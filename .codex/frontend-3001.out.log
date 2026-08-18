@@ -1,0 +1,211 @@
+
+> frontend@0.1.0 start
+> craco start
+
+Starting the development server...
+
+Compiled successfully!
+
+You can now view frontend in the browser.
+
+  Local:            http://localhost:3001
+  On Your Network:  http://192.168.2.8:3001
+
+Note that the development build is not optimized.
+To create a production build, use yarn build.
+
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src\pages\PDDetail.js
+  Line 3938:6:  React Hook useEffect has a missing dependency: 'parseElaboracao'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+[1m[33mWARNING[39m[22m in [1m[eslint] 
+src\pages\PDDetail.js
+  Line 3938:6:  React Hook useEffect has a missing dependency: 'parseElaboracao'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+[39m[22m
+
+webpack compiled with [1m[33m1 warning[39m[22m
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src\pages\PDDetail.js
+  Line 3939:6:  React Hook useEffect has a missing dependency: 'parseElaboracao'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+[1m[33mWARNING[39m[22m in [1m[eslint] 
+src\pages\PDDetail.js
+  Line 3939:6:  React Hook useEffect has a missing dependency: 'parseElaboracao'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+[39m[22m
+
+webpack compiled with [1m[33m1 warning[39m[22m
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src\pages\PDDetail.js
+  Line 3939:6:  React Hook useEffect has missing dependencies: 'normalizeParam' and 'parseElaboracao'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+[1m[33mWARNING[39m[22m in [1m[eslint] 
+src\pages\PDDetail.js
+  Line 3939:6:  React Hook useEffect has missing dependencies: 'normalizeParam' and 'parseElaboracao'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+[39m[22m
+
+webpack compiled with [1m[33m1 warning[39m[22m
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src\pages\PDDetail.js
+  Line 3939:6:  React Hook useEffect has missing dependencies: 'normalizeParam' and 'parseElaboracao'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+[1m[33mWARNING[39m[22m in [1m[eslint] 
+src\pages\PDDetail.js
+  Line 3939:6:  React Hook useEffect has missing dependencies: 'normalizeParam' and 'parseElaboracao'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+[39m[22m
+
+webpack compiled with [1m[33m1 warning[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Failed to compile.
+
+[eslint] 
+src\App.js
+Syntax error: Identifier 'createContext' has already been declared. (80:9) (80:9)
+[1m[31mERROR[39m[22m in [1m./src/App.js[39m[22m
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\src\App.js: Identifier 'createContext' has already been declared. (80:9)
+
+[0m [90m 78 |[39m }
+ [90m 79 |[39m
+[31m[1m>[22m[39m[90m 80 |[39m [36mimport[39m { createContext[33m,[39m useContext } [36mfrom[39m [32m"react"[39m[33m;[39m
+ [90m    |[39m          [31m[1m^[22m[39m
+ [90m 81 |[39m [36mconst[39m [33mThemeCtx[39m [33m=[39m createContext({ dark[33m:[39m [36mfalse[39m[33m,[39m setDark[33m:[39m () [33m=>[39m {} })[33m;[39m
+ [90m 82 |[39m [36mexport[39m [36mconst[39m useTheme [33m=[39m () [33m=>[39m useContext([33mThemeCtx[39m)[33m;[39m
+ [90m 83 |[39m[0m
+    at constructor (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:365:19)
+    at FlowParserMixin.raise (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:6599:19)
+    at FlowScopeHandler.checkRedeclarationInScope (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:1619:19)
+    at FlowScopeHandler.declareName (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:1585:12)
+    at FlowScopeHandler.declareName (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:1686:11)
+    at FlowParserMixin.declareNameFromIdentifier (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:7567:16)
+    at FlowParserMixin.checkIdentifier (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:7563:12)
+    at FlowParserMixin.checkLVal (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:7500:12)
+    at FlowParserMixin.finishImportSpecifier (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:14266:10)
+    at FlowParserMixin.parseImportSpecifier (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:3456:17)
+    at FlowParserMixin.parseNamedImportSpecifiers (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:14398:36)
+    at FlowParserMixin.parseImportSpecifiersAndAfter (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:14242:37)
+    at FlowParserMixin.parseImport (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:14235:17)
+    at FlowParserMixin.parseStatementContent (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:12876:27)
+    at FlowParserMixin.parseStatementLike (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:12767:17)
+    at FlowParserMixin.parseStatementLike (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:2918:24)
+    at FlowParserMixin.parseModuleItem (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:12744:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:13316:36)
+    at FlowParserMixin.parseBlockBody (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:13309:10)
+    at FlowParserMixin.parseProgram (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:12622:10)
+    at FlowParserMixin.parseTopLevel (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:12612:25)
+    at FlowParserMixin.parseTopLevel (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:3685:28)
+    at FlowParserMixin.parse (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:14488:25)
+    at parse (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\parser\lib\index.js:14522:38)
+    at parser (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\core\lib\parser\index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\core\lib\transformation\normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\core\lib\transformation\index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\@babel\core\lib\transform.js:22:33)
+    at transform.next (<anonymous>)
+    at step (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\gensync\index.js:261:32)
+    at C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\gensync\index.js:273:13
+    at async.call.result.err.err (C:\Users\MARLOS\Documents\KURYOSANTESSUPABASE\frontend\node_modules\gensync\index.js:223:11)
+
+[1m[31mERROR[39m[22m in [1m[eslint] 
+src\App.js
+  Line 80:9:  Parsing [1m[31merror[39m[22m[1m: Identifier 'createContext' has already been declared. (80:9)
+
+[39m[22m
+
+webpack compiled with [1m[31m2 errors[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m
+Compiling...
+Compiled successfully!
+webpack compiled [1m[32msuccessfully[39m[22m

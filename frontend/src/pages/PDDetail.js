@@ -534,6 +534,15 @@ export default function PDDetail() {
     }
   };
 
+  const handleCommercialReject = () => {
+    const comment = window.prompt("Anotações para o retrabalho no P&D:");
+    if (!comment || comment.trim().length < 5) {
+      toast.error("Informe as anotações do retrabalho");
+      return;
+    }
+    handleStatusChange("REJECTED", { comment });
+  };
+
   const handleBackward = async () => {
     if (!backwardJustification.trim() || backwardJustification.trim().length < 10) {
       toast.error("Justificativa deve ter no mínimo 10 caracteres");
@@ -698,7 +707,7 @@ export default function PDDetail() {
             {/* Botões de aprovação comercial — visíveis apenas para roles comerciais */}
             {canApproveCommercial && req.status === "WAITING_APPROVAL" && (
               <>
-                <Button size="sm" variant="destructive" onClick={() => handleStatusChange("REJECTED")} className="gap-1.5">
+                <Button size="sm" variant="destructive" onClick={handleCommercialReject} className="gap-1.5">
                   <XCircle className="h-3.5 w-3.5" /> Reprovar
                 </Button>
                 <Button size="sm" className="gap-1.5 bg-green-600 hover:bg-green-700 text-white" onClick={() => handleStatusChange("APPROVED")}>
@@ -707,6 +716,7 @@ export default function PDDetail() {
               </>
             )}
           </div>
+        </div>
 
           {/* Banner: aguardando aprovação comercial */}
           {req.status === "WAITING_APPROVAL" && (
@@ -750,7 +760,7 @@ export default function PDDetail() {
           {/* PD-17: Link to CRM modal */}
           {showLinkCRM && (
             <Dialog open onOpenChange={(open) => !open && setShowLinkCRM(false)}>
-              <DialogContent className="max-w-lg">
+              <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <GitBranch className="h-4 w-4 text-purple-500" /> Vincular a Projeto CRM
@@ -806,7 +816,7 @@ export default function PDDetail() {
 
           {showBackwardDialog && (
             <Dialog open onOpenChange={(open) => !open && setShowBackwardDialog(false)}>
-              <DialogContent className="max-w-md">
+              <DialogContent className="w-[calc(100vw-2rem)] max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2">
                     <ArrowLeft className="h-4 w-4 text-amber-500" /> Retroceder Etapa
@@ -835,8 +845,6 @@ export default function PDDetail() {
               </DialogContent>
             </Dialog>
           )}
-        </div>
-
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-4 flex-wrap h-auto gap-1">
@@ -865,7 +873,7 @@ export default function PDDetail() {
 
           <TabsContent value="overview">
             <ErrorBoundary label="Overview" resetKey={req.id}>
-              <OverviewTab req={req} dev={dev} formulas={formulas} tests={tests} samples={samples} approval={approval} costs={costs} history={history} onRefresh={fetchData} hasDev={hasDev} clientInfo={client_info} canEdit={canEdit} canApproveCommercial={canApproveCommercial} canManageApproval={canManageApproval} onCommercialApprove={() => handleStatusChange("APPROVED")} onCommercialReject={() => handleStatusChange("REJECTED")} formulaCostData={formula_cost_data} setActiveTab={setActiveTab} documents={documents} updates={updates} pending={pending} canViewCommercial={canViewCommercial} labResults={lab_results} />
+              <OverviewTab req={req} dev={dev} formulas={formulas} tests={tests} samples={samples} approval={approval} costs={costs} history={history} onRefresh={fetchData} hasDev={hasDev} clientInfo={client_info} canEdit={canEdit} canApproveCommercial={canApproveCommercial} canManageApproval={canManageApproval} onCommercialApprove={() => handleStatusChange("APPROVED")} onCommercialReject={handleCommercialReject} formulaCostData={formula_cost_data} setActiveTab={setActiveTab} documents={documents} updates={updates} pending={pending} canViewCommercial={canViewCommercial} labResults={lab_results} />
             </ErrorBoundary>
           </TabsContent>
 
@@ -2693,6 +2701,63 @@ function FormulaTab({ devId, formulas, onRefresh, canEdit, clientInfo, req }) {
 
 /* ============ SAMPLE BATCH COMPONENTS ============ */
 
+const SAMPLE_BATCH_BASE_STATUS_LABELS = {
+  ativa: "Base ativa",
+  bloqueada: "Base bloqueada",
+  encerrada: "Base encerrada",
+};
+
+const SAMPLE_BATCH_QUALITY_LABELS = {
+  aprovada: "Qualidade aprovada",
+  pendente: "Qualidade pendente",
+  reprovada: "Qualidade reprovada",
+};
+
+const SAMPLE_BATCH_SCOPE_LABELS = {
+  cor: "Cor",
+  ativo: "Ativo",
+  fragrancia: "Fragrancia",
+};
+
+function computeSampleBatchMetrics(batch = {}) {
+  const volumePerSampleMl = Number(batch.volume_base_ml) || 0;
+  const variants = Array.isArray(batch.variantes) ? batch.variantes : [];
+  const baseTotalVolumeMl = Number(batch.base_total_volume_ml) || (volumePerSampleMl * Math.max(variants.length, 1));
+  const maxDerivations = Number(batch.max_derivacoes) > 0 ? Number(batch.max_derivacoes) : null;
+  const lossPct = Math.max(0, Number(batch.perda_operacional_percent) || 0);
+  const usableVolumeMl = Math.max(baseTotalVolumeMl * (1 - (lossPct / 100)), 0);
+  const byVolume = volumePerSampleMl > 0 ? Math.floor(usableVolumeMl / volumePerSampleMl) : 0;
+  const capacity = maxDerivations == null ? byVolume : Math.min(byVolume, maxDerivations);
+  const derivadasCount = variants.length;
+  const remaining = Math.max(capacity - derivadasCount, 0);
+  const volumeConsumedMl = derivadasCount * volumePerSampleMl;
+  const volumeAvailableMl = Math.max(baseTotalVolumeMl - volumeConsumedMl, 0);
+  const validade = batch.validade_base ? new Date(`${batch.validade_base}T00:00:00`) : null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const blockedReasons = [];
+  if (validade && !Number.isNaN(validade.getTime()) && validade < today) blockedReasons.push("Validade expirada");
+  if ((batch.status_base || "ativa") !== "ativa") blockedReasons.push(SAMPLE_BATCH_BASE_STATUS_LABELS[batch.status_base] || "Base indisponivel");
+  if ((batch.status_qualidade || "aprovada") !== "aprovada") blockedReasons.push(SAMPLE_BATCH_QUALITY_LABELS[batch.status_qualidade] || "Qualidade nao aprovada");
+  if (remaining <= 0) blockedReasons.push("Capacidade de derivacao esgotada");
+  if (volumePerSampleMl > 0 && volumeAvailableMl < volumePerSampleMl) blockedReasons.push("Volume insuficiente para nova amostra");
+
+  return {
+    volumePerSampleMl,
+    baseTotalVolumeMl,
+    maxDerivations,
+    lossPct,
+    capacity,
+    derivadasCount,
+    remaining,
+    volumeConsumedMl,
+    volumeAvailableMl,
+    blockedReasons,
+    blocked: blockedReasons.length > 0,
+  };
+}
+
 function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
   const { ingredientOptions, getSuppliersForIngredient } = usePdMaterialLibrary();
   const emptyVariante = () => ({ id: crypto.randomUUID(), nome: "", versao: 1, overrides: [], notas: "" });
@@ -2700,6 +2765,15 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
     nome: initial.nome || "",
     formula_base_id: initial.formula_base_id || (formulas[0]?.id || ""),
     volume_base_ml: initial.volume_base_ml || 15,
+    base_total_volume_ml: initial.base_total_volume_ml || ((initial.volume_base_ml || 15) * Math.max((initial.variantes || []).length, 1)),
+    max_derivacoes: initial.max_derivacoes ?? "",
+    perda_operacional_percent: initial.perda_operacional_percent || 0,
+    validade_base: initial.validade_base || "",
+    condicoes_armazenamento: initial.condicoes_armazenamento || "",
+    status_base: initial.status_base || "ativa",
+    status_qualidade: initial.status_qualidade || "aprovada",
+    allowed_change_scopes: initial.allowed_change_scopes || ["cor", "ativo", "fragrancia"],
+    base_reference_ingredients: initial.base_reference_ingredients || ["Agua", "Alcool", "Acido hialuronico"],
     notas: initial.notas || "",
     variantes: (initial.variantes || []).map(v => ({
       id: v.id || crypto.randomUUID(),
@@ -2712,6 +2786,15 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
     nome: "",
     formula_base_id: formulas[0]?.id || "",
     volume_base_ml: 15,
+    base_total_volume_ml: 150,
+    max_derivacoes: "",
+    perda_operacional_percent: 0,
+    validade_base: "",
+    condicoes_armazenamento: "",
+    status_base: "ativa",
+    status_qualidade: "aprovada",
+    allowed_change_scopes: ["cor", "ativo", "fragrancia"],
+    base_reference_ingredients: ["Agua", "Alcool", "Acido hialuronico"],
     notas: "",
     variantes: [emptyVariante()],
   });
@@ -2732,15 +2815,34 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
       .finally(() => setLoadingItems(false));
   }, [form.formula_base_id]);
 
+  const batchMetrics = useMemo(() => computeSampleBatchMetrics({
+    ...form,
+    max_derivacoes: form.max_derivacoes === "" ? null : form.max_derivacoes,
+  }), [form]);
+
   const setVariante = (idx, updates) => setForm(f => {
     const v = [...f.variantes];
     v[idx] = { ...v[idx], ...updates };
     return { ...f, variantes: v };
   });
 
-  const addVariante = () => setForm(f => ({ ...f, variantes: [...f.variantes, emptyVariante()] }));
+  const addVariante = () => {
+    if (batchMetrics.remaining <= 0) {
+      toast.error("A base nao suporta novas derivacoes com os limites atuais");
+      return;
+    }
+    setForm(f => ({ ...f, variantes: [...f.variantes, emptyVariante()] }));
+  };
 
   const removeVariante = (idx) => setForm(f => ({ ...f, variantes: f.variantes.filter((_, i) => i !== idx) }));
+
+  const toggleChangeScope = (scope) => setForm(f => {
+    const selected = new Set(f.allowed_change_scopes || []);
+    if (selected.has(scope)) selected.delete(scope);
+    else selected.add(scope);
+    const next = [...selected];
+    return { ...f, allowed_change_scopes: next.length ? next : [scope] };
+  });
 
   const addOverride = (vIdx) => setVariante(vIdx, {
     overrides: [...(form.variantes[vIdx]?.overrides || []), { ingredient_name_base: "", ingredient_name: "", percentage: 0, fornecedor: "" }]
@@ -2806,7 +2908,12 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
     const payload = {
       ...form,
       nome: form.nome.trim(),
+      max_derivacoes: form.max_derivacoes === "" ? null : Number(form.max_derivacoes),
+      base_total_volume_ml: Number(form.base_total_volume_ml) || 0,
+      perda_operacional_percent: Number(form.perda_operacional_percent) || 0,
       notas: form.notas || "",
+      allowed_change_scopes: form.allowed_change_scopes || ["cor", "ativo", "fragrancia"],
+      base_reference_ingredients: form.base_reference_ingredients || ["Agua", "Alcool", "Acido hialuronico"],
       variantes: sanitizedVariantes,
     };
 
@@ -2830,6 +2937,96 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
           <Label className="text-xs font-medium">Volume da Amostra (mL)</Label>
           <Input type="number" value={form.volume_base_ml} onChange={e => setForm(f => ({ ...f, volume_base_ml: parseFloat(e.target.value) || 0 }))} />
           <p className="text-[10px] text-muted-foreground">Volume de cada amostra a elaborar no lab — não o volume do produto final (padrão: 15 mL)</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Volume total da base (mL)</Label>
+          <Input type="number" value={form.base_total_volume_ml} onChange={e => setForm(f => ({ ...f, base_total_volume_ml: parseFloat(e.target.value) || 0 }))} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">MÃ¡x. derivaÃ§Ãµes</Label>
+          <Input type="number" value={form.max_derivacoes} onChange={e => setForm(f => ({ ...f, max_derivacoes: e.target.value }))} placeholder="Sem limite" />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Perda operacional (%)</Label>
+          <Input type="number" step="0.01" value={form.perda_operacional_percent} onChange={e => setForm(f => ({ ...f, perda_operacional_percent: parseFloat(e.target.value) || 0 }))} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Validade da base</Label>
+          <Input type="date" value={form.validade_base} onChange={e => setForm(f => ({ ...f, validade_base: e.target.value }))} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Status da base</Label>
+          <Select value={form.status_base} onValueChange={v => setForm(f => ({ ...f, status_base: v }))}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ativa">Ativa</SelectItem>
+              <SelectItem value="bloqueada">Bloqueada</SelectItem>
+              <SelectItem value="encerrada">Encerrada</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Status da qualidade</Label>
+          <Select value={form.status_qualidade} onValueChange={v => setForm(f => ({ ...f, status_qualidade: v }))}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="aprovada">Aprovada</SelectItem>
+              <SelectItem value="pendente">Pendente</SelectItem>
+              <SelectItem value="reprovada">Reprovada</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium">Armazenamento</Label>
+          <Input value={form.condicoes_armazenamento} onChange={e => setForm(f => ({ ...f, condicoes_armazenamento: e.target.value }))} placeholder="Ex: 25C, ao abrigo da luz" />
+        </div>
+      </div>
+
+      <div className={`rounded-lg border p-3 ${batchMetrics.blocked ? "border-amber-300 bg-amber-50" : "border-emerald-200 bg-emerald-50/60"}`}>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <Badge variant="outline">Derivadas: {batchMetrics.derivadasCount}/{batchMetrics.capacity || 0}</Badge>
+          <Badge variant="outline">Saldo: {batchMetrics.volumeAvailableMl.toFixed(1)} mL</Badge>
+          <Badge variant="outline">Consumo: {batchMetrics.volumeConsumedMl.toFixed(1)} mL</Badge>
+          {batchMetrics.maxDerivations != null && <Badge variant="outline">Limite manual: {batchMetrics.maxDerivations}</Badge>}
+        </div>
+        {batchMetrics.blocked ? (
+          <p className="text-xs text-amber-700 mt-2">{batchMetrics.blockedReasons.join(" · ")}</p>
+        ) : (
+          <p className="text-xs text-emerald-700 mt-2">A base ainda suporta {batchMetrics.remaining} nova(s) derivaÃ§Ã£o(Ãµes).</p>
+        )}
+      </div>
+
+      <div className="rounded-lg border bg-muted/20 p-3 space-y-3">
+        <div>
+          <Label className="text-xs font-medium">Base fixa de referencia</Label>
+          <Input
+            value={(form.base_reference_ingredients || []).join(", ")}
+            onChange={e => setForm(f => ({ ...f, base_reference_ingredients: e.target.value.split(",").map(v => v.trim()).filter(Boolean) }))}
+            className="mt-1 text-sm"
+          />
+        </div>
+        <div>
+          <Label className="text-xs font-medium">Mudancas permitidas nas derivadas</Label>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {["cor", "ativo", "fragrancia"].map(scope => (
+              <Button
+                key={scope}
+                type="button"
+                variant={(form.allowed_change_scopes || []).includes(scope) ? "default" : "outline"}
+                size="sm"
+                onClick={() => toggleChangeScope(scope)}
+                className="h-7 text-xs"
+              >
+                {SAMPLE_BATCH_SCOPE_LABELS[scope]}
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -2857,7 +3054,7 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <Label className="text-sm font-semibold flex items-center gap-1.5"><GitBranch className="h-4 w-4 text-violet-500" />Variantes</Label>
-          <Button variant="outline" size="sm" onClick={addVariante} className="h-7 text-xs gap-1"><Plus className="h-3 w-3" />Adicionar</Button>
+          <Button variant="outline" size="sm" onClick={addVariante} disabled={batchMetrics.remaining <= 0} className="h-7 text-xs gap-1"><Plus className="h-3 w-3" />Adicionar</Button>
         </div>
 
         {form.variantes.map((v, vIdx) => (
@@ -2978,6 +3175,7 @@ function SampleBatchCard({ batch, formulas, onEdit, onDelete, canEdit }) {
   const [baseItems, setBaseItems] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const [showComparativo, setShowComparativo] = useState(false);
+  const metrics = useMemo(() => computeSampleBatchMetrics(batch), [batch]);
 
   useEffect(() => {
     if (!expanded || !batch.formula_base_id) return;
@@ -3044,6 +3242,9 @@ function SampleBatchCard({ batch, formulas, onEdit, onDelete, canEdit }) {
           </p>
         </div>
         <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge variant="outline" className={metrics.blocked ? "text-amber-700 border-amber-300" : "text-emerald-700 border-emerald-300"}>
+            {metrics.remaining} livre(s)
+          </Badge>
           {variantes.map((v, i) => (
             <span key={v.id} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-violet-50 text-violet-700 border border-violet-200">
               {v.nome || `V${i + 1}`}
@@ -3052,8 +3253,19 @@ function SampleBatchCard({ batch, formulas, onEdit, onDelete, canEdit }) {
         </div>
         {canEdit && (
           <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-            <button onClick={() => onEdit(batch)} className="text-muted-foreground hover:text-blue-500 transition-colors p-1"><Pencil className="h-3.5 w-3.5" /></button>
-            <button onClick={() => onDelete(batch.id)} className="text-muted-foreground hover:text-red-500 transition-colors p-1"><Trash2 className="h-3.5 w-3.5" /></button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button type="button" variant="ghost" size="icon" onClick={() => onEdit(batch)} className="h-7 w-7 text-muted-foreground hover:text-blue-600">
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Editar lote</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <Button type="button" variant="ghost" size="icon" onClick={() => onDelete(batch.id)} className="h-7 w-7 text-muted-foreground hover:text-red-600">
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
           </div>
         )}
         <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`} />
@@ -3329,7 +3541,7 @@ function SampleBatchSection({ devId, formulas, onRefresh, canEdit }) {
       )}
 
       <Dialog open={editorOpen} onOpenChange={open => { if (!open) setEditorOpen(false); }}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <GitBranch className="h-5 w-5 text-violet-600" />
@@ -3398,7 +3610,7 @@ function StabilityGridPanel({ reqId, canEdit, onReadingsLoaded, showStudyHeader 
   const [readingForm, setReadingForm] = useState({ day_offset: 0, parameters: {}, notes: "" });
   const [savingReading, setSavingReading] = useState(false);
 
-  const fetchStudy = async () => {
+  const fetchStudy = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get(`/pd/requests/${reqId}/stability-study`);
@@ -3412,9 +3624,9 @@ function StabilityGridPanel({ reqId, canEdit, onReadingsLoaded, showStudyHeader 
     } catch (err) {
       toast.error("Erro ao carregar estabilidades");
     } finally { setLoading(false); }
-  };
+  }, [reqId, onReadingsLoaded]);
 
-  useEffect(() => { fetchStudy(); }, [reqId]);
+  useEffect(() => { fetchStudy(); }, [fetchStudy]);
 
   const readingsByCondition = useMemo(() => {
     const map = {};
@@ -3649,11 +3861,12 @@ const FT_PARAMS = [
   { key: "teor_alcool", label: "Teor de Álcool" },
 ];
 
+const EMPTY_ELABORACAO = { secoes: [] };
+
 function FichaTecnicaTab({ reqId, formulas, req, dev, canEdit, labResults }) {
-  const EMPTY_ELABORACAO = { secoes: [] };
   // Garante shape completo por seção — dados legados podem ter sido gravados sem `etapas`
   // (ou por um caller futuro que não espelhe addSecao), o que quebrava o render em .map().
-  const normalizeSecao = (secao, idx) => ({
+  const normalizeSecao = useCallback((secao, idx) => ({
     id: secao?.id || `s${idx}`,
     nome: secao?.nome || `Fase ${indexToLetters(idx)}`,
     tipo: secao?.tipo || "",
@@ -3661,8 +3874,8 @@ function FichaTecnicaTab({ reqId, formulas, req, dev, canEdit, labResults }) {
     agitacao: secao?.agitacao || "",
     tempo_min: secao?.tempo_min || "",
     etapas: Array.isArray(secao?.etapas) ? secao.etapas : (secao?.etapas ? [String(secao.etapas)] : [""]),
-  });
-  const parseElaboracao = (raw) => {
+  }), []);
+  const parseElaboracao = useCallback((raw) => {
     if (!raw) return EMPTY_ELABORACAO;
     if (typeof raw === "object" && Array.isArray(raw.secoes)) {
       return { ...raw, secoes: raw.secoes.map(normalizeSecao) };
@@ -3670,15 +3883,15 @@ function FichaTecnicaTab({ reqId, formulas, req, dev, canEdit, labResults }) {
     // legacy plain string → migrate to single section
     if (typeof raw === "string" && raw.trim()) return { secoes: [{ id: "s1", nome: "Modo de Preparo", temperatura: "", etapas: [raw] }] };
     return EMPTY_ELABORACAO;
-  };
+  }, [normalizeSecao]);
   // Dados legados podem ter aspecto/cor/densidade/... gravados como string simples
   // (versão anterior da ficha). O backend exige objeto {especificacao, resultado, pa} —
   // sem essa normalização, salvar reenvia a string e o backend rejeita com 422.
-  const normalizeParam = (val) => {
+  const normalizeParam = useCallback((val) => {
     if (val && typeof val === "object") return { especificacao: val.especificacao || "", resultado: val.resultado || "", pa: val.pa || "" };
     if (typeof val === "string" && val.trim()) return { especificacao: "", resultado: val, pa: "" };
     return { especificacao: "", resultado: "", pa: "" };
-  };
+  }, []);
   const [autoFilled, setAutoFilled] = useState({});
 
   const [form, setForm] = useState({
@@ -3723,7 +3936,8 @@ function FichaTecnicaTab({ reqId, formulas, req, dev, canEdit, labResults }) {
         teor_alcool: normalizeParam(a.teor_alcool),
       });
     }).catch(() => {}).finally(() => setLoading(false));
-  }, [reqId, req.project_name, labResults]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reqId, req.project_name, labResults, parseElaboracao, normalizeParam]);
 
   const setParam = (key, field, val) => {
     setForm(prev => ({ ...prev, [key]: { ...prev[key], [field]: val } }));
@@ -4521,8 +4735,6 @@ function SamplesTab({ devId, samples, formulas, onRefresh, canEdit, productName 
   const [form, setForm] = useState({ formula_version: formulas[0]?.version || 1, sent_to_client: false, feedback: "" });
   const [editingId, setEditingId] = useState(null);
   const [editFeedback, setEditFeedback] = useState("");
-  const [sampleVolume, setSampleVolume] = useState(15);
-  const [showOrderId, setShowOrderId] = useState(null);
   const [stockAlert, setStockAlert] = useState(null); // { found, items }
   const [checkingStock, setCheckingStock] = useState(false);
 
@@ -4575,19 +4787,6 @@ function SamplesTab({ devId, samples, formulas, onRefresh, canEdit, productName 
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h3 className="text-base font-semibold">Amostras ({samples.length})</h3>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 border rounded-md px-2 py-1 bg-muted/30">
-            <Beaker className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Vol. amostra:</span>
-            <input
-              type="number"
-              min={1}
-              max={500}
-              value={sampleVolume}
-              onChange={e => setSampleVolume(parseFloat(e.target.value) || 15)}
-              className="w-14 text-xs font-mono bg-transparent border-none outline-none text-right"
-            />
-            <span className="text-xs text-muted-foreground">mL</span>
-          </div>
           <Button size="sm" onClick={handleNewSample} className="gap-1.5" disabled={!canEdit || checkingStock}>
             {checkingStock ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />} Nova Amostra
           </Button>
@@ -4726,34 +4925,9 @@ function SamplesTab({ devId, samples, formulas, onRefresh, canEdit, productName 
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
                     )}
-                    {/* Manipulation order toggle */}
-                    <Button
-                      variant="ghost" size="sm"
-                      className="gap-1 text-xs text-muted-foreground h-7"
-                      onClick={() => setShowOrderId(prev => prev === s.id ? null : s.id)}
-                    >
-                      <ClipboardList className="h-3.5 w-3.5" />
-                      {showOrderId === s.id ? "Fechar ordem" : "Ordem"}
-                    </Button>
                   </div>
                 </div>
 
-                {/* Manipulation order panel */}
-                {showOrderId === s.id && (() => {
-                  const f = formulas.find(f => f.version === s.formula_version);
-                  return (
-                    <div className="mt-3 border-t pt-3">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                        Ordem de manipulação — {sampleVolume} mL (≈ {sampleVolume} g)
-                      </p>
-                      {f ? (
-                        <ManipulacaoOrder formulaId={f.id} sampleVolume={sampleVolume} />
-                      ) : (
-                        <p className="text-xs text-muted-foreground">Fórmula v{s.formula_version} não encontrada.</p>
-                      )}
-                    </div>
-                  );
-                })()}
               </CardContent>
             </Card>
           );

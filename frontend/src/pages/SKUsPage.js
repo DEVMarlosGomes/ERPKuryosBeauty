@@ -96,7 +96,7 @@ export default function SKUsPage() {
       setSkuPriceVal(selectedSku.preco_unitario ?? "");
       setSkuPriceCurrency(selectedSku.preco_unitario_currency || "BRL");
     }
-  }, [selectedSku?.id]);
+  }, [selectedSku]);
 
   const skuCategoryOptions = useMemo(() => {
     const entries = skus

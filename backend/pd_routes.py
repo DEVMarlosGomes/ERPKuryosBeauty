@@ -14,6 +14,7 @@ import uuid
 import io
 import logging
 import asyncio
+import unicodedata
 from validation_utils import clean_text, normalize_cnpj, normalize_email, normalize_phone, is_valid_cnpj, is_valid_email, is_valid_phone
 from workflow_engine import create_workflow_task, audit_log, get_blocking_tasks
 from rbac import (
@@ -31,6 +32,7 @@ from rbac import (
     QA_APPROVERS,
     ADMIN_ONLY,
     COMPRAS_FULL,
+    COMERCIAL_FULL,
 )
 
 logger = logging.getLogger(__name__)
@@ -926,6 +928,34 @@ def _is_epa_eligible(ctx: Dict[str, Any]) -> bool:
     return bool(req.get("kickoff_completed")) and bool(approval.get("approved_by_client")) and bool(ctx.get("formula"))
 
 
+def _pd_request_requires_commercial_approval(pd_req: Dict[str, Any]) -> bool:
+    """Solicitacoes vinculadas a cliente/amostra comercial precisam de aceite Comercial."""
+    if not pd_req:
+        return False
+    if pd_req.get("is_internal_research"):
+        return False
+    commercial_links = (
+        pd_req.get("client_card_id"),
+        pd_req.get("linked_amostra_id"),
+        pd_req.get("linked_variacao_id"),
+        pd_req.get("crm_project_id"),
+        pd_req.get("order_id"),
+        pd_req.get("pedido_id"),
+    )
+    if any(commercial_links):
+        return True
+    request_type = clean_text(pd_req.get("request_type") or "").lower()
+    return request_type not in {"", "pesquisa interna", "internal research"}
+
+
+def _assert_can_register_client_approval(pd_req: Dict[str, Any], user: Dict[str, Any]) -> None:
+    if _pd_request_requires_commercial_approval(pd_req) and not has_role(user, COMERCIAL_FULL):
+        raise HTTPException(
+            status_code=403,
+            detail="Solicitacao comercial: a aprovacao do cliente/comercial deve ser registrada por Comercial ou Admin. P&D deve entregar para aprovacao e aguardar retorno.",
+        )
+
+
 async def _build_live_document_snapshot(req_id: str, doc_type: str, tenant_id: str) -> Dict[str, Any]:
     ctx = await _get_pd_request_context(req_id, tenant_id)
     req = ctx["request"]
@@ -1538,7 +1568,7 @@ async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
         )
 
 
-async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_status: str):
+async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_status: str, comment: str = ""):
     sample_id = pd_req.get("linked_amostra_id")
     variacao_id = pd_req.get("linked_variacao_id")
     if not sample_id or not variacao_id:
@@ -1574,13 +1604,17 @@ async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_s
             "aprovacao_interna": True,
         })
     elif new_status == "REJECTED":
+        rework_note = clean_text(comment) or "Reprovado comercialmente no P&D"
         set_ops.update({
             "variacoes.$.status": "retrabalho",
             "variacoes.$.status_pd_raw": "retrabalho_interno",
             "variacoes.$.status_pd_label": "Retrabalho Solicitado",
             "variacoes.$.resultado": "retrabalho",
             "variacoes.$.aprovacao_externa": False,
-            "variacoes.$.reprovacao_motivo": "Reprovado comercialmente no P&D",
+            "variacoes.$.reprovacao_motivo": rework_note,
+            "variacoes.$.retrabalho_anotacoes": rework_note,
+            "variacoes.$.retrabalho_solicitado_em": now,
+            "variacoes.$.retrabalho_solicitado_por": user.get("name", ""),
         })
     else:
         return sample, variacao, None
@@ -1608,6 +1642,25 @@ async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_s
     )
     updated_variacao = next((v for v in (updated_sample or {}).get("variacoes", []) if v.get("id") == variacao_id), None)
 
+    if new_status == "REJECTED":
+        await db.pd_updates.insert_one({
+            "id": new_id(),
+            "pd_request_id": pd_req["id"],
+            "tenant_id": user["tenant_id"],
+            "tipo": "retrabalho",
+            "mensagem": clean_text(comment) or "Retrabalho solicitado pelo Comercial.",
+            "visivel_comercial": True,
+            "item_solicitado": None,
+            "fornecedor": None,
+            "previsao_entrega": None,
+            "recebido": False,
+            "recebido_em": None,
+            "user_id": user["id"],
+            "user_name": user["name"],
+            "user_role": user.get("role", ""),
+            "created_at": now,
+        })
+
     sku_created = None
     if new_status == "APPROVED" and updated_sample and updated_variacao:
         from crm_routes import _create_sku_from_variacao_v2
@@ -1634,7 +1687,11 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
 
     # Aprovação/rejeição comercial: roles comerciais podem agir somente nessa transição
     COMERCIAL_FULL = {"admin", "vendedor", "sales_ops", "sucesso_cliente"}
-    is_comercial_action = current == "WAITING_APPROVAL" and new_status in ("APPROVED", "REJECTED")
+    is_comercial_action = (
+        current == "WAITING_APPROVAL"
+        and new_status in ("APPROVED", "REJECTED")
+        and has_role(user, COMERCIAL_FULL)
+    )
     if is_comercial_action:
         require_roles(user, PD_FULL | COMERCIAL_FULL)
     else:
@@ -1694,6 +1751,14 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
         if blocking:
             titles = " | ".join(t.get("title", "") for t in blocking[:3])
             raise HTTPException(status_code=409, detail=f"Existem tarefas bloqueantes pendentes: {titles}")
+
+    if new_status == "APPROVED" and not is_comercial_action:
+        raise HTTPException(
+            status_code=403,
+            detail="Somente o Comercial pode aprovar a formulacao final. P&D deve entregar para aprovacao e aguardar a decisao comercial.",
+        )
+    if new_status == "REJECTED" and is_comercial_action and len(clean_text(data.comment)) < 5:
+        raise HTTPException(status_code=400, detail="Informe as anotacoes do retrabalho para o P&D antes de reprovar.")
 
     # Check / auto-register approval for APPROVED status
     if new_status == "APPROVED":
@@ -1778,6 +1843,7 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
                 pd_req,
                 user,
                 new_status,
+                data.comment or "",
             )
         except Exception as exc:
             logger.warning(f"PD commercial approval reverse sync failed for req {req_id}: {exc}")
@@ -2827,12 +2893,28 @@ async def create_approval(dev_id: str, data: ApprovalCreate, request: Request):
     if not dev:
         raise HTTPException(status_code=404, detail="Desenvolvimento não encontrado")
     
+    pd_req = await db.pd_requests.find_one(
+        {"id": dev.get("pd_request_id"), "tenant_id": user["tenant_id"]},
+        {"_id": 0},
+    )
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao P&D nao encontrada")
+
     existing = await db.pd_approvals.find_one({"development_id": dev_id})
+    existing_client_approved = bool((existing or {}).get("approved_by_client"))
+    requested_client_approval = bool(data.approved_by_client)
+    if requested_client_approval and not existing_client_approved:
+        _assert_can_register_client_approval(pd_req, user)
+
+    approved_by_client = requested_client_approval or existing_client_approved
+    if existing_client_approved and not requested_client_approval and not has_role(user, COMERCIAL_FULL):
+        approved_by_client = True
+    approved_by_internal = bool(data.approved_by_internal)
     source_changes = _build_source_changes(
         existing or {},
         {
-            "approved_by_client": data.approved_by_client,
-            "approved_by_internal": data.approved_by_internal,
+            "approved_by_client": approved_by_client,
+            "approved_by_internal": approved_by_internal,
             "notes": data.notes or "",
         },
         {
@@ -2845,8 +2927,8 @@ async def create_approval(dev_id: str, data: ApprovalCreate, request: Request):
         await db.pd_approvals.update_one(
             {"development_id": dev_id},
             {"$set": {
-                "approved_by_client": data.approved_by_client,
-                "approved_by_internal": data.approved_by_internal,
+                "approved_by_client": approved_by_client,
+                "approved_by_internal": approved_by_internal,
                 "notes": data.notes or "",
                 "approval_date": now_iso(),
                 "approved_by_user": user["id"],
@@ -2859,8 +2941,8 @@ async def create_approval(dev_id: str, data: ApprovalCreate, request: Request):
         approval = {
             "id": approval_id,
             "development_id": dev_id,
-            "approved_by_client": data.approved_by_client,
-            "approved_by_internal": data.approved_by_internal,
+            "approved_by_client": approved_by_client,
+            "approved_by_internal": approved_by_internal,
             "approval_date": now_iso(),
             "notes": data.notes or "",
             "approved_by_user": user["id"],
@@ -2869,7 +2951,7 @@ async def create_approval(dev_id: str, data: ApprovalCreate, request: Request):
         await db.pd_approvals.insert_one(approval)
         approval.pop("_id", None)
     
-    if data.approved_by_client:
+    if approved_by_client and not existing_client_approved:
         await _auto_generate_documents_for_request(
             dev["pd_request_id"],
             user,
@@ -2975,6 +3057,13 @@ def _build_cost_versions_response(doc: dict, user: dict, formula_cost_auto: floa
     v1.setdefault("status", "rascunho")
     v1.setdefault("submitted_at", None)
     v1.setdefault("submitted_by_name", None)
+    v1_blank = (
+        v1.get("status") == "rascunho"
+        and not v1.get("submitted_at")
+        and float(v1.get("ingredient_cost_auto") or 0) == 0
+        and float(v1.get("ingredient_cost_manual") or 0) == 0
+        and not clean_text(v1.get("notes"))
+    )
 
     v2_raw = doc.get("v2")
     total_final = doc.get("total_final", 0.0)
@@ -2985,6 +3074,8 @@ def _build_cost_versions_response(doc: dict, user: dict, formula_cost_auto: floa
             "v2": v2_raw,
             "total_final": total_final,
             "updated_at": doc.get("updated_at"),
+            "pd_cost_blank": v1_blank,
+            "pd_cost_analysis_required": v1_blank,
             "_role_view": "compras",
         }
 
@@ -3001,6 +3092,8 @@ def _build_cost_versions_response(doc: dict, user: dict, formula_cost_auto: floa
         "v2": v2_summary,
         "total_final": total_final if v2_raw and v2_raw.get("status") == "finalizado" else None,
         "updated_at": doc.get("updated_at"),
+        "pd_cost_blank": v1_blank,
+        "pd_cost_analysis_required": v1_blank,
         "_role_view": "pd",
     }
 
@@ -3247,6 +3340,16 @@ class SampleBatchOverride(BaseModel):
     percentage: float = 0.0
     fornecedor: str = ""
 
+SAMPLE_BATCH_BASE_STATUSES = {"ativa", "bloqueada", "encerrada"}
+SAMPLE_BATCH_QUALITY_STATUSES = {"aprovada", "pendente", "reprovada"}
+SAMPLE_BATCH_DEFAULT_BASE_INGREDIENTS = ["Agua", "Alcool", "Acido hialuronico"]
+SAMPLE_BATCH_ALLOWED_CHANGE_SCOPES = {"cor", "ativo", "fragrancia"}
+SAMPLE_BATCH_SCOPE_KEYWORDS = {
+    "fragrancia": ("fragr", "essencia", "essência", "perfume", "aroma", "odor"),
+    "cor": ("cor", "corante", "pigmento", "color"),
+    "ativo": ("ativo", "actif", "active", "hialuron", "hyaluron", "niacinamida", "vitamina", "extrato"),
+}
+
 class SampleBatchVariante(BaseModel):
     id: str = ""
     nome: str
@@ -3257,9 +3360,290 @@ class SampleBatchVariante(BaseModel):
 class SampleBatchCreate(BaseModel):
     nome: str
     formula_base_id: str
-    volume_base_ml: float = 1000.0
+    volume_base_ml: float = 15.0
+    base_total_volume_ml: Optional[float] = None
+    max_derivacoes: Optional[int] = None
+    perda_operacional_percent: float = 0.0
+    validade_base: Optional[str] = None
+    condicoes_armazenamento: str = ""
+    status_base: str = "ativa"
+    status_qualidade: str = "aprovada"
+    allowed_change_scopes: List[str] = Field(default_factory=lambda: ["cor", "ativo", "fragrancia"])
+    base_reference_ingredients: List[str] = Field(default_factory=lambda: list(SAMPLE_BATCH_DEFAULT_BASE_INGREDIENTS))
     variantes: List[SampleBatchVariante] = []
     notas: str = ""
+
+
+def _normalize_sample_batch_scope(value: Any) -> str:
+    normalized = (
+        unicodedata.normalize("NFD", str(value or ""))
+        .encode("ascii", "ignore")
+        .decode("ascii")
+        .strip()
+        .lower()
+    )
+    if normalized in {"fragrance", "fragrancia", "fragrancia"}:
+        return "fragrancia"
+    if normalized in SAMPLE_BATCH_ALLOWED_CHANGE_SCOPES:
+        return normalized
+    return normalized
+
+
+def _classify_sample_batch_change_scope(*values: Any) -> Optional[str]:
+    text = " ".join(str(value or "") for value in values)
+    normalized = (
+        unicodedata.normalize("NFD", text)
+        .encode("ascii", "ignore")
+        .decode("ascii")
+        .lower()
+    )
+    for scope, keywords in SAMPLE_BATCH_SCOPE_KEYWORDS.items():
+        if any(keyword in normalized for keyword in keywords):
+            return scope
+    return None
+
+
+def _parse_optional_iso_date(value: Optional[str]) -> Optional[datetime]:
+    if not value:
+        return None
+    raw = clean_text(value)
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail="validade_base deve estar no formato YYYY-MM-DD") from exc
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _build_sample_batch_payload(
+    data: SampleBatchCreate,
+    *,
+    tenant_id: str,
+    dev_id: str,
+    existing_id: Optional[str] = None,
+    current_now: Optional[str] = None,
+) -> Dict[str, Any]:
+    nome = clean_text(data.nome)
+    if not nome:
+        raise HTTPException(status_code=400, detail="Nome do lote obrigatorio")
+
+    formula_base_id = clean_text(data.formula_base_id)
+    if not formula_base_id:
+        raise HTTPException(status_code=400, detail="Formula base obrigatoria")
+
+    volume_por_amostra = round(float(data.volume_base_ml or 0), 4)
+    if volume_por_amostra <= 0:
+        raise HTTPException(status_code=400, detail="volume_base_ml deve ser maior que zero")
+
+    perda_operacional_percent = round(float(data.perda_operacional_percent or 0), 4)
+    if perda_operacional_percent < 0 or perda_operacional_percent >= 100:
+        raise HTTPException(status_code=400, detail="perda_operacional_percent deve estar entre 0 e 99.9999")
+
+    allowed_change_scopes = [
+        _normalize_sample_batch_scope(scope)
+        for scope in (data.allowed_change_scopes or [])
+        if _normalize_sample_batch_scope(scope)
+    ]
+    if not allowed_change_scopes:
+        allowed_change_scopes = ["cor", "ativo", "fragrancia"]
+    invalid_scopes = [scope for scope in allowed_change_scopes if scope not in SAMPLE_BATCH_ALLOWED_CHANGE_SCOPES]
+    if invalid_scopes:
+        raise HTTPException(
+            status_code=400,
+            detail=f"allowed_change_scopes invalido. Use apenas: {sorted(SAMPLE_BATCH_ALLOWED_CHANGE_SCOPES)}",
+        )
+    allowed_change_scopes = list(dict.fromkeys(allowed_change_scopes))
+
+    base_reference_ingredients = [
+        clean_text(ingredient)
+        for ingredient in (data.base_reference_ingredients or [])
+        if clean_text(ingredient)
+    ] or list(SAMPLE_BATCH_DEFAULT_BASE_INGREDIENTS)
+
+    variantes = []
+    nomes_normalizados = set()
+    for idx, variante in enumerate(data.variantes or []):
+        nome_variante = clean_text(variante.nome) or f"Variante {idx + 1}"
+        nome_chave = nome_variante.lower()
+        if nome_chave in nomes_normalizados:
+            raise HTTPException(status_code=400, detail=f"Nome de variante duplicado: {nome_variante}")
+        nomes_normalizados.add(nome_chave)
+
+        seen_base_slots = set()
+        overrides = []
+        for override in variante.overrides or []:
+            ingredient_name_base = clean_text(override.ingredient_name_base)
+            ingredient_name = clean_text(override.ingredient_name)
+            fornecedor = clean_text(override.fornecedor)
+            percentage = round(float(override.percentage or 0), 4)
+            is_empty = not ingredient_name_base and not ingredient_name and not fornecedor and percentage == 0
+            if is_empty:
+                continue
+            if not ingredient_name_base or not ingredient_name:
+                raise HTTPException(status_code=400, detail=f"Override incompleto na variante '{nome_variante}'")
+            if ingredient_name_base in seen_base_slots:
+                raise HTTPException(status_code=400, detail=f"Ingrediente base duplicado em overrides da variante '{nome_variante}'")
+            if percentage <= 0:
+                raise HTTPException(status_code=400, detail=f"Percentual invalido para override '{ingredient_name}' na variante '{nome_variante}'")
+            change_scope = _classify_sample_batch_change_scope(ingredient_name_base, ingredient_name)
+            if change_scope not in allowed_change_scopes:
+                allowed_label = ", ".join(allowed_change_scopes)
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Override '{ingredient_name_base}' nao permitido no lote rapido. "
+                        f"Altere apenas {allowed_label}; mantenha a base fixa ({', '.join(base_reference_ingredients)})."
+                    ),
+                )
+            seen_base_slots.add(ingredient_name_base)
+            overrides.append({
+                "ingredient_name_base": ingredient_name_base,
+                "ingredient_name": ingredient_name,
+                "percentage": percentage,
+                "fornecedor": fornecedor,
+                "change_scope": change_scope,
+            })
+
+        variantes.append({
+            "id": variante.id if variante.id else new_id(),
+            "nome": nome_variante,
+            "versao": max(int(variante.versao or 1), 1),
+            "overrides": overrides,
+            "notas": clean_text(variante.notas),
+        })
+
+    if not variantes:
+        raise HTTPException(status_code=400, detail="Adicione ao menos uma amostra derivada")
+
+    base_total_volume_ml = data.base_total_volume_ml
+    if base_total_volume_ml is None:
+        base_total_volume_ml = volume_por_amostra * len(variantes)
+    base_total_volume_ml = round(float(base_total_volume_ml or 0), 4)
+    if base_total_volume_ml <= 0:
+        raise HTTPException(status_code=400, detail="base_total_volume_ml deve ser maior que zero")
+
+    max_derivacoes = data.max_derivacoes if data.max_derivacoes not in (None, 0) else None
+    if max_derivacoes is not None and int(max_derivacoes) <= 0:
+        raise HTTPException(status_code=400, detail="max_derivacoes deve ser maior que zero")
+    max_derivacoes = int(max_derivacoes) if max_derivacoes is not None else None
+
+    status_base = clean_text(data.status_base).lower() or "ativa"
+    if status_base not in SAMPLE_BATCH_BASE_STATUSES:
+        raise HTTPException(status_code=400, detail=f"status_base invalido. Use: {sorted(SAMPLE_BATCH_BASE_STATUSES)}")
+
+    status_qualidade = clean_text(data.status_qualidade).lower() or "aprovada"
+    if status_qualidade not in SAMPLE_BATCH_QUALITY_STATUSES:
+        raise HTTPException(status_code=400, detail=f"status_qualidade invalido. Use: {sorted(SAMPLE_BATCH_QUALITY_STATUSES)}")
+
+    validade_dt = _parse_optional_iso_date(data.validade_base)
+    validade_base = validade_dt.date().isoformat() if validade_dt else None
+
+    usable_volume_ml = round(base_total_volume_ml * (1 - (perda_operacional_percent / 100.0)), 4)
+    max_por_volume = int(usable_volume_ml // volume_por_amostra) if volume_por_amostra > 0 else 0
+    capacidade_maxima = max_por_volume if max_derivacoes is None else min(max_por_volume, max_derivacoes)
+    derivadas_count = len(variantes)
+    capacidade_restante = capacidade_maxima - derivadas_count
+    volume_consumido_ml = round(derivadas_count * volume_por_amostra, 4)
+    volume_disponivel_ml = round(max(base_total_volume_ml - volume_consumido_ml, 0.0), 4)
+
+    if capacidade_maxima <= 0:
+        raise HTTPException(status_code=400, detail="A base informada nao gera nenhuma derivacao util com o volume atual")
+    if derivadas_count > capacidade_maxima:
+        raise HTTPException(
+            status_code=400,
+            detail=f"A base suporta no maximo {capacidade_maxima} derivacoes e voce informou {derivadas_count}",
+        )
+
+    blocked_reasons: List[str] = []
+    if current_now:
+        try:
+            today = datetime.fromisoformat(str(current_now).replace("Z", "+00:00")).astimezone(timezone.utc).date()
+        except ValueError:
+            today = datetime.now(timezone.utc).date()
+    else:
+        today = datetime.now(timezone.utc).date()
+    if validade_dt and validade_dt.date() < today:
+        blocked_reasons.append("validade_expirada")
+    if status_base != "ativa":
+        blocked_reasons.append(f"status_base_{status_base}")
+    if status_qualidade != "aprovada":
+        blocked_reasons.append(f"qualidade_{status_qualidade}")
+    if capacidade_restante <= 0:
+        blocked_reasons.append("capacidade_esgotada")
+    if volume_disponivel_ml < volume_por_amostra:
+        blocked_reasons.append("volume_insuficiente")
+
+    return {
+        "id": existing_id or new_id(),
+        "development_id": dev_id,
+        "tenant_id": tenant_id,
+        "nome": nome,
+        "formula_base_id": formula_base_id,
+        "volume_base_ml": volume_por_amostra,
+        "base_total_volume_ml": base_total_volume_ml,
+        "max_derivacoes": max_derivacoes,
+        "perda_operacional_percent": perda_operacional_percent,
+        "validade_base": validade_base,
+        "condicoes_armazenamento": clean_text(data.condicoes_armazenamento),
+        "status_base": status_base,
+        "status_qualidade": status_qualidade,
+        "allowed_change_scopes": allowed_change_scopes,
+        "base_reference_ingredients": base_reference_ingredients,
+        "variantes": variantes,
+        "notas": clean_text(data.notas),
+        "derivadas_count": derivadas_count,
+        "capacidade_maxima_derivacoes": capacidade_maxima,
+        "capacidade_restante_derivacoes": max(capacidade_restante, 0),
+        "volume_consumido_ml": volume_consumido_ml,
+        "volume_disponivel_ml": volume_disponivel_ml,
+        "bloqueado_para_novas_derivacoes": bool(blocked_reasons),
+        "motivos_bloqueio": blocked_reasons,
+        "updated_at": current_now or now_iso(),
+    }
+
+
+def _serialize_sample_batch(doc: Dict[str, Any]) -> Dict[str, Any]:
+    payload = dict(doc)
+    payload.setdefault("base_total_volume_ml", None)
+    payload.setdefault("max_derivacoes", None)
+    payload.setdefault("perda_operacional_percent", 0.0)
+    payload.setdefault("validade_base", None)
+    payload.setdefault("condicoes_armazenamento", "")
+    payload.setdefault("status_base", "ativa")
+    payload.setdefault("status_qualidade", "aprovada")
+    payload.setdefault("allowed_change_scopes", ["cor", "ativo", "fragrancia"])
+    payload.setdefault("base_reference_ingredients", list(SAMPLE_BATCH_DEFAULT_BASE_INGREDIENTS))
+    payload.setdefault("notas", "")
+
+    rebuilt = _build_sample_batch_payload(
+        SampleBatchCreate.model_validate({
+            "nome": payload.get("nome"),
+            "formula_base_id": payload.get("formula_base_id"),
+            "volume_base_ml": payload.get("volume_base_ml"),
+            "base_total_volume_ml": payload.get("base_total_volume_ml"),
+            "max_derivacoes": payload.get("max_derivacoes"),
+            "perda_operacional_percent": payload.get("perda_operacional_percent"),
+            "validade_base": payload.get("validade_base"),
+            "condicoes_armazenamento": payload.get("condicoes_armazenamento"),
+            "status_base": payload.get("status_base"),
+            "status_qualidade": payload.get("status_qualidade"),
+            "allowed_change_scopes": payload.get("allowed_change_scopes"),
+            "base_reference_ingredients": payload.get("base_reference_ingredients"),
+            "variantes": payload.get("variantes") or [],
+            "notas": payload.get("notas"),
+        }),
+        tenant_id=payload.get("tenant_id", ""),
+        dev_id=payload.get("development_id", ""),
+        existing_id=payload.get("id"),
+        current_now=payload.get("updated_at"),
+    )
+    for field in ("created_at", "created_by", "created_by_name"):
+        if field in payload:
+            rebuilt[field] = payload[field]
+    return rebuilt
 
 @pd_router.get("/developments/{dev_id}/sample-batches")
 async def list_sample_batches(dev_id: str, request: Request):
@@ -3271,7 +3655,7 @@ async def list_sample_batches(dev_id: str, request: Request):
     batches = await db.pd_sample_batches.find(
         {"development_id": dev_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
     ).sort("created_at", -1).to_list(100)
-    return batches
+    return [_serialize_sample_batch(batch) for batch in batches]
 
 @pd_router.post("/developments/{dev_id}/sample-batches")
 async def create_sample_batch(dev_id: str, data: SampleBatchCreate, request: Request):
@@ -3280,36 +3664,28 @@ async def create_sample_batch(dev_id: str, data: SampleBatchCreate, request: Req
     dev = await db.pd_developments.find_one({"id": dev_id, "tenant_id": user["tenant_id"]})
     if not dev:
         raise HTTPException(status_code=404, detail="Desenvolvimento não encontrado")
-    batch_id = new_id()
+    formula = await db.pd_formulas.find_one(
+        {"id": clean_text(data.formula_base_id), "development_id": dev_id, "tenant_id": user["tenant_id"]},
+        {"_id": 0, "id": 1},
+    )
+    if not formula:
+        raise HTTPException(status_code=404, detail="Formula base nao encontrada para este desenvolvimento")
     now = now_iso()
-    variantes = []
-    for v in data.variantes:
-        vid = v.id if v.id else new_id()
-        variantes.append({
-            "id": vid,
-            "nome": v.nome,
-            "versao": v.versao,
-            "overrides": [o.dict() for o in v.overrides],
-            "notas": v.notas,
-        })
-    doc = {
-        "id": batch_id,
-        "development_id": dev_id,
-        "tenant_id": user["tenant_id"],
-        "nome": data.nome,
-        "formula_base_id": data.formula_base_id,
-        "volume_base_ml": data.volume_base_ml,
-        "variantes": variantes,
-        "notas": data.notas,
-        "created_at": now,
-        "created_by": user["id"],
-        "created_by_name": user["name"],
-        "updated_at": now,
-    }
-    await db.pd_sample_batches.insert_one({**doc, "_id": batch_id})
-    await audit_log(tenant_id=user["tenant_id"], user_id=user["id"], user_name=user.get("name", ""),
-                    action="created", entity_type="pd_sample_batches", entity_id=batch_id, after=doc)
-    return doc
+    doc = _build_sample_batch_payload(data, tenant_id=user["tenant_id"], dev_id=dev_id, current_now=now)
+    doc["created_at"] = now
+    doc["created_by"] = user["id"]
+    doc["created_by_name"] = user["name"]
+    await db.pd_sample_batches.insert_one({**doc, "_id": doc["id"]})
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="created",
+        entity_type="pd_sample_batches",
+        entity_id=doc["id"],
+        after=doc,
+    )
+    return _serialize_sample_batch(doc)
 
 @pd_router.put("/developments/{dev_id}/sample-batches/{batch_id}")
 async def update_sample_batch(dev_id: str, batch_id: str, data: SampleBatchCreate, request: Request):
@@ -3318,32 +3694,27 @@ async def update_sample_batch(dev_id: str, batch_id: str, data: SampleBatchCreat
     dev = await db.pd_developments.find_one({"id": dev_id, "tenant_id": user["tenant_id"]})
     if not dev:
         raise HTTPException(status_code=404, detail="Desenvolvimento não encontrado")
-    existing = await db.pd_sample_batches.find_one({"id": batch_id, "development_id": dev_id})
+    existing = await db.pd_sample_batches.find_one({"id": batch_id, "development_id": dev_id, "tenant_id": user["tenant_id"]})
     if not existing:
         raise HTTPException(status_code=404, detail="Lote não encontrado")
-    variantes = []
-    for v in data.variantes:
-        vid = v.id if v.id else new_id()
-        variantes.append({
-            "id": vid,
-            "nome": v.nome,
-            "versao": v.versao,
-            "overrides": [o.dict() for o in v.overrides],
-            "notas": v.notas,
-        })
-    updates = {
-        "nome": data.nome,
-        "formula_base_id": data.formula_base_id,
-        "volume_base_ml": data.volume_base_ml,
-        "variantes": variantes,
-        "notas": data.notas,
-        "updated_at": now_iso(),
-    }
-    await db.pd_sample_batches.update_one({"id": batch_id}, {"$set": updates})
+    formula = await db.pd_formulas.find_one(
+        {"id": clean_text(data.formula_base_id), "development_id": dev_id, "tenant_id": user["tenant_id"]},
+        {"_id": 0, "id": 1},
+    )
+    if not formula:
+        raise HTTPException(status_code=404, detail="Formula base nao encontrada para este desenvolvimento")
+    updates = _build_sample_batch_payload(
+        data,
+        tenant_id=user["tenant_id"],
+        dev_id=dev_id,
+        existing_id=batch_id,
+        current_now=now_iso(),
+    )
+    await db.pd_sample_batches.update_one({"id": batch_id, "tenant_id": user["tenant_id"]}, {"$set": updates})
     await audit_log(tenant_id=user["tenant_id"], user_id=user["id"], user_name=user.get("name", ""),
                     action="updated", entity_type="pd_sample_batches", entity_id=batch_id,
                     before={"nome": existing.get("nome")}, after=updates)
-    return {**{k: v for k, v in existing.items() if k != "_id"}, **updates}
+    return _serialize_sample_batch({**{k: v for k, v in existing.items() if k != "_id"}, **updates})
 
 @pd_router.delete("/developments/{dev_id}/sample-batches/{batch_id}")
 async def delete_sample_batch(dev_id: str, batch_id: str, request: Request):
@@ -4267,6 +4638,15 @@ async def save_ficha_tecnica_ui(req_id: str, data: FichaTecnicaAnaliseUpsert, re
     if not pd_req:
         raise HTTPException(status_code=404, detail="Solicitação não encontrada")
     dev = await db.pd_developments.find_one({"pd_request_id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if clean_text(data.status_aprovacao or "").lower() == "aprovado" and _pd_request_requires_commercial_approval(pd_req):
+        if not dev:
+            raise HTTPException(status_code=409, detail="Inicie o desenvolvimento antes de aprovar a ficha tecnica.")
+        approval = await db.pd_approvals.find_one({"development_id": dev["id"]}, {"_id": 0})
+        if not (approval and approval.get("approved_by_client")):
+            raise HTTPException(
+                status_code=409,
+                detail="Ficha tecnica de solicitacao comercial so pode ser aprovada apos aprovacao comercial/cliente registrada.",
+            )
     update_data = {}
     for field in ["produto", "lote", "data_fabricacao", "validade", "quantidade", "elaboracao", "resp_tecnico", "status_aprovacao"]:
         val = getattr(data, field, None)
@@ -5985,7 +6365,53 @@ async def homologar_mp(mp_id: str, data: HomologarRequest, request: Request):
         {"id": mp_id, "tenant_id": user["tenant_id"]},
         {"$set": update, "$push": {"historico": evento}}
     )
-    return await db.homologacao_mps.find_one({"id": mp_id}, {"_id": 0})
+    updated_mp = await db.homologacao_mps.find_one({"id": mp_id}, {"_id": 0})
+    catalog_query = {
+        "tenant_id": user["tenant_id"],
+        "$or": [
+            {"nome": updated_mp.get("nome", "")},
+            {"inci": updated_mp.get("inci", "")},
+            {"codigo_interno": updated_mp.get("codigo_interno", "")},
+        ],
+    }
+    catalog_updates = {
+        "homologacao": {
+            "mp_id": updated_mp.get("id"),
+            "status": updated_mp.get("status"),
+            "fornecedor_id": updated_mp.get("fornecedor_id"),
+            "fornecedor_nome": updated_mp.get("fornecedor_nome", ""),
+            "parecer": updated_mp.get("parecer_homologacao", ""),
+            "data_homologacao": updated_mp.get("data_homologacao"),
+        },
+        "ultima_atualizacao": now,
+        "atualizado_por": user["name"],
+        "atualizado_por_id": user["id"],
+    }
+    if updated_mp.get("custo_referencia") is not None:
+        catalog_updates["preco_rs_kg"] = float(updated_mp.get("custo_referencia") or 0)
+        catalog_updates["moeda"] = "BRL"
+    if updated_mp.get("fornecedor_nome"):
+        catalog_updates["fornecedor"] = updated_mp.get("fornecedor_nome", "")
+    if getattr(db, "pd_catalog", None) and hasattr(db.pd_catalog, "update_many"):
+        await db.pd_catalog.update_many(catalog_query, {"$set": catalog_updates})
+    if getattr(db, "pd_stock_items", None) and hasattr(db.pd_stock_items, "update_many"):
+        await db.pd_stock_items.update_many(
+            {
+                "tenant_id": user["tenant_id"],
+                "$or": [
+                    {"nome": updated_mp.get("nome", "")},
+                    {"codigo_interno": updated_mp.get("codigo_interno", "")},
+                ],
+            },
+            {"$set": {
+                "mp_id": updated_mp.get("id"),
+                "homologacao_status": updated_mp.get("status"),
+                "fornecedor": updated_mp.get("fornecedor_nome", ""),
+                "custo_unitario": float(updated_mp.get("custo_referencia") or 0),
+                "updated_at": now,
+            }},
+        )
+    return updated_mp
 
 
 @pd_router.post("/homologacao/mps/{mp_id}/suspender")
@@ -6064,7 +6490,8 @@ async def reativar_mp(mp_id: str, data: SuspenderRequest, request: Request):
 async def delete_mp(mp_id: str, request: Request):
     user = await get_current_user(request)
     # Bloquear se tem item de estoque vinculado
-    est_count = await db.estoque_items.count_documents({"mp_id": mp_id, "tenant_id": user["tenant_id"]})
+    stock_collection = getattr(db, "pd_stock_items", None) or getattr(db, "estoque_items", None)
+    est_count = await stock_collection.count_documents({"mp_id": mp_id, "tenant_id": user["tenant_id"]}) if stock_collection else 0
     if est_count > 0:
         raise HTTPException(status_code=400, detail=f"MP tem {est_count} item(ns) no estoque. Remova do estoque antes.")
     await db.homologacao_mps.delete_one({"id": mp_id, "tenant_id": user["tenant_id"]})

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
-import { BACKEND_URL } from "@/lib/backend";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -11,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { ArrowLeft, Save, Download, Loader2, Plus, Trash2, FileText, Pencil, Check, X, ShieldCheck, AlertTriangle, Factory, Lock, CheckCircle2, Copy } from "lucide-react";
+import { ArrowLeft, Save, Download, Loader2, Plus, Trash2, FileText, Pencil, Check, X, ShieldCheck, AlertTriangle, Factory, Lock, CheckCircle2, Copy, Paperclip, Upload } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CurrencyInput, fmtCurrency } from "@/components/ui/CurrencyInput";
 import { useAuth } from "@/contexts/AuthContext";
@@ -111,6 +110,7 @@ export default function OrderDetail() {
   const [showReproduzir, setShowReproduzir] = useState(false);
   const [reproducaoData, setReproducaoData] = useState({ items_override: [], endereco_entrega: "", observacoes: "" });
   const [reproducaoLoading, setReproducaoLoading] = useState(false);
+  const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -241,9 +241,46 @@ export default function OrderDetail() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+      fetchOrder();
       toast.success("PDF gerado!");
     } catch (err) {
       toast.error("Erro ao gerar PDF");
+    }
+  };
+
+  const uploadAttachment = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setUploadingAttachment(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      await api.post(`/orders/${id}/attachments`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Anexo enviado");
+      fetchOrder();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Erro ao enviar anexo");
+    } finally {
+      setUploadingAttachment(false);
+    }
+  };
+
+  const downloadAttachment = async (attachment) => {
+    try {
+      const response = await api.get(`/orders/${id}/attachments/${attachment.id}/download`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: attachment.content_type || "application/octet-stream" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = attachment.original_filename || "anexo";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error("Erro ao baixar anexo");
     }
   };
 
@@ -363,6 +400,9 @@ export default function OrderDetail() {
   const descontoPct = totalBruto > 0 ? (totalDesconto / totalBruto * 100) : 0;
   const statusCfg = STATUS_COLORS[form.status] || STATUS_COLORS.rascunho;
   const apCom = form.aprovacao_comercial || "nao_necessaria";
+  const attachments = form.attachments || [];
+  const pdfMeta = form.pdf || {};
+  const isGeneratorOrder = form.origem === "gerador" || !!form.gerador_origem;
 
   return (
     <div className="h-full overflow-auto">
@@ -385,6 +425,11 @@ export default function OrderDetail() {
                 {form.auto_created && (
                   <Badge variant="outline" className="text-[10px] gap-1">
                     <FileText className="h-2.5 w-2.5" /> Auto-gerado a partir do P&D
+                  </Badge>
+                )}
+                {(form.origem === "gerador" || form.gerador_origem) && (
+                  <Badge variant="outline" className="text-[10px] gap-1 border-blue-300 text-blue-700 dark:text-blue-300">
+                    <FileText className="h-2.5 w-2.5" /> Gerador
                   </Badge>
                 )}
                 {form.kickoff_id && (
@@ -561,6 +606,74 @@ export default function OrderDetail() {
               </div>
             )}
           </div>
+        )}
+
+        {(isGeneratorOrder || attachments.length > 0 || pdfMeta.generated_at) && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" /> Fluxo do Gerador
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Status minimo do pedido criado no gerador, sem duplicar a tela de Pedidos.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" onClick={downloadPDF} className="gap-1.5">
+                    <Download className="h-3.5 w-3.5" /> Baixar PDF
+                  </Button>
+                  <label className="inline-flex">
+                    <input
+                      type="file"
+                      className="sr-only"
+                      accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                      onChange={uploadAttachment}
+                      disabled={uploadingAttachment}
+                    />
+                    <span className="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
+                      {uploadingAttachment ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                      Anexar
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+                <GeneratorStep label="Anexo" done={attachments.length > 0} detail={attachments.length ? `${attachments.length} arquivo(s)` : "pendente"} />
+                <GeneratorStep label="PDF" done={!!pdfMeta.generated_at} detail={pdfMeta.generated_at ? new Date(pdfMeta.generated_at).toLocaleString("pt-BR") : "nao gerado"} />
+                <GeneratorStep label="Cliente" done={form.aprovacao_cliente === "aprovado"} detail={form.aprovacao_cliente || "pendente"} />
+                <GeneratorStep label="Comercial" done={apCom === "nao_necessaria" || apCom === "aprovada"} detail={apCom} />
+                <GeneratorStep label="OP" done={!!form.op_id} detail={form.op_id ? "gerada" : "pendente"} />
+              </div>
+
+              {attachments.length > 0 && (
+                <div className="rounded-lg border">
+                  <div className="border-b bg-muted/30 px-3 py-2 text-xs font-semibold text-muted-foreground">Anexos do cliente</div>
+                  <div className="divide-y">
+                    {attachments.map((attachment) => (
+                      <button
+                        key={attachment.id}
+                        type="button"
+                        onClick={() => downloadAttachment(attachment)}
+                        className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-muted/40"
+                      >
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Paperclip className="h-4 w-4 shrink-0 text-muted-foreground" />
+                          <span className="truncate font-medium">{attachment.original_filename}</span>
+                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {attachment.uploaded_at ? new Date(attachment.uploaded_at).toLocaleDateString("pt-BR") : ""}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* 1) Informações Iniciais */}
@@ -1103,6 +1216,18 @@ export default function OrderDetail() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function GeneratorStep({ label, done, detail }) {
+  return (
+    <div className={`rounded-lg border p-3 ${done ? "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20" : "border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20"}`}>
+      <div className="flex items-center gap-2">
+        {done ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <AlertTriangle className="h-4 w-4 text-amber-600" />}
+        <p className="text-xs font-semibold">{label}</p>
+      </div>
+      <p className="mt-1 truncate text-[11px] text-muted-foreground">{detail || "-"}</p>
     </div>
   );
 }

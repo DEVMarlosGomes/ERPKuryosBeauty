@@ -106,7 +106,7 @@ function SheetDetalhe({ item, onClose }) {
             .then(r => setDetalhe(r.data))
             .catch(() => toast.error("Erro ao carregar detalhes do item"))
             .finally(() => setLoading(false));
-    }, [item?.item_id]);
+    }, [item]);
 
     if (!item) return null;
 

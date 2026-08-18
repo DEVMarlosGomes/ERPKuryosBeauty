@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from pathlib import Path
 from urllib.parse import urlparse
+from contextlib import asynccontextmanager
 
 BASE_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BASE_DIR.parent
@@ -1959,7 +1960,6 @@ async def seed_admin():
 
 # ============ STARTUP ============
 
-@app.on_event("startup")
 async def startup():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("tenant_id")
@@ -2133,9 +2133,20 @@ async def startup():
     await seed_admin()
     logger.info("CRM Kuryos API started")
 
-@app.on_event("shutdown")
 async def shutdown():
     client.close()
+
+
+@asynccontextmanager
+async def lifespan(app_: FastAPI):
+    await startup()
+    try:
+        yield
+    finally:
+        await shutdown()
+
+
+app.router.lifespan_context = lifespan
 
 # ============ INCLUDE ROUTER + CORS + WEBSOCKET ============
 
@@ -2193,9 +2204,10 @@ async def websocket_endpoint(websocket: WebSocket):
 def build_allowed_origins(frontend_url: str) -> list[str]:
     origins = {
         frontend_url.rstrip("/"),
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
     }
+    for port in range(3000, 3006):
+        origins.add(f"http://localhost:{port}")
+        origins.add(f"http://127.0.0.1:{port}")
 
     parsed = urlparse(frontend_url)
     if parsed.scheme and parsed.hostname:

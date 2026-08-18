@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -103,6 +103,25 @@ export default function TasksPage() {
   const [runningStability, setRunningStability] = useState(false);
   const [stabilityStatus, setStabilityStatus] = useState(null);
 
+  const loadTasks = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get("/workflow/tasks", { params: getParamsForView(viewMode, isLeader) });
+      setTasks(data || []);
+    } catch (error) {
+      toast.error(formatApiError(error));
+    } finally {
+      setLoading(false);
+    }
+  }, [viewMode, isLeader]);
+
+  const loadStabilityStatus = useCallback(async () => {
+    try {
+      const { data } = await api.get("/pd/stability/scheduler-status");
+      setStabilityStatus(data);
+    } catch { setStabilityStatus(null); }
+  }, []);
+
   const checkReminders = async () => {
     setCheckingReminders(true);
     try {
@@ -125,14 +144,7 @@ export default function TasksPage() {
     } finally { setRunningStability(false); }
   };
 
-  const loadStabilityStatus = async () => {
-    try {
-      const { data } = await api.get("/pd/stability/scheduler-status");
-      setStabilityStatus(data);
-    } catch { setStabilityStatus(null); }
-  };
-
-  useEffect(() => { loadStabilityStatus(); }, []);
+  useEffect(() => { loadStabilityStatus(); }, [loadStabilityStatus]);
 
   const submitCreateTask = async () => {
     if (!createForm.title.trim()) return toast.error("Título obrigatório");
@@ -150,7 +162,7 @@ export default function TasksPage() {
 
   useEffect(() => {
     loadTasks();
-  }, [viewMode, isLeader]);
+  }, [loadTasks]);
 
   useEffect(() => {
     // Always fetch the user's open tasks for the KPI summary, regardless of viewMode
@@ -159,18 +171,6 @@ export default function TasksPage() {
       .then(({ data }) => setAllOpenTasks(data || []))
       .catch(() => setAllOpenTasks([]));
   }, []);
-
-  const loadTasks = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get("/workflow/tasks", { params: getParamsForView(viewMode, isLeader) });
-      setTasks(data || []);
-    } catch (error) {
-      toast.error(formatApiError(error));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const filtered = useMemo(() => {
     return tasks.filter((task) => {

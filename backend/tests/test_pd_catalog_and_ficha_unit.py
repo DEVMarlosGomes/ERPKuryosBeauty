@@ -3,6 +3,9 @@ import os
 import sys
 from types import SimpleNamespace
 
+import pytest
+from fastapi import HTTPException
+
 sys.path.insert(0, os.path.abspath("backend"))
 
 import pd_routes
@@ -128,3 +131,21 @@ def test_catalog_enrichment_merges_material_and_homologated_suppliers():
     assert enriched["fornecedor"] == "Fornecedor Material"
     assert enriched["inci"] == "Vegetal Base"
     assert enriched["categoria"] == "Emoliente"
+
+
+def test_commercial_pd_requests_require_commercial_client_approval():
+    pd_req = {"id": "pd-1", "client_card_id": "client-1", "request_type": "Amostra Cliente"}
+
+    assert pd_routes._pd_request_requires_commercial_approval(pd_req) is True
+    with pytest.raises(HTTPException) as exc:
+        pd_routes._assert_can_register_client_approval(pd_req, {"role": "formulador"})
+
+    assert exc.value.status_code == 403
+    pd_routes._assert_can_register_client_approval(pd_req, {"role": "sales_ops"})
+
+
+def test_internal_research_does_not_require_commercial_client_approval():
+    pd_req = {"id": "pd-2", "is_internal_research": True, "request_type": "Pesquisa Interna"}
+
+    assert pd_routes._pd_request_requires_commercial_approval(pd_req) is False
+    pd_routes._assert_can_register_client_approval(pd_req, {"role": "formulador"})

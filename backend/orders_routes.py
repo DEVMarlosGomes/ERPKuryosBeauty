@@ -4,13 +4,20 @@ Orders Module (Pedidos) - Production Order management
 - Generates "Ordem de Produção" PDF (Kuryos layout)
 - Visible to all roles
 """
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 import io
 import logging
+import math
+import hashlib
+import re
+import mimetypes
+import os
+import uuid
+from pathlib import Path
 
 from cq_routes import (
     cq_verificar_assepsia_manipulacao,
@@ -76,6 +83,9 @@ CATEGORIAS_INSUMO = [
     "Matérias-primas específicas",
 ]
 
+ORDER_ATTACHMENT_EXTENSIONS = {"pdf", "jpg", "jpeg", "png", "doc", "docx", "xls", "xlsx"}
+ORDER_ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024
+
 # Statuses that make the order immutable (RN-PI-05)
 STATUSES_IMUTAVEL = {"confirmado", "em_producao", "concluido"}
 
@@ -89,6 +99,9 @@ TIER_GERENTE = 25.0
 
 # ============ MODELS ============
 class OrderItem(BaseModel):
+    sku_id: Optional[str] = None
+    pd_request_id: Optional[str] = None
+    pd_concluido: bool = False
     codigo_kuryos: str = ""
     codigo_cliente: str = ""
     item: str
@@ -151,6 +164,9 @@ class OrderCreate(BaseModel):
     kickoff_id: Optional[str] = None          # Gap A: optional FK to kickoffs collection
     client_card_id: Optional[str] = None
     numero_pedido: Optional[str] = None
+    pedido_cliente_ref: Optional[str] = None
+    gerador_origem: Optional[str] = None
+    allow_duplicate: bool = False
     data_pedido: Optional[str] = None
     tipo_servico: str = "producao"             # producao | reposicao | retrabalho
     nivel_formalizacao: int = 1                # 1 | 2 | 3
@@ -173,6 +189,8 @@ class DirectOrderCreate(BaseModel):
     prazo_entrega: str = ""
     tipo_servico: str = "producao"             # producao | reposicao | retrabalho
     nivel_formalizacao: int = 1                # 1 | 2 | 3
+    pedido_cliente_ref: Optional[str] = None
+    allow_duplicate: bool = False
     frete: FreteData = Field(default_factory=FreteData)
     condicoes: CondicoesData = Field(default_factory=CondicoesData)
     observacoes: str = ""
@@ -217,12 +235,22 @@ class OPCreate(BaseModel):
 
 
 class OPUpdate(BaseModel):
-    status: Optional[str] = None  # "aberta" | "em_processo" | "concluida" | "cancelada"
+    status: Optional[str] = None  # "aberta" | "em_processo" | "pausada" | "concluida" | "cancelada"
     items: Optional[List[OPItem]] = None
     observacoes: Optional[str] = None
+    linha_id: Optional[str] = None
+    linha_nome: Optional[str] = None
+    pcp_numero: Optional[str] = None
 
 
-OP_STATUSES = ["aberta", "em_processo", "concluida", "cancelada"]
+OP_STATUSES = ["aberta", "em_processo", "pausada", "concluida", "cancelada"]
+
+
+class OPReworkCreate(BaseModel):
+    motivo: str
+    anotacoes: str = ""
+    item_idx: Optional[int] = None
+    prioridade: str = "normal"
 
 
 # ===== R15: REPRODUZIR MODELS =====
@@ -275,6 +303,207 @@ def _calculate_totals(items: List[Dict[str, Any]]) -> Dict[str, float]:
         "total_desconto": round(total_desconto, 2),
         "desconto_pct_medio": desc_pct_medio,
     }
+
+
+def _normalize_key_text(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    return re.sub(r"\s+", " ", text)
+
+
+def _digits_only(value: Any) -> str:
+    return re.sub(r"\D", "", str(value or ""))
+
+
+def _order_duplicate_fingerprint(
+    cliente: Dict[str, Any],
+    items: List[Dict[str, Any]],
+    data_pedido: Optional[str],
+    pedido_cliente_ref: Optional[str] = None,
+) -> str:
+    """Stable same-day fingerprint to block accidental duplicate order creation."""
+    client_key = _digits_only(cliente.get("cnpj")) or _normalize_key_text(
+        cliente.get("razao_social") or cliente.get("nome")
+    )
+    ref_key = _normalize_key_text(pedido_cliente_ref) or str(data_pedido or "")[:10]
+    item_keys = []
+    for item in items:
+        code = _normalize_key_text(item.get("codigo_kuryos") or item.get("sku_id") or "")
+        name = _normalize_key_text(item.get("item"))
+        qty = round(float(item.get("qtd") or 0), 4)
+        unit = round(float(item.get("valor_unitario") or 0), 4)
+        item_keys.append(f"{code}:{name}:{qty}:{unit}")
+    basis = "|".join([client_key, ref_key, *sorted(item_keys)])
+    return hashlib.sha1(basis.encode("utf-8")).hexdigest()
+
+
+def _is_generator_order(order: Dict[str, Any]) -> bool:
+    return order.get("origem") == "gerador" or bool(order.get("gerador_origem"))
+
+
+def _order_generator_steps(order: Dict[str, Any]) -> List[Dict[str, Any]]:
+    pdf_meta = order.get("pdf") or {}
+    attachments = order.get("attachments") or []
+    ap_com = order.get("aprovacao_comercial") or "nao_necessaria"
+    return [
+        {
+            "key": "anexo_cliente",
+            "label": "Anexo do cliente",
+            "done": bool(attachments),
+            "count": len(attachments),
+        },
+        {
+            "key": "pdf",
+            "label": "PDF do pedido",
+            "done": bool(pdf_meta.get("generated_at")),
+            "generated_at": pdf_meta.get("generated_at"),
+            "filename": pdf_meta.get("filename"),
+        },
+        {
+            "key": "aprovacao_cliente",
+            "label": "Aprovacao do cliente",
+            "done": order.get("aprovacao_cliente") == "aprovado",
+            "status": order.get("aprovacao_cliente") or "pendente",
+        },
+        {
+            "key": "aprovacao_comercial",
+            "label": "Aprovacao comercial",
+            "done": ap_com in {"nao_necessaria", "aprovada"},
+            "status": ap_com,
+        },
+        {
+            "key": "op",
+            "label": "OP",
+            "done": bool(order.get("op_id")),
+            "op_id": order.get("op_id"),
+        },
+    ]
+
+
+def _order_generator_status(order: Dict[str, Any]) -> Dict[str, Any]:
+    steps = _order_generator_steps(order)
+    done = sum(1 for step in steps if step["done"])
+    return {
+        "order_id": order.get("id"),
+        "numero_pedido": order.get("numero_pedido"),
+        "status": order.get("status"),
+        "cliente": (order.get("cliente") or {}).get("razao_social") or (order.get("cliente") or {}).get("nome"),
+        "steps": steps,
+        "completed_steps": done,
+        "total_steps": len(steps),
+        "progress_pct": round((done / len(steps) * 100) if steps else 0, 1),
+        "pending": [step["key"] for step in steps if not step["done"]],
+    }
+
+
+def _orders_upload_root() -> Path:
+    default_root = Path(__file__).parent / "uploads"
+    return Path(os.environ.get("UPLOAD_DIR", str(default_root))) / "orders"
+
+
+def _safe_attachment_filename(filename: str) -> str:
+    name = Path(filename or "anexo").name.strip() or "anexo"
+    return re.sub(r"[^A-Za-z0-9._ -]+", "_", name)[:180]
+
+
+async def _assert_no_duplicate_order(
+    *,
+    tenant_id: str,
+    duplicate_fingerprint: str,
+) -> None:
+    existing = await db.orders.find_one(
+        {
+            "tenant_id": tenant_id,
+            "duplicate_fingerprint": duplicate_fingerprint,
+            "status": {"$nin": ["cancelado", "concluido"]},
+        },
+        {"_id": 0, "id": 1, "numero_pedido": 1, "status": 1},
+    )
+    if existing:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": f"Pedido duplicado bloqueado. Ja existe o pedido #{existing.get('numero_pedido')} em status {existing.get('status')}.",
+                "order_id": existing.get("id"),
+                "numero_pedido": existing.get("numero_pedido"),
+            },
+        )
+
+
+async def _approved_pd_for_sku(sku_doc: Dict[str, Any], tenant_id: str) -> Optional[Dict[str, Any]]:
+    sample_id = sku_doc.get("amostra_id")
+    if not sample_id:
+        return None
+    base_query: Dict[str, Any] = {
+        "tenant_id": tenant_id,
+        "linked_amostra_id": sample_id,
+        "status": {"$in": ["APPROVED", "COMPLETED", "aprovado", "concluido"]},
+    }
+    variation_id = sku_doc.get("amostra_variacao_id")
+    queries = []
+    if variation_id:
+        exact = dict(base_query)
+        exact["linked_variacao_id"] = variation_id
+        queries.append(exact)
+    queries.append(base_query)
+
+    for query in queries:
+        docs = await db.pd_requests.find(query, {"_id": 0}).sort("updated_at", -1).to_list(1)
+        if docs:
+            return docs[0]
+    return None
+
+
+async def _enrich_items_from_skus(
+    items: List[Dict[str, Any]],
+    tenant_id: str,
+    *,
+    require_known_sku: bool = False,
+    require_pd_completed: bool = False,
+) -> List[Dict[str, Any]]:
+    enriched: List[Dict[str, Any]] = []
+    for raw_item in items:
+        item = dict(raw_item)
+        codigo = (item.get("codigo_kuryos") or "").strip()
+        if not codigo or codigo.lower() in {"a definir", "na", "n/a"}:
+            enriched.append(item)
+            continue
+
+        sku_doc = await db.skus.find_one(
+            {"codigo_interno": codigo, "tenant_id": tenant_id},
+            {"_id": 0},
+        )
+        if not sku_doc:
+            if require_known_sku:
+                raise HTTPException(status_code=404, detail=f"SKU '{codigo}' nao encontrado no cadastro.")
+            enriched.append(item)
+            continue
+
+        if sku_doc.get("status") != "ativo":
+            raise HTTPException(
+                status_code=400,
+                detail=f"SKU '{sku_doc.get('codigo_interno')}' nao esta ativo (status: {sku_doc.get('status')}).",
+            )
+
+        pd_req = await _approved_pd_for_sku(sku_doc, tenant_id)
+        if require_pd_completed and not pd_req:
+            raise HTTPException(
+                status_code=422,
+                detail=f"SKU '{sku_doc.get('codigo_interno')}' nao possui P&D concluido/aprovado vinculado.",
+            )
+
+        item["sku_id"] = sku_doc.get("id")
+        item["codigo_kuryos"] = sku_doc.get("codigo_interno") or codigo
+        item["pd_request_id"] = pd_req.get("id") if pd_req else item.get("pd_request_id")
+        item["pd_concluido"] = bool(pd_req)
+        item["produto_pai_id"] = sku_doc.get("produto_pai_id")
+        item["sku_cliente_id"] = sku_doc.get("cliente_id")
+        if not item.get("item"):
+            item["item"] = sku_doc.get("nome_produto") or codigo
+        if not item.get("valor_unitario") and sku_doc.get("preco_unitario"):
+            item["valor_unitario"] = float(sku_doc.get("preco_unitario") or 0)
+            item["valor_unitario_currency"] = sku_doc.get("preco_unitario_currency") or item.get("valor_unitario_currency") or "BRL"
+        enriched.append(item)
+    return enriched
 
 
 def _eval_aprovacao_comercial(totals: Dict[str, float], existing: Optional[Dict] = None) -> Dict[str, Any]:
@@ -449,6 +678,8 @@ async def auto_create_order_on_pd_approval(pd_request_id: str, user: Dict[str, A
         "total_desconto": totals["total_desconto"],
         "desconto_pct_medio": totals["desconto_pct_medio"],
         "observacoes": "",
+        "attachments": [],
+        "pdf": {"status": "nao_gerado"},
         "cgi_status": "pendente",
         "cgi_assinado_em": None,
         "cgi_assinado_por": None,
@@ -492,6 +723,29 @@ async def list_orders(request: Request, status: Optional[str] = None, q: Optiona
     return orders
 
 
+@orders_router.get("/generated/status")
+async def generated_orders_status(request: Request):
+    user = await get_current_user(request)
+    query = {
+        "tenant_id": user["tenant_id"],
+        "$or": [
+            {"origem": "gerador"},
+            {"gerador_origem": {"$exists": True, "$nin": ["", None]}},
+        ],
+    }
+    orders = await db.orders.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    statuses = [_order_generator_status(order) for order in orders]
+    return {
+        "total": len(statuses),
+        "com_anexo": sum(1 for st in statuses if "anexo_cliente" not in st["pending"]),
+        "pdf_gerado": sum(1 for st in statuses if "pdf" not in st["pending"]),
+        "aguardando_cliente": sum(1 for st in statuses if "aprovacao_cliente" in st["pending"]),
+        "aguardando_comercial": sum(1 for st in statuses if "aprovacao_comercial" in st["pending"]),
+        "com_op": sum(1 for st in statuses if "op" not in st["pending"]),
+        "orders": statuses[:50],
+    }
+
+
 @orders_router.get("/{order_id}")
 async def get_order(order_id: str, request: Request):
     user = await get_current_user(request)
@@ -532,7 +786,14 @@ async def get_reorder_draft(client_card_id: str, request: Request):
     return draft
 
 
-async def _create_order_document(data: OrderCreate, user: Dict[str, Any], *, origem: str = "pipeline") -> Dict[str, Any]:
+async def _create_order_document(
+    data: OrderCreate,
+    user: Dict[str, Any],
+    *,
+    origem: str = "pipeline",
+    require_known_sku: bool = False,
+    require_pd_completed_skus: bool = False,
+) -> Dict[str, Any]:
     """Corpo comum de criação de pedido — usado tanto pelo fluxo normal (POST /orders,
     vindo de pd_request/kickoff) quanto pelo Pedido Direto (POST /orders/direct, A12),
     para garantir que os dois entrem exatamente no mesmo ciclo de vida (checklist,
@@ -557,6 +818,20 @@ async def _create_order_document(data: OrderCreate, user: Dict[str, Any], *, ori
     items = [it.model_dump() for it in data.items]
     if data.pd_request_id and not items:
         items = await _build_items_from_pd(data.pd_request_id, user["tenant_id"])
+    items = await _enrich_items_from_skus(
+        items,
+        user["tenant_id"],
+        require_known_sku=require_known_sku,
+        require_pd_completed=require_pd_completed_skus,
+    )
+    if origem in {"gerador", "direto"}:
+        usable_items = [it for it in items if (it.get("item") or "").strip()]
+        if not usable_items:
+            raise HTTPException(status_code=400, detail="Inclua pelo menos um item no pedido.")
+        for it in usable_items:
+            if float(it.get("qtd") or 0) <= 0:
+                raise HTTPException(status_code=400, detail=f"Item '{it.get('item')}' precisa ter quantidade maior que zero.")
+        items = usable_items
 
     # Build default checklist if not provided
     checklist = [c.model_dump() for c in data.checklist_insumos] if data.checklist_insumos else \
@@ -565,6 +840,17 @@ async def _create_order_document(data: OrderCreate, user: Dict[str, Any], *, ori
     numero = data.numero_pedido or await _generate_order_number(user["tenant_id"])
     totals = _calculate_totals(items)
     ap_comercial = _eval_aprovacao_comercial(totals)
+    duplicate_fingerprint = _order_duplicate_fingerprint(
+        cliente,
+        items,
+        data.data_pedido or now_iso(),
+        data.pedido_cliente_ref,
+    )
+    if not data.allow_duplicate:
+        await _assert_no_duplicate_order(
+            tenant_id=user["tenant_id"],
+            duplicate_fingerprint=duplicate_fingerprint,
+        )
 
     order = {
         "id": new_id(),
@@ -572,6 +858,9 @@ async def _create_order_document(data: OrderCreate, user: Dict[str, Any], *, ori
         "pd_request_id": data.pd_request_id,
         "kickoff_id": data.kickoff_id,
         "client_card_id": data.client_card_id,
+        "pedido_cliente_ref": data.pedido_cliente_ref or "",
+        "gerador_origem": data.gerador_origem or "",
+        "duplicate_fingerprint": duplicate_fingerprint,
         "numero_pedido": numero,
         "data_pedido": data.data_pedido or now_iso(),
         "status": "rascunho",
@@ -589,6 +878,8 @@ async def _create_order_document(data: OrderCreate, user: Dict[str, Any], *, ori
         "total_desconto": totals["total_desconto"],
         "desconto_pct_medio": totals["desconto_pct_medio"],
         "observacoes": data.observacoes,
+        "attachments": [],
+        "pdf": {"status": "nao_gerado"},
         "cgi_status": "pendente",
         "cgi_assinado_em": None,
         "cgi_assinado_por": None,
@@ -619,6 +910,19 @@ async def _create_order_document(data: OrderCreate, user: Dict[str, Any], *, ori
 async def create_order(data: OrderCreate, request: Request):
     user = await get_current_user(request)
     return await _create_order_document(data, user, origem="pipeline")
+
+
+@orders_router.post("/generator")
+async def create_generator_order(data: OrderCreate, request: Request):
+    """Create an order from the web generator, enriching SKU/P&D data when available."""
+    user = await get_current_user(request)
+    return await _create_order_document(
+        data,
+        user,
+        origem="gerador",
+        require_known_sku=False,
+        require_pd_completed_skus=False,
+    )
 
 
 @orders_router.post("/direct")
@@ -658,7 +962,9 @@ async def create_direct_order(data: DirectOrderCreate, request: Request):
     valor_unitario_currency = data.valor_unitario_currency or sku_doc.get("preco_unitario_currency") or "BRL"
 
     item = OrderItem(
+        sku_id=sku_doc.get("id"),
         codigo_kuryos=sku_doc.get("codigo_interno", ""),
+        pd_concluido=False,
         item=sku_doc.get("nome_produto", ""),
         prazo_entrega=data.prazo_entrega,
         valor_unitario=valor_unitario,
@@ -671,13 +977,21 @@ async def create_direct_order(data: DirectOrderCreate, request: Request):
     order_data = OrderCreate(
         tipo_servico=data.tipo_servico,
         nivel_formalizacao=data.nivel_formalizacao,
+        pedido_cliente_ref=data.pedido_cliente_ref,
+        allow_duplicate=data.allow_duplicate,
         cliente=ClienteData(**cliente),
         frete=data.frete,
         items=[item],
         condicoes=data.condicoes,
         observacoes=data.observacoes,
     )
-    return await _create_order_document(order_data, user, origem="direto")
+    return await _create_order_document(
+        order_data,
+        user,
+        origem="direto",
+        require_known_sku=True,
+        require_pd_completed_skus=False,
+    )
 
 
 @orders_router.put("/{order_id}")
@@ -927,6 +1241,197 @@ async def _generate_op_number(tenant_id: str) -> str:
     return f"OP-{year}-{count + 1:03d}"
 
 
+def _formula_items_total_pct(items: List[Dict[str, Any]]) -> float:
+    return round(sum(float(item.get("percentage") or item.get("percentual_mm") or 0) for item in items), 4)
+
+
+def _normalise_formula_status(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
+async def _find_latest_pd_formula(development_id: str, tenant_id: str) -> Optional[Dict[str, Any]]:
+    formulas = await db.pd_formulas.find(
+        {"development_id": development_id, "tenant_id": tenant_id},
+        {"_id": 0},
+    ).sort("version", -1).to_list(1)
+    return formulas[0] if formulas else None
+
+
+async def _resolve_pd_request_for_op_item(
+    item: Dict[str, Any],
+    order: Dict[str, Any],
+    tenant_id: str,
+) -> Optional[Dict[str, Any]]:
+    if order.get("pd_request_id"):
+        return await db.pd_requests.find_one(
+            {"id": order["pd_request_id"], "tenant_id": tenant_id},
+            {"_id": 0},
+        )
+
+    codigo = (item.get("codigo_kuryos") or "").strip()
+    if not codigo:
+        return None
+
+    sku = await db.skus.find_one(
+        {"codigo_interno": codigo, "tenant_id": tenant_id},
+        {"_id": 0},
+    )
+    if not sku or not sku.get("amostra_id"):
+        return None
+
+    query: Dict[str, Any] = {
+        "tenant_id": tenant_id,
+        "linked_amostra_id": sku["amostra_id"],
+        "status": {"$in": ["APPROVED", "COMPLETED"]},
+    }
+    if sku.get("amostra_variacao_id"):
+        query["linked_variacao_id"] = sku["amostra_variacao_id"]
+    requests = await db.pd_requests.find(query, {"_id": 0}).sort("updated_at", -1).to_list(1)
+    return requests[0] if requests else None
+
+
+async def _build_op_technical_snapshot_for_item(
+    item: Dict[str, Any],
+    order: Dict[str, Any],
+    tenant_id: str,
+) -> Dict[str, Any]:
+    codigo = (item.get("codigo_kuryos") or "").strip()
+    bloqueios: List[str] = []
+    alertas: List[str] = []
+    pd_req = await _resolve_pd_request_for_op_item(item, order, tenant_id)
+
+    if not pd_req:
+        return {
+            "codigo_kuryos": codigo,
+            "item": item.get("item", ""),
+            "apto_operacao": False,
+            "pd_request_id": None,
+            "formula_id": None,
+            "formula_versao": None,
+            "formula_status": None,
+            "total_percentual": 0,
+            "itens_formula": [],
+            "bloqueios": ["PD concluido/aprovado nao encontrado para este SKU"],
+            "alertas": [],
+        }
+
+    pd_status = pd_req.get("status")
+    if pd_status not in ("APPROVED", "COMPLETED"):
+        bloqueios.append(f"PD nao concluido/aprovado: {pd_status or 'sem status'}")
+
+    dev = await db.pd_developments.find_one(
+        {"pd_request_id": pd_req["id"], "tenant_id": tenant_id},
+        {"_id": 0},
+    )
+    formula = await _find_latest_pd_formula(dev["id"], tenant_id) if dev else None
+    if not dev or not formula:
+        bloqueios.append("Formula de P&D nao encontrada")
+        return {
+            "codigo_kuryos": codigo,
+            "item": item.get("item", ""),
+            "apto_operacao": False,
+            "pd_request_id": pd_req["id"],
+            "formula_id": None,
+            "formula_versao": None,
+            "formula_status": None,
+            "total_percentual": 0,
+            "itens_formula": [],
+            "bloqueios": bloqueios,
+            "alertas": alertas,
+        }
+
+    approval = await db.pd_approvals.find_one({"development_id": dev["id"]}, {"_id": 0})
+    if not (approval and approval.get("approved_by_internal") and approval.get("approved_by_client")):
+        bloqueios.append("Formula sem aprovacao interna e comercial/cliente registrada")
+
+    formula_status = _normalise_formula_status(formula.get("status"))
+    if formula_status and formula_status not in {"aprovada", "aprovado", "approved"}:
+        alertas.append(f"Status da formula: {formula.get('status')}")
+
+    formula_items = await db.pd_formula_items.find({"formula_id": formula["id"]}, {"_id": 0}).to_list(500)
+    if not formula_items:
+        bloqueios.append("Formula sem itens")
+
+    total_pct = _formula_items_total_pct(formula_items)
+    if formula_items and not math.isclose(total_pct, 100.0, abs_tol=0.01):
+        bloqueios.append(f"Formula soma {total_pct}% em vez de 100%")
+
+    missing_phase = [
+        it.get("ingredient_name") or it.get("mp_codigo") or "item sem nome"
+        for it in formula_items
+        if not (it.get("phase") or it.get("fase"))
+    ]
+    if missing_phase:
+        bloqueios.append(f"Itens sem fase de manipulacao: {', '.join(missing_phase[:5])}")
+
+    ficha = await db.pd_ficha_tecnica.find_one(
+        {"pd_request_id": pd_req["id"], "tenant_id": tenant_id},
+        {"_id": 0},
+    )
+    if not ficha:
+        alertas.append("Ficha tecnica operacional ainda nao revisada/salva")
+
+    public_items = [
+        {
+            "ingredient_name": it.get("ingredient_name") or it.get("mp_codigo") or "",
+            "percentage": it.get("percentage") or it.get("percentual_mm") or 0,
+            "phase": it.get("phase") or it.get("fase") or "",
+            "function": it.get("function") or "",
+            "fornecedor": it.get("fornecedor") or "",
+            "catalog_id": it.get("catalog_id"),
+        }
+        for it in formula_items
+    ]
+
+    return {
+        "codigo_kuryos": codigo,
+        "item": item.get("item", ""),
+        "apto_operacao": len(bloqueios) == 0,
+        "pd_request_id": pd_req["id"],
+        "formula_id": formula["id"],
+        "formula_versao": formula.get("version"),
+        "formula_status": formula.get("status"),
+        "formula_nome": formula.get("name"),
+        "total_percentual": total_pct,
+        "itens_formula": public_items,
+        "bloqueios": bloqueios,
+        "alertas": alertas,
+    }
+
+
+async def _build_op_technical_snapshot(order: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    reviews = [
+        await _build_op_technical_snapshot_for_item(item, order, tenant_id)
+        for item in (order.get("items") or [])
+    ]
+    bloqueios = [
+        f"{review.get('codigo_kuryos') or review.get('item')}: {reason}"
+        for review in reviews
+        for reason in review.get("bloqueios", [])
+    ]
+    alertas = [
+        f"{review.get('codigo_kuryos') or review.get('item')}: {reason}"
+        for review in reviews
+        for reason in review.get("alertas", [])
+    ]
+    requires_technical_review = bool(order.get("pd_request_id") or order.get("origem") in {"direto", "reproducao"})
+    return {
+        "apto_operacao": len(bloqueios) == 0,
+        "revisao_obrigatoria": requires_technical_review,
+        "bloqueios": bloqueios,
+        "alertas": alertas,
+        "items": reviews,
+        "snapshot_at": now_iso(),
+    }
+
+
+def _technical_review_blocks_operation(op: Dict[str, Any]) -> List[str]:
+    tecnico = op.get("tecnico") or {}
+    if not tecnico.get("revisao_obrigatoria"):
+        return []
+    return list(tecnico.get("bloqueios") or []) if not tecnico.get("apto_operacao") else []
+
+
 @orders_router.post("/{order_id}/create-op")
 async def create_op_from_order(order_id: str, request: Request):
     """Convert a confirmed PI into an Ordem de Produção."""
@@ -940,6 +1445,17 @@ async def create_op_from_order(order_id: str, request: Request):
         existing_op = await db.ops.find_one({"id": order["op_id"]}, {"_id": 0})
         if existing_op:
             return existing_op
+
+    tecnico = await _build_op_technical_snapshot(order, user["tenant_id"])
+    if tecnico["revisao_obrigatoria"] and tecnico["bloqueios"]:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "OP bloqueada: revise P&D/ficha tecnica antes de emitir.",
+                "bloqueios": tecnico["bloqueios"],
+                "alertas": tecnico["alertas"],
+            },
+        )
 
     numero_op = await _generate_op_number(user["tenant_id"])
     op_items = [
@@ -963,6 +1479,7 @@ async def create_op_from_order(order_id: str, request: Request):
         "project_name": order.get("project_name", ""),
         "status": "aberta",
         "items": op_items,
+        "tecnico": tecnico,
         "observacoes": "",
         "created_at": now_iso(),
         "updated_at": now_iso(),
@@ -1063,6 +1580,17 @@ async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Reque
         "auto_created": False,
         "origem": "reproducao",
     }
+    tecnico = await _build_op_technical_snapshot(new_order, user["tenant_id"])
+    if tecnico["revisao_obrigatoria"] and tecnico["bloqueios"]:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "Reproducao bloqueada: revise P&D/ficha tecnica antes de emitir OP.",
+                "bloqueios": tecnico["bloqueios"],
+                "alertas": tecnico["alertas"],
+            },
+        )
+
     await db.orders.insert_one(new_order)
     new_order.pop("_id", None)
 
@@ -1089,6 +1617,7 @@ async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Reque
         "project_name": new_order.get("project_name", ""),
         "status": "aberta",
         "items": op_items,
+        "tecnico": tecnico,
         "observacoes": "",
         "created_at": ts,
         "updated_at": ts,
@@ -1107,6 +1636,90 @@ async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Reque
     new_order["status"] = "em_producao"
 
     return {"order": new_order, "op": op}
+
+
+# ============ ORDER ATTACHMENTS ============
+@orders_router.get("/{order_id}/attachments")
+async def list_order_attachments(order_id: str, request: Request):
+    user = await get_current_user(request)
+    order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "attachments": 1})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+    return order.get("attachments") or []
+
+
+@orders_router.post("/{order_id}/attachments")
+async def upload_order_attachment(order_id: str, request: Request, file: UploadFile = File(...)):
+    user = await get_current_user(request)
+    order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "id": 1})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+
+    data = await file.read()
+    if len(data) > ORDER_ATTACHMENT_MAX_BYTES:
+        raise HTTPException(status_code=400, detail="Arquivo muito grande (max 10MB)")
+
+    original_filename = _safe_attachment_filename(file.filename or "anexo")
+    ext = original_filename.rsplit(".", 1)[-1].lower() if "." in original_filename else "bin"
+    if ext not in ORDER_ATTACHMENT_EXTENSIONS:
+        allowed = ", ".join(sorted(ORDER_ATTACHMENT_EXTENSIONS))
+        raise HTTPException(status_code=400, detail=f"Tipo de arquivo nao permitido. Permitidos: {allowed}")
+
+    attachment_id = new_id()
+    stored_name = f"{attachment_id}.{ext}"
+    relative_path = Path(user["tenant_id"]) / order_id / stored_name
+    target_path = _orders_upload_root() / relative_path
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_bytes(data)
+
+    content_type = file.content_type or mimetypes.guess_type(original_filename)[0] or "application/octet-stream"
+    attachment = {
+        "id": attachment_id,
+        "original_filename": original_filename,
+        "content_type": content_type,
+        "size": len(data),
+        "storage_path": str(relative_path).replace("\\", "/"),
+        "download_url": f"/api/orders/{order_id}/attachments/{attachment_id}/download",
+        "uploaded_by": user["id"],
+        "uploaded_by_name": user.get("name", ""),
+        "uploaded_at": now_iso(),
+    }
+    await db.orders.update_one(
+        {"id": order_id, "tenant_id": user["tenant_id"]},
+        {"$push": {"attachments": attachment}, "$set": {"updated_at": now_iso()}},
+    )
+    return attachment
+
+
+@orders_router.get("/{order_id}/attachments/{attachment_id}/download")
+async def download_order_attachment(order_id: str, attachment_id: str, request: Request):
+    user = await get_current_user(request)
+    order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "attachments": 1})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+
+    attachment = next((item for item in (order.get("attachments") or []) if item.get("id") == attachment_id), None)
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Anexo nao encontrado")
+
+    path = _orders_upload_root() / attachment.get("storage_path", "")
+    try:
+        resolved_root = _orders_upload_root().resolve()
+        resolved_path = path.resolve()
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Arquivo do anexo nao encontrado")
+    if resolved_root not in resolved_path.parents and resolved_path != resolved_root:
+        raise HTTPException(status_code=400, detail="Caminho de anexo invalido")
+    if not resolved_path.exists():
+        raise HTTPException(status_code=404, detail="Arquivo do anexo nao encontrado")
+
+    data = resolved_path.read_bytes()
+    filename = _safe_attachment_filename(attachment.get("original_filename") or "anexo")
+    return StreamingResponse(
+        io.BytesIO(data),
+        media_type=attachment.get("content_type") or "application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 # ============ PDF GENERATION ============
@@ -1221,6 +1834,7 @@ async def export_order_pdf(order_id: str, request: Request):
     render_section("1", "INFORMAÇÕES INICIAIS", [
         ["Cliente", order.get("cliente", {}).get("nome", "") or "-"],
         ["# Pedido", order.get("numero_pedido", "") or "-"],
+        ["# Pedido Cliente", order.get("pedido_cliente_ref", "") or "-"],
         ["Data", data_pedido_str or "-"],
     ])
 
@@ -1304,6 +1918,16 @@ async def export_order_pdf(order_id: str, request: Request):
         ["Forma de Pgto", cond.get("forma_pgto", "") or "-"],
     ])
 
+    attachments = order.get("attachments", []) or []
+    if _is_generator_order(order) or attachments:
+        attachment_names = ", ".join([att.get("original_filename", "") for att in attachments if att.get("original_filename")])
+        render_section("5.1", "RASTREIO DO GERADOR", [
+            ["Origem", order.get("gerador_origem") or order.get("origem") or "-"],
+            ["Anexos do Cliente", attachment_names or "-"],
+            ["Aprovacao Cliente", order.get("aprovacao_cliente") or "-"],
+            ["Aprovacao Comercial", order.get("aprovacao_comercial") or "-"],
+        ])
+
     # ===== 6) INSUMOS A SEREM ENVIADOS =====
     elements.append(Table([[Paragraph("<b>6)</b>", section_num),
                             Paragraph("<b>INSUMOS À SEREM ENVIADOS</b>", section_title)]],
@@ -1355,6 +1979,21 @@ async def export_order_pdf(order_id: str, request: Request):
     pdf.build(elements)
     buffer.seek(0)
     filename = f"ordem_producao_{order.get('numero_pedido', order_id)}.pdf"
+    generated_at = now_iso()
+    await db.orders.update_one(
+        {"id": order_id, "tenant_id": user["tenant_id"]},
+        {"$set": {
+            "pdf": {
+                "status": "gerado",
+                "filename": filename,
+                "generated_at": generated_at,
+                "generated_by": user["id"],
+                "generated_by_name": user.get("name", ""),
+                "download_url": f"/api/orders/{order_id}/pdf",
+            },
+            "updated_at": generated_at,
+        }},
+    )
     return StreamingResponse(
         buffer,
         media_type="application/pdf",
@@ -1400,6 +2039,16 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
     payload = data.model_dump(exclude_unset=True)
     if "status" in payload and payload["status"] not in OP_STATUSES:
         raise HTTPException(status_code=400, detail=f"Status inválido. Permitidos: {OP_STATUSES}")
+    if payload.get("status") in {"em_processo", "concluida"}:
+        bloqueios = _technical_review_blocks_operation(op)
+        if bloqueios:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "OP bloqueada por pendencias tecnicas do P&D/ficha tecnica.",
+                    "bloqueios": bloqueios,
+                },
+            )
     update_fields: Dict[str, Any] = {k: v for k, v in payload.items() if v is not None or k == "observacoes"}
     update_fields["updated_at"] = now_iso()
     await db.ops.update_one({"id": op_id}, {"$set": update_fields})
@@ -1465,6 +2114,260 @@ async def _record_op_producao_to_sku(op: dict):
 
 
 # ─── Apontamento de produção ─────────────────────────────────────────────────
+def _pd_request_id_from_op(op: Dict[str, Any], order: Optional[Dict[str, Any]] = None) -> Optional[str]:
+    if order and order.get("pd_request_id"):
+        return order["pd_request_id"]
+    tecnico = op.get("tecnico") or {}
+    for review in tecnico.get("items") or []:
+        if review.get("pd_request_id"):
+            return review["pd_request_id"]
+    return None
+
+
+def _append_rework_note(notes: List[Dict[str, Any]], origem: str, texto: Any, **extra: Any) -> None:
+    if texto is None:
+        return
+    if isinstance(texto, (list, tuple)):
+        texto = " | ".join(str(part).strip() for part in texto if str(part).strip())
+    elif isinstance(texto, dict):
+        texto = "; ".join(f"{key}: {value}" for key, value in texto.items() if value not in (None, ""))
+    else:
+        texto = str(texto).strip()
+    if not texto:
+        return
+    note = {"origem": origem, "texto": texto}
+    note.update({key: value for key, value in extra.items() if value not in (None, "", [])})
+    notes.append(note)
+
+
+def _event_rework_text(event: Dict[str, Any]) -> str:
+    fields = [
+        event.get("tipo") or event.get("acao") or event.get("status"),
+        event.get("motivo"),
+        event.get("observacao") or event.get("observacoes"),
+        event.get("message") or event.get("mensagem"),
+    ]
+    return " - ".join(str(field).strip() for field in fields if str(field or "").strip())
+
+
+def _collect_op_rework_notes(
+    op: Dict[str, Any],
+    data: OPReworkCreate,
+    order: Optional[Dict[str, Any]] = None,
+) -> List[Dict[str, Any]]:
+    notes: List[Dict[str, Any]] = []
+    _append_rework_note(notes, "solicitacao_retrabalho", data.anotacoes, prioridade=data.prioridade)
+    _append_rework_note(notes, "observacoes_op", op.get("observacoes"), op_numero=op.get("numero_op"))
+
+    if order:
+        cliente = order.get("cliente") or {}
+        _append_rework_note(
+            notes,
+            "pedido_comercial",
+            {
+                "pedido": order.get("numero_pedido") or order.get("pedido_cliente_ref") or order.get("id"),
+                "cliente": cliente.get("nome") or order.get("cliente_nome"),
+                "observacoes": order.get("observacoes"),
+            },
+            pedido_id=order.get("id"),
+        )
+        for idx, item in enumerate(order.get("items") or []):
+            if data.item_idx is not None and idx != data.item_idx:
+                continue
+            _append_rework_note(
+                notes,
+                "item_pedido",
+                {
+                    "item": item.get("item"),
+                    "codigo_kuryos": item.get("codigo_kuryos"),
+                    "qtd": item.get("qtd"),
+                    "prazo": item.get("prazo_entrega"),
+                },
+                item_idx=idx,
+            )
+
+    tecnico = op.get("tecnico") or {}
+    _append_rework_note(notes, "ficha_tecnica_bloqueios", tecnico.get("bloqueios"))
+    _append_rework_note(notes, "ficha_tecnica_alertas", tecnico.get("alertas"))
+    for review in tecnico.get("items") or []:
+        _append_rework_note(
+            notes,
+            "snapshot_tecnico_item",
+            {
+                "item": review.get("item"),
+                "pd_request_id": review.get("pd_request_id"),
+                "formula_id": review.get("formula_id"),
+                "formula_versao": review.get("formula_versao"),
+                "formula_status": review.get("formula_status"),
+                "total_percentual": review.get("total_percentual"),
+                "bloqueios": " | ".join(review.get("bloqueios") or []),
+                "alertas": " | ".join(review.get("alertas") or []),
+            },
+        )
+
+    for hist in op.get("historico") or []:
+        _append_rework_note(
+            notes,
+            "historico_op",
+            _event_rework_text(hist),
+            em=hist.get("em") or hist.get("created_at") or hist.get("data"),
+        )
+
+    for apontamento in op.get("apontamentos") or []:
+        texto = apontamento.get("observacoes") or {
+            "qtd_produzida": apontamento.get("qtd_produzida"),
+            "turno": apontamento.get("turno"),
+        }
+        _append_rework_note(
+            notes,
+            "apontamento",
+            texto,
+            em=apontamento.get("horario") or apontamento.get("em"),
+            item=apontamento.get("item_nome"),
+        )
+    for perda in op.get("perdas") or []:
+        _append_rework_note(
+            notes,
+            "perda",
+            perda.get("motivo") or perda.get("observacoes"),
+            em=perda.get("em"),
+            item=perda.get("item_nome"),
+            quantidade=perda.get("quantidade"),
+            unidade=perda.get("unidade"),
+        )
+    for pausa in op.get("pausas") or []:
+        _append_rework_note(
+            notes,
+            "pausa",
+            pausa.get("motivo") or pausa.get("observacoes"),
+            em=pausa.get("horario_inicio"),
+            tipo=pausa.get("tipo"),
+        )
+    for checklist in op.get("checklist") or []:
+        _append_rework_note(
+            notes,
+            "checklist_op",
+            checklist.get("observacoes") or checklist.get("status") or checklist.get("item"),
+            item=checklist.get("item") or checklist.get("categoria"),
+            status=checklist.get("status"),
+        )
+    return notes
+
+
+async def _mark_pd_request_rework_from_op(
+    *,
+    pd_request_id: str,
+    update_doc: Dict[str, Any],
+    user: Dict[str, Any],
+    motivo: str,
+) -> None:
+    pd_req = await db.pd_requests.find_one({"id": pd_request_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if not pd_req:
+        return
+
+    now = update_doc["created_at"]
+    old_status = pd_req.get("status")
+    set_fields = {
+        "rework_pending_from_op": True,
+        "last_rework_update_id": update_doc["id"],
+        "last_rework_op_id": update_doc["op_id"],
+        "last_rework_reason": motivo,
+        "updated_at": now,
+    }
+    if old_status != "REJECTED":
+        set_fields["status"] = "REJECTED"
+
+    await db.pd_requests.update_one(
+        {"id": pd_request_id, "tenant_id": user["tenant_id"]},
+        {"$set": set_fields},
+    )
+
+    if old_status != "REJECTED":
+        await db.pd_request_status_history.insert_one({
+            "id": new_id(),
+            "pd_request_id": pd_request_id,
+            "from_status": old_status,
+            "to_status": "REJECTED",
+            "changed_by": user["id"],
+            "changed_by_name": user.get("name", ""),
+            "comment": f"Retrabalho enviado pela OP {update_doc.get('op_numero') or update_doc.get('op_id')}: {motivo}",
+            "created_at": now,
+        })
+
+    card_event = {
+        "de": None,
+        "para": "retrabalho_interno",
+        "data": now,
+        "usuario": user.get("name", ""),
+        "usuario_id": user["id"],
+        "observacao": f"Retrabalho de OP enviado ao P&D: {motivo}",
+        "pd_update_id": update_doc["id"],
+        "op_id": update_doc["op_id"],
+    }
+    await db.pd_cards.update_many(
+        {"pd_request_id": pd_request_id, "tenant_id": user["tenant_id"]},
+        {"$set": {"status_pd": "retrabalho_interno", "updated_at": now}, "$push": {"historico_movimentacoes": card_event}},
+    )
+
+
+@ops_router.post("/{op_id}/rework")
+async def send_op_rework_to_pd(op_id: str, data: OPReworkCreate, request: Request):
+    user = await get_current_user(request)
+    op = await db.ops.find_one({"id": op_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nÃ£o encontrada")
+    if len((data.motivo or "").strip()) < 5:
+        raise HTTPException(status_code=400, detail="Informe o motivo do retrabalho com pelo menos 5 caracteres.")
+
+    order = None
+    if op.get("pedido_id"):
+        order = await db.orders.find_one({"id": op["pedido_id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+    pd_request_id = _pd_request_id_from_op(op, order)
+    if not pd_request_id:
+        raise HTTPException(status_code=422, detail="Nao foi possivel localizar o P&D vinculado a esta OP.")
+
+    now = now_iso()
+    update_doc = {
+        "id": new_id(),
+        "tenant_id": user["tenant_id"],
+        "pd_request_id": pd_request_id,
+        "source": "pcp_op_rework",
+        "op_id": op["id"],
+        "op_numero": op.get("numero_op"),
+        "motivo": data.motivo.strip(),
+        "prioridade": data.prioridade,
+        "item_idx": data.item_idx,
+        "anotacoes": _collect_op_rework_notes(op, data, order),
+        "created_by": user["id"],
+        "created_by_name": user.get("name", ""),
+        "created_at": now,
+        "status": "pendente_pd",
+    }
+    await db.pd_updates.insert_one(update_doc)
+    await _mark_pd_request_rework_from_op(
+        pd_request_id=pd_request_id,
+        update_doc=update_doc,
+        user=user,
+        motivo=data.motivo.strip(),
+    )
+
+    event = {
+        "id": new_id(),
+        "tipo": "retrabalho_enviado_pd",
+        "motivo": data.motivo.strip(),
+        "pd_request_id": pd_request_id,
+        "pd_update_id": update_doc["id"],
+        "por": user.get("name", ""),
+        "em": now,
+    }
+    await db.ops.update_one(
+        {"id": op_id, "tenant_id": user["tenant_id"]},
+        {"$push": {"historico": event}, "$set": {"updated_at": now}},
+    )
+    update_doc.pop("_id", None)
+    return update_doc
+
+
 class ApontamentoCreate(BaseModel):
     item_idx: int = 0
     qtd_produzida: float

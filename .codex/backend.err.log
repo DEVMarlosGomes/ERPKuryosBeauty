@@ -1,94 +1,21 @@
-2026-07-16 19:38:22,431 - server - WARNING - Using local development defaults for: MONGO_URL, DB_NAME, JWT_SECRET
-INFO:     Started server process [20616]
+2026-08-17 22:33:32,012 - server - WARNING - Using local development defaults for: MONGO_URL, DB_NAME, JWT_SECRET
+INFO:     Started server process [18700]
 INFO:     Waiting for application startup.
-2026-07-16 19:38:27,283 - server - WARNING - No EMERGENT_LLM_KEY for storage
-2026-07-16 19:38:28,195 - crm_routes - INFO - CRM module initialized
-2026-07-16 19:38:28,206 - estoque_routes - INFO - Estoque module initialized
-2026-07-16 19:38:29,083 - cq_routes - INFO - CQ module initialized
-2026-07-16 19:38:31,817 - cq_routes - INFO - CQ module indexes created
-2026-07-16 19:38:32,501 - workflow_engine - INFO - Workflow engine initialized
-2026-07-16 19:38:32,520 - workflow_routes - INFO - Workflow routes initialized
-2026-07-16 19:38:32,521 - categorias_routes - INFO - Categorias module initialized
-2026-07-16 19:38:32,639 - fragrancias_routes - INFO - Fragrâncias module initialized
-2026-07-16 19:38:32,885 - materiais_routes - INFO - Materiais module initialized
-2026-07-16 19:38:33,106 - produtos_routes - INFO - Produtos module initialized
-2026-07-16 19:38:44,121 - server - INFO - CRM Kuryos API started
+2026-08-17 22:33:32,387 - server - WARNING - No EMERGENT_LLM_KEY for storage
+2026-08-17 22:33:32,406 - crm_routes - INFO - CRM module initialized
+2026-08-17 22:33:32,406 - estoque_routes - INFO - Estoque module initialized
+2026-08-17 22:33:32,428 - cq_routes - INFO - CQ module initialized
+2026-08-17 22:33:32,451 - cq_routes - INFO - CQ module indexes created
+2026-08-17 22:33:32,463 - workflow_engine - INFO - Workflow engine initialized
+2026-08-17 22:33:32,464 - workflow_routes - INFO - Workflow routes initialized
+2026-08-17 22:33:32,464 - categorias_routes - INFO - Categorias module initialized
+2026-08-17 22:33:32,466 - fragrancias_routes - INFO - Fragrâncias module initialized
+2026-08-17 22:33:32,470 - materiais_routes - INFO - Materiais module initialized
+2026-08-17 22:33:32,476 - produtos_routes - INFO - Produtos module initialized
+2026-08-17 22:33:34,634 - server - INFO - CRM Kuryos API started
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
 C:\Users\MARLOS\AppData\Local\Programs\Python\Python313\Lib\site-packages\jwt\api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 18 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
   return self._jws.encode(
 C:\Users\MARLOS\AppData\Local\Programs\Python\Python313\Lib\site-packages\jwt\api_jwt.py:368: InsecureKeyLengthWarning: The HMAC key is 18 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
   decoded = self.decode_complete(
-INFO:     ('127.0.0.1', 61661) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-INFO:     ('127.0.0.1', 61662) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-2026-07-16 20:57:21,530 - crm_routes - INFO - Batch created 1 projects for client 6a3f4f9e-9f76-4065-b08a-6769768ffb40
-2026-07-16 20:58:32,400 - crm_routes - INFO - Batch created 1 projects for client 6a3f4f9e-9f76-4065-b08a-6769768ffb40
-2026-07-16 21:01:47,580 - crm_routes - INFO - Batch created 1 projects for client 6a3f4f9e-9f76-4065-b08a-6769768ffb40
-2026-07-16 21:24:30,843 - crm_routes - INFO - Batch created 1 projects for client a3044ec3-8f03-4198-8a38-8530aa2a4d3b
-2026-07-16 21:25:50,307 - crm_routes - INFO - Created P&D card 374f9757-70f9-42b4-a240-a8b0735cb612 for variação 2026-1015-a
-2026-07-16 21:25:50,307 - crm_routes - INFO - Batch created 1 samples (v2) with variations for project 5f49d33d-a1c8-4d98-a469-2eeb4e4a0a6e
-INFO:     ('127.0.0.1', 62693) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-INFO:     ('127.0.0.1', 62694) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-INFO:     ('127.0.0.1', 62699) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-INFO:     ('127.0.0.1', 62700) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-2026-07-16 21:26:08,738 - crm_routes - INFO - Auto-created pd_request fdddec0a-42be-48df-8268-61c1e05e360d for pd_card 374f9757-70f9-42b4-a240-a8b0735cb612 (variação 2026-1015-a)
-INFO:     connection closed
-2026-07-17 00:16:41,580 - crm_routes - INFO - Batch created 1 projects for client 6a3f4f9e-9f76-4065-b08a-6769768ffb40
-2026-07-17 00:19:59,320 - crm_routes - INFO - Batch created 1 projects for client 6a3f4f9e-9f76-4065-b08a-6769768ffb40
-2026-07-17 00:21:20,373 - crm_routes - INFO - Created P&D card 1b7726eb-5014-40f2-9fef-ad14df8ead7f for variação 2026-1016-a
-2026-07-17 00:21:20,378 - crm_routes - INFO - Created P&D card e4561447-5039-4810-a342-80a752da0295 for variação 2026-1016-b
-2026-07-17 00:21:20,385 - crm_routes - INFO - Created P&D card 451aeb40-2cff-49d6-9d22-d3b9ed74c00a for variação 2026-1016-c
-2026-07-17 00:21:20,390 - crm_routes - INFO - Created P&D card 739ba49c-ce83-424d-bf8a-f0226e7c9462 for variação 2026-1016-d
-2026-07-17 00:21:20,395 - crm_routes - INFO - Created P&D card e1e7a1a8-57bb-4ced-93f9-52e27046a4e5 for variação 2026-1016-e
-2026-07-17 00:21:20,400 - crm_routes - INFO - Created P&D card 2134d01c-4b24-497e-8e41-2812269e1fc6 for variação 2026-1016-f
-2026-07-17 00:21:20,406 - crm_routes - INFO - Created P&D card 0665d639-038e-4ef1-a36f-88c4586232d4 for variação 2026-1016-g
-2026-07-17 00:21:20,410 - crm_routes - INFO - Created P&D card 884cf09b-119f-496b-8c1c-731921338284 for variação 2026-1016-h
-2026-07-17 00:21:20,414 - crm_routes - INFO - Created P&D card 524cb781-139f-4e4a-ac17-0ecd03829793 for variação 2026-1016-i
-2026-07-17 00:21:20,418 - crm_routes - INFO - Created P&D card 53185389-a128-43a3-979f-f4c026486bee for variação 2026-1016-j
-2026-07-17 00:21:20,422 - crm_routes - INFO - Created P&D card ef557aec-8197-4a00-8aeb-53a68ba875ca for variação 2026-1016-k
-2026-07-17 00:21:20,426 - crm_routes - INFO - Created P&D card c4b9df93-04c2-4be4-9414-722623324033 for variação 2026-1016-l
-2026-07-17 00:21:20,429 - crm_routes - INFO - Created P&D card 9858e20c-7258-4a35-9889-07690382479c for variação 2026-1016-m
-2026-07-17 00:21:20,433 - crm_routes - INFO - Created P&D card 4e829a93-67eb-4650-9127-e8df64801466 for variação 2026-1016-n
-2026-07-17 00:21:20,436 - crm_routes - INFO - Created P&D card d95d6229-947d-4f1d-a056-a8375bac7343 for variação 2026-1016-o
-2026-07-17 00:21:20,440 - crm_routes - INFO - Created P&D card ee85e02a-3685-465c-ac70-d9a12fe07c68 for variação 2026-1016-p
-2026-07-17 00:21:20,445 - crm_routes - INFO - Created P&D card 4e51986d-c952-4eeb-a242-821e0672e242 for variação 2026-1016-q
-2026-07-17 00:21:20,449 - crm_routes - INFO - Created P&D card 9d082521-d07d-4ce1-ae8d-c7cffa9e1512 for variação 2026-1016-r
-2026-07-17 00:21:20,454 - crm_routes - INFO - Created P&D card 38424808-3696-403c-bf41-68613db7cdcd for variação 2026-1016-s
-2026-07-17 00:21:20,459 - crm_routes - INFO - Created P&D card 623f9475-e920-4444-b32e-6212c18cd4eb for variação 2026-1016-t
-2026-07-17 00:21:20,464 - crm_routes - INFO - Created P&D card 66d53e48-025a-4099-afb5-3aa4f3a2f770 for variação 2026-1016-u
-2026-07-17 00:21:20,468 - crm_routes - INFO - Created P&D card a3a4ec14-be9b-4574-8976-001b9c5bec72 for variação 2026-1016-v
-2026-07-17 00:21:20,471 - crm_routes - INFO - Created P&D card ea51e4ae-ed01-4e75-ab76-244f2b771900 for variação 2026-1016-w
-2026-07-17 00:21:20,477 - crm_routes - INFO - Created P&D card a6805699-ae3c-4e99-86be-b35ace80e85a for variação 2026-1016-x
-2026-07-17 00:21:20,480 - crm_routes - INFO - Created P&D card d22fdec0-9e1a-4611-9854-73507bf49e95 for variação 2026-1016-y
-2026-07-17 00:21:20,485 - crm_routes - INFO - Created P&D card abf8a12a-2dda-4ea9-9f11-4b5f0053df5e for variação 2026-1016-z
-2026-07-17 00:21:20,490 - crm_routes - INFO - Created P&D card 1a81ee29-5f7d-4c75-9dfe-d14a43320de5 for variação 2026-1016-aa
-2026-07-17 00:21:20,494 - crm_routes - INFO - Created P&D card 575cee86-5bba-4fad-99ac-5bada2e13d00 for variação 2026-1016-ab
-2026-07-17 00:21:20,498 - crm_routes - INFO - Created P&D card aeea4d04-36cc-45a7-a4c8-2af186f32a0e for variação 2026-1016-ac
-2026-07-17 00:21:20,502 - crm_routes - INFO - Created P&D card 74563cfd-79d2-4b8a-8567-12a8e96e6fed for variação 2026-1016-ad
-2026-07-17 00:21:20,508 - crm_routes - INFO - Created P&D card 81205337-095c-4cb0-9066-fa9a9da1a2af for variação 2026-1016-ae
-2026-07-17 00:21:20,512 - crm_routes - INFO - Created P&D card 1dffd3ff-2f27-4491-a7b4-4bbde0fd00a9 for variação 2026-1016-af
-2026-07-17 00:21:20,515 - crm_routes - INFO - Created P&D card c7ceb1c7-eab7-45b6-aaf1-4160deb64321 for variação 2026-1016-ag
-2026-07-17 00:21:20,516 - crm_routes - INFO - Batch created 1 samples (v2) with variations for project 1a5f374f-9f3c-49ec-9bbc-0110df4b3cde
-INFO:     ('127.0.0.1', 63290) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     ('127.0.0.1', 63291) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-INFO:     connection closed
-INFO:     ('127.0.0.1', 63320) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     ('127.0.0.1', 63321) - "WebSocket /api/ws" [accepted]
-INFO:     connection open
-INFO:     connection closed
-INFO:     connection closed

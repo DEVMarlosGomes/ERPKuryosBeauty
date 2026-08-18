@@ -4447,6 +4447,7 @@ async def list_skus(
     cat3: Optional[str] = None,
     cat2: Optional[str] = None,
     search: Optional[str] = None,
+    pd_concluidos: bool = False,
 ):
     user = await _get_current_user(request)
     query = {"tenant_id": user["tenant_id"]}
@@ -4465,6 +4466,46 @@ async def list_skus(
         ]
 
     skus = await db.skus.find(query, {"_id": 0}).sort("created_at", -1).to_list(5000)
+    if skus:
+        sample_ids = list({sku.get("amostra_id") for sku in skus if sku.get("amostra_id")})
+        if sample_ids:
+            approved_requests = await db.pd_requests.find(
+                {
+                    "tenant_id": user["tenant_id"],
+                    "status": {"$in": ["APPROVED", "COMPLETED", "aprovado", "concluido"]},
+                    "linked_amostra_id": {"$in": sample_ids},
+                },
+                {"_id": 0, "id": 1, "status": 1, "linked_amostra_id": 1, "linked_variacao_id": 1, "updated_at": 1},
+            ).to_list(5000)
+            approved_by_pair = {}
+            approved_by_sample = {}
+            for doc in approved_requests:
+                sample_id = doc.get("linked_amostra_id")
+                variation_id = doc.get("linked_variacao_id")
+                if not sample_id:
+                    continue
+                if variation_id:
+                    approved_by_pair[(sample_id, variation_id)] = doc
+                approved_by_sample[sample_id] = doc
+
+            enriched = []
+            for sku in skus:
+                approved = approved_by_pair.get((sku.get("amostra_id"), sku.get("amostra_variacao_id")))
+                if not approved:
+                    approved = approved_by_sample.get(sku.get("amostra_id"))
+                sku["pd_concluido"] = bool(approved)
+                if approved:
+                    sku["pd_request_id"] = approved.get("id")
+                    sku["pd_status"] = approved.get("status")
+                if not pd_concluidos or approved:
+                    enriched.append(sku)
+            skus = enriched
+        else:
+            if pd_concluidos:
+                skus = []
+            else:
+                for sku in skus:
+                    sku["pd_concluido"] = False
 
     # Regra de exibição: SKU nunca "pelado" — anexa nome do Produto-Pai (família) pra
     # cada SKU que já tiver o vínculo (apresentacao/volume ficam no próprio doc do SKU).

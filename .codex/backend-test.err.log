@@ -1,0 +1,33 @@
+2026-08-03 19:23:50,873 - server - WARNING - Using local development defaults for: MONGO_URL, DB_NAME, JWT_SECRET
+INFO:     Started server process [7456]
+INFO:     Waiting for application startup.
+2026-08-03 19:23:51,404 - server - WARNING - No EMERGENT_LLM_KEY for storage
+2026-08-03 19:23:51,426 - crm_routes - INFO - CRM module initialized
+2026-08-03 19:23:51,428 - estoque_routes - INFO - Estoque module initialized
+2026-08-03 19:23:51,456 - cq_routes - INFO - CQ module initialized
+2026-08-03 19:23:51,481 - cq_routes - INFO - CQ module indexes created
+2026-08-03 19:23:51,495 - workflow_engine - INFO - Workflow engine initialized
+2026-08-03 19:23:51,496 - workflow_routes - INFO - Workflow routes initialized
+2026-08-03 19:23:51,498 - categorias_routes - INFO - Categorias module initialized
+2026-08-03 19:23:51,500 - fragrancias_routes - INFO - Fragrâncias module initialized
+2026-08-03 19:23:51,504 - materiais_routes - INFO - Materiais module initialized
+2026-08-03 19:23:51,511 - produtos_routes - INFO - Produtos module initialized
+2026-08-03 19:23:53,791 - server - INFO - CRM Kuryos API started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-08-03 19:24:22,808 - crm_routes - INFO - Alert scheduler: created 1 alerts across 1 tenants
+C:\Users\MARLOS\AppData\Local\Programs\Python\Python313\Lib\site-packages\jwt\api_jwt.py:147: InsecureKeyLengthWarning: The HMAC key is 18 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  return self._jws.encode(
+C:\Users\MARLOS\AppData\Local\Programs\Python\Python313\Lib\site-packages\jwt\api_jwt.py:368: InsecureKeyLengthWarning: The HMAC key is 18 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  decoded = self.decode_complete(
+2026-08-03 19:29:54,430 - crm_routes - INFO - Batch created 1 projects for client a3429247-756e-447a-859c-23fb4810c787
+2026-08-03 19:30:46,406 - crm_routes - INFO - Created P&D card efc58245-eaae-4fc4-8f1f-9c20095acff5 for variação 2026-1017-a
+2026-08-03 19:30:46,407 - crm_routes - INFO - Batch created 1 samples (v2) with variations for project 5a9e7bed-0956-49b0-873c-4d900cd7d904
+INFO:     ('127.0.0.1', 50327) - "WebSocket /api/ws" [accepted]
+INFO:     connection open
+2026-08-03 19:30:58,519 - crm_routes - INFO - Sincronizado P&D\u2192CRM: Card efc58245-eaae-4fc4-8f1f-9c20095acff5 (em_desenvolvimento) \u2192 Variação 23cb771b-058d-4b2f-8074-fe2eb27fcee8 (em_elaboracao / Em Desenvolvimento)
+INFO:     connection closed
+INFO:     ('127.0.0.1', 50344) - "WebSocket /api/ws" [accepted]
+INFO:     connection open
+2026-08-03 19:31:05,743 - crm_routes - INFO - Auto-created pd_request ecfa6b1f-298a-4e02-8d1b-c12b7a928352 for pd_card efc58245-eaae-4fc4-8f1f-9c20095acff5 (variação 2026-1017-a)
+INFO:     connection closed

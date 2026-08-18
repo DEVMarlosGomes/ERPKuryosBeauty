@@ -30,6 +30,7 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
     const [valorUnitario, setValorUnitario] = useState("");
     const [valorUnitarioCurrency, setValorUnitarioCurrency] = useState("BRL");
     const [prazoEntrega, setPrazoEntrega] = useState("");
+    const [pedidoClienteRef, setPedidoClienteRef] = useState("");
     const [tipoServico, setTipoServico] = useState("producao");
     const [observacoes, setObservacoes] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -38,7 +39,7 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
         setClienteQuery(""); setClientes([]); setCliente(null);
         setSkuQuery(""); setSkus([]); setSku(null);
         setQtdDisplay(""); setValorUnitario(""); setValorUnitarioCurrency("BRL");
-        setPrazoEntrega(""); setTipoServico("producao"); setObservacoes("");
+        setPrazoEntrega(""); setPedidoClienteRef(""); setTipoServico("producao"); setObservacoes("");
     }, []);
 
     useEffect(() => { if (!open) reset(); }, [open, reset]);
@@ -61,7 +62,7 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
         const t = setTimeout(async () => {
             try {
                 const { data } = await api.get("/crm/skus", {
-                    params: { cliente_id: cliente.id, status: "ativo", search: skuQuery.trim() || undefined },
+                    params: { cliente_id: cliente.id, status: "ativo", pd_concluidos: true, search: skuQuery.trim() || undefined },
                 });
                 setSkus((data || []).slice(0, 8));
             } catch { setSkus([]); }
@@ -96,6 +97,7 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
                 valor_unitario: valorUnitarioNumeric,
                 valor_unitario_currency: valorUnitarioCurrency,
                 prazo_entrega: prazoEntrega,
+                pedido_cliente_ref: pedidoClienteRef,
                 tipo_servico: tipoServico,
                 observacoes,
             });
@@ -111,7 +113,7 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="w-[calc(100vw-2rem)] max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Novo Pedido Direto</DialogTitle>
                     <p className="text-xs text-muted-foreground">
@@ -153,7 +155,7 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
                             <Label>Produto (SKU)</Label>
                             {sku ? (
                                 <div className="flex items-center justify-between rounded-md border p-2 bg-muted/30">
-                                    <span className="text-sm flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />{sku.nome_produto} <span className="text-xs text-muted-foreground font-mono">{sku.codigo_interno}</span></span>
+                                    <span className="text-sm flex items-center gap-1.5"><Package className="h-3.5 w-3.5" />{sku.nome_produto} <span className="text-xs text-muted-foreground font-mono">{sku.codigo_interno}</span>{sku.pd_concluido && <span className="text-[10px] text-green-600">P&D concluido</span>}</span>
                                     <Button variant="ghost" size="sm" onClick={() => setSku(null)}>Trocar</Button>
                                 </div>
                             ) : (
@@ -165,7 +167,10 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
                                             {skus.map((s) => (
                                                 <button key={s.id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center justify-between gap-2" onClick={() => pickSku(s)}>
                                                     <span className="truncate">{s.nome_produto}</span>
-                                                    <span className="text-xs text-muted-foreground font-mono shrink-0">{s.codigo_interno}</span>
+                                                    <span className="flex shrink-0 items-center gap-1">
+                                                        {s.pd_concluido && <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] text-green-700">P&D</span>}
+                                                        <span className="text-xs text-muted-foreground font-mono">{s.codigo_interno}</span>
+                                                    </span>
                                                 </button>
                                             ))}
                                         </div>
@@ -217,6 +222,10 @@ export default function DirectOrderModal({ open, onOpenChange, onCreated }) {
                                     <Label>Prazo de entrega</Label>
                                     <Input placeholder="Ex: 20 dias" value={prazoEntrega} onChange={(e) => setPrazoEntrega(e.target.value)} />
                                 </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label># Pedido do cliente</Label>
+                                <Input placeholder="Opcional, usado para evitar duplicidade" value={pedidoClienteRef} onChange={(e) => setPedidoClienteRef(e.target.value)} />
                             </div>
                             <div className="space-y-2">
                                 <Label>Observações</Label>

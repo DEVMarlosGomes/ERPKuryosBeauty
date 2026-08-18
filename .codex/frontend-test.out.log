@@ -1,0 +1,66 @@
+
+> frontend@0.1.0 start
+> craco start
+
+Starting the development server...
+
+Compiled with warnings.
+
+[eslint] 
+src\components\Sidebar.js
+  Line 229:8:  React Hook useEffect has a missing dependency: 'filteredModules'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\CRM2Page.js
+  Line 215:11:  The 'projectServiceOptions' logical expression could make the dependencies of useMemo Hook (at line 267) change on every render. To fix this, wrap the initialization of 'projectServiceOptions' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+src\pages\ComprasEstoqueProjetado.js
+  Line 109:8:  React Hook useEffect has a missing dependency: 'item'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\KickoffPage.js
+  Line 168:6:  React Hook useEffect has a missing dependency: 'loadKickoff'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\KickoffsListPage.js
+  Line 59:6:  React Hook useEffect has a missing dependency: 'loadKickoffs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\PDDetail.js
+  Line 3559:38:  React Hook useEffect has a missing dependency: 'fetchStudy'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  Line 3868:6:   React Hook useEffect has a missing dependency: 'parseElaboracao'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\SKUsPage.js
+  Line 99:6:  React Hook useEffect has a missing dependency: 'selectedSku'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\TasksPage.js
+  Line 153:6:  React Hook useEffect has a missing dependency: 'loadTasks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+[1m[33mWARNING[39m[22m in [1m[eslint] 
+src\components\Sidebar.js
+  Line 229:8:  React Hook useEffect has a missing dependency: 'filteredModules'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\CRM2Page.js
+  Line 215:11:  The 'projectServiceOptions' logical expression could make the dependencies of useMemo Hook (at line 267) change on every render. To fix this, wrap the initialization of 'projectServiceOptions' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+src\pages\ComprasEstoqueProjetado.js
+  Line 109:8:  React Hook useEffect has a missing dependency: 'item'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\KickoffPage.js
+  Line 168:6:  React Hook useEffect has a missing dependency: 'loadKickoff'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\KickoffsListPage.js
+  Line 59:6:  React Hook useEffect has a missing dependency: 'loadKickoffs'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\PDDetail.js
+  Line 3559:38:  React Hook useEffect has a missing dependency: 'fetchStudy'. Either include it or remove the dependency array       react-hooks/exhaustive-deps
+  Line 3868:6:   React Hook useEffect has a missing dependency: 'parseElaboracao'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\SKUsPage.js
+  Line 99:6:  React Hook useEffect has a missing dependency: 'selectedSku'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+src\pages\TasksPage.js
+  Line 153:6:  React Hook useEffect has a missing dependency: 'loadTasks'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+[39m[22m
+
+webpack compiled with [1m[33m1 warning[39m[22m

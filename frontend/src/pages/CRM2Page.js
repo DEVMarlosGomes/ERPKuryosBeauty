@@ -211,10 +211,10 @@ export default function CRM2Page() {
         APPROVED: "bg-green-50 text-green-700 border-green-200",
         CLOSED: "bg-gray-100 text-gray-500 border-gray-200",
     };
-    const projectPositioningOptions = constants?.project_posicionamento || [];
-    const projectServiceOptions = constants?.project_tipo_servico || [];
-    const projectRestrictionOptions = constants?.project_restricoes_tecnicas || [];
-    const sampleConstants = constants || {};
+    const projectPositioningOptions = useMemo(() => constants?.project_posicionamento || [], [constants]);
+    const projectServiceOptions = useMemo(() => constants?.project_tipo_servico || [], [constants]);
+    const projectRestrictionOptions = useMemo(() => constants?.project_restricoes_tecnicas || [], [constants]);
+    const sampleConstants = useMemo(() => constants || {}, [constants]);
     // A4: mesma fonte de verdade do cliente (categoria_interesse) — sem lista própria.
     const projectCategoryOptions = useMemo(() => (
         Object.entries(constants?.categoria_interesse || {}).flatMap(([group, values]) =>

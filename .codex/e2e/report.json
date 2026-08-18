@@ -1,0 +1,1000 @@
+[
+  {
+    "kind": "reference",
+    "route": "gerador",
+    "viewport": "desktop",
+    "bodyChars": 1622,
+    "hasExpected": true,
+    "events": {
+      "console": [],
+      "pageErrors": [],
+      "failedResponses": [],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-ref-gerador.png"
+  },
+  {
+    "kind": "reference",
+    "route": "pcp-dashboard",
+    "viewport": "desktop",
+    "bodyChars": 4499,
+    "hasExpected": true,
+    "events": {
+      "console": [],
+      "pageErrors": [],
+      "failedResponses": [],
+      "failedRequests": [
+        {
+          "url": "https://prod-kuryos.web.app/dashboard.html",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-ref-pcp-dashboard.png"
+  },
+  {
+    "kind": "reference",
+    "route": "gerador",
+    "viewport": "mobile",
+    "bodyChars": 1622,
+    "hasExpected": true,
+    "events": {
+      "console": [],
+      "pageErrors": [],
+      "failedResponses": [],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-ref-gerador.png"
+  },
+  {
+    "kind": "reference",
+    "route": "pcp-dashboard",
+    "viewport": "mobile",
+    "bodyChars": 4499,
+    "hasExpected": true,
+    "events": {
+      "console": [],
+      "pageErrors": [],
+      "failedResponses": [],
+      "failedRequests": [
+        {
+          "url": "https://prod-kuryos.web.app/dashboard.html",
+          "failure": "net::ERR_ABORTED"
+        }
+      ]
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-ref-pcp-dashboard.png"
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/dashboard",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 1731,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-dashboard.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/planejamento",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 774,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-planejamento.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/planejamento?tab=agenda",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 660,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-planejamento-tab-agenda.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/planejamento?tab=config",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 943,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-planejamento-tab-config.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/horizonte",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 808,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-horizonte.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/controle-ops",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 775,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-controle-ops.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/produtos",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 4809,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-produtos.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/insumos",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 2434,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-insumos.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/apontamento",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 1129,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [
+        "Apontamento Total"
+      ],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-pcp-apontamento.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/orders",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 2077,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-orders.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/orders/gerador",
+    "viewport": "desktop",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 1844,
+      "widthOverflow": 0,
+      "fixedSidebars": [
+        {
+          "tag": "ASIDE",
+          "width": 320,
+          "text": "Resumo\nConferencia antes de revisar.\n\nCliente\n\nNao informado\n\nItens\n\n0\n\nInsumos\n"
+        }
+      ],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\desktop-local-orders-gerador.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/dashboard",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 1354,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-dashboard.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/planejamento",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 397,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-planejamento.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/planejamento?tab=agenda",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 283,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-planejamento-tab-agenda.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/planejamento?tab=config",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 566,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": false
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-planejamento-tab-config.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/horizonte",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 431,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-horizonte.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/controle-ops",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 398,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-controle-ops.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/produtos",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 4432,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-produtos.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/insumos",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 2057,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-insumos.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/pcp/apontamento",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 752,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-pcp-apontamento.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/orders",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 1826,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-orders.png",
+    "failures": []
+  },
+  {
+    "kind": "local",
+    "route": "/orders/gerador",
+    "viewport": "mobile",
+    "metrics": {
+      "title": "Kuryos ERP",
+      "bodyChars": 1593,
+      "widthOverflow": 0,
+      "fixedSidebars": [],
+      "visibleDialogs": 0,
+      "clippedText": [],
+      "hasKuryos": true,
+      "hasPcp": true,
+      "hasGerador": true
+    },
+    "events": {
+      "console": [
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        },
+        {
+          "type": "error",
+          "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+        }
+      ],
+      "pageErrors": [],
+      "failedResponses": [
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        },
+        {
+          "status": 401,
+          "url": "http://localhost:8001/api/auth/me"
+        }
+      ],
+      "failedRequests": []
+    },
+    "screenshot": "C:\\Users\\MARLOS\\Documents\\KURYOSANTESSUPABASE\\.codex\\e2e\\mobile-local-orders-gerador.png",
+    "failures": []
+  }
+]

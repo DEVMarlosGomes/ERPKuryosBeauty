@@ -520,3 +520,41 @@ def test_sync_linked_variacao_from_pd_approval_generates_fasttrack_sku(monkeypat
         "variacao_id": "var-1",
         "fasttrack": True,
     }
+
+
+def test_sync_linked_variacao_from_pd_rejection_pushes_rework_notes():
+    fake_db = SimpleNamespace(
+        crm_samples=TrackingCollection(
+            [
+                {
+                    "id": "sample-1",
+                    "tenant_id": "tenant-1",
+                    "variacoes": [
+                        {
+                            "id": "var-1",
+                            "status": "enviada",
+                        }
+                    ],
+                }
+            ]
+        ),
+        pd_updates=TrackingCollection(),
+    )
+    pd_routes.db = fake_db
+    pd_routes.new_id_func = lambda: "update-rework-1"
+    pd_routes.now_iso_func = lambda: "2026-07-17T21:30:00+00:00"
+
+    asyncio.run(
+        pd_routes._sync_linked_variacao_from_pd_approval(
+            {"id": "req-1", "linked_amostra_id": "sample-1", "linked_variacao_id": "var-1"},
+            {"id": "user-1", "name": "Comercial", "tenant_id": "tenant-1", "role": "vendedor"},
+            "REJECTED",
+            "Trocar fragrancia para uma opcao menos doce e manter base.",
+        )
+    )
+
+    sample_set = fake_db.crm_samples.update_calls[-1][1]["$set"]
+    assert sample_set["variacoes.$.status"] == "retrabalho"
+    assert sample_set["variacoes.$.retrabalho_anotacoes"] == "Trocar fragrancia para uma opcao menos doce e manter base."
+    assert fake_db.pd_updates.insert_calls[-1]["tipo"] == "retrabalho"
+    assert "menos doce" in fake_db.pd_updates.insert_calls[-1]["mensagem"]

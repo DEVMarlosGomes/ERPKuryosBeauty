@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ClipboardList, Search, Loader2, FileText, ArrowRight, Building2, Calendar, DollarSign, Bell, Plus } from "lucide-react";
-import DirectOrderModal from "@/components/DirectOrderModal";
+import { ClipboardList, Search, Loader2, FileText, ArrowRight, Building2, Calendar, DollarSign, Bell, Plus, Paperclip, Download } from "lucide-react";
 
 const STATUS_CONFIG = {
   rascunho: { label: "Rascunho", color: "bg-slate-500/10 text-slate-600 border-slate-300 dark:text-slate-300" },
@@ -53,7 +52,7 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [followupFilter, setFollowupFilter] = useState("all");
-  const [showDirectOrder, setShowDirectOrder] = useState(false);
+  const [generatedStatus, setGeneratedStatus] = useState(null);
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
@@ -61,8 +60,12 @@ export default function OrdersPage() {
       const params = {};
       if (statusFilter !== "all") params.status = statusFilter;
       if (search.trim()) params.q = search.trim();
-      const res = await api.get("/orders", { params });
+      const [res, generatorRes] = await Promise.all([
+        api.get("/orders", { params }),
+        api.get("/orders/generated/status").catch(() => ({ data: null })),
+      ]);
       setOrders(res.data || []);
+      setGeneratedStatus(generatorRes.data);
     } catch (err) {
       toast.error("Erro ao carregar pedidos");
     } finally {
@@ -95,16 +98,12 @@ export default function OrdersPage() {
               Pedidos comerciais gerados a partir de projetos P&D aprovados
             </p>
           </div>
-          <Button onClick={() => setShowDirectOrder(true)} className="gap-1.5" data-testid="new-direct-order-btn">
-            <Plus className="h-4 w-4" /> Novo Pedido Direto
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => navigate("/orders/gerador")} className="gap-1.5">
+              <FileText className="h-4 w-4" /> Gerador de Pedidos
+            </Button>
+          </div>
         </div>
-
-        <DirectOrderModal
-          open={showDirectOrder}
-          onOpenChange={setShowDirectOrder}
-          onCreated={(order) => { fetchOrders(); navigate(`/orders/${order.id}`); }}
-        />
 
         {/* Mini stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -114,6 +113,30 @@ export default function OrdersPage() {
           <StatCard label="Em Produção" value={counts.em_producao} color="text-amber-600" />
           <StatCard label="Valor Total" value={formatCurrencyBR(counts.valor_total)} color="text-green-600" icon={DollarSign} isText />
         </div>
+
+        {generatedStatus?.total > 0 && (
+          <Card className="border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20">
+            <CardContent className="p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-sm font-semibold flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-blue-600" /> Status dos pedidos do Gerador
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Visao minima integrada nesta tela, sem duplicar cadastro/listagem de pedidos.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <GeneratorPill label="Gerados" value={generatedStatus.total} />
+                  <GeneratorPill label="Com anexo" value={generatedStatus.com_anexo} />
+                  <GeneratorPill label="PDF gerado" value={generatedStatus.pdf_gerado} />
+                  <GeneratorPill label="Aguard. cliente" value={generatedStatus.aguardando_cliente} />
+                  <GeneratorPill label="Com OP" value={generatedStatus.com_op} />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filters */}
         <div className="flex gap-2 items-center flex-wrap">
@@ -207,6 +230,24 @@ export default function OrdersPage() {
                               Pedido Direto
                             </Badge>
                           )}
+                          {(order.origem === "gerador" || order.gerador_origem) && (
+                            <Badge variant="outline" className="text-[10px] gap-1 border-blue-300 text-blue-700">
+                              <FileText className="h-2.5 w-2.5" />
+                              Gerador
+                            </Badge>
+                          )}
+                          {(order.attachments || []).length > 0 && (
+                            <Badge variant="outline" className="text-[10px] gap-1 border-emerald-300 text-emerald-700">
+                              <Paperclip className="h-2.5 w-2.5" />
+                              Anexo
+                            </Badge>
+                          )}
+                          {order.pdf?.generated_at && (
+                            <Badge variant="outline" className="text-[10px] gap-1 border-green-300 text-green-700">
+                              <Download className="h-2.5 w-2.5" />
+                              PDF
+                            </Badge>
+                          )}
                           {order.reproducao_de && (
                             <Badge variant="outline" className="text-[10px] gap-1 border-violet-300 text-violet-700">
                               Reprodução
@@ -266,5 +307,14 @@ function StatCard({ label, value, icon: Icon, color, isText }) {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function GeneratorPill({ label, value }) {
+  return (
+    <div className="rounded-md border bg-background/80 px-3 py-2">
+      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className="text-base font-bold">{value ?? 0}</div>
+    </div>
   );
 }

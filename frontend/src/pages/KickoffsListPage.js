@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { formatApiError } from "@/lib/formatError";
@@ -39,7 +39,7 @@ export default function KickoffsListPage() {
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
 
-  const loadKickoffs = async () => {
+  const loadKickoffs = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -52,11 +52,11 @@ export default function KickoffsListPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [status]);
 
   useEffect(() => {
     loadKickoffs();
-  }, [status]);
+  }, [loadKickoffs]);
 
   const filteredKickoffs = useMemo(() => {
     const term = search.trim().toLowerCase();

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "@/lib/api";
 import { formatApiError } from "@/lib/formatError";
@@ -142,7 +142,7 @@ export default function KickoffPage() {
   const [activeTab, setActiveTab] = useState("bloco1");
   const [projSamples, setProjSamples] = useState([]);
 
-  const loadKickoff = async () => {
+  const loadKickoff = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get(`/kickoff/${id}`);
@@ -161,11 +161,11 @@ export default function KickoffPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
 
   useEffect(() => {
     loadKickoff();
-  }, [id]);
+  }, [loadKickoff]);
 
   const currentApproval = kickoff?.aprovacao_pendente || null;
   const canApproveCurrent = useMemo(() => {

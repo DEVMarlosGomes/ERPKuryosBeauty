@@ -36,6 +36,13 @@ function formatDT(iso) {
 
 function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
 
+function apiErrorMessage(e, fallback = "Erro") {
+  const detail = e.response?.data?.detail;
+  if (typeof detail === "string") return detail;
+  if (detail?.message) return detail.message;
+  return fallback;
+}
+
 export default function OPDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -56,6 +63,10 @@ export default function OPDetail() {
   // Perda
   const [showPerda, setShowPerda] = useState(false);
   const [perdaForm, setPerdaForm] = useState({ item_idx: 0, tipo: "processo", quantidade: "", unidade: "un", motivo: "" });
+
+  // Retrabalho para P&D
+  const [showRework, setShowRework] = useState(false);
+  const [reworkForm, setReworkForm] = useState({ motivo: "", anotacoes: "", prioridade: "normal" });
 
   const fetchOp = useCallback(async () => {
     try {
@@ -95,7 +106,7 @@ export default function OPDetail() {
       const res = await api.put(`/ops/${id}`, { status: newStatus });
       setOp(res.data); setForm(deepClone(res.data));
       toast.success("Status atualizado");
-    } catch (e) { toast.error(e.response?.data?.detail || "Erro"); }
+    } catch (e) { toast.error(apiErrorMessage(e)); }
   };
 
   const updateItem = (idx, key, value) => {
@@ -121,7 +132,7 @@ export default function OPDetail() {
       });
       setOp(res.data); setForm(deepClone(res.data)); setShowApontar(false);
       toast.success("Apontamento registrado");
-    } catch (e) { toast.error(e.response?.data?.detail || "Erro"); }
+    } catch (e) { toast.error(apiErrorMessage(e)); }
     finally { setSaving(false); }
   };
 
@@ -133,7 +144,7 @@ export default function OPDetail() {
       const res = await api.post(`/ops/${id}/pausar`, pausaForm);
       setOp(res.data); setForm(deepClone(res.data)); setShowPausar(false);
       toast.success("Produção pausada");
-    } catch (e) { toast.error(e.response?.data?.detail || "Erro"); }
+    } catch (e) { toast.error(apiErrorMessage(e)); }
     finally { setSaving(false); }
   };
 
@@ -143,7 +154,7 @@ export default function OPDetail() {
       const res = await api.post(`/ops/${id}/retomar`);
       setOp(res.data); setForm(deepClone(res.data));
       toast.success("Produção retomada");
-    } catch (e) { toast.error(e.response?.data?.detail || "Erro"); }
+    } catch (e) { toast.error(apiErrorMessage(e)); }
     finally { setSaving(false); }
   };
 
@@ -163,8 +174,27 @@ export default function OPDetail() {
       });
       setOp(res.data); setForm(deepClone(res.data)); setShowPerda(false);
       toast.success("Perda registrada");
-    } catch (e) { toast.error(e.response?.data?.detail || "Erro"); }
+    } catch (e) { toast.error(apiErrorMessage(e)); }
     finally { setSaving(false); }
+  };
+
+  const handleSendRework = async () => {
+    if (reworkForm.motivo.trim().length < 5) {
+      toast.error("Informe o motivo do retrabalho");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.post(`/ops/${id}/rework`, reworkForm);
+      setShowRework(false);
+      setReworkForm({ motivo: "", anotacoes: "", prioridade: "normal" });
+      await fetchOp();
+      toast.success("Retrabalho enviado ao P&D");
+    } catch (e) {
+      toast.error(apiErrorMessage(e, "Erro ao enviar retrabalho"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading || !form) {
@@ -181,6 +211,9 @@ export default function OPDetail() {
   const totalPerdas = (op.perdas || []).reduce((s, p) => s + (Number(p.quantidade) || 0), 0);
   const progressPct = totalPlanejado > 0 ? Math.min((totalProduzido / totalPlanejado) * 100, 100) : 0;
   const ativo = ["aberta", "em_processo", "pausada"].includes(form.status);
+  const tecnico = form.tecnico || {};
+  const bloqueiosTecnicos = tecnico.bloqueios || [];
+  const alertasTecnicos = tecnico.alertas || [];
 
   return (
     <div className="h-full overflow-auto">
@@ -234,6 +267,11 @@ export default function OPDetail() {
                   <CheckCircle2 className="h-3.5 w-3.5 mr-1" />Concluir
                 </Button>
               </>
+            )}
+            {!editing && (tecnico.revisao_obrigatoria || bloqueiosTecnicos.length > 0) && (
+              <Button size="sm" variant="outline" onClick={() => setShowRework(true)}>
+                <AlertTriangle className="h-3.5 w-3.5 mr-1" />Retrabalho P&D
+              </Button>
             )}
             {form.status === "pausada" && !editing && (
               <Button size="sm" onClick={handleRetomar} disabled={saving}>
@@ -292,6 +330,76 @@ export default function OPDetail() {
             ))}
           </CardContent>
         </Card>
+
+        {(tecnico.revisao_obrigatoria || bloqueiosTecnicos.length > 0 || alertasTecnicos.length > 0) && (
+          <Card className={bloqueiosTecnicos.length ? "border-red-200 dark:border-red-900/40" : "border-amber-200 dark:border-amber-900/40"}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <AlertTriangle className={`h-4 w-4 ${bloqueiosTecnicos.length ? "text-red-500" : "text-amber-500"}`} />
+                Ficha tecnica operacional
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge className={tecnico.apto_operacao ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+                  {tecnico.apto_operacao ? "Apta para operacao" : "Bloqueada"}
+                </Badge>
+                <span className="text-xs text-muted-foreground">Snapshot: {formatDT(tecnico.snapshot_at)}</span>
+              </div>
+              {bloqueiosTecnicos.length > 0 && (
+                <div className="rounded-md bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-3">
+                  <p className="text-xs font-semibold text-red-700 dark:text-red-300 mb-1">Bloqueios</p>
+                  <ul className="text-xs text-red-700 dark:text-red-300 space-y-1 list-disc pl-4">
+                    {bloqueiosTecnicos.map((b, i) => <li key={i}>{b}</li>)}
+                  </ul>
+                </div>
+              )}
+              {alertasTecnicos.length > 0 && (
+                <div className="rounded-md bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 p-3">
+                  <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">Alertas</p>
+                  <ul className="text-xs text-amber-700 dark:text-amber-300 space-y-1 list-disc pl-4">
+                    {alertasTecnicos.map((a, i) => <li key={i}>{a}</li>)}
+                  </ul>
+                </div>
+              )}
+              {(tecnico.items || []).map((review, idx) => (
+                <div key={idx} className="border rounded-md overflow-hidden">
+                  <div className="flex items-center justify-between gap-2 px-3 py-2 bg-muted/30">
+                    <div>
+                      <p className="text-xs font-semibold">{review.codigo_kuryos || review.item || `Item ${idx + 1}`}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Formula v{review.formula_versao || "?"} · total {Number(review.total_percentual || 0).toLocaleString("pt-BR")}%
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px]">{review.formula_status || "sem status"}</Badge>
+                  </div>
+                  {(review.itens_formula || []).length > 0 && (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="border-t bg-muted/20">
+                            <th className="text-left p-2">Fase</th>
+                            <th className="text-left p-2">Ingrediente</th>
+                            <th className="text-right p-2">%</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(review.itens_formula || []).slice(0, 12).map((it, i) => (
+                            <tr key={i} className="border-t">
+                              <td className="p-2 font-mono">{it.phase || "-"}</td>
+                              <td className="p-2">{it.ingredient_name || "-"}</td>
+                              <td className="p-2 text-right font-mono">{Number(it.percentage || 0).toLocaleString("pt-BR")}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Items */}
         <Card>
@@ -438,6 +546,49 @@ export default function OPDetail() {
       </div>
 
       {/* ── Apontar dialog ─────────────────────────────────────────────── */}
+      <Dialog open={showRework} onOpenChange={setShowRework}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />Retrabalho para P&D
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>Prioridade</Label>
+              <Select value={reworkForm.prioridade}
+                onValueChange={v => setReworkForm(f => ({ ...f, prioridade: v }))}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="alta">Alta</SelectItem>
+                  <SelectItem value="critica">Critica</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Motivo *</Label>
+              <Input value={reworkForm.motivo}
+                onChange={e => setReworkForm(f => ({ ...f, motivo: e.target.value }))}
+                placeholder="Ex: ajuste de odor, cor, estabilidade ou processo" className="mt-1" autoFocus />
+            </div>
+            <div>
+              <Label>Anotacoes adicionais</Label>
+              <Textarea value={reworkForm.anotacoes}
+                onChange={e => setReworkForm(f => ({ ...f, anotacoes: e.target.value }))}
+                rows={4} className="mt-1" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowRework(false)} disabled={saving}>Cancelar</Button>
+            <Button onClick={handleSendRework} disabled={saving}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <AlertTriangle className="h-4 w-4 mr-1" />}
+              Enviar ao P&D
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={showApontar} onOpenChange={setShowApontar}>
         <DialogContent className="max-w-sm">
           <DialogHeader><DialogTitle>Apontar Produção</DialogTitle></DialogHeader>

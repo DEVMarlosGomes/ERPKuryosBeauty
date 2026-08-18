@@ -8,7 +8,11 @@ function normalizeUrl(url) {
 function getStoredBackendUrl() {
     if (typeof window === "undefined") return "";
     try {
-        return normalizeUrl(window.localStorage.getItem(STORAGE_KEY));
+        const stored = normalizeUrl(window.localStorage.getItem(STORAGE_KEY));
+        const { origin, port } = window.location;
+        const isFrontendDev = /^3\d{3}$/.test(port || "");
+        if (isFrontendDev && stored === normalizeUrl(origin)) return "";
+        return stored;
     } catch {
         return "";
     }
@@ -34,10 +38,10 @@ function getLocalDevBackendUrls() {
             ? ["127.0.0.1", "localhost"]
             : [hostname];
 
-    if (port === "3000") {
+    if (/^3\d{3}$/.test(port || "")) {
         return hosts.flatMap((host) => [
-            `${protocol}//${host}:8000`,
             `${protocol}//${host}:8001`,
+            `${protocol}//${host}:8000`,
         ]);
     }
 
