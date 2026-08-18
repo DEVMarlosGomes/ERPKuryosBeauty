@@ -80,6 +80,6 @@ def can_view_live_document_revisions(user: dict) -> bool:
 
 
 def can_view_commercial_costs(user: dict) -> bool:
-    """Only compras and admin see the full commercial cost breakdown (v2).
+    """Commercial and compras roles see the full commercial cost breakdown (v2).
     P&D roles see only the final total, never the line-item detail."""
-    return has_role(user, COMPRAS_FULL)
+    return has_role(user, COMPRAS_FULL | COMERCIAL_FULL)

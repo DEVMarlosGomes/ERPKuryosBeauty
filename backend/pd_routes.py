@@ -421,7 +421,7 @@ class PDCostV1Upsert(BaseModel):
     notes: str = ""
 
 class ComprasCostUpsert(BaseModel):
-    """Compras fills in the commercial cost breakdown (v2)."""
+    """Commercial/cost team fills in the commercial cost breakdown (v2)."""
     packaging_cost: float = 0.0
     labor_cost: float = 0.0
     overhead_cost: float = 0.0
@@ -3019,7 +3019,7 @@ async def get_costs(dev_id: str, request: Request):
     return cost
 
 
-# ============ COST VERSIONS (versioned system: P&D v1 → Compras v2) ============
+# ============ COST VERSIONS (versioned system: P&D v1 -> Comercial v2) ============
 
 def _default_cost_versions_doc(dev_id: str, tenant_id: str) -> dict:
     return {
@@ -3043,7 +3043,7 @@ def _default_cost_versions_doc(dev_id: str, tenant_id: str) -> dict:
 def _build_cost_versions_response(doc: dict, user: dict, formula_cost_auto: float = 0.0) -> dict:
     """Return a role-filtered view of the cost versions document.
 
-    compras / admin  → full breakdown of both v1 and v2.
+    comercial / compras / admin -> full breakdown of both v1 and v2.
     P&D roles        → full v1 (they own it), but from v2 only status + total_final.
     """
     if not doc:
@@ -3076,7 +3076,7 @@ def _build_cost_versions_response(doc: dict, user: dict, formula_cost_auto: floa
             "updated_at": doc.get("updated_at"),
             "pd_cost_blank": v1_blank,
             "pd_cost_analysis_required": v1_blank,
-            "_role_view": "compras",
+            "_role_view": "comercial",
         }
 
     # P&D view: full v1, but v2 is redacted to just status + total
@@ -3133,7 +3133,7 @@ async def upsert_cost_v1(dev_id: str, data: PDCostV1Upsert, request: Request):
 
     existing = await db.pd_cost_versions.find_one({"development_id": dev_id}, {"_id": 0})
     if existing and (existing.get("v1") or {}).get("status") == "enviado":
-        raise HTTPException(status_code=409, detail="Custo v1 já enviado para Compras. Não é possível editar.")
+        raise HTTPException(status_code=409, detail="Custo v1 já enviado para análise comercial. Não é possível editar.")
 
     # Derive ingredient_cost_auto from latest formula
     formula_cost_auto = 0.0
@@ -3178,7 +3178,7 @@ async def upsert_cost_v1(dev_id: str, data: PDCostV1Upsert, request: Request):
 
 @pd_router.post("/developments/{dev_id}/cost-versions/v1/submit")
 async def submit_cost_v1(dev_id: str, request: Request):
-    """P&D freezes v1 and sends it to Compras for commercial cost addition."""
+    """P&D freezes v1 and sends it to Comercial for cost approval."""
     user = await get_current_user(request)
     dev = await db.pd_developments.find_one({"id": dev_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not dev:
@@ -3189,7 +3189,7 @@ async def submit_cost_v1(dev_id: str, request: Request):
     if not existing:
         raise HTTPException(status_code=400, detail="Salve um rascunho de custo antes de enviar.")
     if (existing.get("v1") or {}).get("status") == "enviado":
-        raise HTTPException(status_code=409, detail="Custo v1 já foi enviado para Compras.")
+        raise HTTPException(status_code=409, detail="Custo v1 já foi enviado para análise comercial.")
 
     patch = {
         "v1.status": "enviado",
@@ -3208,12 +3208,12 @@ async def submit_cost_v1(dev_id: str, request: Request):
 
 @pd_router.put("/developments/{dev_id}/cost-versions/v2")
 async def upsert_cost_v2(dev_id: str, data: ComprasCostUpsert, request: Request):
-    """Compras fills in the commercial cost breakdown (v2). Requires v1 to be submitted."""
+    """Commercial/cost team fills in the commercial cost breakdown (v2). Requires v1 to be submitted."""
     user = await get_current_user(request)
     dev = await db.pd_developments.find_one({"id": dev_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not dev:
         raise HTTPException(status_code=404, detail="Desenvolvimento não encontrado")
-    require_roles(user, COMPRAS_FULL)
+    require_roles(user, COMPRAS_FULL | COMERCIAL_FULL)
 
     existing = await db.pd_cost_versions.find_one({"development_id": dev_id}, {"_id": 0})
     if not existing or (existing.get("v1") or {}).get("status") != "enviado":
@@ -3254,12 +3254,12 @@ async def upsert_cost_v2(dev_id: str, data: ComprasCostUpsert, request: Request)
 
 @pd_router.post("/developments/{dev_id}/cost-versions/v2/finalize")
 async def finalize_cost_v2(dev_id: str, request: Request):
-    """Compras finalizes the commercial cost. After this, costs are locked."""
+    """Comercial finalizes/approves v2. After this, costs are locked and visible to P&D."""
     user = await get_current_user(request)
     dev = await db.pd_developments.find_one({"id": dev_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not dev:
         raise HTTPException(status_code=404, detail="Desenvolvimento não encontrado")
-    require_roles(user, COMPRAS_FULL)
+    require_roles(user, COMERCIAL_FULL)
 
     existing = await db.pd_cost_versions.find_one({"development_id": dev_id}, {"_id": 0})
     if not existing or not existing.get("v2"):
@@ -3271,6 +3271,8 @@ async def finalize_cost_v2(dev_id: str, request: Request):
         "v2.status": "finalizado",
         "v2.finalized_at": now_iso(),
         "v2.finalized_by_name": user.get("name", ""),
+        "v2.finalized_by_role": user.get("role", ""),
+        "v2.approved_by_commercial": True,
         "updated_at": now_iso(),
     }
     await db.pd_cost_versions.update_one({"development_id": dev_id}, {"$set": patch})
@@ -3279,7 +3281,7 @@ async def finalize_cost_v2(dev_id: str, request: Request):
     await audit_log(tenant_id=user["tenant_id"], user_id=user["id"], user_name=user.get("name", ""),
                     action="cost_v2_finalized", entity_type="pd_cost_versions", entity_id=dev_id,
                     before={"v2_status": "rascunho"},
-                    after={"v2_status": "finalizado", "total_final": doc.get("total_final", 0)})
+                    after={"v2_status": "finalizado", "approved_by_commercial": True, "total_final": doc.get("total_final", 0)})
     return _build_cost_versions_response(doc, user)
 
 # ============ COSTS AUTO-CALCULATE FROM FORMULA ============
@@ -4129,7 +4131,7 @@ async def run_stability_scheduler_now(request: Request):
 async def get_pd_full_detail(req_id: str, request: Request):
     """Get complete P&D request with all related data"""
     user = await get_current_user(request)
-    require_roles(user, PD_READ)
+    require_roles(user, PD_READ | COMERCIAL_FULL)
     pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not pd_req:
         raise HTTPException(status_code=404, detail="Solicitação não encontrada")

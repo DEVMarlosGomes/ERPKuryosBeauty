@@ -132,7 +132,7 @@ function AppLayout() {
                         <Route path="/pd/catalog" element={<RoleGuard allowed={PD_FULL}><PDCatalog /></RoleGuard>} />
                         <Route path="/pd/estoque" element={<RoleGuard allowed={PD_FULL}><PDStock /></RoleGuard>} />
                         <Route path="/pd/relatorios" element={<RoleGuard allowed={PD_READ}><PDReports /></RoleGuard>} />
-                        <Route path="/pd/:id" element={<RoleGuard allowed={PD_READ}><PDDetail /></RoleGuard>} />
+                        <Route path="/pd/:id" element={<RoleGuard allowed={[...PD_READ, ...COMERCIAL]}><PDDetail /></RoleGuard>} />
                         <Route path="/tasks" element={<TasksPage />} />
                         <Route path="/orders" element={<OrdersPage />} />
                         <Route path="/orders/gerador" element={<OrderGeneratorPage />} />

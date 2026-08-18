@@ -588,6 +588,7 @@ export default function PDDetail() {
   const pendingCount = (pending || []).filter(p => p.status === "pendente").length;
   const isInternalResearch = !!req.is_internal_research;
   const canViewCommercial = authUser && ["admin", "compras", "vendedor", "sales_ops", "sucesso_cliente"].includes(authUser.role);
+  const canFinalizeCommercialCost = authUser && ["admin", "vendedor", "sales_ops", "sucesso_cliente"].includes(authUser.role);
   const canLinkToCRM = authUser && ["admin", "lider_pd", "formulador", "engenharia_produto", "vendedor", "sales_ops"].includes(authUser.role);
 
   const linkToCRM = async () => {
@@ -933,7 +934,7 @@ export default function PDDetail() {
             <TabsContent value="comercial">
               <ErrorBoundary label="Comercial" resetKey={req.id}>
                 {hasDev ? (
-                  <ComercialTab devId={dev.id} costVersions={cost_versions} formulaCostData={formula_cost_data} onRefresh={fetchData} />
+                  <ComercialTab devId={dev.id} costVersions={cost_versions} formulaCostData={formula_cost_data} onRefresh={fetchData} canFinalize={canFinalizeCommercialCost} />
                 ) : (
                   <NeedsDev onAction={() => handleStatusChange("IN_PROGRESS")} status={req.status} canEdit={canEdit} />
                 )}
@@ -2928,7 +2929,7 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
 
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
           <Label className="text-xs font-medium">Nome do Lote <span className="text-red-500">*</span></Label>
           <Input value={form.nome} onChange={e => setForm(f => ({ ...f, nome: e.target.value }))} placeholder="Ex: Lote Fragrâncias Jun/2026" />
@@ -3059,19 +3060,19 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
 
         {form.variantes.map((v, vIdx) => (
           <div key={v.id} className="border rounded-lg p-3 space-y-3 bg-muted/30">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <div className="flex items-center justify-center h-6 w-6 rounded-full bg-violet-100 text-violet-700 text-xs font-bold flex-shrink-0">{vIdx + 1}</div>
               <Input
                 value={v.nome}
                 onChange={e => setVariante(vIdx, { nome: e.target.value })}
                 placeholder={`Nome da variante ${vIdx + 1} (ex: Rosa, Floral, sem frag.)`}
-                className="h-8 text-sm flex-1"
+                className="h-8 min-w-0 text-sm sm:flex-1"
               />
               <Input
                 type="number"
                 value={v.versao}
                 onChange={e => setVariante(vIdx, { versao: parseInt(e.target.value) || 1 })}
-                className="h-8 w-20 text-sm"
+                className="h-8 w-full text-sm sm:w-20"
                 placeholder="v"
                 min={1}
               />
@@ -3096,21 +3097,21 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
                 const filteredFornecedores = getFornecedoresForIngredient(o.ingredient_name);
                 return (
                   <div key={oIdx} className="border border-border rounded-md p-2 space-y-1.5 bg-background">
-                    <div className="flex items-center gap-1.5">
+                    <div className="grid grid-cols-1 items-center gap-1.5 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto]">
                       <Select value={o.ingredient_name_base} onValueChange={val => updateOverride(vIdx, oIdx, "ingredient_name_base", val)}>
-                        <SelectTrigger className="h-7 text-xs flex-1"><SelectValue placeholder="Substituir..." /></SelectTrigger>
+                        <SelectTrigger className="h-8 min-w-0 text-xs"><SelectValue placeholder="Substituir..." /></SelectTrigger>
                         <SelectContent>
                           {baseItems.map(it => <SelectItem key={it.id} value={it.ingredient_name}>{it.ingredient_name}</SelectItem>)}
                         </SelectContent>
                       </Select>
-                      <ChevronRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                      <ChevronRight className="hidden h-3 w-3 text-muted-foreground sm:block" />
                       {ingredientOptions.length > 0 ? (
                         <Select value={o.ingredient_name} onValueChange={val => {
                           const v2 = [...form.variantes];
                           v2[vIdx] = { ...v2[vIdx], overrides: v2[vIdx].overrides.map((ov, i) => i === oIdx ? { ...ov, ingredient_name: val, fornecedor: "" } : ov) };
                           setForm(f => ({ ...f, variantes: v2 }));
                         }}>
-                          <SelectTrigger className="h-7 text-xs flex-1"><SelectValue placeholder="MP substituta..." /></SelectTrigger>
+                          <SelectTrigger className="h-8 min-w-0 text-xs"><SelectValue placeholder="MP substituta..." /></SelectTrigger>
                           <SelectContent>
                             {ingredientOptions.map(it => (
                               <SelectItem key={it.option_key} value={it.nome}>
@@ -3120,15 +3121,15 @@ function SampleBatchEditor({ devId, formulas, initial, onSave, onClose }) {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Input value={o.ingredient_name} onChange={e => updateOverride(vIdx, oIdx, "ingredient_name", e.target.value)} placeholder="Novo ingrediente" className="h-7 text-xs flex-1" />
+                        <Input value={o.ingredient_name} onChange={e => updateOverride(vIdx, oIdx, "ingredient_name", e.target.value)} placeholder="Novo ingrediente" className="h-8 min-w-0 text-xs" />
                       )}
                       <button onClick={() => removeOverride(vIdx, oIdx)} className="text-muted-foreground hover:text-red-500 transition-colors flex-shrink-0">
                         <X className="h-3 w-3" />
                       </button>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_88px] items-center gap-1.5">
                       <Select value={o.fornecedor} onValueChange={val => updateOverride(vIdx, oIdx, "fornecedor", val)}>
-                        <SelectTrigger className="h-7 text-xs flex-1"><SelectValue placeholder="Fornecedor..." /></SelectTrigger>
+                        <SelectTrigger className="h-8 min-w-0 text-xs"><SelectValue placeholder="Fornecedor..." /></SelectTrigger>
                         <SelectContent>
                           {filteredFornecedores.map(f => (
                             <SelectItem key={`${f.id}-${f.razao_social}`} value={f.razao_social}>
@@ -4995,11 +4996,12 @@ function ManipulacaoOrder({ formulaId, sampleVolume }) {
   );
 }
 
-/* ============ COSTS TAB — P&D view (ingredient costs + submit to Compras) ============ */
+/* ============ COSTS TAB — P&D view (ingredient costs + submit to Comercial) ============ */
 function CostsTab({ devId, costVersions, formulas, formulaCostData, onRefresh, canEdit, canViewCommercial }) {
   const v1 = costVersions?.v1 || {};
   const v2summary = costVersions?.v2 || null;
   const totalFinal = costVersions?.total_final;
+  const pdCostBlank = Boolean(costVersions?.pd_cost_analysis_required);
   const v1Status = v1.status || "rascunho";
   const isSubmitted = v1Status === "enviado";
 
@@ -5032,7 +5034,7 @@ function CostsTab({ devId, costVersions, formulas, formulaCostData, onRefresh, c
     setSubmitting(true);
     try {
       await api.post(`/pd/developments/${devId}/cost-versions/v1/submit`);
-      toast.success("Custo v1 enviado para Compras.");
+      toast.success("Custo v1 enviado para análise comercial.");
       onRefresh();
     } catch (err) { toast.error(formatApiError(err) || "Erro ao enviar."); }
     finally { setSubmitting(false); }
@@ -5040,11 +5042,11 @@ function CostsTab({ devId, costVersions, formulas, formulaCostData, onRefresh, c
 
   const v1StatusConfig = {
     rascunho: { label: "Rascunho", icon: Clock4, cls: "bg-slate-500/10 text-slate-400 border-slate-500/20" },
-    enviado:  { label: "Enviado para Compras", icon: CheckCircle, cls: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+    enviado:  { label: "Enviado para Comercial", icon: CheckCircle, cls: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
   }[v1Status] || { label: v1Status, icon: AlertCircle, cls: "bg-amber-500/10 text-amber-600 border-amber-500/20" };
 
   const v2StatusConfig = !v2summary ? null : {
-    rascunho:   { label: "Compras em análise", icon: Clock4, cls: "bg-sky-500/10 text-sky-600 border-sky-500/20" },
+    rascunho:   { label: "Comercial em análise", icon: Clock4, cls: "bg-sky-500/10 text-sky-600 border-sky-500/20" },
     finalizado: { label: "Custo final disponível", icon: CheckCircle2, cls: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
   }[v2summary.status] || { label: v2summary.status, icon: AlertCircle, cls: "bg-slate-500/10 text-slate-400 border-slate-500/20" };
 
@@ -5072,6 +5074,18 @@ function CostsTab({ devId, costVersions, formulas, formulaCostData, onRefresh, c
           </Badge>
         )}
       </div>
+
+      {pdCostBlank && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <div>
+            <p className="font-semibold">Custo P&D em branco</p>
+            <p className="text-xs">
+              Revise a formula, os custos de materia-prima e qualquer ajuste manual antes de enviar para analise comercial.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Formula ingredient cost table (auto) */}
       {latestFormula && (
@@ -5182,7 +5196,7 @@ function CostsTab({ devId, costVersions, formulas, formulaCostData, onRefresh, c
               </Button>
               <Button onClick={submitV1} disabled={submitting} className="flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700">
                 <Send className="h-4 w-4" />
-                {submitting ? "Enviando..." : "Enviar para Compras"}
+                {submitting ? "Enviando..." : "Enviar para Comercial"}
               </Button>
             </div>
           )}
@@ -5342,8 +5356,8 @@ function FormulaCostVersionsPanel({ formula, canViewCommercial, canEdit }) {
   );
 }
 
-/* ============ COMERCIAL TAB — Compras view (full v1 + v2 inputs) ============ */
-function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
+/* ============ COMERCIAL TAB — Commercial view (full v1 + v2 inputs) ============ */
+function ComercialTab({ devId, costVersions, formulaCostData, onRefresh, canFinalize }) {
   const v1 = costVersions?.v1 || {};
   const v2 = costVersions?.v2 || {};
   const v1Status = v1.status || "rascunho";
@@ -5395,7 +5409,7 @@ function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
     setFinalizing(true);
     try {
       await api.post(`/pd/developments/${devId}/cost-versions/v2/finalize`);
-      toast.success("Custo comercial finalizado e comunicado ao P&D.");
+      toast.success("Custo aprovado pelo Comercial e comunicado ao P&D.");
       onRefresh();
     } catch (err) { toast.error(formatApiError(err) || "Erro ao finalizar."); }
     finally { setFinalizing(false); }
@@ -5437,7 +5451,7 @@ function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
         )}
       </div>
 
-      {/* V1 summary (read-only for Compras) */}
+      {/* V1 summary (read-only for Comercial) */}
       <Card className="border-green-200/50 dark:border-green-900/50">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2 text-muted-foreground">
@@ -5492,7 +5506,7 @@ function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <ShoppingCart className="h-4 w-4 text-sky-600" />
-            Custos Adicionais (Compras)
+            Custos Adicionais / Analise Comercial
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -5514,7 +5528,7 @@ function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
           </div>
 
           <div>
-            <Label className="text-xs text-muted-foreground mb-1 block">Observações do Compras</Label>
+            <Label className="text-xs text-muted-foreground mb-1 block">Observações da análise comercial</Label>
             <Input value={form.notes} disabled={isFinalized} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
               placeholder="Fornecedor, cotação, condições de pagamento, etc." />
           </div>
@@ -5556,11 +5570,17 @@ function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
                 <Save className="h-4 w-4" />
                 {saving ? "Salvando..." : "Salvar Rascunho"}
               </Button>
-              <Button onClick={finalizeV2} disabled={finalizing || !v2Status} className="flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={finalizeV2} disabled={finalizing || !v2Status || !canFinalize} className="flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700">
                 <CheckCircle2 className="h-4 w-4" />
-                {finalizing ? "Finalizando..." : "Finalizar Custo"}
+                {finalizing ? "Finalizando..." : "Aprovar e Finalizar Custo"}
               </Button>
             </div>
+          )}
+
+          {!canFinalize && !isFinalized && (
+            <p className="text-xs text-center text-muted-foreground">
+              Somente Comercial pode aprovar e finalizar o custo para liberar a atualizacao do P&D.
+            </p>
           )}
 
           {!v2Status && (
@@ -5570,7 +5590,7 @@ function ComercialTab({ devId, costVersions, formulaCostData, onRefresh }) {
           {isFinalized && (
             <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 dark:bg-emerald-950 dark:border-emerald-900 p-3 text-sm text-emerald-700 dark:text-emerald-300">
               <CheckCircle2 className="h-4 w-4 shrink-0" />
-              Custo finalizado e comunicado ao P&D. Custo total: <strong>R$ {totalFinal.toFixed(2)}</strong>
+              Custo aprovado pelo Comercial e comunicado ao P&D. Custo total: <strong>R$ {totalFinal.toFixed(2)}</strong>
             </div>
           )}
         </CardContent>
