@@ -6,12 +6,11 @@ Fluxo:
   3. Slot em_execucao → concluido   (atualiza OP para concluida)
   4. Qualquer ativo → cancelado
 """
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import logging
-import io
 import re
 from workflow_engine import next_lote_per_day, format_lote_numero
 
@@ -68,6 +67,37 @@ def _week_key(data_iso: str) -> str:
     d = datetime.fromisoformat(data_iso[:10])
     iso = d.isocalendar()
     return f"{iso[0]}-{str(iso[1]).zfill(2)}"
+
+
+def _parse_date_ymd(value: str, field_name: str) -> date:
+    try:
+        return datetime.fromisoformat(str(value or "")[:10]).date()
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"{field_name} deve estar no formato YYYY-MM-DD")
+
+
+def _iter_dates(start: date, end: date):
+    current = start
+    while current <= end:
+        yield current
+        current += timedelta(days=1)
+
+
+def _dia_key_from_date(value: date) -> str:
+    return DIAS_SEMANA[value.weekday()]
+
+
+def _calendar_config_from_apply(data: "CalendarioPeriodoApply") -> Dict[str, Any]:
+    return {
+        "habilitado": data.habilitado,
+        "hora_inicio": _as_hhmm(data.hora_inicio, "07:00"),
+        "hora_fim": _as_hhmm(data.hora_fim, "18:00"),
+        "pausa_almoco": data.pausa_almoco,
+        "almoco_inicio": _as_hhmm(data.almoco_inicio, "12:00"),
+        "almoco_fim": _as_hhmm(data.almoco_fim, "13:00"),
+        "horas_extras": max(int(data.horas_extras or 0), 0),
+        "turnos": [turno.model_dump() for turno in data.turnos],
+    }
 
 
 def _date_in_range(value: str, data_inicio: Optional[str], data_fim: Optional[str]) -> bool:
@@ -243,6 +273,13 @@ class LoteUpdate(BaseModel):
     status: Optional[str] = None
 
 
+class TurnoDiaConfig(BaseModel):
+    nome: str = "Padrao"
+    hora_inicio: str = "07:00"
+    hora_fim: str = "17:00"
+    capacidade_pct: float = 100.0
+
+
 class CalendarioDiaConfig(BaseModel):
     habilitado: bool = True
     hora_inicio: str = "07:00"
@@ -251,6 +288,7 @@ class CalendarioDiaConfig(BaseModel):
     almoco_inicio: str = "12:00"
     almoco_fim: str = "13:00"
     horas_extras: int = 0
+    turnos: List[TurnoDiaConfig] = Field(default_factory=list)
 
 
 class CalendarioCreate(BaseModel):
@@ -263,6 +301,22 @@ class CalendarioCreate(BaseModel):
     sex: Optional[CalendarioDiaConfig] = None
     sab: Optional[CalendarioDiaConfig] = None
     dom: Optional[CalendarioDiaConfig] = None
+
+
+class CalendarioPeriodoApply(BaseModel):
+    data_inicio: str
+    data_fim: str
+    linha_ids: List[str] = Field(default_factory=list)
+    dias: List[str] = Field(default_factory=list)
+    habilitado: bool = True
+    hora_inicio: str = "07:00"
+    hora_fim: str = "18:00"
+    pausa_almoco: bool = True
+    almoco_inicio: str = "12:00"
+    almoco_fim: str = "13:00"
+    horas_extras: int = 0
+    turnos: List[TurnoDiaConfig] = Field(default_factory=list)
+    observacoes: str = ""
 
 
 # ===== SEQUENCES =====
@@ -537,7 +591,8 @@ async def list_programacao(
 
 
 @pcp_router.post("/importar-programacao")
-async def importar_programacao(request: Request, file: UploadFile = File(...)):
+async def importar_programacao(request: Request):
+    raise HTTPException(status_code=410, detail="Importacao semanal removida. Use o calendario dinamico do PCP.")
     user = await get_current_user(request)
     filename = (file.filename or "").lower()
     if not filename.endswith((".xlsx", ".xlsm")):
@@ -1284,6 +1339,78 @@ async def create_calendario(data: CalendarioCreate, request: Request):
     cal.pop("_id", None)
     logger.info(f"Calendário {data.semana}/{data.linha_id} criado por {user['name']}")
     return cal
+
+
+@pcp_router.post("/calendario/aplicar-periodo")
+async def aplicar_calendario_periodo(data: CalendarioPeriodoApply, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    start = _parse_date_ymd(data.data_inicio, "data_inicio")
+    end = _parse_date_ymd(data.data_fim, "data_fim")
+    if end < start:
+        raise HTTPException(status_code=400, detail="data_fim deve ser maior ou igual a data_inicio")
+
+    dias_alvo = set(data.dias or DIAS_SEMANA)
+    invalid = dias_alvo - set(DIAS_SEMANA)
+    if invalid:
+        raise HTTPException(status_code=400, detail=f"Dias invalidos: {sorted(invalid)}")
+
+    if data.linha_ids:
+        linhas = await db.pcp_linhas.find(
+            {"tenant_id": tid, "id": {"$in": data.linha_ids}, "status": {"$ne": "inativa"}},
+            {"_id": 0},
+        ).to_list(200)
+        found = {linha["id"] for linha in linhas}
+        missing = set(data.linha_ids) - found
+        if missing:
+            raise HTTPException(status_code=404, detail=f"Linhas nao encontradas ou inativas: {sorted(missing)}")
+    else:
+        await _ensure_default_linhas(user)
+        linhas = await db.pcp_linhas.find({"tenant_id": tid, "status": {"$ne": "inativa"}}, {"_id": 0}).to_list(200)
+    if not linhas:
+        raise HTTPException(status_code=400, detail="Nenhuma linha ativa disponivel para aplicar calendario.")
+
+    config = _calendar_config_from_apply(data)
+    affected = []
+    now = _now()
+    for linha in linhas:
+        for current in _iter_dates(start, end):
+            dia_key = _dia_key_from_date(current)
+            if dia_key not in dias_alvo:
+                continue
+            semana = _week_key(current.isoformat())
+            existing = await db.pcp_calendario.find_one(
+                {"tenant_id": tid, "semana": semana, "linha_id": linha["id"]},
+                {"_id": 0},
+            )
+            if not existing:
+                await _ensure_calendar_for_line(user, linha["id"], current.isoformat())
+            await db.pcp_calendario.update_one(
+                {"tenant_id": tid, "semana": semana, "linha_id": linha["id"]},
+                {"$set": {
+                    dia_key: config,
+                    "updated_at": now,
+                    "updated_by": user["id"],
+                    "updated_by_name": user.get("name", ""),
+                    "ajuste_rapido_observacoes": data.observacoes,
+                }},
+            )
+            affected.append({
+                "semana": semana,
+                "linha_id": linha["id"],
+                "linha_nome": linha.get("nome", ""),
+                "data": current.isoformat(),
+                "dia": dia_key,
+            })
+
+    return {
+        "ok": True,
+        "periodo": {"data_inicio": start.isoformat(), "data_fim": end.isoformat()},
+        "linhas": len(linhas),
+        "dias_aplicados": len(affected),
+        "config": config,
+        "afetados": affected,
+    }
 
 
 @pcp_router.get("/calendario/{semana}/{linha_id}")

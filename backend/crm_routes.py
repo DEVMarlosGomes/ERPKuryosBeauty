@@ -110,8 +110,8 @@ PROJECT_TRANSITIONS = {
     "projeto_em_discussao": ["amostra_solicitada", "projeto_arquivado"],
     "amostra_solicitada": ["amostra_em_desenvolvimento", "projeto_arquivado"],
     "amostra_em_desenvolvimento": ["amostra_enviada", "projeto_arquivado"],
-    "amostra_enviada": ["em_negociacao", "projeto_arquivado"],
-    "em_negociacao": ["pedido_aprovado", "projeto_arquivado"],
+    "amostra_enviada": ["em_negociacao", "amostra_em_desenvolvimento", "projeto_arquivado"],
+    "em_negociacao": ["pedido_aprovado", "amostra_em_desenvolvimento", "projeto_arquivado"],
     "pedido_aprovado": [],
     "projeto_arquivado": [],
     # legado
@@ -986,6 +986,12 @@ async def _advance_project_stage_if_needed(
 
 
 def _pd_status_to_project_stage_sync(pd_status: str, now: str) -> Optional[tuple[str, str, dict]]:
+    if pd_status == "solicitado":
+        return (
+            "amostra_solicitada",
+            "pd_card_requested",
+            {},
+        )
     if pd_status == "em_desenvolvimento":
         return (
             "amostra_em_desenvolvimento",
@@ -997,6 +1003,12 @@ def _pd_status_to_project_stage_sync(pd_status: str, now: str) -> Optional[tuple
             "amostra_enviada",
             "pd_card_waiting_approval",
             {"data_ultima_amostra_enviada": now},
+        )
+    if pd_status == "retrabalho_interno":
+        return (
+            "amostra_em_desenvolvimento",
+            "pd_card_rework",
+            {"data_inicio_desenvolvimento": now},
         )
     return None
 

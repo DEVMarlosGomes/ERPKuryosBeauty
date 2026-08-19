@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +43,14 @@ const LOSS_TYPES = [
   ["outro", "Outro"],
 ];
 
+const SETOR_PROFILES = [
+  { key: "manipulacao", label: "Manipulacao", lineTypes: ["manipulacao"] },
+  { key: "envase", label: "Linha de Envase", lineTypes: ["envase", "geral"] },
+  { key: "rotulagem", label: "Rotulagem", lineTypes: ["rotulagem", "embalagem"] },
+  { key: "logistica", label: "Logistica", lineTypes: ["logistica", "embalagem"] },
+  { key: "laboratorio", label: "Laboratorio", lineTypes: ["laboratorio", "controle_qualidade"] },
+];
+
 function opItem(op) { return op?.items?.[0] || {}; }
 function planned(op) { return (op?.items || []).reduce((s, item) => s + Number(item.qtd_planejada || 0), 0); }
 function produced(op) { return (op?.items || []).reduce((s, item) => s + Number(item.qtd_produzida || 0), 0); }
@@ -73,6 +81,9 @@ function ActionButton({ children, icon: Icon, className = "", ...props }) {
 export default function PCPProductionPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const params = useParams();
+  const setorAtual = SETOR_PROFILES.some((s) => s.key === params.setor) ? params.setor : "envase";
+  const setorCfg = SETOR_PROFILES.find((s) => s.key === setorAtual) || SETOR_PROFILES[1];
   const [ops, setOps] = useState([]);
   const [linhas, setLinhas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +119,14 @@ export default function PCPProductionPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const activeOps = useMemo(() => ops.filter((op) => ["aberta", "em_processo", "pausada"].includes(op.status)), [ops]);
+  const lineTypeByName = useMemo(() => Object.fromEntries((linhas || []).map((linha) => [linha.nome, linha.tipo || "geral"])), [linhas]);
+  const activeOps = useMemo(() => ops.filter((op) => {
+    if (!["aberta", "em_processo", "pausada"].includes(op.status)) return false;
+    const explicit = op.setor_pcp || op.pcp_setor || op.setor;
+    if (explicit) return explicit === setorAtual;
+    const type = op.linha_tipo || lineTypeByName[op.linha_nome] || lineTypeByName[op.linha] || "geral";
+    return setorCfg.lineTypes.includes(type) || (setorAtual === "envase" && !explicit);
+  }), [ops, setorAtual, setorCfg.lineTypes, lineTypeByName]);
   const filteredOps = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return activeOps;
@@ -163,6 +181,7 @@ export default function PCPProductionPage() {
         item_idx: Number(apontForm.item_idx || 0),
         qtd_produzida: qtd,
         turno: apontForm.turno,
+        setor: setorAtual,
         observacoes: retro
           ? [`Retroativo ${retroForm.data} ${retroForm.hora}`, retroForm.observacoes].filter(Boolean).join(" - ")
           : apontForm.observacoes,
@@ -258,10 +277,25 @@ export default function PCPProductionPage() {
 
   return (
     <Shell>
+      <div className="mb-4 flex w-full gap-1 overflow-x-auto rounded-2xl bg-[#1f1f22] p-1">
+        {SETOR_PROFILES.map((setor) => (
+          <button
+            key={setor.key}
+            type="button"
+            onClick={() => navigate(`/pcp/apontamento/${setor.key}`)}
+            className={`whitespace-nowrap rounded-xl px-4 py-2 text-sm font-black transition ${
+              setorAtual === setor.key ? "bg-[#6485f2] text-white" : "text-zinc-500 hover:bg-white/5 hover:text-white"
+            }`}
+          >
+            {setor.label}
+          </button>
+        ))}
+      </div>
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-bold text-zinc-500">Sistema PCP - Registro de Producao</p>
           <h1 className="mt-1 text-3xl font-black tracking-tight text-white">{todayLabel()}</h1>
+          <p className="mt-1 text-sm font-bold text-[#6485f2]">{setorCfg.label}</p>
           <div className="mt-2 flex items-center gap-2 text-sm font-bold text-green-500">
             <span className="h-2 w-2 rounded-full bg-green-500 shadow-[0_0_18px_rgba(34,197,94,.8)]" />
             Ao vivo

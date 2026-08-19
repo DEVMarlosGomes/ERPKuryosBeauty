@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-  AlertTriangle, CheckCircle2, FileSpreadsheet, FileUp, Pencil, RefreshCw, Search, Wrench,
+  AlertTriangle, CheckCircle2, FileSpreadsheet, Pencil, RefreshCw, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -115,9 +115,20 @@ function PlanningPage({ data }) {
   const [tab, setTab] = useState(initialTab);
   const [search, setSearch] = useState("");
   const [schedulingId, setSchedulingId] = useState("");
-  const [importing, setImporting] = useState(false);
   const weekStart = startOfWeek(data.day);
   const weekEnd = addDays(weekStart, 6);
+  const [calendarSaving, setCalendarSaving] = useState(false);
+  const [calendarForm, setCalendarForm] = useState({
+    data_inicio: weekStart,
+    data_fim: weekEnd,
+    linha_id: "all",
+    dias: ["seg", "ter", "qua", "qui", "sex"],
+    habilitado: true,
+    hora_inicio: "07:00",
+    hora_fim: "18:00",
+    turnos: "1",
+    observacoes: "",
+  });
   const activeOps = data.ops.filter(op => ["aberta", "em_processo", "pausada"].includes(op.status));
   const activeLines = data.linhas.filter(linha => linha.status !== "inativa");
   const totalPlanejado = data.slots.reduce((s, slot) => s + Number(slot.qtd_planejada || 0), 0);
@@ -180,21 +191,41 @@ function PlanningPage({ data }) {
     }
   };
 
-  const importSchedule = async (file) => {
-    if (!file) return;
-    const form = new FormData();
-    form.append("file", file);
-    setImporting(true);
+  const toggleCalendarDay = (dia) => {
+    setCalendarForm((form) => ({
+      ...form,
+      dias: form.dias.includes(dia) ? form.dias.filter((d) => d !== dia) : [...form.dias, dia],
+    }));
+  };
+
+  const applyCalendar = async () => {
+    if (!calendarForm.data_inicio || !calendarForm.data_fim) return toast.error("Informe o periodo.");
+    if (!calendarForm.dias.length) return toast.error("Selecione ao menos um dia da semana.");
+    const turnos = calendarForm.turnos === "2"
+      ? [
+          { nome: "Turno 1", hora_inicio: calendarForm.hora_inicio, hora_fim: "14:00", capacidade_pct: 50 },
+          { nome: "Turno 2", hora_inicio: "14:00", hora_fim: calendarForm.hora_fim, capacidade_pct: 50 },
+        ]
+      : [{ nome: "Padrao", hora_inicio: calendarForm.hora_inicio, hora_fim: calendarForm.hora_fim, capacidade_pct: 100 }];
+    setCalendarSaving(true);
     try {
-      const { data: result } = await api.post("/pcp/importar-programacao", form);
-      toast.success(`${result.importados || 0} slots importados. ${result.ignorados || 0} ignorados.`);
+      const { data: result } = await api.post("/pcp/calendario/aplicar-periodo", {
+        data_inicio: calendarForm.data_inicio,
+        data_fim: calendarForm.data_fim,
+        linha_ids: calendarForm.linha_id === "all" ? [] : [calendarForm.linha_id],
+        dias: calendarForm.dias,
+        habilitado: calendarForm.habilitado,
+        hora_inicio: calendarForm.hora_inicio,
+        hora_fim: calendarForm.hora_fim,
+        turnos,
+        observacoes: calendarForm.observacoes,
+      });
+      toast.success(`Calendario aplicado em ${result.dias_aplicados || 0} dia(s).`);
       await data.load();
-      setTab("grade");
-      navigate("/pcp/planejamento", { replace: true });
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Nao foi possivel importar a programacao.");
+      toast.error(err.response?.data?.detail || "Nao foi possivel aplicar calendario.");
     } finally {
-      setImporting(false);
+      setCalendarSaving(false);
     }
   };
 
@@ -319,45 +350,71 @@ function PlanningPage({ data }) {
 
       {tab === "config" && (
         <div className="space-y-4">
-          <DarkCard className="border-l-4 border-l-[#6485f2]">
-            <h2 className="mb-4 text-base font-black">Importar Programacao Semanal (Previsao de Envase)</h2>
-            <p className="mb-4 text-sm text-zinc-500">Selecione ou arraste a planilha semanal para importar todos os slots planejados.</p>
-            <label
-              className={`flex min-h-[140px] cursor-pointer items-center justify-center rounded-2xl border border-dashed border-zinc-600 transition hover:border-[#6485f2] hover:bg-[#6485f2]/10 ${importing ? "pointer-events-none opacity-60" : ""}`}
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={(event) => {
-                event.preventDefault();
-                importSchedule(event.dataTransfer.files?.[0]);
-              }}
-            >
-              <input
-                type="file"
-                accept=".xlsx,.xlsm"
-                className="hidden"
-                disabled={importing}
-                onChange={(event) => {
-                  importSchedule(event.target.files?.[0]);
-                  event.target.value = "";
-                }}
-              />
-              <div className="text-center">
-                <FileUp className="mx-auto h-9 w-9 text-yellow-400" />
-                <p className="mt-3 font-black">{importing ? "Importando planilha..." : "Clique ou arraste o arquivo da planilha aqui"}</p>
-                <p className="mt-1 text-xs text-zinc-500">Aceita: .xlsm e .xlsx - aba Previsao Envase</p>
+          <DarkCard>
+            <h2 className="mb-4 text-base font-black">Ajuste Rapido de Calendario e Turnos</h2>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
+              <div>
+                <Label>Data inicial</Label>
+                <Input type="date" value={calendarForm.data_inicio} onChange={(e) => setCalendarForm((f) => ({ ...f, data_inicio: e.target.value }))} className="mt-1 border-white/10 bg-zinc-700 text-white" />
               </div>
-            </label>
-          </DarkCard>
-          <DarkCard>
-            <h2 className="mb-4 text-base font-black">Horas de Producao</h2>
-            <p className="text-sm text-zinc-300">As horas de producao vem direto do horario de turno. Ajuste em Configuracoes - Horarios dos Turnos e Apontamento.</p>
-          </DarkCard>
-          <DarkCard>
-            <h2 className="mb-4 text-base font-black">Dias de Trabalho</h2>
-            <div className="flex flex-wrap gap-2">
-              {["Segunda", "Terca", "Quarta", "Quinta", "Sexta", "Sabado", "Domingo"].map((d, i) => (
-                <button key={d} className={`rounded-lg px-5 py-3 font-black ${i < 5 ? "bg-emerald-100 text-emerald-800" : "bg-black text-zinc-400 border border-zinc-600"}`}>{d}</button>
+              <div>
+                <Label>Data final</Label>
+                <Input type="date" value={calendarForm.data_fim} onChange={(e) => setCalendarForm((f) => ({ ...f, data_fim: e.target.value }))} className="mt-1 border-white/10 bg-zinc-700 text-white" />
+              </div>
+              <div>
+                <Label>Linha</Label>
+                <Select value={calendarForm.linha_id} onValueChange={(v) => setCalendarForm((f) => ({ ...f, linha_id: v }))}>
+                  <SelectTrigger className="mt-1 border-white/10 bg-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas as linhas</SelectItem>
+                    {data.linhas.map((linha) => <SelectItem key={linha.id} value={linha.id}>{linha.nome}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Turnos</Label>
+                <Select value={calendarForm.turnos} onValueChange={(v) => setCalendarForm((f) => ({ ...f, turnos: v }))}>
+                  <SelectTrigger className="mt-1 border-white/10 bg-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 turno</SelectItem>
+                    <SelectItem value="2">2 turnos</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div>
+                <Label>Inicio</Label>
+                <Input type="time" value={calendarForm.hora_inicio} onChange={(e) => setCalendarForm((f) => ({ ...f, hora_inicio: e.target.value }))} className="mt-1 border-white/10 bg-zinc-700 text-white" />
+              </div>
+              <div>
+                <Label>Fim</Label>
+                <Input type="time" value={calendarForm.hora_fim} onChange={(e) => setCalendarForm((f) => ({ ...f, hora_fim: e.target.value }))} className="mt-1 border-white/10 bg-zinc-700 text-white" />
+              </div>
+              <div>
+                <Label>Status do dia</Label>
+                <Select value={calendarForm.habilitado ? "on" : "off"} onValueChange={(v) => setCalendarForm((f) => ({ ...f, habilitado: v === "on" }))}>
+                  <SelectTrigger className="mt-1 border-white/10 bg-zinc-700 text-white"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="on">Operando</SelectItem>
+                    <SelectItem value="off">Bloqueado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                ["seg", "Segunda"], ["ter", "Terca"], ["qua", "Quarta"], ["qui", "Quinta"], ["sex", "Sexta"], ["sab", "Sabado"], ["dom", "Domingo"],
+              ].map(([key, label]) => (
+                <button key={key} type="button" onClick={() => toggleCalendarDay(key)} className={`rounded-lg px-4 py-2 text-sm font-black ${calendarForm.dias.includes(key) ? "bg-emerald-100 text-emerald-800" : "border border-zinc-600 bg-black text-zinc-400"}`}>
+                  {label}
+                </button>
               ))}
             </div>
+            <Input value={calendarForm.observacoes} onChange={(e) => setCalendarForm((f) => ({ ...f, observacoes: e.target.value }))} placeholder="Observacoes do ajuste" className="mt-4 border-white/10 bg-zinc-700 text-white" />
+            <Button className="mt-5 bg-[#00bf20] px-8 font-black hover:bg-[#00a91c]" disabled={calendarSaving} onClick={applyCalendar}>
+              {calendarSaving ? "Aplicando..." : "Aplicar Calendario"}
+            </Button>
           </DarkCard>
           <DarkCard>
             <h2 className="mb-4 text-base font-black text-red-400">Limpar Programacao em Lote</h2>
@@ -434,43 +491,14 @@ function HorizonPage({ data }) {
 
 function ControlOpsPage({ data }) {
   const navigate = useNavigate();
-  const [savingOp, setSavingOp] = useState("");
-  const [recalculating, setRecalculating] = useState(false);
   const activeOps = data.ops.filter(op => ["aberta", "em_processo", "pausada"].includes(op.status));
-  const updateOp = async (op, payload) => {
-    setSavingOp(op.id);
-    try {
-      await api.put(`/ops/${op.id}`, payload);
-      toast.success("OP atualizada.");
-      await data.load();
-    } catch (err) {
-      toast.error(err.response?.data?.detail?.message || err.response?.data?.detail || "Nao foi possivel atualizar a OP.");
-    } finally {
-      setSavingOp("");
-    }
-  };
-  const recalculateStatus = async () => {
-    setRecalculating(true);
-    try {
-      const { data: result } = await api.post("/pcp/recalcular-status");
-      toast.success(`${result.ops_sincronizadas || 0} OPs sincronizadas. ${result.slots_bloqueados || 0} bloqueios tecnicos.`);
-      await data.load();
-    } catch (err) {
-      toast.error(err.response?.data?.detail || "Nao foi possivel recalcular os status.");
-    } finally {
-      setRecalculating(false);
-    }
-  };
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
         <div>
           <h1 className="text-3xl font-black">Controle de OPs Ativas</h1>
-          <p className="mt-1 text-sm text-zinc-500">Acompanhe o progresso fisico e gerencie as OPs ativas em producao</p>
+          <p className="mt-1 text-sm text-zinc-500">Visualizador das OPs emitidas para acompanhamento por nivel de OP.</p>
         </div>
-        <Button className="w-full bg-[#6485f2] font-black hover:bg-[#7593ff] md:w-auto" disabled={recalculating} onClick={recalculateStatus}>
-          {recalculating ? "Recalculando..." : "Recalcular Status de Todas as OPs / Lotes"}
-        </Button>
       </div>
       <div className="flex w-full overflow-x-auto rounded-lg bg-zinc-100 p-1 md:inline-flex md:w-auto">
         <button className="rounded-md bg-[#1f1f22] px-8 py-2 font-black text-white">OPs Ativas</button>
@@ -497,20 +525,7 @@ function ControlOpsPage({ data }) {
                     <td className="p-4">{op.cliente_nome || "-"}</td>
                     <td className="p-4 font-black">{item.item || op.project_name || "-"}<p className="text-xs font-normal text-zinc-500">SKU: {item.codigo_kuryos || "-"}</p></td>
                     <td className="p-4">
-                      <Select
-                        value={op.linha_id || "none"}
-                        disabled={savingOp === op.id}
-                        onValueChange={(linhaId) => {
-                          const linha = data.linhas.find(l => l.id === linhaId);
-                          updateOp(op, {
-                            linha_id: linhaId === "none" ? "" : linhaId,
-                            linha_nome: linha?.nome || "",
-                          });
-                        }}
-                      >
-                        <SelectTrigger className="w-32 border-white/10 bg-[#1f1f22] text-white"><SelectValue /></SelectTrigger>
-                        <SelectContent><SelectItem value="none">Sem linha</SelectItem>{data.linhas.map(l => <SelectItem key={l.id} value={l.id}>{l.nome}</SelectItem>)}</SelectContent>
-                      </Select>
+                      <Badge className="bg-zinc-100 text-zinc-700">{op.linha_nome || "Sem linha"}</Badge>
                     </td>
                     <td className="p-4"><Badge className="bg-violet-100 text-violet-700">#{op.numero_pedido || "-"}</Badge></td>
                     <td className="p-4">
@@ -518,12 +533,9 @@ function ControlOpsPage({ data }) {
                       <div className="h-2 overflow-hidden rounded-full bg-zinc-300"><div className="h-full bg-[#00bf20]" style={{ width: `${progress}%` }} /></div>
                     </td>
                     <td className="p-4">
-                      <Select value={op.status} disabled={savingOp === op.id} onValueChange={(status) => updateOp(op, { status })}>
-                        <SelectTrigger className="w-36 border-white/10 bg-[#1f1f22] text-white"><SelectValue /></SelectTrigger>
-                        <SelectContent>{["aberta", "em_processo", "pausada", "concluida"].map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-                      </Select>
+                      <Badge className="bg-blue-100 text-blue-700">{op.status || "-"}</Badge>
                     </td>
-                    <td className="p-4"><Button variant="outline" size="icon" className="border-white/20 bg-transparent text-red-300" onClick={() => navigate(`/ops/${op.id}`)}><Wrench className="h-4 w-4" /></Button></td>
+                    <td className="p-4"><Button variant="outline" size="sm" className="border-white/20 bg-transparent text-white" onClick={() => navigate(`/ops/${op.id}`)}>Ver OP</Button></td>
                   </tr>
                 );
               })}

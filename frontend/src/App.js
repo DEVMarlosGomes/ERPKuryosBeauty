@@ -20,6 +20,7 @@ const PDReports = lazy(() => import("@/pages/PDReports"));
 const CRM1Page = lazy(() => import("@/pages/CRM1Page"));
 const CRM2Page = lazy(() => import("@/pages/CRM2Page"));
 const CRM3Page = lazy(() => import("@/pages/CRM3Page"));
+const CommercialBudgetPage = lazy(() => import("@/pages/CommercialBudgetPage"));
 const KickoffPage = lazy(() => import("@/pages/KickoffPage"));
 const KickoffsListPage = lazy(() => import("@/pages/KickoffsListPage"));
 const SKUsPage = lazy(() => import("@/pages/SKUsPage"));
@@ -57,10 +58,12 @@ const MovimentacaoPage = lazy(() => import("@/pages/MovimentacaoPage"));
 const RecebimentoPage = lazy(() => import("@/pages/RecebimentoPage"));
 const ExpedicaoPage = lazy(() => import("@/pages/ExpedicaoPage"));
 const FaturamentoPage = lazy(() => import("@/pages/FaturamentoPage"));
+const LogisticaPage = lazy(() => import("@/pages/LogisticaPage"));
 const PCPDailyDashboard = lazy(() => import("@/pages/PCPDailyDashboard"));
 const PCPClonePage = lazy(() => import("@/pages/PCPClonePage"));
 const PCPProductionPage = lazy(() => import("@/pages/PCPProductionPage"));
 const ContratosPage = lazy(() => import("@/pages/ContratosPage"));
+const CadastrosPage = lazy(() => import("@/pages/CadastrosPage"));
 
 function ThemeProvider({ children }) {
     const [dark, setDark] = useState(() => localStorage.getItem("theme") !== "light");
@@ -109,6 +112,7 @@ function AppLayout() {
     const CQ_ROLES = ["admin", "qa", "lider_pd", "formulador", "engenharia_produto", "compras", "sales_ops"];
     const COMPRAS_ROLES = ["admin", "compras", "engenharia_produto", "lider_pd", "qa", "sales_ops"];
     const CONTRATOS_ROLES = ["admin", "sales_ops", "vendedor", "compras", "lider_pd", "qa", "engenharia_produto", "sucesso_cliente"];
+    const CADASTROS_ROLES = ["admin", "vendedor", "sales_ops", "sucesso_cliente", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"];
 
     return (
         <div className="flex min-h-screen md:h-screen overflow-hidden bg-background">
@@ -122,6 +126,7 @@ function AppLayout() {
                         <Route path="/crm/clients" element={<RoleGuard allowed={COMERCIAL}><CRM1Page /></RoleGuard>} />
                         <Route path="/crm/projects" element={<RoleGuard allowed={COMERCIAL}><CRM2Page /></RoleGuard>} />
                         <Route path="/crm/samples" element={<RoleGuard allowed={COMERCIAL}><CRM3Page /></RoleGuard>} />
+                        <Route path="/crm/orcamentos" element={<RoleGuard allowed={COMERCIAL}><CommercialBudgetPage /></RoleGuard>} />
                         <Route path="/kickoffs" element={<RoleGuard allowed={KICKOFF_ROLES}><KickoffsListPage /></RoleGuard>} />
                         <Route path="/kickoff/:id" element={<RoleGuard allowed={KICKOFF_ROLES}><KickoffPage /></RoleGuard>} />
                         <Route path="/crm/skus" element={<RoleGuard allowed={[...PD_READ, ...COMERCIAL]}><SKUsPage /></RoleGuard>} />
@@ -143,10 +148,13 @@ function AppLayout() {
                         <Route path="/pcp/planejamento" element={<PCPClonePage mode="planejamento" />} />
                         <Route path="/pcp/horizonte" element={<PCPClonePage mode="horizonte" />} />
                         <Route path="/pcp/controle-ops" element={<PCPClonePage mode="controle" />} />
-                        <Route path="/pcp/produtos" element={<PCPClonePage mode="produtos" />} />
-                        <Route path="/pcp/insumos" element={<PCPClonePage mode="matriz" />} />
-                        <Route path="/pcp/apontamento" element={<PCPProductionPage />} />
+                        <Route path="/pcp/produtos" element={<Navigate to="/cadastros" replace />} />
+                        <Route path="/pcp/insumos" element={<Navigate to="/cadastros" replace />} />
+                        <Route path="/pcp/apontamento" element={<Navigate to="/pcp/apontamento/envase" replace />} />
+                        <Route path="/pcp/apontamento/:setor" element={<PCPProductionPage />} />
                         <Route path="/pcp" element={<Navigate to="/pcp/dashboard" replace />} />
+                        <Route path="/cadastros" element={<RoleGuard allowed={CADASTROS_ROLES}><CadastrosPage /></RoleGuard>} />
+                        <Route path="/logistica" element={<LogisticaPage />} />
                         <Route path="/expedicao" element={<ExpedicaoPage />} />
                         <Route path="/faturamento" element={<FaturamentoPage />} />
                         <Route path="/compras" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasDashboard /></RoleGuard>} />

@@ -55,6 +55,7 @@ from categorias_routes import categorias_router, init_categorias, create_categor
 from fragrancias_routes import fragrancias_router, init_fragrancias, create_fragrancias_indexes
 from materiais_routes import materiais_router, init_materiais, create_materiais_indexes
 from produtos_routes import produtos_router, init_produtos, create_produtos_indexes
+from cadastros_master_routes import cadastros_master_router, init_cadastros_master, create_cadastros_master_indexes
 from propostas_routes import propostas_router, init_propostas
 from requirements_routes import requirements_router, init_requirements, create_requirements_indexes
 from workflow_engine import init_workflow, run_workflow_notification_scheduler
@@ -2065,6 +2066,8 @@ async def startup():
     await create_materiais_indexes()
     init_produtos(db, get_current_user, new_id, now_iso)
     await create_produtos_indexes()
+    init_cadastros_master(db, get_current_user, new_id, now_iso)
+    await create_cadastros_master_indexes()
     init_propostas(db, get_current_user, new_id, now_iso)
     init_requirements(db, get_current_user)
     await create_requirements_indexes()
@@ -2170,6 +2173,7 @@ app.include_router(categorias_router)
 app.include_router(fragrancias_router)
 app.include_router(materiais_router)
 app.include_router(produtos_router)
+app.include_router(cadastros_master_router)
 app.include_router(propostas_router)
 app.include_router(requirements_router)
 

@@ -305,6 +305,16 @@ export default function OrderDetail() {
     }
   };
 
+  const requestClientConfirmation = async () => {
+    try {
+      const res = await api.post(`/orders/${id}/solicitar-confirmacao-cliente`);
+      setOrder(res.data); setForm(deepClone(res.data));
+      toast.success("Solicitacao de confirmacao enviada ao cliente");
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Erro ao solicitar confirmacao");
+    }
+  };
+
   const approveComercial = async () => {
     try {
       const res = await api.post(`/orders/${id}/aprovar-comercial`, { observacoes: "" });
@@ -552,16 +562,22 @@ export default function OrderDetail() {
               <p className="text-xs text-muted-foreground">
                 {form.aprovacao_cliente === "aprovado"
                   ? `Registrado por ${form.aprovacao_cliente_por || "—"} em ${form.aprovacao_cliente_em ? new Date(form.aprovacao_cliente_em).toLocaleDateString("pt-BR") : "—"}`
-                  : "Comprovante (print/e-mail) deve ser anexado e aprovação registrada antes de gerar OP."
+                  : `Solicitacao: ${form.confirmacao_cliente?.solicitada_em ? new Date(form.confirmacao_cliente.solicitada_em).toLocaleString("pt-BR") : "pendente de envio"}`
                 }
               </p>
             </div>
           </div>
           {form.aprovacao_cliente !== "aprovado" && (
-            <Button size="sm" variant="outline" onClick={approveCliente}
-              className="shrink-0 gap-1.5 border-slate-400 text-slate-700 hover:bg-slate-100">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Registrar Aprovação
-            </Button>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <Button size="sm" variant="outline" onClick={requestClientConfirmation}
+                className="gap-1.5 border-slate-400 text-slate-700 hover:bg-slate-100">
+                <FileText className="h-3.5 w-3.5" /> Solicitar confirmacao
+              </Button>
+              <Button size="sm" variant="outline" onClick={approveCliente}
+                className="gap-1.5 border-slate-400 text-slate-700 hover:bg-slate-100">
+                <CheckCircle2 className="h-3.5 w-3.5" /> Registrar Aprovacao
+              </Button>
+            </div>
           )}
         </div>
 

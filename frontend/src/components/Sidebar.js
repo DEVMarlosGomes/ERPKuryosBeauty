@@ -5,7 +5,7 @@ import {
     LayoutDashboard, Kanban, Users, LogOut, Moon, Sun, FlaskConical, Building2,
     Package, ChevronDown, ChevronRight, ShieldCheck, BarChart3, Warehouse, ClipboardList,
     CheckSquare, History, BookOpen, Database, Menu, X, ShoppingCart, FileText, Microscope, Factory,
-    Truck, Receipt, Calendar, ArrowLeftRight, PanelLeftClose, PanelLeftOpen
+    Truck, Receipt, Calendar, ArrowLeftRight, PanelLeftClose, PanelLeftOpen, Tags
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -34,12 +34,13 @@ const NAV_MODULES = [
         type: "group",
         label: "CRM Comercial",
         icon: Building2,
-        basePaths: ["/crm/clients", "/crm/projects", "/crm/samples"],
+        basePaths: ["/crm/clients", "/crm/projects", "/crm/samples", "/crm/orcamentos"],
         roles: ["admin", "vendedor", "sales_ops", "sucesso_cliente", "gestor"],
         children: [
             { path: "/crm/clients", label: "Pipeline Clientes" },
             { path: "/crm/projects", label: "Projetos" },
             { path: "/crm/samples", label: "Amostras" },
+            { path: "/crm/orcamentos", label: "Orcamentos", icon: FileText },
         ],
     },
     {
@@ -49,6 +50,14 @@ const NAV_MODULES = [
         label: "Kickoffs",
         icon: ClipboardList,
         roles: ["admin", "vendedor", "sales_ops", "formulador", "qa", "lider_pd", "engenharia_produto", "sucesso_cliente", "gestor"],
+    },
+    {
+        key: "cadastros",
+        type: "link",
+        path: "/cadastros",
+        label: "Cadastros",
+        icon: Tags,
+        roles: ["admin", "vendedor", "sales_ops", "sucesso_cliente", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"],
     },
     {
         key: "pd",
@@ -68,24 +77,19 @@ const NAV_MODULES = [
         ],
     },
     {
-        key: "estoque",
+        key: "logistica",
         type: "group",
-        label: "Estoque / WMS",
-        icon: Warehouse,
-        basePaths: ["/estoque"],
-        roles: ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"],
+        label: "Logistica",
+        icon: Truck,
+        basePaths: ["/logistica", "/estoque", "/recebimento", "/expedicao"],
+        roles: ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "sales_ops", "gestor"],
         children: [
-            { path: "/estoque",               label: "Estoque Geral",        icon: Warehouse },
-            { path: "/estoque/movimentacao",   label: "Movimentação",         icon: ArrowLeftRight },
+            { path: "/logistica", label: "Visao Geral", icon: Truck },
+            { path: "/estoque", label: "Estoque", icon: Warehouse },
+            { path: "/estoque/movimentacao", label: "WMS / Movimentacao", icon: ArrowLeftRight },
+            { path: "/recebimento", label: "Recebimento", icon: Package },
+            { path: "/expedicao", label: "Expedicao", icon: Truck },
         ],
-    },
-    {
-        key: "recebimento",
-        type: "link",
-        path: "/recebimento",
-        label: "Recebimento",
-        icon: Package,
-        roles: ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"],
     },
     {
         key: "cq",
@@ -132,18 +136,8 @@ const NAV_MODULES = [
             { path: "/pcp/planejamento", label: "Planejamento", icon: Calendar },
             { path: "/pcp/horizonte", label: "Horizonte de Produção", icon: BarChart3 },
             { path: "/pcp/controle-ops", label: "Controle de OPs", icon: Factory },
-            { path: "/pcp/produtos", label: "Cadastro de Produtos", icon: Package },
-            { path: "/pcp/insumos", label: "Matriz de Insumos", icon: Database },
-            { path: "/pcp/apontamento", label: "Apontamento Diário", icon: Factory },
+            { path: "/pcp/apontamento/envase", label: "Apontamento por Setor", icon: Factory },
         ],
-    },
-    {
-        key: "expedicao",
-        type: "link",
-        path: "/expedicao",
-        label: "Expedição",
-        icon: Truck,
-        roles: ["admin", "compras", "engenharia_produto", "lider_pd", "qa", "sales_ops", "gestor"],
     },
     {
         key: "faturamento",

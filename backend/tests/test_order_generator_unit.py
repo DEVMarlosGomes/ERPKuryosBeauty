@@ -37,6 +37,10 @@ class FakeCollection:
     def find(self, query, projection=None):
         return FakeCursor([self._project(doc, projection) for doc in self.docs if self._matches(doc, query)])
 
+    async def insert_one(self, doc):
+        self.docs.append(dict(doc))
+        return SimpleNamespace(inserted_id=doc.get("id"))
+
     def _matches(self, doc, query):
         for key, value in query.items():
             current = doc.get(key)
@@ -156,7 +160,39 @@ def test_order_generator_status_tracks_attachment_pdf_and_approvals():
     assert status["pending"] == ["aprovacao_cliente", "op"]
 
 
+def test_cadastro_pendente_items_flags_manual_products_only():
+    pending = orders_routes._cadastro_pendente_items([
+        {"item": "Produto Manual", "codigo_kuryos": "A definir"},
+        {"item": "Produto Sem Codigo", "codigo_kuryos": ""},
+        {"item": "Produto Cadastrado", "codigo_kuryos": "BSP-MISS-0001", "sku_id": "sku-1"},
+    ])
+
+    assert [item["item"] for item in pending] == ["Produto Manual", "Produto Sem Codigo"]
+    assert all(item["motivo"] == "Produto sem SKU cadastrado no pedido gerado" for item in pending)
+
+
 def test_safe_attachment_filename_blocks_path_traversal():
     filename = orders_routes._safe_attachment_filename("../Pedido Cliente 01.pdf")
 
     assert filename == "Pedido Cliente 01.pdf"
+
+
+def test_queue_email_without_smtp_records_pending(monkeypatch):
+    monkeypatch.delenv("SMTP_HOST", raising=False)
+    orders_routes.new_id_func = lambda: "email-1"
+    orders_routes.now_iso_func = lambda: "2026-08-19T10:00:00+00:00"
+    orders_routes.db = SimpleNamespace(email_logs=FakeCollection())
+
+    log = asyncio.run(orders_routes._queue_email(
+        tenant_id="tenant-1",
+        to_email="cliente@example.com",
+        subject="Pedido",
+        body="Resumo",
+        source="client_confirmation_request",
+        entity_type="order",
+        entity_id="order-1",
+        user={"id": "user-1", "name": "Admin"},
+    ))
+
+    assert log["status"] == "pendente"
+    assert orders_routes.db.email_logs.docs[0]["to"] == "cliente@example.com"

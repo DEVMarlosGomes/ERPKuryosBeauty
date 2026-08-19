@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 const blankItem = () => ({
   item: "",
+  item_origem: "cadastrado",
   sku_id: "",
   pd_request_id: "",
   pd_concluido: false,
@@ -87,6 +88,25 @@ function maskCnpj(value) {
 
 function clientName(client) {
   return client.nome_empresa || client.nome || client.razao_social || "";
+}
+
+function clientKey(client) {
+  const cnpj = String(client.cnpj || client.cnpj_normalized || "").replace(/\D/g, "");
+  return cnpj || clientName(client).trim().toLowerCase();
+}
+
+function cityUfFromClient(client) {
+  if (client.cidade_uf) return client.cidade_uf;
+  const cidade = client.cidade || client.city || client.endereco?.cidade || "";
+  const uf = client.uf || client.estado || client.endereco?.uf || "";
+  return cidade && uf ? `${cidade}/${uf}` : (cidade || uf || "");
+}
+
+function addressFromClient(client) {
+  if (client.endereco_completo) return client.endereco_completo;
+  if (typeof client.endereco === "string") return client.endereco;
+  const e = client.endereco || {};
+  return [e.logradouro, e.numero, e.bairro, e.cidade, e.uf, e.cep].filter(Boolean).join(", ");
 }
 
 function Section({ number, title, icon: Icon, children, description }) {
@@ -164,9 +184,22 @@ export default function OrderGeneratorPage() {
 
   const validItems = useMemo(() => items.filter((item) => item.item.trim()), [items]);
 
-  const clientOptions = useMemo(() => clients.map(clientName).filter(Boolean).sort(), [clients]);
+  const uniqueClients = useMemo(() => {
+    const map = new Map();
+    for (const client of clients) {
+      const key = clientKey(client);
+      if (!key) continue;
+      const current = map.get(key);
+      if (!current || (client.cli4 && !current.cli4) || (client.cnpj && !current.cnpj)) {
+        map.set(key, client);
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => clientName(a).localeCompare(clientName(b)));
+  }, [clients]);
+  const clientOptions = useMemo(() => Array.from(new Set(uniqueClients.map(clientName).filter(Boolean))).sort(), [uniqueClients]);
   const skuOptions = useMemo(() => skus
     .filter((sku) => sku.status === "ativo")
+    .filter((sku) => String(sku.codigo_interno || "").trim())
     .filter((sku) => !form.cliente_id || sku.cliente_id === form.cliente_id)
     .sort((a, b) => Number(!!b.pd_concluido) - Number(!!a.pd_concluido) || String(a.nome_produto || "").localeCompare(String(b.nome_produto || ""))),
     [skus, form.cliente_id]
@@ -178,7 +211,7 @@ export default function OrderGeneratorPage() {
 
   const applyClient = (name) => {
     setField("cliente", name);
-    const found = clients.find((client) => clientName(client).toLowerCase() === name.toLowerCase());
+    const found = uniqueClients.find((client) => clientName(client).toLowerCase() === name.toLowerCase());
     if (!found) {
       setForm((prev) => ({ ...prev, cliente: name, cliente_id: "" }));
       return;
@@ -189,11 +222,42 @@ export default function OrderGeneratorPage() {
       cliente: name,
       cnpj: found.cnpj || prev.cnpj,
       razao_social: found.razao_social || found.nome_empresa || prev.razao_social,
-      cidade_uf: found.cidade_uf || found.cidade || prev.cidade_uf,
+      cidade_uf: cityUfFromClient(found) || prev.cidade_uf,
+      cidade_uf_frete: prev.cidade_uf_frete || cityUfFromClient(found),
+      endereco: prev.endereco || addressFromClient(found),
       responsavel: found.contato_principal?.nome || found.responsavel || prev.responsavel,
       telefone: found.contato_principal?.whatsapp || found.telefone || prev.telefone,
       email: found.contato_principal?.email || found.email || prev.email,
+      email_destinatario: prev.email_destinatario || found.contato_principal?.email || found.email || "",
     }));
+  };
+
+  const setItemOrigin = (index, origin) => {
+    setItems((prev) => prev.map((item, idx) => {
+      if (idx !== index) return item;
+      if (origin === "manual") {
+        return {
+          ...item,
+          item_origem: "manual",
+          sku_id: "",
+          pd_request_id: "",
+          pd_concluido: false,
+          codigo_kuryos: "A definir",
+        };
+      }
+      return { ...item, item_origem: "cadastrado", codigo_kuryos: item.codigo_kuryos === "A definir" ? "" : item.codigo_kuryos };
+    }));
+  };
+
+  const syncInsumosFromSku = (sku) => {
+    const bom = sku.composicao_embalagem || sku.bom_embalagem || sku.bom_items || sku.insumos || [];
+    if (!Array.isArray(bom) || bom.length === 0) return;
+    setInsumos(bom.map((row) => ({
+      item: row.nome_material || row.nome || row.item || row.codigo_material || "",
+      especificacoes: [row.codigo_material || row.codigo_interno, row.tipo, row.observacoes].filter(Boolean).join(" | "),
+      quantidade: row.quantidade_por_unidade || row.quantidade || "",
+      responsavel: "Kuryos",
+    })));
   };
 
   const applySku = (index, code) => {
@@ -202,14 +266,16 @@ export default function OrderGeneratorPage() {
     if (!sku) return;
     setItems((prev) => prev.map((item, idx) => idx === index ? {
       ...item,
+      item_origem: "cadastrado",
       sku_id: sku.id || "",
       pd_request_id: sku.pd_request_id || "",
       pd_concluido: !!sku.pd_concluido,
       codigo_kuryos: sku.codigo_interno || code,
-      item: item.item || sku.nome_produto || "",
+      item: sku.nome_produto || item.item || "",
       valor_unitario: item.valor_unitario || sku.preco_unitario || "",
       valor_unitario_currency: sku.preco_unitario_currency || "BRL",
     } : item));
+    syncInsumosFromSku(sku);
   };
 
   const validate = () => {
@@ -231,6 +297,7 @@ export default function OrderGeneratorPage() {
     const invalidSku = validItems.find((item) => {
       const code = item.codigo_kuryos.trim();
       if (!code || code.toLowerCase() === "a definir") return false;
+      if (item.item_origem === "manual") return false;
       return !skuOptions.some((sku) => sku.codigo_interno === code);
     });
     if (invalidSku) {
@@ -246,6 +313,10 @@ export default function OrderGeneratorPage() {
       .filter((item) => item.codigo_kuryos && item.codigo_kuryos !== "A definir")
       .map((item) => `${item.pd_concluido ? "SKU P&D concluido" : "SKU ativo"}: ${item.codigo_kuryos}${item.sku_id ? ` (sku_id ${item.sku_id})` : ""}`)
       .join("\n");
+    const cadastroPendente = validItems
+      .filter((item) => item.item_origem === "manual" || !item.sku_id)
+      .map((item) => `Cadastro de produto pendente: ${item.item.trim()} (${item.codigo_kuryos?.trim() || "A definir"})`)
+      .join("\n");
 
     const cleanItems = validItems.map((item) => {
       const qtd = numberValue(item.qtd);
@@ -255,7 +326,7 @@ export default function OrderGeneratorPage() {
         sku_id: item.sku_id || null,
         pd_request_id: item.pd_request_id || null,
         pd_concluido: !!item.pd_concluido,
-        codigo_kuryos: item.codigo_kuryos.trim() || "A definir",
+        codigo_kuryos: item.sku_id ? item.codigo_kuryos.trim() : "A definir",
         codigo_cliente: item.codigo_cliente.trim() || "NA",
         prazo_entrega: item.prazo_entrega ? `${item.prazo_entrega} dias` : "",
         valor_unitario: valor,
@@ -281,6 +352,7 @@ export default function OrderGeneratorPage() {
       form.pedido_num_cliente ? `Pedido do cliente: ${form.pedido_num_cliente}` : "",
       form.pct_nf ? `% NF: ${form.pct_nf}` : "",
       skuTrace,
+      cadastroPendente,
       form.pedido_cliente_file_name ? `Anexo do cliente: ${form.pedido_cliente_file_name}` : "",
       form.enviar_email ? `Criar rascunho para cliente: ${form.email_destinatario || "sem destinatario"}` : "",
       form.observacoes,
@@ -480,11 +552,51 @@ export default function OrderGeneratorPage() {
                       )}
                     </div>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-6">
-                      <Field label="Descricao do Item *" className="md:col-span-6">
-                        <Input value={item.item} onChange={(e) => updateItem(index, "item", e.target.value)} />
+                      <Field label="Tipo de item" className="md:col-span-2">
+                        <Select value={item.item_origem} onValueChange={(value) => setItemOrigin(index, value)}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="cadastrado">Selecionar item cadastrado</SelectItem>
+                            <SelectItem value="manual">Digitar item novo</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </Field>
-                      <Field label="Codigo Kuryos" className="md:col-span-3" hint="Para produto existente, selecione um SKU vindo dos concluidos/aprovados do P&D.">
-                        <Input list="order-generator-skus" value={item.codigo_kuryos} onChange={(e) => applySku(index, e.target.value)} placeholder="A definir" />
+                      {item.item_origem === "cadastrado" ? (
+                        <Field label="Produto cadastrado" className="md:col-span-4" hint="Seleciona produto ativo gerado pelo fluxo de amostra aprovada/SKU.">
+                          <Select value={item.codigo_kuryos || ""} onValueChange={(value) => applySku(index, value)}>
+                            <SelectTrigger><SelectValue placeholder="Selecione o SKU/produto" /></SelectTrigger>
+                            <SelectContent>
+                              {skuOptions.map((sku) => (
+                                <SelectItem key={sku.id} value={sku.codigo_interno}>
+                                  {sku.codigo_interno} - {sku.nome_produto || "Produto"}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </Field>
+                      ) : (
+                        <Field label="Descricao do Item *" className="md:col-span-4" hint="Item digitado fica com SKU A definir e pendencia para Cadastros.">
+                          <Input value={item.item} onChange={(e) => updateItem(index, "item", e.target.value)} />
+                        </Field>
+                      )}
+                      {item.item_origem === "cadastrado" && (
+                        <Field label="Descricao do Item *" className="md:col-span-6">
+                          <Input value={item.item} onChange={(e) => updateItem(index, "item", e.target.value)} />
+                        </Field>
+                      )}
+                      {item.item_origem === "manual" && (
+                        <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200 md:col-span-6">
+                          Este item sera salvo como "A definir" e marcado nas observacoes para acompanhamento do setor de Cadastros.
+                        </div>
+                      )}
+                      <Field label="Codigo Kuryos" className="md:col-span-3" hint="Automatico quando o produto cadastrado e selecionado.">
+                        <Input
+                          list="order-generator-skus"
+                          value={item.codigo_kuryos}
+                          onChange={(e) => item.item_origem === "manual" ? updateItem(index, "codigo_kuryos", "A definir") : applySku(index, e.target.value)}
+                          placeholder="A definir"
+                          disabled={item.item_origem === "manual"}
+                        />
                       </Field>
                       <Field label="Codigo Cliente" className="md:col-span-3">
                         <Input value={item.codigo_cliente} onChange={(e) => updateItem(index, "codigo_cliente", e.target.value)} placeholder="NA" />
@@ -573,8 +685,8 @@ export default function OrderGeneratorPage() {
                 <div className="flex items-start gap-3">
                   <Checkbox checked={form.enviar_email} onCheckedChange={(checked) => setField("enviar_email", !!checked)} className="mt-0.5 h-7 w-7 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold">Criar rascunho para o cliente</p>
-                    <p className="text-xs text-muted-foreground">Fica registrado no pedido para o comercial revisar e enviar.</p>
+                    <p className="text-sm font-semibold">Solicitar confirmacao do cliente</p>
+                    <p className="text-xs text-muted-foreground">Fica registrado no pedido; enquanto nao aprovado, o status permanece aguardando confirmacao.</p>
                   </div>
                 </div>
                 <Field label="Destinatario"><Input type="email" value={form.email_destinatario} onChange={(e) => setField("email_destinatario", e.target.value)} placeholder="destinatario@empresa.com" /></Field>

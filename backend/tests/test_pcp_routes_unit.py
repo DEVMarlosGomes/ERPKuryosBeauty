@@ -27,3 +27,28 @@ def test_op_technical_blocks_require_revision_and_not_apt():
 def test_op_technical_blocks_release_when_apt_or_no_revision():
     assert pcp_routes._op_technical_blocks({"tecnico": {"revisao_obrigatoria": False}}) == []
     assert pcp_routes._op_technical_blocks({"tecnico": {"revisao_obrigatoria": True, "apto_operacao": True}}) == []
+
+
+def test_calendar_period_helpers_build_dynamic_shift_config():
+    payload = pcp_routes.CalendarioPeriodoApply(
+        data_inicio="2026-08-19",
+        data_fim="2026-08-22",
+        dias=["qua", "sab"],
+        hora_inicio="7",
+        hora_fim="18h30",
+        turnos=[
+            pcp_routes.TurnoDiaConfig(nome="Turno 1", hora_inicio="07:00", hora_fim="14:00", capacidade_pct=50),
+            pcp_routes.TurnoDiaConfig(nome="Turno 2", hora_inicio="14:00", hora_fim="18:30", capacidade_pct=50),
+        ],
+    )
+
+    dates = list(pcp_routes._iter_dates(
+        pcp_routes._parse_date_ymd(payload.data_inicio, "data_inicio"),
+        pcp_routes._parse_date_ymd(payload.data_fim, "data_fim"),
+    ))
+    assert [pcp_routes._dia_key_from_date(d) for d in dates] == ["qua", "qui", "sex", "sab"]
+
+    config = pcp_routes._calendar_config_from_apply(payload)
+    assert config["hora_inicio"] == "07:00"
+    assert config["hora_fim"] == "18:30"
+    assert len(config["turnos"]) == 2

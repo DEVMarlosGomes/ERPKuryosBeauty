@@ -17,7 +17,9 @@ import re
 import mimetypes
 import os
 import uuid
+import smtplib
 from pathlib import Path
+from email.message import EmailMessage
 
 from cq_routes import (
     cq_verificar_assepsia_manipulacao,
@@ -49,6 +51,74 @@ def new_id():
 
 def now_iso():
     return now_iso_func()
+
+
+def _smtp_configured() -> bool:
+    return bool(os.environ.get("SMTP_HOST"))
+
+
+def _send_email_now(to_email: str, subject: str, body: str) -> None:
+    host = os.environ.get("SMTP_HOST")
+    if not host:
+        raise RuntimeError("SMTP_HOST nao configurado")
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    username = os.environ.get("SMTP_USER", "")
+    password = os.environ.get("SMTP_PASSWORD", "")
+    sender = os.environ.get("SMTP_FROM") or username or COMMERCIAL_ORDER_EMAIL
+
+    msg = EmailMessage()
+    msg["From"] = sender
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.set_content(body)
+
+    with smtplib.SMTP(host, port, timeout=20) as smtp:
+        if os.environ.get("SMTP_TLS", "true").lower() not in {"0", "false", "no"}:
+            smtp.starttls()
+        if username:
+            smtp.login(username, password)
+        smtp.send_message(msg)
+
+
+async def _queue_email(
+    *,
+    tenant_id: str,
+    to_email: str,
+    subject: str,
+    body: str,
+    source: str,
+    entity_type: str,
+    entity_id: str,
+    user: Dict[str, Any],
+) -> Dict[str, Any]:
+    now = now_iso()
+    log = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "to": to_email,
+        "subject": subject,
+        "body": body,
+        "source": source,
+        "entity_type": entity_type,
+        "entity_id": entity_id,
+        "status": "pendente",
+        "error": "",
+        "created_at": now,
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+        "sent_at": None,
+    }
+    if _smtp_configured():
+        try:
+            _send_email_now(to_email, subject, body)
+            log["status"] = "enviado"
+            log["sent_at"] = now_iso()
+        except Exception as exc:
+            log["status"] = "erro"
+            log["error"] = str(exc)
+    await db.email_logs.insert_one(log)
+    log.pop("_id", None)
+    return log
 
 
 # ============ STATUS ============
@@ -95,6 +165,8 @@ STATUSES_IMUTAVEL = {"confirmado", "em_producao", "concluido"}
 # pct > TIER_GERENTE             → aprovacao_comercial = "pendente", nivel = "diretoria"        (roles: admin only)
 TIER_AUTO = 5.0
 TIER_GERENTE = 25.0
+
+COMMERCIAL_ORDER_EMAIL = os.environ.get("COMMERCIAL_ORDER_EMAIL", "comercial@kuryos.com.br")
 
 
 # ============ MODELS ============
@@ -338,6 +410,18 @@ def _order_duplicate_fingerprint(
 
 def _is_generator_order(order: Dict[str, Any]) -> bool:
     return order.get("origem") == "gerador" or bool(order.get("gerador_origem"))
+
+
+def _cadastro_pendente_items(items: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    return [
+        {
+            "item": it.get("item", ""),
+            "codigo_kuryos": it.get("codigo_kuryos") or "A definir",
+            "motivo": "Produto sem SKU cadastrado no pedido gerado",
+        }
+        for it in items
+        if not it.get("sku_id") and str(it.get("codigo_kuryos") or "").strip().lower() in {"", "a definir", "na"}
+    ]
 
 
 def _order_generator_steps(order: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -786,6 +870,71 @@ async def get_reorder_draft(client_card_id: str, request: Request):
     return draft
 
 
+def _order_email_summary(order: Dict[str, Any]) -> str:
+    cliente = order.get("cliente") or {}
+    lines = [
+        f"Pedido: {order.get('numero_pedido', '-')}",
+        f"Cliente: {cliente.get('razao_social') or cliente.get('nome') or '-'}",
+        f"Data: {str(order.get('data_pedido') or '')[:10]}",
+        f"Total: R$ {float(order.get('total_pedido') or 0):,.2f}",
+        "",
+        "Itens:",
+    ]
+    for item in order.get("items") or []:
+        lines.append(
+            f"- {item.get('item') or '-'} | Codigo: {item.get('codigo_kuryos') or 'A definir'} | Qtd: {item.get('qtd') or 0}"
+        )
+    if order.get("cadastro_pendente"):
+        lines.extend(["", "Atencao: existem itens pendentes de cadastro."])
+    return "\n".join(lines)
+
+
+async def _notify_order_created(order: Dict[str, Any], user: Dict[str, Any]) -> None:
+    tenant_id = order["tenant_id"]
+    summary = _order_email_summary(order)
+    created_subject = f"Pedido gerado {order.get('numero_pedido', '-')}"
+    await _queue_email(
+        tenant_id=tenant_id,
+        to_email=COMMERCIAL_ORDER_EMAIL,
+        subject=created_subject,
+        body=f"Um novo pedido foi gerado no ERP Kuryos.\n\n{summary}",
+        source="order_created",
+        entity_type="order",
+        entity_id=order["id"],
+        user=user,
+    )
+
+    cliente_email = ((order.get("cliente") or {}).get("email") or "").strip()
+    if not cliente_email:
+        return
+
+    confirm_log = await _queue_email(
+        tenant_id=tenant_id,
+        to_email=cliente_email,
+        subject=f"Confirmacao do pedido {order.get('numero_pedido', '-')}",
+        body=(
+            "Por favor confirme o recebimento e aprovacao deste pedido para liberarmos o fluxo interno.\n\n"
+            f"{summary}\n\nResponda este e-mail com a confirmacao ou ajuste necessario."
+        ),
+        source="client_confirmation_request",
+        entity_type="order",
+        entity_id=order["id"],
+        user=user,
+    )
+    now = now_iso()
+    await db.orders.update_one(
+        {"id": order["id"], "tenant_id": tenant_id},
+        {"$set": {
+            "confirmacao_cliente.solicitada_em": now,
+            "confirmacao_cliente.email_log_id": confirm_log["id"],
+            "updated_at": now,
+        }},
+    )
+    order.setdefault("confirmacao_cliente", {})["solicitada_em"] = now
+    order["confirmacao_cliente"]["email_log_id"] = confirm_log["id"]
+    order["updated_at"] = now
+
+
 async def _create_order_document(
     data: OrderCreate,
     user: Dict[str, Any],
@@ -832,6 +981,7 @@ async def _create_order_document(
             if float(it.get("qtd") or 0) <= 0:
                 raise HTTPException(status_code=400, detail=f"Item '{it.get('item')}' precisa ter quantidade maior que zero.")
         items = usable_items
+    cadastro_pendente_items = _cadastro_pendente_items(items)
 
     # Build default checklist if not provided
     checklist = [c.model_dump() for c in data.checklist_insumos] if data.checklist_insumos else \
@@ -886,6 +1036,14 @@ async def _create_order_document(
         "aprovacao_cliente": "pendente",
         "aprovacao_cliente_obs": "",
         "aprovacao_cliente_em": None,
+        "confirmacao_cliente": {
+            "status": "pendente",
+            "destinatario": cliente.get("email", ""),
+            "solicitada_em": None,
+            "confirmada_em": None,
+        },
+        "cadastro_pendente_items": cadastro_pendente_items,
+        "cadastro_pendente": bool(cadastro_pendente_items),
         # Gap B: aprovacao_comercial
         "aprovacao_comercial": ap_comercial["aprovacao_comercial"],
         "aprovacao_comercial_nivel": ap_comercial["aprovacao_comercial_nivel"],
@@ -903,6 +1061,7 @@ async def _create_order_document(
     }
     await db.orders.insert_one(order)
     order.pop("_id", None)
+    await _notify_order_created(order, user)
     return order
 
 
@@ -1139,10 +1298,52 @@ async def aprovar_cliente(order_id: str, request: Request):
             "aprovacao_cliente_obs": obs,
             "aprovacao_cliente_em": now,
             "aprovacao_cliente_por": user["name"],
+            "confirmacao_cliente.status": "aprovado",
+            "confirmacao_cliente.confirmada_em": now,
+            "confirmacao_cliente.confirmada_por": user["name"],
+            "confirmacao_cliente.observacoes": obs,
             "updated_at": now,
         }}
     )
     return await db.orders.find_one({"id": order_id}, {"_id": 0})
+
+
+@orders_router.post("/{order_id}/solicitar-confirmacao-cliente")
+async def solicitar_confirmacao_cliente(order_id: str, request: Request):
+    user = await get_current_user(request)
+    order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+    cliente_email = ((order.get("cliente") or {}).get("email") or "").strip()
+    if not cliente_email:
+        raise HTTPException(status_code=422, detail="Pedido sem e-mail do cliente para solicitar confirmacao.")
+
+    log = await _queue_email(
+        tenant_id=user["tenant_id"],
+        to_email=cliente_email,
+        subject=f"Confirmacao do pedido {order.get('numero_pedido', '-')}",
+        body=(
+            "Por favor confirme o recebimento e aprovacao deste pedido para liberarmos o fluxo interno.\n\n"
+            f"{_order_email_summary(order)}\n\nResponda este e-mail com a confirmacao ou ajuste necessario."
+        ),
+        source="client_confirmation_request",
+        entity_type="order",
+        entity_id=order_id,
+        user=user,
+    )
+    now = now_iso()
+    await db.orders.update_one(
+        {"id": order_id, "tenant_id": user["tenant_id"]},
+        {"$set": {
+            "aprovacao_cliente": "pendente",
+            "confirmacao_cliente.status": "pendente",
+            "confirmacao_cliente.destinatario": cliente_email,
+            "confirmacao_cliente.solicitada_em": now,
+            "confirmacao_cliente.email_log_id": log["id"],
+            "updated_at": now,
+        }},
+    )
+    return await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
 
 
 @orders_router.post("/{order_id}/aprovar-comercial")
@@ -2372,6 +2573,7 @@ class ApontamentoCreate(BaseModel):
     item_idx: int = 0
     qtd_produzida: float
     turno: str = "integral"     # manha | tarde | noite | integral
+    setor: str = "envase"
     horario: Optional[str] = None
     observacoes: str = ""
 
@@ -2398,6 +2600,7 @@ async def apontar_producao(op_id: str, data: ApontamentoCreate, request: Request
         "item_nome": items[data.item_idx].get("item", ""),
         "qtd_produzida": data.qtd_produzida,
         "turno": data.turno,
+        "setor": data.setor,
         "horario": data.horario or now,
         "observacoes": data.observacoes,
         "por": user["name"],
