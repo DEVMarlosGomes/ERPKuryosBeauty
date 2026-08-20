@@ -3,11 +3,12 @@ ERP v3.0 Process-driven Workflow backend tests.
 Covers: auth, reset, audit logs, blocking tasks, hierarchy, global sample numbering,
 rework, P&D stage gating with CQ approval, and role-based audit access.
 """
-import os
 import pytest
 import requests
+from integration_helpers import get_backend_url, skip_without_backend_url
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://approval-pipeline-9.preview.emergentagent.com").rstrip("/")
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 
 ADMIN_EMAIL = "admin@kuryos.com"

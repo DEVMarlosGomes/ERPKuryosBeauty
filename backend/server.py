@@ -1698,7 +1698,7 @@ async def erp_overview(request: Request):
         db.cq_checklists.count_documents({"tenant_id": tid, "status": {"$in": ["pendente", "em_andamento"]}}),
         # Compras
         db.compras_fornecedores.count_documents({"tenant_id": tid, "homologacao.status": "homologado"}),
-        db.compras_fornecedores.count_documents({"tenant_id": tid, "homologacao.status": "em_avaliacao"}),
+        db.compras_fornecedores.count_documents({"tenant_id": tid, "homologacao.status": {"$in": ["nao_iniciada", "em_processo", "em_avaliacao"]}}),
         db.compras_pos.count_documents({"tenant_id": tid, "status": {"$in": ["emitida", "confirmada"]}}),
         db.compras_pos.count_documents({"tenant_id": tid, "status": {"$in": ["emitida", "confirmada"]}, "data_entrega_prevista": {"$lt": now}}),
         # Pedidos

@@ -6,9 +6,10 @@ transicionado pra IN_PROGRESS para obter um development_id).
 """
 import pytest
 import requests
-import os
+from integration_helpers import get_backend_url, skip_without_backend_url
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 
 
 @pytest.fixture(scope="module")

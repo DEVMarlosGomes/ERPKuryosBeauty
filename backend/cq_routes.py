@@ -117,12 +117,12 @@ async def cq_verificar_lote_aprovado(db, tenant_id: str, lote_id: str):
         {"lote_id": lote_id, "tenant_id": tenant_id},
         sort=[("created_at", -1)],
     )
-    if ultimo and ultimo.get("status_novo") == "reprovado":
+    if not ultimo or ultimo.get("status_novo") not in {"aprovado", "concessao"}:
         raise HTTPException(
             status_code=400,
             detail={
-                "error": "hard_stop_lote_reprovado",
-                "message": "Lote está REPROVADO — movimentação bloqueada. Registre disposição via RNC.",
+                "error": "hard_stop_lote_sem_liberacao_cq",
+                "message": "Lote sem liberacao de CQ. Movimentacao bloqueada ate aprovacao ou concessao registrada.",
             },
         )
 
@@ -247,6 +247,7 @@ class AprovarInput(BaseModel):
     observacoes: Optional[str] = None
     justificativa_concessao: Optional[str] = None   # required when decisao=concessao
     disposicao_imediata: Optional[str] = None       # required when decisao=reprovado
+    instrumento_usado_id: Optional[str] = None
     # devolucao | descarte | reprocesso | concessao
 
 
@@ -1129,6 +1130,23 @@ async def aprovar_ra(ra_id: str, data: AprovarInput, request: Request):
                 detail=f"disposicao_imediata inválida. Valores aceitos: {sorted(DISPOSICOES_VALIDAS)}",
             )
 
+    if data.instrumento_usado_id:
+        instrumento = await db.cq_instrumentos.find_one(
+            {"id": data.instrumento_usado_id, "tenant_id": tenant_id},
+            {"_id": 0},
+        )
+        if not instrumento:
+            raise HTTPException(status_code=404, detail="Instrumento usado na analise nao encontrado")
+        status_real = _calc_instrumento_status(instrumento)
+        if status_real != "calibrado":
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "error": "hard_stop_instrumento_nao_calibrado",
+                    "message": f"Instrumento '{instrumento.get('nome', data.instrumento_usado_id)}' esta com status '{status_real}'. Calibracao valida e obrigatoria para liberar RA.",
+                },
+            )
+
     now = now_iso()
     status_anterior = ra["status"]
     status_novo = data.decisao
@@ -1149,7 +1167,11 @@ async def aprovar_ra(ra_id: str, data: AprovarInput, request: Request):
     await db.cq_registros_analise.update_one(
         {"id": ra_id},
         {
-            "$set": {"status": status_novo, "updated_at": now},
+            "$set": {
+                "status": status_novo,
+                "instrumento_usado_id": data.instrumento_usado_id,
+                "updated_at": now,
+            },
             "$push": {"log_auditoria": log_entry},
         },
     )
@@ -1170,6 +1192,38 @@ async def aprovar_ra(ra_id: str, data: AprovarInput, request: Request):
         user=user,
         ra_id=ra_id,
     )
+
+    posicao_cq = "aprovado" if data.decisao in ("aprovado", "concessao") else "reprovado"
+    if ra.get("item_id"):
+        await db.estoque_items.update_one(
+            {"id": ra["item_id"], "tenant_id": tenant_id},
+            {
+                "$set": {
+                    "posicao_cq": posicao_cq,
+                    "cq_status": data.decisao,
+                    "cq_lote_id": ra.get("lote_id"),
+                    "cq_ra_id": ra_id,
+                    "cq_decidido_em": now,
+                    "updated_at": now,
+                }
+            },
+        )
+
+    if ra.get("recebimento_id"):
+        await db.recebimentos.update_one(
+            {
+                "id": ra["recebimento_id"],
+                "tenant_id": tenant_id,
+                "items.ra_id": ra_id,
+            },
+            {
+                "$set": {
+                    "items.$.ra_status": data.decisao,
+                    "items.$.cq_decidido_em": now,
+                    "updated_at": now,
+                }
+            },
+        )
 
     ret_id: Optional[str] = None
     rnc_id: Optional[str] = None

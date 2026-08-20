@@ -11,13 +11,14 @@ Strategy (senior tester mindset):
   - Error message quality: 4xx bodies are informative
 """
 
-import os
 import pytest
 import requests
 import time
 import re
+from integration_helpers import get_backend_url, skip_without_backend_url
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "http://localhost:8000").rstrip("/")
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 ADMIN_EMAIL = "admin@kuryos.com"
 ADMIN_PASS = "admin123"

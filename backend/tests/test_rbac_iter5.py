@@ -4,11 +4,12 @@ visibility, homologacao MP, live documents, and demo seed users.
 
 Auth uses HttpOnly cookies; we use requests.Session per user.
 """
-import os
 import pytest
 import requests
+from integration_helpers import get_backend_url, skip_without_backend_url
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://approval-pipeline-9.preview.emergentagent.com").rstrip("/")
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 
 USERS = {

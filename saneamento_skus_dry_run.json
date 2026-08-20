@@ -1,0 +1,367 @@
+{
+  "generated_at": "2026-08-20T22:36:28.258231+00:00",
+  "mode": "dry-run",
+  "summary": {
+    "skus_analisados": 50,
+    "updates_planejados": 0,
+    "issues": 50,
+    "updates_por_colecao": {},
+    "issues_por_tipo": {
+      "pd_concluido_sem_evidencia_suficiente": 50
+    }
+  },
+  "updates": [],
+  "issues": [
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "ac60299e-84ff-4ba9-b60a-116dc440ddcf",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "d03cb7a5-11e8-4e32-aa54-c9dfdb834083",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "46e23220-733e-427a-b08d-2da38ea0f0f9",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "38dbebb9-fa01-49bd-9096-3f0c2cb93a07",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "76348b19-b52f-4e94-ba7b-232a362235dc",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "55ca2844-678d-409c-8efd-9f7af948cfc6",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "45537d2e-d776-46cf-9689-4a7b21cb95be",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "5dbe2374-e7a9-4321-a429-8477dbba17f9",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "4a22a14b-45aa-4ca4-ab1f-63e2e9bc011a",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "59653a1b-c55b-40c6-9edc-6e4ec4b1134f",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "b50d4a69-a941-4a9b-956f-d088b949adbe",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "b9190dfa-06de-4a35-ab95-0462e4eeaac0",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "9efd3efa-5f7c-4264-af3b-4b9e8db9eedb",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "a31c454e-7279-4f90-8eef-896696c9c193",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "08eb5e84-2064-4917-bbd5-205799261639",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "ebae83c7-a5ee-41f9-a4f8-7248d7691570",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "8668c4dd-1d10-4776-ad1a-5dd8934f079c",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "30d6314a-5bd4-4ed7-a5ae-dd829dc98ef4",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "6e5dd7db-6a7f-41cb-a2f9-6afcbefe4e0e",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "f97571c6-3f3e-43a3-a223-2027352647fc",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "9120fce6-9f84-47c1-a6cf-93fdf89a2ed1",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "9d312f64-a7a1-459c-9160-1e77aae84077",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "39770d5c-c2ed-457d-9e31-feb8f423a6c0",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "2d2a0dcd-12b4-45d4-8ddc-143035e57851",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "85ec3e64-1098-4976-a08e-a0f38486b3ee",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "08cf5da1-b7ec-40b8-980e-6c364d4dcaa5",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "64fbb829-1b88-46a1-99cf-383673c47dba",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "07690620-e2df-4ae0-b339-18aa90402569",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "9dc0f2ff-b5ce-44d1-9710-bb5ffcd2019c",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "1d00467f-5a86-47fe-bc2b-af1b135faea0",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "aa8c317f-aa4e-4f74-bdf7-103322c22308",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "cc2b7979-9b35-47fb-9941-91564614225d",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "a77b8572-6e11-452d-984d-ae8b78512386",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "4ef8bb60-f68e-4efa-97c5-3833e725c9a2",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "e3597a23-5671-4c89-9fe2-aa3c0b483550",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "c92f0a65-42e3-4b8b-97ae-f0eb8e67d7f0",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "c1449d26-03dc-45b9-8361-95ff356d792c",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "75b398d5-d927-4c90-9d3d-247532a3ed8c",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "ae1ca91d-71f8-444b-b6fd-123424ed67a2",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "10a38a18-bdb4-471f-a44d-1b79a6e90060",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "3daf07a3-47c5-4460-a41c-e666bb1fe9f0",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "8e52a8cd-fe15-4e00-9ec0-5277d6cb40f6",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "25530254-e5c7-49c9-a271-b152933d86be",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "b1547aaf-d41e-4105-9fca-d1a8a6f09135",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "87c11b3d-c5e7-46b3-b7b4-237415ac7f3d",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "172af5f9-15fb-4e3d-8da4-92540cf37103",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "4959ecbf-69ea-41db-a1da-980ac23d832a",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "195ca259-23fe-498d-bc57-8f46b0431fc4",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "bdb44470-ac8b-4141-a5d3-61fd503e9edc",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    },
+    {
+      "type": "pd_concluido_sem_evidencia_suficiente",
+      "sku_id": "7971ef57-cfe5-4505-8cfb-291547bd8890",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "severity": "baixa",
+      "detail": "Nao ha evidencia suficiente para marcar P&D concluido automaticamente."
+    }
+  ],
+  "database": "kuryos_crm"
+}

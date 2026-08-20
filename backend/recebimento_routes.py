@@ -252,14 +252,18 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
         # SLA deadline
         sla_days = sla.get(item.tipo_mp, 3)
         data_limite_cq = (datetime.utcnow() + timedelta(days=sla_days)).isoformat()[:10]
+        lote_id = new_id()
+        ra_id = new_id()
 
         # 1) Find or create estoque item
-        query_estoque: Dict[str, Any] = {"tenant_id": tid, "setor": setor}
+        query_estoque: Dict[str, Any] = {"tenant_id": tid, "setor": setor, "cq_lote_id": lote_id}
         if item.mp_id:
             query_estoque["mp_id"] = item.mp_id
         else:
             query_estoque["nome"] = item.nome
             query_estoque["mp_id"] = None
+        if item.lote:
+            query_estoque["lote"] = item.lote
 
         estoque_item = await db.estoque_items.find_one(query_estoque, {"_id": 0})
         estoque_item_id = None
@@ -269,7 +273,17 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
             if estoque_item.get("posicao_cq") not in ("aprovado",):
                 await db.estoque_items.update_one(
                     {"id": estoque_item_id},
-                    {"$set": {"posicao_cq": "quarentena", "lote": item.lote or estoque_item.get("lote", ""), "updated_at": now}}
+                    {
+                        "$set": {
+                            "posicao_cq": "quarentena",
+                            "cq_status": "quarentena",
+                            "cq_lote_id": lote_id,
+                            "cq_ra_id": ra_id,
+                            "prazo_analise_qualidade": data_limite_cq,
+                            "lote": item.lote or estoque_item.get("lote", ""),
+                            "updated_at": now,
+                        }
+                    }
                 )
         else:
             estoque_item_id = new_id()
@@ -290,6 +304,10 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
                 "validade": item.validade,
                 "observacoes": "",
                 "posicao_cq": "quarentena",
+                "cq_status": "quarentena",
+                "cq_lote_id": lote_id,
+                "cq_ra_id": ra_id,
+                "prazo_analise_qualidade": data_limite_cq,
                 "created_by": user["id"],
                 "created_by_name": user["name"],
                 "created_at": now,
@@ -333,9 +351,9 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
         # 3) Create RA in CQ with SLA deadline
         lote_numero = item.lote or f"L{now[:10].replace('-', '')}"
         ra = {
-            "id": new_id(),
+            "id": ra_id,
             "tenant_id": tid,
-            "lote_id": new_id(),
+            "lote_id": lote_id,
             "lote_numero": lote_numero,
             "tipo": ra_tipo,
             "status": "rascunho",
@@ -367,6 +385,7 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
             "setor": setor,
             "ra_id": ra["id"],
             "ra_status": "rascunho",
+            "lote_id": lote_id,
             "urgente": urgente,
             "data_limite_cq": data_limite_cq,
         })

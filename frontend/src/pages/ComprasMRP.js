@@ -161,6 +161,7 @@ export default function ComprasMRP() {
                             <th className="text-left px-3 py-2 font-medium text-muted-foreground">Número</th>
                             <th className="text-left px-3 py-2 font-medium text-muted-foreground">Data</th>
                             <th className="text-center px-3 py-2 font-medium text-muted-foreground">Status</th>
+                            <th className="text-center px-3 py-2 font-medium text-muted-foreground">Origem</th>
                             <th className="text-center px-3 py-2 font-medium text-muted-foreground">OPs</th>
                             <th className="text-center px-3 py-2 font-medium text-muted-foreground">Disparado por</th>
                             <th className="px-3 py-2" />
@@ -168,14 +169,15 @@ export default function ComprasMRP() {
                     </thead>
                     <tbody>
                         {loading ? (
-                            <tr><td colSpan={6} className="text-center py-10"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" /></td></tr>
+                            <tr><td colSpan={7} className="text-center py-10"><Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" /></td></tr>
                         ) : rodadas.length === 0 ? (
-                            <tr><td colSpan={6} className="text-center py-10 text-muted-foreground">Nenhuma rodada MRP encontrada.</td></tr>
+                            <tr><td colSpan={7} className="text-center py-10 text-muted-foreground">Nenhuma rodada MRP encontrada.</td></tr>
                         ) : rodadas.map(r => (
                             <tr key={r.id} className="border-b last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => nav(`/compras/mrp/${r.id}`)}>
                                 <td className="px-3 py-2 font-mono font-medium">{r.numero_mrp}</td>
                                 <td className="px-3 py-2 text-muted-foreground">{r.created_at?.slice(0, 10)}</td>
                                 <td className="px-3 py-2 text-center"><StatusBadge s={r.status} /></td>
+                                <td className="px-3 py-2 text-center text-muted-foreground">{r.origem_demanda || "manual"}</td>
                                 <td className="px-3 py-2 text-center">{(r.ops_consideradas || []).length}</td>
                                 <td className="px-3 py-2 text-center text-muted-foreground">{r.disparado_por_nome}</td>
                                 <td className="px-3 py-2"><ChevronRight className="h-4 w-4 text-muted-foreground" /></td>

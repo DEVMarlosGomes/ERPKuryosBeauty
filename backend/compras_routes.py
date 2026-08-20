@@ -1425,6 +1425,7 @@ class MRPOPInput(BaseModel):
 
 class MRPCalcularInput(BaseModel):
     ops_input: Optional[List[MRPOPInput]] = None
+    horizonte_dias: int = Field(90, ge=7, le=365)
 
 
 class MRPRevisarItemInput(BaseModel):
@@ -1463,7 +1464,158 @@ def _business_days_delta(data_necessidade_str: str, lead_time: int, buffer: int 
     return dl.isoformat(), dl < hoje
 
 
-async def _calcular_mrp(tenant_id: str, ops_input: Optional[List[dict]], disparado_por: dict) -> dict:
+async def _resolve_compras_item_formula(tenant_id: str, formula_item: Dict[str, Any]) -> Optional[dict]:
+    catalog_id = formula_item.get("catalog_id")
+    codigo = (
+        formula_item.get("codigo_interno")
+        or formula_item.get("mp_codigo")
+        or formula_item.get("codigo")
+        or ""
+    )
+    nome = (
+        formula_item.get("ingredient_name")
+        or formula_item.get("nome_tecnico")
+        or formula_item.get("nome_comercial")
+        or ""
+    )
+
+    queries: List[Dict[str, Any]] = []
+    if catalog_id:
+        queries.extend([
+            {"tenant_id": tenant_id, "catalog_id": catalog_id},
+            {"tenant_id": tenant_id, "pd_catalog_id": catalog_id},
+            {"tenant_id": tenant_id, "origem_id": catalog_id},
+        ])
+        catalog = await db.pd_catalog.find_one(
+            {"tenant_id": tenant_id, "id": catalog_id},
+            {"_id": 0, "codigo_interno": 1, "nome": 1},
+        )
+        if catalog:
+            if catalog.get("codigo_interno"):
+                codigo = codigo or catalog["codigo_interno"]
+            if catalog.get("nome"):
+                nome = nome or catalog["nome"]
+
+    if codigo:
+        queries.append({"tenant_id": tenant_id, "codigo_interno": codigo})
+    if nome:
+        queries.append({"tenant_id": tenant_id, "descricao": {"$regex": f"^{re.escape(nome)}$", "$options": "i"}})
+
+    for query in queries:
+        item = await db.compras_itens.find_one(query, {"_id": 0})
+        if item:
+            return item
+    return None
+
+
+def _quantidade_formula_por_unidade(formula_item: Dict[str, Any]) -> float:
+    for key in ("quantidade_por_unidade", "quantidade_lote_padrao", "quantidade"):
+        try:
+            value = float(formula_item.get(key) or 0)
+        except (TypeError, ValueError):
+            value = 0
+        if value > 0:
+            return value
+
+    try:
+        pct = float(formula_item.get("percentage") or formula_item.get("percentual_mm") or 0)
+    except (TypeError, ValueError):
+        pct = 0
+    return pct / 100 if pct > 0 else 0
+
+
+async def _bom_from_op_tecnico(tenant_id: str, op: Dict[str, Any], quantidade_op: float) -> List[dict]:
+    bom_items: List[dict] = []
+    unresolved: List[dict] = []
+    reviews = (op.get("tecnico") or {}).get("items") or []
+
+    for review in reviews:
+        for formula_item in review.get("itens_formula") or []:
+            ci = await _resolve_compras_item_formula(tenant_id, formula_item)
+            qtd_un = _quantidade_formula_por_unidade(formula_item)
+            if not ci or qtd_un <= 0:
+                unresolved.append({
+                    "ingredient_name": formula_item.get("ingredient_name") or formula_item.get("mp_codigo") or "",
+                    "catalog_id": formula_item.get("catalog_id"),
+                    "motivo": "item_compras_nao_resolvido" if not ci else "quantidade_por_unidade_zerada",
+                })
+                continue
+            bom_items.append({
+                "item_id": ci["id"],
+                "quantidade_por_unidade": qtd_un,
+            })
+
+    if unresolved:
+        op.setdefault("_mrp_unresolved_items", []).extend(unresolved)
+    return bom_items
+
+
+async def _coletar_ops_planejadas_para_mrp(tenant_id: str, horizonte_dias: int) -> List[dict]:
+    hoje = datetime.now(timezone.utc).date()
+    limite = (hoje + timedelta(days=horizonte_dias)).isoformat()
+    slots = await db.pcp_programacao.find(
+        {
+            "tenant_id": tenant_id,
+            "status": {"$in": ["planejado", "em_execucao"]},
+            "data_inicio": {"$lte": limite},
+        },
+        {"_id": 0},
+    ).to_list(1000)
+
+    ops_input: List[dict] = []
+    seen_ops = set()
+    for slot in slots:
+        op_id = slot.get("op_id")
+        if not op_id or op_id in seen_ops:
+            continue
+        op = await db.ops.find_one(
+            {"id": op_id, "tenant_id": tenant_id, "status": {"$nin": ["concluida", "cancelada"]}},
+            {"_id": 0},
+        )
+        if not op:
+            continue
+        seen_ops.add(op_id)
+        quantidade_op = float(slot.get("qtd_planejada") or 0)
+        if quantidade_op <= 0:
+            items = op.get("items") or []
+            quantidade_op = sum(float(item.get("qtd_planejada") or item.get("qtd") or 0) for item in items)
+        if quantidade_op <= 0:
+            quantidade_op = 1.0
+
+        bom_items = await _bom_from_op_tecnico(tenant_id, op, quantidade_op)
+        if not bom_items:
+            continue
+
+        ops_input.append({
+            "op_id": op["id"],
+            "op_numero": op.get("numero_op", ""),
+            "sku_descricao": op.get("project_name") or (op.get("items") or [{}])[0].get("item", ""),
+            "quantidade_op": quantidade_op,
+            "data_necessidade": (slot.get("data_inicio") or slot.get("data_fim") or "")[:10] or None,
+            "bom_items": bom_items,
+            "origem": "pcp_programacao",
+            "pcp_slot_id": slot.get("id"),
+            "itens_nao_resolvidos": op.get("_mrp_unresolved_items", []),
+        })
+    return ops_input
+
+
+async def _estoque_item_disponivel_para_mrp(tenant_id: str, estoque_item: Dict[str, Any]) -> bool:
+    posicao_cq = estoque_item.get("posicao_cq") or estoque_item.get("cq_status") or "livre"
+    if posicao_cq in {"quarentena", "reprovado"}:
+        return False
+    lote_id = estoque_item.get("cq_lote_id")
+    if lote_id:
+        ultimo_status_cq = await db.cq_status_lote.find_one(
+            {"tenant_id": tenant_id, "lote_id": lote_id},
+            sort=[("created_at", -1)],
+        )
+        if not ultimo_status_cq or ultimo_status_cq.get("status_novo") not in {"aprovado", "concessao"}:
+            return False
+    return True
+
+
+async def _calcular_mrp(tenant_id: str, ops_input: Optional[List[dict]], disparado_por: dict, horizonte_dias: int = 90) -> dict:
     """
     Engine MRP semi-automático:
     1. Agregar necessidade bruta por item a partir das OPs
@@ -1479,6 +1631,11 @@ async def _calcular_mrp(tenant_id: str, ops_input: Optional[List[dict]], dispara
 
     # ── 1. Acumular necessidade bruta por item ─────────────────────────────────
     necessidades: Dict[str, Dict[str, Any]] = {}
+
+    origem_demanda = "manual"
+    if not ops_input:
+        ops_input = await _coletar_ops_planejadas_para_mrp(tenant_id, horizonte_dias)
+        origem_demanda = "pcp_programacao"
 
     if ops_input:
         for op in ops_input:
@@ -1514,15 +1671,7 @@ async def _calcular_mrp(tenant_id: str, ops_input: Optional[List[dict]], dispara
         if not ref_key:
             continue
         # Verificar último status CQ do lote para desconto
-        lote_ref = ei.get("lote", "")
-        aprovado = True
-        if lote_ref:
-            ultimo_status_cq = await db.cq_status_lote.find_one(
-                {"tenant_id": tenant_id, "lote_id": lote_ref},
-                sort=[("created_at", -1)],
-            )
-            if ultimo_status_cq and ultimo_status_cq.get("status_novo") == "reprovado":
-                aprovado = False
+        aprovado = await _estoque_item_disponivel_para_mrp(tenant_id, ei)
         qty = ei.get("quantidade_atual", 0) if aprovado else 0.0
         estoque_por_item[ref_key] = estoque_por_item.get(ref_key, 0) + qty
 
@@ -1677,6 +1826,13 @@ async def _calcular_mrp(tenant_id: str, ops_input: Optional[List[dict]], dispara
         "snapshot_estoque": snapshot_estoque,
         "snapshot_pos_transito": snapshot_pos_transito,
         "ops_consideradas": [op.get("op_id", "") for op in (ops_input or [])],
+        "origem_demanda": origem_demanda,
+        "horizonte_dias": horizonte_dias,
+        "itens_nao_resolvidos": [
+            {"op_id": op.get("op_id"), **item}
+            for op in (ops_input or [])
+            for item in op.get("itens_nao_resolvidos", [])
+        ],
     }
 
 
@@ -1689,7 +1845,7 @@ async def calcular_mrp(data: MRPCalcularInput, request: Request):
     tenant_id = user["tenant_id"]
 
     ops_raw = [op.dict() for op in data.ops_input] if data.ops_input else None
-    resultado = await _calcular_mrp(tenant_id, ops_raw, user)
+    resultado = await _calcular_mrp(tenant_id, ops_raw, user, data.horizonte_dias)
 
     numero_mrp = await _gerar_numero_mrp(tenant_id)
     mrp_id = new_id()
@@ -1700,6 +1856,9 @@ async def calcular_mrp(data: MRPCalcularInput, request: Request):
         "numero_mrp": numero_mrp,
         "status": "gerada",
         "ops_consideradas": resultado["ops_consideradas"],
+        "origem_demanda": resultado["origem_demanda"],
+        "horizonte_dias": resultado["horizonte_dias"],
+        "itens_nao_resolvidos": resultado["itens_nao_resolvidos"],
         "snapshot_estoque": resultado["snapshot_estoque"],
         "snapshot_pos_transito": resultado["snapshot_pos_transito"],
         "itens_sugeridos": resultado["itens_sugeridos"],
@@ -2136,6 +2295,59 @@ async def criar_po(data: POCreate, request: Request):
 
     po_id = new_id()
     valor_total_po = round(sum(it["valor_total_item"] for it in itens_doc), 2)
+    demandas_reservadas: List[str] = []
+
+    if data.demanda_ids:
+        seen_demanda_ids = list(dict.fromkeys(data.demanda_ids))
+        demandas = await db.compras_demandas.find(
+            {
+                "id": {"$in": seen_demanda_ids},
+                "tenant_id": tenant_id,
+            },
+            {"_id": 0},
+        ).to_list(len(seen_demanda_ids))
+        if len(demandas) != len(seen_demanda_ids):
+            encontrados = {d["id"] for d in demandas}
+            faltantes = [did for did in seen_demanda_ids if did not in encontrados]
+            raise HTTPException(status_code=404, detail=f"Demanda(s) nao encontrada(s): {faltantes}")
+
+        for demanda in demandas:
+            if demanda.get("status") != "pendente" or demanda.get("po_id"):
+                raise HTTPException(
+                    status_code=409,
+                    detail=f"Demanda {demanda['id']} ja foi processada ou vinculada a uma PO.",
+                )
+            fornecedor_demanda = demanda.get("fornecedor_selecionado_id")
+            if fornecedor_demanda and fornecedor_demanda != data.fornecedor_id:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Demanda {demanda['id']} pertence a outro fornecedor preferencial.",
+                )
+
+        for demanda in demandas:
+            result = await db.compras_demandas.update_one(
+                {
+                    "id": demanda["id"],
+                    "tenant_id": tenant_id,
+                    "status": "pendente",
+                    "$or": [{"po_id": None}, {"po_id": {"$exists": False}}],
+                },
+                {
+                    "$set": {
+                        "po_id": po_id,
+                        "status": "po_reservada",
+                        "reservado_por_id": user["id"],
+                        "reservado_por_nome": user.get("name", ""),
+                        "reservado_em": now_iso(),
+                    }
+                },
+            )
+            if getattr(result, "modified_count", 0) != 1:
+                raise HTTPException(
+                    status_code=409,
+                    detail=f"Demanda {demanda['id']} foi alterada por outro usuario. Recarregue a tela.",
+                )
+            demandas_reservadas.append(demanda["id"])
 
     doc = {
         "id": po_id,
@@ -2147,6 +2359,7 @@ async def criar_po(data: POCreate, request: Request):
         "status": "rascunho",
         "origem": data.origem,
         "ops_vinculadas": data.ops_vinculadas,
+        "demanda_ids": demandas_reservadas,
         "data_emissao": None,
         "data_entrega_solicitada": data.data_entrega_solicitada,
         "data_entrega_confirmada": None,
@@ -2175,14 +2388,14 @@ async def criar_po(data: POCreate, request: Request):
         "log_auditoria": [{"acao": "po_criada", "por_id": user["id"], "por_nome": user.get("name", ""), "em": now_iso()}],
     }
 
-    if data.demanda_ids:
-        for did in data.demanda_ids:
-            await db.compras_demandas.update_one(
-                {"id": did, "tenant_id": tenant_id},
-                {"$set": {"po_id": po_id, "status": "po_emitida"}},
-            )
-
     await db.compras_pos.insert_one(doc)
+
+    if demandas_reservadas:
+        await db.compras_demandas.update_many(
+            {"id": {"$in": demandas_reservadas}, "tenant_id": tenant_id, "po_id": po_id},
+            {"$set": {"status": "po_emitida", "po_numero": doc.get("numero_po"), "updated_at": now_iso()}},
+        )
+
     doc.pop("_id", None)
     return doc
 
@@ -2593,12 +2806,7 @@ async def _ler_estoque_aprovado(tenant_id: str) -> Dict[str, float]:
         ref = ei.get("mp_id") or ei.get("codigo") or ei.get("id")
         if not ref:
             continue
-        aprovado = True
-        lote_ref = ei.get("lote", "")
-        if lote_ref:
-            ult = await db.cq_status_lote.find_one({"tenant_id": tenant_id, "lote_id": lote_ref}, sort=[("created_at", -1)])
-            if ult and ult.get("status_novo") == "reprovado":
-                aprovado = False
+        aprovado = await _estoque_item_disponivel_para_mrp(tenant_id, ei)
         por_item[ref] = por_item.get(ref, 0) + (float(ei.get("quantidade_atual", 0)) if aprovado else 0.0)
     return por_item
 

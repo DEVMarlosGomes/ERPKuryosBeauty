@@ -88,6 +88,41 @@ async def _auto_mark_vencidas(tid: str):
     )
 
 
+async def _assert_expedicao_pronta_para_nf(tid: str, exp_id: Optional[str]) -> Optional[dict]:
+    if not exp_id:
+        return None
+
+    exp = await db.expedicao_ordens.find_one({"id": exp_id, "tenant_id": tid}, {"_id": 0})
+    if not exp:
+        raise HTTPException(status_code=404, detail="Ordem de Expedicao nao encontrada para faturamento")
+    if exp.get("status") not in {"expedido", "entregue"}:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "hard_stop_nf_expedicao_nao_liberada",
+                "message": f"NF so pode ser gerada para EXP expedida ou entregue. Status atual: {exp.get('status')}",
+            },
+        )
+
+    for item in exp.get("items", []):
+        eid = item.get("estoque_item_id")
+        if not eid:
+            continue
+        est = await db.estoque_items.find_one({"id": eid, "tenant_id": tid}, {"_id": 0})
+        if not est:
+            raise HTTPException(status_code=404, detail=f"Item de estoque nao encontrado para NF: {eid}")
+        posicao_cq = est.get("posicao_cq") or est.get("cq_status") or "livre"
+        if posicao_cq in {"quarentena", "reprovado"}:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "error": "hard_stop_nf_item_sem_liberacao_cq",
+                    "message": f"Item '{item.get('produto_nome', eid)}' esta em {posicao_cq}. Faturamento bloqueado.",
+                },
+            )
+    return exp
+
+
 # ===== NF MODELS =====
 class NFCreate(BaseModel):
     order_id: Optional[str] = None
@@ -210,6 +245,8 @@ async def create_nota(data: NFCreate, request: Request):
                 data.valor_total = float(pi["total_pedido"])
                 data.valor_produtos = data.valor_total
 
+    exp_ref = await _assert_expedicao_pronta_para_nf(tid, data.exp_id)
+
     valor_total = data.valor_total or (data.valor_produtos + data.valor_frete + data.valor_impostos)
 
     nf = {
@@ -221,7 +258,7 @@ async def create_nota(data: NFCreate, request: Request):
         "order_id": data.order_id,
         "order_numero": pi_ref.get("order_numero") or data.order_numero,
         "exp_id": data.exp_id,
-        "exp_numero": data.exp_numero,
+        "exp_numero": (exp_ref or {}).get("numero_exp") or data.exp_numero,
         "cliente_nome": data.cliente_nome.strip(),
         "cliente_id": data.cliente_id,
         "cliente_cnpj": data.cliente_cnpj,
@@ -281,6 +318,8 @@ async def update_nota(nf_id: str, data: NFUpdate, request: Request):
                 status_code=422,
                 detail=f"Transição {nf['status']} → {novo_status} não permitida"
             )
+        if novo_status == "emitida":
+            await _assert_expedicao_pronta_para_nf(user["tenant_id"], nf.get("exp_id"))
         historico.append({"de": nf["status"], "para": novo_status, "por": user["name"], "em": now})
         updates["status"] = novo_status
         updates["historico"] = historico

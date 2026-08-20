@@ -176,6 +176,23 @@ export default function ComprasMRPRevisao() {
 
             <ProgressBar revisados={revisados} total={itens.length} />
             {todosPendentes && <p className="text-xs text-muted-foreground">Revise todos os itens antes de aprovar.</p>}
+            <div className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">
+                <span>Origem: <b className="text-foreground">{rodada.origem_demanda || "manual"}</b></span>
+                <span className="mx-2">|</span>
+                <span>Horizonte: <b className="text-foreground">{rodada.horizonte_dias || 90} dias</b></span>
+                {(rodada.itens_nao_resolvidos || []).length > 0 && (
+                    <div className="mt-2 rounded-md border border-amber-300 bg-amber-50 p-2 text-amber-800">
+                        <div className="font-semibold">Itens de formula sem vinculo em Compras ({rodada.itens_nao_resolvidos.length})</div>
+                        <div className="mt-1 flex flex-wrap gap-1">
+                            {rodada.itens_nao_resolvidos.slice(0, 8).map((item, idx) => (
+                                <span key={`${item.op_id || "op"}-${idx}`} className="rounded bg-white/70 px-2 py-0.5">
+                                    {item.ingredient_name || item.catalog_id || item.motivo}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {urgentes.length > 0 && (
                 <div>

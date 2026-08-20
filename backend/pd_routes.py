@@ -16,7 +16,7 @@ import logging
 import asyncio
 import unicodedata
 from validation_utils import clean_text, normalize_cnpj, normalize_email, normalize_phone, is_valid_cnpj, is_valid_email, is_valid_phone
-from workflow_engine import create_workflow_task, audit_log, get_blocking_tasks
+from workflow_engine import create_workflow_task, audit_log, get_blocking_tasks, next_sequence
 from rbac import (
     require_roles,
     has_role,
@@ -6080,6 +6080,384 @@ def _serialize_doc(doc):
     return doc
 
 
+def _homologacao_status_for_compras(status: str) -> str:
+    return {
+        "pendente": "em_processo",
+        "homologado": "homologado",
+        "homologada": "homologado",
+        "rejeitado": "reprovado",
+        "rejeitada": "reprovado",
+        "suspenso": "suspenso",
+        "suspensa": "suspenso",
+    }.get((status or "").strip().lower(), "nao_iniciada")
+
+
+def _pd_mp_tipo2(tipo_mp: str) -> str:
+    tipo = (tipo_mp or "").strip().upper()
+    if tipo == "ROTULO":
+        return "RT"
+    if tipo == "EMBALAGEM":
+        return "EP"
+    return "MP"
+
+
+def _pd_mp_categoria_compras(mp: Dict[str, Any]) -> str:
+    tipo = (mp.get("tipo_mp") or "").strip().upper()
+    funcao = (mp.get("funcao") or "").strip().lower()
+    nome = (mp.get("nome") or "").strip().lower()
+    if "fragr" in funcao or "fragr" in nome:
+        return "fragrancia"
+    if tipo in {"ROTULO", "EMBALAGEM"}:
+        return "embalagem"
+    return "mp"
+
+
+async def _next_pd_material_code(tenant_id: str, tipo2: str) -> str:
+    seq = await next_sequence(tenant_id, f"mat_{tipo2}", start=0)
+    return f"{tipo2}-{seq:05d}"
+
+
+async def _upsert_compras_fornecedor_from_homologacao(tenant_id: str, supplier: Dict[str, Any], user: Optional[dict] = None) -> Optional[dict]:
+    if not supplier or not getattr(db, "compras_fornecedores", None):
+        return None
+
+    now = now_iso()
+    cnpj_norm = supplier.get("cnpj_normalized") or normalize_cnpj(supplier.get("cnpj", ""))
+    lookup_or: List[Dict[str, Any]] = [
+        {"origem_homologacao_id": supplier.get("id")},
+        {"homologacao.origem_homologacao_id": supplier.get("id")},
+    ]
+    if cnpj_norm:
+        lookup_or.extend([
+            {"cnpj_normalizado": cnpj_norm},
+            {"cnpj_normalized": cnpj_norm},
+        ])
+    if supplier.get("razao_social"):
+        lookup_or.append({"razao_social": supplier.get("razao_social")})
+
+    existing = await db.compras_fornecedores.find_one(
+        {"tenant_id": tenant_id, "$or": lookup_or},
+        {"_id": 0},
+    )
+    status_homologacao = _homologacao_status_for_compras(supplier.get("status"))
+    categorias = [supplier.get("categoria")] if supplier.get("categoria") else []
+    contato = {
+        "id": (existing.get("contatos") or [{}])[0].get("id") if existing else new_id(),
+        "nome": supplier.get("contato_nome", ""),
+        "email": supplier.get("contato_email", ""),
+        "telefone": supplier.get("contato_telefone", ""),
+        "whatsapp": supplier.get("contato_telefone", ""),
+    }
+    homologacao = {
+        "status": status_homologacao,
+        "data_homologacao": supplier.get("data_homologacao"),
+        "proxima_reavaliacao": None,
+        "documentos_file_ids": [],
+        "historico_rncs_count": 0,
+        "historico_rncs_criticas_12m": 0,
+        "origem_modulo": "pd_homologacao",
+        "origem_homologacao_id": supplier.get("id"),
+        "parecer": supplier.get("parecer_homologacao", ""),
+    }
+    base_updates = {
+        "razao_social": supplier.get("razao_social", ""),
+        "nome_fantasia": supplier.get("nome_fantasia", ""),
+        "cnpj": supplier.get("cnpj", ""),
+        "cnpj_normalizado": cnpj_norm,
+        "cnpj_normalized": cnpj_norm,
+        "endereco": {"logradouro": supplier.get("endereco", "")} if supplier.get("endereco") else {},
+        "contatos": [contato] if any(contato.get(k) for k in ("nome", "email", "telefone")) else [],
+        "categorias": categorias,
+        "homologacao": homologacao,
+        "status_cadastro": "ativo" if status_homologacao != "suspenso" else "inativo",
+        "origem": "pd_homologacao",
+        "origem_homologacao_id": supplier.get("id"),
+        "updated_at": now,
+    }
+
+    if existing:
+        await db.compras_fornecedores.update_one(
+            {"tenant_id": tenant_id, "id": existing["id"]},
+            {
+                "$set": base_updates,
+                "$push": {
+                    "log_auditoria": {
+                        "acao": "sincronizado_pd_homologacao",
+                        "por_id": (user or {}).get("id", ""),
+                        "por_nome": (user or {}).get("name", ""),
+                        "em": now,
+                    }
+                },
+            },
+        )
+        supplier_id = existing["id"]
+    else:
+        supplier_id = new_id()
+        doc = {
+            "id": supplier_id,
+            "tenant_id": tenant_id,
+            "codigo_interno": f"FOR-{(await next_sequence(tenant_id, 'compras_fornecedores', start=0)):05d}",
+            "ie": "",
+            "im": "",
+            **base_updates,
+            "created_at": now,
+            "log_auditoria": [{
+                "acao": "criado_por_pd_homologacao",
+                "por_id": (user or {}).get("id", ""),
+                "por_nome": (user or {}).get("name", ""),
+                "em": now,
+            }],
+        }
+        await db.compras_fornecedores.insert_one(doc)
+
+    synced = await db.compras_fornecedores.find_one({"tenant_id": tenant_id, "id": supplier_id}, {"_id": 0})
+    await db.homologacao_fornecedores.update_one(
+        {"tenant_id": tenant_id, "id": supplier.get("id")},
+        {"$set": {
+            "compras_fornecedor_id": supplier_id,
+            "compras_codigo_interno": (synced or {}).get("codigo_interno", ""),
+            "updated_at": now,
+        }},
+    )
+    return synced
+
+
+async def _resolve_compras_fornecedor_for_mp(tenant_id: str, mp: Dict[str, Any], user: Optional[dict] = None) -> tuple[str, str]:
+    if mp.get("fornecedor_id"):
+        fornecedor_pd = await db.homologacao_fornecedores.find_one(
+            {"tenant_id": tenant_id, "id": mp["fornecedor_id"]},
+            {"_id": 0},
+        )
+        if fornecedor_pd:
+            synced = await _upsert_compras_fornecedor_from_homologacao(tenant_id, fornecedor_pd, user)
+            if synced:
+                return synced.get("id", ""), synced.get("razao_social") or synced.get("nome_fantasia") or mp.get("fornecedor_nome", "")
+
+    if mp.get("fornecedor_nome") and getattr(db, "compras_fornecedores", None):
+        fornecedor = await db.compras_fornecedores.find_one(
+            {
+                "tenant_id": tenant_id,
+                "$or": [
+                    {"razao_social": mp.get("fornecedor_nome")},
+                    {"nome_fantasia": mp.get("fornecedor_nome")},
+                ],
+            },
+            {"_id": 0},
+        )
+        if fornecedor:
+            return fornecedor.get("id", ""), fornecedor.get("razao_social") or fornecedor.get("nome_fantasia") or mp.get("fornecedor_nome", "")
+    return "", mp.get("fornecedor_nome", "")
+
+
+async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any], user: Optional[dict] = None) -> Optional[dict]:
+    if not mp:
+        return None
+
+    now = now_iso()
+    tipo2 = _pd_mp_tipo2(mp.get("tipo_mp", ""))
+    codigo = (mp.get("codigo_interno") or "").strip()
+    if not codigo:
+        codigo = await _next_pd_material_code(tenant_id, tipo2)
+        await db.homologacao_mps.update_one(
+            {"tenant_id": tenant_id, "id": mp.get("id")},
+            {"$set": {"codigo_interno": codigo, "updated_at": now}},
+        )
+        mp = {**mp, "codigo_interno": codigo}
+
+    fornecedor_compras_id, fornecedor_nome = await _resolve_compras_fornecedor_for_mp(tenant_id, mp, user)
+    status_homologacao = _homologacao_status_for_compras(mp.get("status"))
+    material_status = "bloqueado" if status_homologacao in {"reprovado", "suspenso"} else "ativo"
+    fornecedor_entry = None
+    if fornecedor_compras_id or fornecedor_nome:
+        fornecedor_entry = {
+            "fornecedor_id": fornecedor_compras_id,
+            "fornecedor_nome": fornecedor_nome,
+            "codigo_fornecedor": "",
+            "status_homologacao": status_homologacao,
+            "preco_por_unidade": float(mp.get("custo_referencia") or 0),
+            "moeda": "BRL",
+            "adicionado_em": now,
+        }
+
+    material_query = {
+        "tenant_id": tenant_id,
+        "$or": [
+            {"homologacao_mp_id": mp.get("id")},
+            {"origem_homologacao_id": mp.get("id")},
+            {"codigo_interno": codigo},
+            {"nome": mp.get("nome", "")},
+        ],
+    }
+    material = await db.materiais.find_one(material_query, {"_id": 0}) if getattr(db, "materiais", None) else None
+    fornecedores = list((material or {}).get("fornecedores") or [])
+    if fornecedor_entry:
+        fornecedores = [
+            entry for entry in fornecedores
+            if (entry.get("fornecedor_id") or entry.get("fornecedor_nome")) != (fornecedor_entry.get("fornecedor_id") or fornecedor_entry.get("fornecedor_nome"))
+        ]
+        fornecedores.append(fornecedor_entry)
+
+    material_updates = {
+        "codigo_interno": codigo,
+        "tipo2": tipo2,
+        "subtipo": mp.get("funcao", "") or mp.get("tipo_mp", ""),
+        "nome": mp.get("nome", ""),
+        "descricao": mp.get("observacoes", "") or mp.get("especificacoes_tecnicas", ""),
+        "unidade_estoque": mp.get("unidade", "kg"),
+        "unidade_compra": mp.get("unidade", "kg"),
+        "fator_conversao": 1.0,
+        "fornecedores": fornecedores,
+        "atributos": {
+            "inci": mp.get("inci", ""),
+            "funcao": mp.get("funcao", ""),
+            "tipo_mp": mp.get("tipo_mp", ""),
+            "certificados": mp.get("certificados") or [],
+            "msds_url": mp.get("msds_url", ""),
+            "validade_laudo": mp.get("validade_laudo"),
+        },
+        "status": material_status,
+        "homologacao_mp_id": mp.get("id"),
+        "origem": "pd_homologacao",
+        "origem_homologacao_id": mp.get("id"),
+        "updated_at": now,
+    }
+
+    material_id = (material or {}).get("id")
+    if getattr(db, "materiais", None):
+        if material:
+            await db.materiais.update_one({"tenant_id": tenant_id, "id": material_id}, {"$set": material_updates})
+        else:
+            material_id = new_id()
+            await db.materiais.insert_one({
+                "id": material_id,
+                "tenant_id": tenant_id,
+                "categoria_mp_id": "",
+                "categoria_mp_codigo": "",
+                "categoria_mp_nome": "",
+                "created_by": (user or {}).get("id", ""),
+                "created_by_name": (user or {}).get("name", ""),
+                "created_at": now,
+                **material_updates,
+            })
+
+    compras_item = None
+    compras_item_id = ""
+    if getattr(db, "compras_itens", None):
+        compras_categoria = _pd_mp_categoria_compras(mp)
+        item_query = {
+            "tenant_id": tenant_id,
+            "$or": [
+                {"homologacao_mp_id": mp.get("id")},
+                {"codigo_interno": codigo},
+                {"descricao": mp.get("nome", "")},
+            ],
+        }
+        compras_item = await db.compras_itens.find_one(item_query, {"_id": 0})
+        homologados = set((compras_item or {}).get("fornecedores_homologados") or [])
+        if fornecedor_compras_id:
+            if status_homologacao == "homologado":
+                homologados.add(fornecedor_compras_id)
+            else:
+                homologados.discard(fornecedor_compras_id)
+        item_updates = {
+            "codigo_interno": codigo,
+            "descricao": mp.get("nome", ""),
+            "categoria": compras_categoria,
+            "sub_categoria": mp.get("funcao", "") or mp.get("tipo_mp", ""),
+            "unidade_compra": mp.get("unidade", "kg"),
+            "fator_conversao_producao": 1.0,
+            "estoque_minimo": (compras_item or {}).get("estoque_minimo"),
+            "estoque_seguranca": (compras_item or {}).get("estoque_seguranca", 0.0),
+            "lead_time_dias": (compras_item or {}).get("lead_time_dias", 0),
+            "requer_homologacao_cq": True,
+            "fornecedores_homologados": sorted(homologados),
+            "homologacao_mp_id": mp.get("id"),
+            "material_id": material_id or "",
+            "pd_catalog_id": (compras_item or {}).get("pd_catalog_id", ""),
+            "origem": "pd_homologacao",
+            "updated_at": now,
+        }
+        if compras_item:
+            compras_item_id = compras_item.get("id", "")
+            await db.compras_itens.update_one({"tenant_id": tenant_id, "id": compras_item_id}, {"$set": item_updates})
+        else:
+            compras_item_id = new_id()
+            await db.compras_itens.insert_one({
+                "id": compras_item_id,
+                "tenant_id": tenant_id,
+                "ultimo_preco_pago": None,
+                "created_at": now,
+                **item_updates,
+            })
+
+    if getattr(db, "pd_catalog", None):
+        catalog_query = {
+            "tenant_id": tenant_id,
+            "$or": [
+                {"codigo_interno": codigo},
+                {"nome": mp.get("nome", "")},
+                {"inci": mp.get("inci", "")},
+            ],
+        }
+        catalog_updates = {
+            "nome": mp.get("nome", ""),
+            "inci": mp.get("inci", ""),
+            "codigo_interno": codigo,
+            "fornecedor": fornecedor_nome,
+            "preco_rs_kg": float(mp.get("custo_referencia") or 0),
+            "moeda": "BRL",
+            "unidade": mp.get("unidade", "kg"),
+            "categoria": mp.get("funcao", "") or mp.get("tipo_mp", ""),
+            "homologacao": {
+                "mp_id": mp.get("id"),
+                "status": mp.get("status"),
+                "fornecedor_id": mp.get("fornecedor_id"),
+                "fornecedor_compras_id": fornecedor_compras_id,
+                "fornecedor_nome": fornecedor_nome,
+                "parecer": mp.get("parecer_homologacao", ""),
+                "data_homologacao": mp.get("data_homologacao"),
+            },
+            "compras_item_id": compras_item_id,
+            "material_id": material_id or "",
+            "ultima_atualizacao": now,
+            "atualizado_por": (user or {}).get("name", ""),
+            "atualizado_por_id": (user or {}).get("id", ""),
+        }
+        catalog_existing = await db.pd_catalog.find_one(catalog_query, {"_id": 0})
+        if catalog_existing:
+            await db.pd_catalog.update_one({"tenant_id": tenant_id, "id": catalog_existing["id"]}, {"$set": catalog_updates})
+            await db.compras_itens.update_one(
+                {"tenant_id": tenant_id, "id": compras_item_id},
+                {"$set": {"pd_catalog_id": catalog_existing["id"]}},
+            ) if compras_item_id and getattr(db, "compras_itens", None) else None
+        else:
+            catalog_id = new_id()
+            await db.pd_catalog.insert_one({
+                "id": catalog_id,
+                "tenant_id": tenant_id,
+                "observacoes": mp.get("observacoes", ""),
+                "created_at": now,
+                **catalog_updates,
+            })
+            if compras_item_id and getattr(db, "compras_itens", None):
+                await db.compras_itens.update_one(
+                    {"tenant_id": tenant_id, "id": compras_item_id},
+                    {"$set": {"pd_catalog_id": catalog_id}},
+                )
+
+    await db.homologacao_mps.update_one(
+        {"tenant_id": tenant_id, "id": mp.get("id")},
+        {"$set": {
+            "codigo_interno": codigo,
+            "compras_item_id": compras_item_id,
+            "material_id": material_id or "",
+            "compras_fornecedor_id": fornecedor_compras_id,
+            "updated_at": now,
+        }},
+    )
+    return await db.homologacao_mps.find_one({"tenant_id": tenant_id, "id": mp.get("id")}, {"_id": 0})
+
+
 # ----- FORNECEDORES -----
 
 @pd_router.post("/homologacao/fornecedores")
@@ -6110,7 +6488,8 @@ async def create_fornecedor(data: FornecedorHomologacao, request: Request):
         "updated_at": now,
     }
     await db.homologacao_fornecedores.insert_one(doc)
-    return _serialize_doc(doc)
+    await _upsert_compras_fornecedor_from_homologacao(user["tenant_id"], doc, user)
+    return await db.homologacao_fornecedores.find_one({"id": f_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
 
 
 @pd_router.get("/homologacao/fornecedores")
@@ -6159,7 +6538,9 @@ async def update_fornecedor(f_id: str, data: FornecedorUpdate, request: Request)
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado")
-    return await db.homologacao_fornecedores.find_one({"id": f_id}, {"_id": 0})
+    updated = await db.homologacao_fornecedores.find_one({"id": f_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    await _upsert_compras_fornecedor_from_homologacao(user["tenant_id"], updated, user)
+    return await db.homologacao_fornecedores.find_one({"id": f_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
 
 
 @pd_router.post("/homologacao/fornecedores/{f_id}/homologar")
@@ -6189,7 +6570,9 @@ async def homologar_fornecedor(f_id: str, data: HomologarRequest, request: Reque
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Fornecedor não encontrado")
-    return await db.homologacao_fornecedores.find_one({"id": f_id}, {"_id": 0})
+    updated = await db.homologacao_fornecedores.find_one({"id": f_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    await _upsert_compras_fornecedor_from_homologacao(user["tenant_id"], updated, user)
+    return await db.homologacao_fornecedores.find_one({"id": f_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
 
 
 @pd_router.delete("/homologacao/fornecedores/{f_id}")
@@ -6245,7 +6628,8 @@ async def create_mp(data: MPHomologacao, request: Request):
         "updated_at": now,
     }
     await db.homologacao_mps.insert_one(doc)
-    return _serialize_doc(doc)
+    await _upsert_material_from_homologacao_mp(user["tenant_id"], doc, user)
+    return await db.homologacao_mps.find_one({"id": mp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
 
 
 @pd_router.get("/homologacao/mps")
@@ -6297,7 +6681,8 @@ async def update_mp(mp_id: str, data: MPUpdate, request: Request):
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="MP não encontrada")
-    mp_doc = await db.homologacao_mps.find_one({"id": mp_id}, {"_id": 0})
+    mp_doc = await db.homologacao_mps.find_one({"id": mp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    mp_doc = await _upsert_material_from_homologacao_mp(user["tenant_id"], mp_doc, user) or mp_doc
     catalog_docs = await db.pd_catalog.find(
         {
             "tenant_id": user["tenant_id"],
@@ -6323,7 +6708,7 @@ async def update_mp(mp_id: str, data: MPUpdate, request: Request):
                 },
             }],
         )
-    return mp_doc
+    return await db.homologacao_mps.find_one({"id": mp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
 
 
 @pd_router.post("/homologacao/mps/{mp_id}/homologar")
@@ -6367,7 +6752,7 @@ async def homologar_mp(mp_id: str, data: HomologarRequest, request: Request):
         {"id": mp_id, "tenant_id": user["tenant_id"]},
         {"$set": update, "$push": {"historico": evento}}
     )
-    updated_mp = await db.homologacao_mps.find_one({"id": mp_id}, {"_id": 0})
+    updated_mp = await db.homologacao_mps.find_one({"id": mp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     catalog_query = {
         "tenant_id": user["tenant_id"],
         "$or": [
@@ -6413,7 +6798,7 @@ async def homologar_mp(mp_id: str, data: HomologarRequest, request: Request):
                 "updated_at": now,
             }},
         )
-    return updated_mp
+    return await _upsert_material_from_homologacao_mp(user["tenant_id"], updated_mp, user)
 
 
 @pd_router.post("/homologacao/mps/{mp_id}/suspender")
@@ -6454,7 +6839,8 @@ async def suspender_mp(mp_id: str, data: SuspenderRequest, request: Request):
         before={"status": mp.get("status")},
         after={"status": "suspensa", "parecer": data.parecer},
     )
-    return await db.homologacao_mps.find_one({"id": mp_id}, {"_id": 0})
+    updated_mp = await db.homologacao_mps.find_one({"id": mp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    return await _upsert_material_from_homologacao_mp(user["tenant_id"], updated_mp, user)
 
 
 @pd_router.post("/homologacao/mps/{mp_id}/reativar")
@@ -6485,7 +6871,8 @@ async def reativar_mp(mp_id: str, data: SuspenderRequest, request: Request):
         {"id": mp_id, "tenant_id": user["tenant_id"]},
         {"$set": update, "$push": {"historico": evento}}
     )
-    return await db.homologacao_mps.find_one({"id": mp_id}, {"_id": 0})
+    updated_mp = await db.homologacao_mps.find_one({"id": mp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    return await _upsert_material_from_homologacao_mp(user["tenant_id"], updated_mp, user)
 
 
 @pd_router.delete("/homologacao/mps/{mp_id}")

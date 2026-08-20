@@ -8,7 +8,7 @@ const AREAS = [
   { title: "WMS / Movimentacao", description: "Entradas, saidas, transferencias e ajustes.", path: "/estoque/movimentacao", icon: PackageCheck },
   { title: "Recebimento", description: "Entrada operacional de materiais e conferencias.", path: "/recebimento", icon: PackageCheck },
   { title: "Expedicao", description: "Separacao, conferencia, despacho e entrega.", path: "/expedicao", icon: Truck },
-  { title: "Agendamentos", description: "Entregas e coletas vinculadas ao fluxo logistico.", path: "/expedicao", icon: CalendarClock },
+  { title: "Agendamentos", description: "Entregas e coletas vinculadas ao fluxo logistico.", path: "/logistica/agendamentos", icon: CalendarClock },
 ];
 
 export default function LogisticaPage() {

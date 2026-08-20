@@ -89,6 +89,7 @@ const NAV_MODULES = [
             { path: "/estoque/movimentacao", label: "WMS / Movimentacao", icon: ArrowLeftRight },
             { path: "/recebimento", label: "Recebimento", icon: Package },
             { path: "/expedicao", label: "Expedicao", icon: Truck },
+            { path: "/logistica/agendamentos", label: "Agendamentos", icon: Calendar },
         ],
     },
     {

@@ -15,23 +15,16 @@ Execução:
   pytest backend/tests/test_compras.py -v
 """
 
-import os
 import pytest
 import requests
+from integration_helpers import get_backend_url, skip_without_backend_url
 
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
-if not BASE_URL:
-    try:
-        with open("/app/frontend/.env") as f:
-            for line in f:
-                if line.startswith("REACT_APP_BACKEND_URL="):
-                    BASE_URL = line.split("=", 1)[1].strip().rstrip("/")
-    except FileNotFoundError:
-        BASE_URL = "http://localhost:8001"
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 
 API = f"{BASE_URL}/api/compras"
 

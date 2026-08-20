@@ -11,9 +11,12 @@ Endpoints:
 
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 import math
 import os
+
+from rbac import require_roles
+from workflow_engine import audit_log
 
 propostas_router = APIRouter(prefix="/api/crm/projects", tags=["propostas"])
 
@@ -39,13 +42,37 @@ class InsumoItem(BaseModel):
     unidade: str = ""
 
 class PedidoItem(BaseModel):
+    id: str = ""
+    sample_id: str = ""
+    variacao_id: str = ""
+    sku_id: str = ""
     codigo_kuryos: str = ""
     codigo_cliente: str = ""
     item: str = ""
     prazo_entrega: str = ""
     qtd: Optional[float] = None
+    custo_base: Optional[float] = None
+    margem_percentual: Optional[float] = None
+    preco_sugerido: Optional[float] = None
+    preco_negociado: Optional[float] = None
     valor_unitario: Optional[float] = None
     valor_total: Optional[float] = None  # calculado no frontend, salvo aqui
+
+class DesenvolvimentoEmbalagemItem(BaseModel):
+    id: str = ""
+    pedido_item_id: str = ""
+    sample_id: str = ""
+    variacao_id: str = ""
+    sku_id: str = ""
+    tipo: str = ""
+    descricao: str = ""
+    especificacao: str = ""
+    fornecedor_id: str = ""
+    fornecedor_nome: str = ""
+    custo_unitario: Optional[float] = None
+    prazo_dias: Optional[int] = None
+    status: str = "em_desenvolvimento"
+    observacoes: str = ""
 
 class PropostaPayload(BaseModel):
     # Bloco A — Proposta Comercial
@@ -56,11 +83,16 @@ class PropostaPayload(BaseModel):
     observacoes_proposta: str = ""
     # Bloco B — Pedido de Fabricação
     items_pedido: List[PedidoItem] = []
+    desenvolvimentos_embalagem: List[DesenvolvimentoEmbalagemItem] = []
     condicoes_pagamento: str = ""
     insumos_fabricacao: List[InsumoItem] = []
     rodape_observacoes: str = ""
     # Controle
-    status: str = "rascunho"  # rascunho | confirmado | cancelado
+    status: str = "rascunho"  # rascunho | enviado | confirmado | cancelado
+    negociacao_status: str = "rascunho"  # rascunho | em_negociacao | aprovado | reprovado
+    negociacao_motivo: str = ""
+    negociacao_evidencia_file_id: str = ""
+    negociacao_observacoes: str = ""
 
 class PropostaPatch(BaseModel):
     tipo_produto: Optional[str] = None
@@ -69,10 +101,26 @@ class PropostaPatch(BaseModel):
     insumos_inclusos: Optional[List[str]] = None
     observacoes_proposta: Optional[str] = None
     items_pedido: Optional[List[PedidoItem]] = None
+    desenvolvimentos_embalagem: Optional[List[DesenvolvimentoEmbalagemItem]] = None
     condicoes_pagamento: Optional[str] = None
     insumos_fabricacao: Optional[List[InsumoItem]] = None
     rodape_observacoes: Optional[str] = None
     status: Optional[str] = None
+    negociacao_status: Optional[str] = None
+    negociacao_motivo: Optional[str] = None
+    negociacao_evidencia_file_id: Optional[str] = None
+    negociacao_observacoes: Optional[str] = None
+
+
+class NegociacaoPayload(BaseModel):
+    decisao: str
+    motivo: str = ""
+    evidencia_file_id: str = ""
+    observacoes: str = ""
+
+
+WRITE_ROLES = {"admin", "sales_ops", "vendedor"}
+NEGOTIATION_DECISIONS = {"aprovado", "reprovado"}
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

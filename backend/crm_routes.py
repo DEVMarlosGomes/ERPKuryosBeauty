@@ -1,4 +1,4 @@
-"""
+﻿"""
 CRM Routes - Kuryos Beauty CRM
 3-level pipeline: Clients (CRM1) → Projects (CRM2) → Samples (CRM3) → SKU
 """
@@ -119,6 +119,8 @@ PROJECT_TRANSITIONS = {
 }
 
 SAMPLE_STAGES = ["solicitada", "em_elaboracao", "retrabalho", "enviada", "aprovada", "reprovada"]
+SAMPLE_TEST_STATUSES = ["aguardando", "em_teste", "liberada", "reprovada"]
+CLIENT_DECISION_STATUSES = ["aprovada", "retrabalho", "arquivado"]
 
 SAMPLE_TRANSITIONS = {
     "solicitada": ["em_elaboracao"],
@@ -762,6 +764,137 @@ def _days_until(target: Optional[datetime]) -> Optional[int]:
     now = datetime.now()
     delta = target - now
     return max(delta.days, 0)
+
+def _now_plus_hours_iso(now: str, hours: int) -> str:
+    try:
+        base = datetime.fromisoformat(str(now).replace("Z", "+00:00"))
+    except ValueError:
+        base = datetime.now(timezone.utc)
+    if base.tzinfo is None:
+        base = base.replace(tzinfo=timezone.utc)
+    return (base + timedelta(hours=hours)).isoformat()
+
+def _initial_sample_test_state(now: str) -> dict:
+    return {
+        "status_teste": "aguardando",
+        "prazo_teste_ate": _now_plus_hours_iso(now, 48),
+        "inicio_teste_em": None,
+        "fim_teste_em": None,
+        "teste_historico": [{
+            "de": "",
+            "para": "aguardando",
+            "data": now,
+            "sla_horas": 48,
+            "origem": "crm_sample_created",
+        }],
+    }
+
+def _sample_test_patch_for_pd_status(pd_status: str, now: str) -> tuple[dict, Optional[dict]]:
+    status_map = {
+        "em_testes": "em_teste",
+        "aguardando_aprovacao": "liberada",
+        "aprovado": "liberada",
+        "concluido": "liberada",
+        "retrabalho_interno": "reprovada",
+    }
+    status_teste = status_map.get(pd_status)
+    if not status_teste:
+        return {}, None
+
+    patch = {
+        "status_teste": status_teste,
+        "prazo_teste_ate": _now_plus_hours_iso(now, 48),
+        "updated_at": now,
+    }
+    if status_teste == "em_teste":
+        patch["inicio_teste_em"] = now
+        patch["fim_teste_em"] = None
+    elif status_teste in {"liberada", "reprovada"}:
+        patch["fim_teste_em"] = now
+
+    history = {
+        "para": status_teste,
+        "data": now,
+        "status_pd": pd_status,
+        "sla_horas": 48,
+        "origem": "pd_status_sync",
+    }
+    return patch, history
+
+def _build_briefing_record(
+    *,
+    tenant_id: str,
+    project: dict,
+    sample_id: str,
+    sample_payload: dict,
+    user: dict,
+    now: str,
+    origem: str = "crm_sample",
+) -> dict:
+    campos = {
+        "nome_produto": sample_payload.get("nome_produto") or sample_payload.get("nome_amostra", ""),
+        "categoria": sample_payload.get("categoria", ""),
+        "briefing_base": sample_payload.get("briefing_base", ""),
+        "briefing_especifico": sample_payload.get("briefing_especifico", ""),
+        "produto": sample_payload.get("produto", ""),
+        "objetivo_projeto": sample_payload.get("objetivo_projeto", ""),
+        "aplicacoes_desenvolver": sample_payload.get("aplicacoes_desenvolver", ""),
+        "ativos_claims": sample_payload.get("ativos_claims", ""),
+        "referencias": sample_payload.get("referencias", ""),
+        "textura_esperada": sample_payload.get("textura_esperada", ""),
+        "aplicacao": sample_payload.get("aplicacao", ""),
+        "sensorial": sample_payload.get("sensorial", ""),
+        "ph": sample_payload.get("ph", ""),
+        "observacao_tecnica": sample_payload.get("observacao_tecnica", ""),
+        "publico_alvo": project.get("publico_alvo", ""),
+        "posicionamento": project.get("posicionamento", ""),
+        "tipo_servico": project.get("tipo_servico", ""),
+        "volume_estimado_pedido": project.get("volume_estimado_pedido"),
+        "prazo_desejado_amostra": project.get("prazo_desejado_amostra", ""),
+    }
+    return {
+        "id": f"briefing-{sample_id}",
+        "tenant_id": tenant_id,
+        "cliente_id": project.get("cliente_id"),
+        "cliente_nome": project.get("cliente_nome", ""),
+        "projeto_id": project.get("id"),
+        "projeto_nome": project.get("nome_projeto", ""),
+        "amostra_id": sample_id,
+        "versao": 1,
+        "status": "ativo",
+        "origem": origem,
+        "campos": campos,
+        "created_by": user.get("id"),
+        "created_by_name": user.get("name", ""),
+        "created_at": now,
+        "updated_at": now,
+    }
+
+async def _persist_briefing_record(record: dict):
+    collection = getattr(db, "crm_briefings", None)
+    if collection and hasattr(collection, "insert_one"):
+        await collection.insert_one(dict(record))
+    return record
+
+def _build_client_decision(
+    *,
+    resultado: str,
+    feedback_cliente: str,
+    direcoes_retrabalho: str,
+    user: dict,
+    now: str,
+    rework_sample_id: Optional[str] = None,
+):
+    canonical = "arquivado" if resultado == "reprovada" else resultado
+    return {
+        "resultado": canonical,
+        "feedback_cliente": feedback_cliente or "",
+        "direcoes_retrabalho": direcoes_retrabalho or "",
+        "registrado_por": user.get("id"),
+        "registrado_por_nome": user.get("name", ""),
+        "registrado_em": now,
+        "rework_sample_id": rework_sample_id,
+    }
 
 async def _create_project_deadline_alert_task(project: dict, user: dict):
     prazo = clean_text(project.get("prazo_desejado_amostra", ""))
@@ -2095,7 +2228,10 @@ async def move_project(project_id: str, data: ProjectMove, request: Request):
     )
     kickoff_created = None
     kickoff_tasks = []
+    skus_gerados = []
     if new_stage == "pedido_aprovado":
+        skus_gerados = await _generate_skus_for_project_approved_variations(project_id, user)
+
         from kickoff_routes import create_kickoff_for_project
 
         kickoff = await create_kickoff_for_project(project_id, user)
@@ -2130,6 +2266,7 @@ async def move_project(project_id: str, data: ProjectMove, request: Request):
         "tasks_generated": new_tasks,
         "kickoff_criado": kickoff_created,
         "tarefas_criadas": kickoff_tasks,
+        "skus_gerados": skus_gerados,
     }
 
 
@@ -2278,6 +2415,16 @@ async def batch_create_samples(data: SampleBatchCreate, request: Request):
         if item.tipo_amostra == "adaptacao_de_formula" and not clean_text(item.referencia_formula):
             raise HTTPException(status_code=400, detail="referencia_formula é obrigatória para adaptação de fórmula")
         sample_id = _new_id()
+        item_payload = item.model_dump()
+        briefing_record = _build_briefing_record(
+            tenant_id=user["tenant_id"],
+            project=project,
+            sample_id=sample_id,
+            sample_payload=item_payload,
+            user=user,
+            now=now,
+            origem="crm_sample_legacy",
+        )
         sample = {
             "id": sample_id,
             "tenant_id": user["tenant_id"],
@@ -2291,6 +2438,9 @@ async def batch_create_samples(data: SampleBatchCreate, request: Request):
             "observacao_tecnica": item.observacao_tecnica,
             "responsavel_pd": "",
             "data_envio": None,
+            **_initial_sample_test_state(now),
+            "briefing_id": briefing_record["id"],
+            "briefing_registro": briefing_record,
             "motivo_retrabalho": "",
             "historico_retrabalhos": [],
             "feedback_cliente": "",
@@ -2313,6 +2463,7 @@ async def batch_create_samples(data: SampleBatchCreate, request: Request):
             "updated_at": now,
         }
         await db.crm_samples.insert_one(sample)
+        await _persist_briefing_record(briefing_record)
         sample.pop("_id", None)
         created.append(sample)
 
@@ -2397,6 +2548,16 @@ async def batch_create_samples_v2(data: SampleBatchCreateV2, request: Request):
 
         # Criar amostra pai
         sample_id = _new_id()
+        item_payload = item.model_dump()
+        briefing_record = _build_briefing_record(
+            tenant_id=user["tenant_id"],
+            project=project,
+            sample_id=sample_id,
+            sample_payload=item_payload,
+            user=user,
+            now=now,
+            origem="crm_sample_v2",
+        )
 
         # Criar variações
         variacoes_data = []
@@ -2417,6 +2578,7 @@ async def batch_create_samples_v2(data: SampleBatchCreateV2, request: Request):
                 "custo_fragrancia_currency": _normalize_currency_code(var.custo_fragrancia_currency),
                 "observacoes_especificas": var.observacoes_especificas,
                 "status": "solicitada",
+                **_initial_sample_test_state(now),
                 "aprovacao_interna": False,
                 "aprovacao_externa": False,
                 "historico_status": [{
@@ -2504,6 +2666,9 @@ async def batch_create_samples_v2(data: SampleBatchCreateV2, request: Request):
             "resultado": item.resultado,
             "aprovacao_interna": False,
             "aprovacao_externa": False,
+            **_initial_sample_test_state(now),
+            "briefing_id": briefing_record["id"],
+            "briefing_registro": briefing_record,
             "data_envio": None,
             "enviado_comercial_em": None,
             "aprovado_cliente_em": None,
@@ -2546,6 +2711,7 @@ async def batch_create_samples_v2(data: SampleBatchCreateV2, request: Request):
         inherit(sample, project, INHERITED_FROM_PROJECT)
 
         await db.crm_samples.insert_one(sample)
+        await _persist_briefing_record(briefing_record)
         sample.pop("_id", None)
 
         await audit_log(
@@ -3043,7 +3209,7 @@ async def _create_pd_card_for_variacao(sample: dict, variacao: dict, user: dict)
     
     # Atualizar variação com o card_id e status inicial
     await db.crm_samples.update_one(
-        {"id": sample["id"], "variacoes.id": variacao["id"]},
+        {"id": sample["id"], "tenant_id": tenant_id, "variacoes.id": variacao["id"]},
         {"$set": {
             "variacoes.$.pd_card_id": card_id,
             "variacoes.$.status_pd_raw": "solicitado",
@@ -3355,6 +3521,7 @@ async def create_rework_sample(sample_id: str, data: SampleReworkInput, request:
         "observacoes_especificas": data.observacoes_especificas
             or (base_variacao or {}).get("observacoes_especificas", ""),
         "status": "solicitada",
+        **_initial_sample_test_state(now),
         "aprovacao_interna": False,
         "aprovacao_externa": False,
         "historico_status": [{
@@ -3379,6 +3546,20 @@ async def create_rework_sample(sample_id: str, data: SampleReworkInput, request:
     }
 
     nova_sample_id = _new_id()
+    briefing_record = _build_briefing_record(
+        tenant_id=user["tenant_id"],
+        project=project,
+        sample_id=nova_sample_id,
+        sample_payload={
+            **original,
+            "nome_produto": data.nome_produto or original.get("nome_produto", ""),
+            "briefing_especifico": original.get("briefing_especifico", ""),
+            "observacao_tecnica": data.observacoes_especificas or original.get("observacao_tecnica", ""),
+        },
+        user=user,
+        now=now,
+        origem="crm_sample_rework",
+    )
     nova_sample = {
         "id": nova_sample_id,
         "tenant_id": user["tenant_id"],
@@ -3403,6 +3584,9 @@ async def create_rework_sample(sample_id: str, data: SampleReworkInput, request:
         "resultado": "",
         "aprovacao_interna": False,
         "aprovacao_externa": False,
+        **_initial_sample_test_state(now),
+        "briefing_id": briefing_record["id"],
+        "briefing_registro": briefing_record,
         "data_envio": None,
         "enviado_comercial_em": None,
         "aprovado_cliente_em": None,
@@ -3423,6 +3607,7 @@ async def create_rework_sample(sample_id: str, data: SampleReworkInput, request:
         "observacao_tecnica": original.get("observacao_tecnica", ""),
         "stage": "solicitada",
         "rework_de_amostra_id": original["id"],
+        "rework_de_variacao_id": data.variacao_id,
         "rework_de_numero": original.get("numero_amostra", ""),
         "rework_motivo": data.motivo,
         "rework_origem": data.origem,
@@ -3433,6 +3618,7 @@ async def create_rework_sample(sample_id: str, data: SampleReworkInput, request:
     }
     inherit(nova_sample, project, INHERITED_FROM_PROJECT)
     await db.crm_samples.insert_one(nova_sample)
+    await _persist_briefing_record(briefing_record)
     nova_sample.pop("_id", None)
 
     # Marcar a original com referência ao retrabalho gerado
@@ -3728,7 +3914,7 @@ async def move_variacao(sample_id: str, variacao_id: str, data: VariacaoMove, re
 # ======================================================================
 
 class ResultadoClienteRequest(BaseModel):
-    resultado: str  # "aprovada" | "reprovada" | "retrabalho"
+    resultado: str  # "aprovada" | "retrabalho" | "arquivado" ("reprovada" legado)
     feedback_cliente: Optional[str] = None
     direcoes_retrabalho: Optional[str] = None
 
@@ -3737,31 +3923,29 @@ class ResultadoClienteRequest(BaseModel):
 async def resultado_cliente(
     sample_id: str, variacao_id: str, data: ResultadoClienteRequest, request: Request
 ):
-    """Único ponto onde o Comercial pode registrar algo sobre a variação:
-    o resultado que o cliente deu (aprovada/reprovada/retrabalho).
-    Só permitido quando o status está em 'enviada' (amostra já no cliente).
-    """
+    """Ponto unico onde o Comercial registra a decisao do cliente."""
     user = await _get_current_user(request)
 
-    if data.resultado not in ("aprovada", "reprovada", "retrabalho"):
+    if data.resultado not in ("aprovada", "arquivado", "reprovada", "retrabalho"):
         raise HTTPException(
             status_code=422,
-            detail="resultado deve ser: aprovada, reprovada ou retrabalho",
+            detail="resultado deve ser: aprovada, arquivado ou retrabalho",
         )
-    if data.resultado == "retrabalho" and not (data.feedback_cliente or "").strip():
+    canonical_resultado = "arquivado" if data.resultado == "reprovada" else data.resultado
+    if canonical_resultado in ("retrabalho", "arquivado") and not (data.feedback_cliente or "").strip():
         raise HTTPException(
             status_code=422,
-            detail="feedback_cliente é obrigatório quando resultado='retrabalho'",
+            detail="feedback_cliente e obrigatorio quando resultado='retrabalho' ou 'arquivado'",
         )
 
     tenant_id = user["tenant_id"]
     sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
     if not sample:
-        raise HTTPException(status_code=404, detail="Amostra não encontrada")
+        raise HTTPException(status_code=404, detail="Amostra nao encontrada")
 
     variacao = next((v for v in sample.get("variacoes", []) if v["id"] == variacao_id), None)
     if not variacao:
-        raise HTTPException(status_code=404, detail="Variação não encontrada")
+        raise HTTPException(status_code=404, detail="Variacao nao encontrada")
 
     status_atual = variacao.get("status")
     if status_atual != "enviada":
@@ -3770,7 +3954,7 @@ async def resultado_cliente(
             detail={
                 "error": "status_invalido",
                 "message": (
-                    f"Resultado só pode ser registrado quando status='enviada'. "
+                    f"Resultado so pode ser registrado quando status='enviada'. "
                     f"Status atual: '{status_atual}'"
                 ),
                 "status_atual": status_atual,
@@ -3778,7 +3962,7 @@ async def resultado_cliente(
         )
 
     now = _now_iso()
-    novo_status_crm = data.resultado  # aprovada | reprovada | retrabalho
+    novo_status_crm = "reprovada" if canonical_resultado == "arquivado" else canonical_resultado
     aprovacao_interna = bool(
         variacao.get("aprovacao_interna")
         or variacao.get("enviado_comercial_em")
@@ -3788,13 +3972,14 @@ async def resultado_cliente(
     if not aprovacao_interna:
         raise HTTPException(
             status_code=409,
-            detail="Aprovação interna pendente antes do registro do cliente.",
+            detail="Aprovacao interna pendente antes do registro do cliente.",
         )
+
     pd_label = {
-        "aprovada":    "Aprovado pelo Cliente",
-        "reprovada":   "Reprovado pelo Cliente",
-        "retrabalho":  "Retrabalho Solicitado",
-    }[data.resultado]
+        "aprovada": "Aprovado pelo Cliente",
+        "arquivado": "Arquivado pelo Cliente",
+        "retrabalho": "Retrabalho Solicitado",
+    }[canonical_resultado]
 
     set_ops = {
         "variacoes.$.status": novo_status_crm,
@@ -3802,21 +3987,28 @@ async def resultado_cliente(
         "variacoes.$.feedback_cliente": data.feedback_cliente or "",
         "variacoes.$.resultado_cliente_registrado_por": user["id"],
         "variacoes.$.resultado_cliente_registrado_em": now,
+        "variacoes.$.decisao_cliente": _build_client_decision(
+            resultado=canonical_resultado,
+            feedback_cliente=data.feedback_cliente or "",
+            direcoes_retrabalho=data.direcoes_retrabalho or "",
+            user=user,
+            now=now,
+        ),
         "variacoes.$.aprovacao_interna": True,
         "variacoes.$.updated_at": now,
     }
     if data.direcoes_retrabalho:
         set_ops["variacoes.$.direcoes_retrabalho"] = data.direcoes_retrabalho
-    if data.resultado == "aprovada":
+    if canonical_resultado == "aprovada":
         set_ops["variacoes.$.resultado"] = "aprovada"
         set_ops["variacoes.$.aprovacao_externa"] = True
         set_ops["variacoes.$.aprovado_cliente_em"] = now
-    if data.resultado == "reprovada":
-        set_ops["variacoes.$.resultado"] = "reprovada"
+    if canonical_resultado == "arquivado":
+        set_ops["variacoes.$.resultado"] = "arquivado"
         set_ops["variacoes.$.aprovacao_externa"] = False
         set_ops["variacoes.$.reprovacao_motivo"] = data.feedback_cliente or ""
         set_ops["variacoes.$.arquivada"] = True
-    if data.resultado == "retrabalho":
+    if canonical_resultado == "retrabalho":
         set_ops["variacoes.$.aprovacao_externa"] = False
         set_ops["variacoes.$.reprovacao_motivo"] = data.feedback_cliente or ""
 
@@ -3832,6 +4024,7 @@ async def resultado_cliente(
                     "usuario": user["name"],
                     "usuario_id": user["id"],
                     "origem": "resultado_cliente",
+                    "resultado_cliente": canonical_resultado,
                 }
             },
         },
@@ -3843,21 +4036,20 @@ async def resultado_cliente(
         variacao_id=variacao_id,
         user=user,
         now=now,
-        crm_stage="reprovada" if data.resultado in ("reprovada", "retrabalho") else "enviada",
+        crm_stage="reprovada" if canonical_resultado in ("arquivado", "retrabalho") else "enviada",
         feedback_cliente=data.feedback_cliente or "",
         direcoes_retrabalho=data.direcoes_retrabalho or "",
-        resultado_cliente=data.resultado,
+        resultado_cliente=canonical_resultado,
     )
 
-    # Notificar pd_card vinculado
     pd_card = await db.pd_cards.find_one({"amostra_variacao_id": variacao_id, "tenant_id": tenant_id}, {"_id": 0})
     pd_card_notificado = False
     if pd_card:
         novo_status_pd = {
-            "aprovada":   "aguardando_aprovacao",
-            "reprovada":  "retrabalho_interno",
+            "aprovada": "aguardando_aprovacao",
+            "arquivado": "retrabalho_interno",
             "retrabalho": "retrabalho_interno",
-        }[data.resultado]
+        }[canonical_resultado]
         await db.pd_cards.update_one(
             {"id": pd_card["id"], "tenant_id": tenant_id},
             {
@@ -3865,7 +4057,7 @@ async def resultado_cliente(
                     "status_pd": novo_status_pd,
                     "feedback_cliente": data.feedback_cliente or "",
                     "direcoes_retrabalho": data.direcoes_retrabalho or "",
-                    "resultado_cliente": data.resultado,
+                    "resultado_cliente": canonical_resultado,
                     "updated_at": now,
                 },
                 "$push": {
@@ -3881,7 +4073,10 @@ async def resultado_cliente(
             },
         )
         pd_card_notificado = True
-        logger.info(f"Resultado cliente: variação {variacao_id} → {novo_status_crm} / pd_card {pd_card['id']} → {novo_status_pd}")
+        logger.info(
+            f"Resultado cliente: variacao {variacao_id} -> {novo_status_crm} / "
+            f"pd_card {pd_card['id']} -> {novo_status_pd}"
+        )
 
     await audit_log(
         tenant_id=tenant_id,
@@ -3891,14 +4086,12 @@ async def resultado_cliente(
         entity_type="variacao",
         entity_id=variacao_id,
         before={"status": "enviada"},
-        after={"status": novo_status_crm, "resultado": data.resultado},
+        after={"status": novo_status_crm, "resultado": canonical_resultado},
         metadata={"sample_id": sample_id, "pd_card_id": pd_card["id"] if pd_card else None},
     )
 
-    # Auditoria de SKU: este era o ÚNICO ponto real de aprovação (o front nunca chama
-    # os endpoints /move que disparavam a geração antiga) e nunca gerava SKU nenhum.
     sku_created = None
-    if data.resultado == "aprovada":
+    if canonical_resultado == "aprovada":
         updated_sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
         updated_variacao = next((v for v in (updated_sample or {}).get("variacoes", []) if v["id"] == variacao_id), None)
         if updated_sample and updated_variacao:
@@ -3907,12 +4100,11 @@ async def resultado_cliente(
     return {
         "success": True,
         "variacao_id": variacao_id,
-        "resultado": data.resultado,
+        "resultado": canonical_resultado,
         "status_atualizado": novo_status_crm,
         "pd_card_notificado": pd_card_notificado,
         "sku_created": sku_created,
     }
-
 
 # ======================================================================
 #  SAMPLE / VARIAÇÃO — DELETE & ADD VARIAÇÕES (pós-envio)
@@ -4169,8 +4361,10 @@ async def _check_sku_dependency_chain(
     """
     R25: Validate full dependency chain before generating SKU.
     Raises HTTPException 409 with the first missing prerequisite.
-    Chain: Categoria exists → Cliente com CLI4 → CGI assinado → Projeto →
-           Amostra/Variação aprovada (define categoria) → Pedido de Industrialização aprovado
+    Chain: Categoria exists -> Cliente com CLI4 -> Projeto ->
+           Amostra/Variacao aprovada -> Negociacao/Pedido aprovado.
+    O CGI/Kickoff vem depois do SKU no fluxo Prospect->Pedido; contrato nao pode
+    bloquear a criacao do produto comercial.
     Retorna o CAT3 resolvido (reaproveitado pelo caller na montagem do código do SKU,
     garantindo que a checagem e a geração usam exatamente a mesma resolução).
     """
@@ -4193,19 +4387,8 @@ async def _check_sku_dependency_chain(
     if not cat3:
         raise HTTPException(status_code=409, detail=f"[R25] Categoria '{categoria}' não possui CAT3 ativo cadastrado — solicite a categoria antes de gerar o SKU")
 
-    # 3. CGI assinado (contratos vinculados ao cliente/projeto)
-    if variacao is not None and fasttrack_variacao:
-        cgi = {"numero_contrato": "FASTTRACK"}
-    else:
-        cgi = await db.contratos.find_one(
-            {"tenant_id": tenant_id, "cliente_id": cliente_id, "status": {"$in": ["assinado", "vigente"]}},
-            {"_id": 0, "numero_contrato": 1},
-        )
-    if not cgi:
-        raise HTTPException(
-            status_code=409,
-            detail="[R25] CGI (Contrato Geral de Industrialização) não assinado — assine o contrato antes de gerar o SKU"
-        )
+    # 3. O CGI/Kickoff vem depois do SKU no fluxo Prospect->Pedido.
+    # Contrato assinado nao pode bloquear a criacao do produto comercial.
 
     # 4. Amostra (ou variação, quando geração é por variação — R11) aprovada
     if variacao is not None:
@@ -4288,6 +4471,9 @@ async def _create_sku_from_sample(sample: dict, user: dict) -> dict:
         "moq": 0,
         "anvisa": {"numero": "", "validade": None},
         "status": "ativo",
+        "pd_concluido": True,
+        "pd_concluido_em": now,
+        "pd_concluido_origem": "fluxo_comercial_aprovado",
         "descontinuado_motivo": None,
         "descontinuado_em": None,
         "descontinuado_por": None,
@@ -4334,6 +4520,39 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
     pelo front) — ver RELATORIO_BETA_FIXES.md / auditoria de SKU.
     """
     tenant_id = sample["tenant_id"]
+    existing_sku = None
+    if variacao.get("sku_id"):
+        existing_sku = await db.skus.find_one(
+            {"id": variacao["sku_id"], "tenant_id": tenant_id},
+            {"_id": 0},
+        )
+    if not existing_sku:
+        existing_sku = await db.skus.find_one(
+            {
+                "tenant_id": tenant_id,
+                "amostra_id": sample.get("id"),
+                "amostra_variacao_id": variacao.get("id"),
+                "status": {"$ne": "descontinuado"},
+            },
+            {"_id": 0},
+        )
+    if existing_sku:
+        pd_patch = {
+            "pd_concluido": True,
+            "pd_concluido_em": _now_iso(),
+            "pd_concluido_origem": "fluxo_comercial_aprovado",
+            "updated_at": _now_iso(),
+        }
+        await db.skus.update_one(
+            {"id": existing_sku["id"], "tenant_id": tenant_id},
+            {"$set": pd_patch},
+        )
+        await db.crm_samples.update_one(
+            {"id": sample["id"], "tenant_id": tenant_id, "variacoes.id": variacao["id"]},
+            {"$set": {"variacoes.$.sku_id": existing_sku["id"], "variacoes.$.gera_sku": True}},
+        )
+        existing_sku.update(pd_patch)
+        return existing_sku
 
     try:
         cat3 = await _check_sku_dependency_chain(
@@ -4387,6 +4606,9 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
         "moq": 0,
         "anvisa": {"numero": "", "validade": None},
         "status": "ativo",
+        "pd_concluido": True,
+        "pd_concluido_em": now,
+        "pd_concluido_origem": "fluxo_comercial_aprovado",
         "descontinuado_motivo": None,
         "descontinuado_em": None,
         "descontinuado_por": None,
@@ -4413,7 +4635,7 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
 
     # Atualizar variação com SKU ID
     await db.crm_samples.update_one(
-        {"id": sample["id"], "variacoes.id": variacao["id"]},
+        {"id": sample["id"], "tenant_id": tenant_id, "variacoes.id": variacao["id"]},
         {"$set": {"variacoes.$.sku_id": sku_id, "variacoes.$.gera_sku": True}}
     )
 
@@ -4441,6 +4663,10 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
             sku_id=sku_id,
             tenant_id=tenant_id,
         )
+        await db.skus.update_one(
+            {"id": sku_id, "tenant_id": tenant_id},
+            {"$set": {"produto_pai_id": produto_pai["id"], "updated_at": _now_iso()}},
+        )
         sku["produto_pai_id"] = produto_pai["id"]
     except HTTPException as exc:
         # Não bloqueia a geração do SKU em si — o vínculo pode ser feito manualmente
@@ -4449,6 +4675,55 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
 
     logger.info(f"Auto-created SKU {codigo} from variação {variacao.get('codigo')} (sample {sample['id']})")
     return sku
+
+
+async def _generate_skus_for_project_approved_variations(project_id: str, user: dict) -> List[dict]:
+    """Gera SKUs pendentes quando a negociacao/projeto vira pedido_aprovado.
+
+    O resultado do cliente pode aprovar a variacao antes do projeto estar em
+    pedido_aprovado; nesse momento a geracao retorna bloqueada por etapa. Este helper
+    e a segunda tentativa oficial no fechamento comercial e e idempotente porque
+    _create_sku_from_variacao_v2 reaproveita SKU existente por variacao.
+    """
+    tenant_id = user["tenant_id"]
+    samples = await db.crm_samples.find(
+        {"tenant_id": tenant_id, "projeto_id": project_id},
+        {"_id": 0},
+    ).to_list(1000)
+    results: List[dict] = []
+
+    for sample in samples:
+        variations = sample.get("variacoes") or []
+        generated_for_sample = False
+        for variacao in variations:
+            if variacao.get("status") != "aprovada" and variacao.get("resultado") != "aprovada":
+                continue
+            sku = await _create_sku_from_variacao_v2(sample, variacao, user)
+            results.append({
+                "amostra_id": sample.get("id"),
+                "variacao_id": variacao.get("id"),
+                "sku": sku,
+            })
+            if sku and not sku.get("blocked"):
+                generated_for_sample = True
+
+        if not variations and sample.get("stage") == "aprovada":
+            sku = await _create_sku_from_sample(sample, user)
+            results.append({
+                "amostra_id": sample.get("id"),
+                "variacao_id": None,
+                "sku": sku,
+            })
+            if sku and not sku.get("blocked"):
+                generated_for_sample = True
+
+        if generated_for_sample:
+            await db.crm_samples.update_one(
+                {"tenant_id": tenant_id, "id": sample["id"]},
+                {"$set": {"stage": "aprovada", "updated_at": _now_iso()}},
+            )
+
+    return results
 
 
 @crm_router.get("/skus")
@@ -4505,19 +4780,22 @@ async def list_skus(
                 approved = approved_by_pair.get((sku.get("amostra_id"), sku.get("amostra_variacao_id")))
                 if not approved:
                     approved = approved_by_sample.get(sku.get("amostra_id"))
-                sku["pd_concluido"] = bool(approved)
+                stored_concluded = bool(sku.get("pd_concluido"))
+                sku["pd_concluido"] = bool(approved) or stored_concluded
                 if approved:
                     sku["pd_request_id"] = approved.get("id")
                     sku["pd_status"] = approved.get("status")
-                if not pd_concluidos or approved:
+                elif stored_concluded:
+                    sku["pd_status"] = sku.get("pd_status") or "concluido_fluxo_comercial"
+                if not pd_concluidos or approved or stored_concluded:
                     enriched.append(sku)
             skus = enriched
         else:
             if pd_concluidos:
-                skus = []
+                skus = [sku for sku in skus if sku.get("pd_concluido")]
             else:
                 for sku in skus:
-                    sku["pd_concluido"] = False
+                    sku["pd_concluido"] = bool(sku.get("pd_concluido"))
 
     # Regra de exibição: SKU nunca "pelado" — anexa nome do Produto-Pai (família) pra
     # cada SKU que já tiver o vínculo (apresentacao/volume ficam no próprio doc do SKU).
@@ -5013,6 +5291,8 @@ async def move_pd_card(card_id: str, data: PDCardMove, request: Request):
             new_status,
             (PD_TO_CRM_STATUS_MAP.get(new_status), PD_STATUS_LABELS.get(new_status, new_status))
         )
+        test_patch, test_history = _sample_test_patch_for_pd_status(new_status, now)
+        test_set_ops = {f"variacoes.$.{key}": value for key, value in test_patch.items()}
 
         if crm_status:
             # Atualiza status, label rico e histórico
@@ -5025,6 +5305,7 @@ async def move_pd_card(card_id: str, data: PDCardMove, request: Request):
                         "variacoes.$.status_pd_raw": new_status,
                         "variacoes.$.ultima_atualizacao_pd": now,
                         "variacoes.$.updated_at": now,
+                        **test_set_ops,
                     },
                     "$push": {
                         "variacoes.$.historico_status": {
@@ -5052,6 +5333,7 @@ async def move_pd_card(card_id: str, data: PDCardMove, request: Request):
                         "variacoes.$.status_pd_raw": new_status,
                         "variacoes.$.ultima_atualizacao_pd": now,
                         "variacoes.$.updated_at": now,
+                        **test_set_ops,
                     },
                     "$push": {
                         "variacoes.$.historico_status": {

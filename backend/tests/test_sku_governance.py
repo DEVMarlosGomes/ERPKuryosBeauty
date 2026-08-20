@@ -15,13 +15,14 @@ não tentam montar a cadeia completa até a geração efetiva do SKU — validam
 (a amostra/variação aprovada, o wiring do sku_created, o bloqueio com motivo claro) e
 documentam esse gap. Ver RELATORIO_BETA_FIXES.md / auditoria de SKU para detalhes.
 """
-import os
 import re
 import time
 import pytest
 import requests
+from integration_helpers import get_backend_url, skip_without_backend_url
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "").rstrip("/")
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 
 
 @pytest.fixture(scope="module")

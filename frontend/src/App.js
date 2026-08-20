@@ -59,6 +59,7 @@ const RecebimentoPage = lazy(() => import("@/pages/RecebimentoPage"));
 const ExpedicaoPage = lazy(() => import("@/pages/ExpedicaoPage"));
 const FaturamentoPage = lazy(() => import("@/pages/FaturamentoPage"));
 const LogisticaPage = lazy(() => import("@/pages/LogisticaPage"));
+const LogisticaAgendamentosPage = lazy(() => import("@/pages/LogisticaAgendamentosPage"));
 const PCPDailyDashboard = lazy(() => import("@/pages/PCPDailyDashboard"));
 const PCPClonePage = lazy(() => import("@/pages/PCPClonePage"));
 const PCPProductionPage = lazy(() => import("@/pages/PCPProductionPage"));
@@ -155,6 +156,7 @@ function AppLayout() {
                         <Route path="/pcp" element={<Navigate to="/pcp/dashboard" replace />} />
                         <Route path="/cadastros" element={<RoleGuard allowed={CADASTROS_ROLES}><CadastrosPage /></RoleGuard>} />
                         <Route path="/logistica" element={<LogisticaPage />} />
+                        <Route path="/logistica/agendamentos" element={<LogisticaAgendamentosPage />} />
                         <Route path="/expedicao" element={<ExpedicaoPage />} />
                         <Route path="/faturamento" element={<FaturamentoPage />} />
                         <Route path="/compras" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasDashboard /></RoleGuard>} />

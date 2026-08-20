@@ -10,6 +10,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
+from cq_routes import cq_verificar_liberacao_palete, cq_verificar_lote_aprovado
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,23 @@ STATUS_TRANSITIONS = {
     "entregue":    [],
     "cancelado":   [],
 }
+
+
+async def _assert_liberado_para_expedicao(est: dict, item: dict, tenant_id: str):
+    posicao_cq = est.get("posicao_cq") or est.get("cq_status") or "livre"
+    if posicao_cq in {"quarentena", "reprovado"}:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "hard_stop_expedicao_sem_liberacao_cq",
+                "message": f"Produto '{item.get('produto_nome', est.get('nome', est.get('id')))}' esta em {posicao_cq}. Expedicao bloqueada.",
+            },
+        )
+
+    lote_id = est.get("cq_lote_id") or item.get("lote_id")
+    if lote_id:
+        await cq_verificar_lote_aprovado(db, tenant_id, lote_id)
+        await cq_verificar_liberacao_palete(db, tenant_id, lote_id)
 
 
 # ===== MODELS =====
@@ -237,10 +255,16 @@ async def update_ordem(exp_id: str, data: ExpUpdate, request: Request):
                     continue
                 est = await db.estoque_items.find_one({"id": eid, "tenant_id": user["tenant_id"]}, {"_id": 0})
                 if not est:
-                    continue
+                    raise HTTPException(status_code=404, detail=f"Item de estoque nao encontrado para expedicao: {eid}")
                 qty_antes = est.get("quantidade_atual", 0)
                 qty_saida = float(item.get("quantidade", 0))
-                qty_depois = max(0.0, qty_antes - qty_saida)
+                if qty_saida > qty_antes:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Saldo insuficiente para expedir {item.get('produto_nome', eid)}: atual={qty_antes}, saida={qty_saida}",
+                    )
+                await _assert_liberado_para_expedicao(est, item, user["tenant_id"])
+                qty_depois = qty_antes - qty_saida
                 await db.estoque_items.update_one(
                     {"id": eid},
                     {"$set": {"quantidade_atual": qty_depois, "updated_at": now}}

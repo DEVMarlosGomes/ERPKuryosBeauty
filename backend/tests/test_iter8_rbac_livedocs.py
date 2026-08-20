@@ -6,11 +6,12 @@ Iteration 8 backend tests:
 
 Auth uses HttpOnly cookies (access_token). We use requests.Session per role.
 """
-import os
 import pytest
 import requests
+from integration_helpers import get_backend_url, skip_without_backend_url
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL").rstrip("/")
+BASE_URL = get_backend_url()
+pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 
 CREDS = {

@@ -21,16 +21,18 @@ export default function CQDashboard() {
     const loadCards = async () => {
         setLoading(true);
         try {
-            const [rasRes, ckRes, rncRes, instrRes, rtRes] = await Promise.all([
+            const [rasDraftRes, rasAnalysisRes, ckRes, rncRes, instrRes, rtRes] = await Promise.all([
+                api.get("/cq/registros-analise", { params: { status: "rascunho" } }),
                 api.get("/cq/registros-analise", { params: { status: "em_analise" } }),
                 api.get("/cq/checklists", { params: { status: "em_preenchimento" } }),
                 api.get("/cq/rncs", { params: { status: "aberta" } }),
                 api.get("/cq/instrumentos"),
                 api.get("/retrabalho/dashboard").catch(() => ({ data: { total_ativos: 0 } })),
             ]);
-            const rasPendentes = Array.isArray(rasRes.data)
-                ? rasRes.data.length
-                : (rasRes.data?.total ?? rasRes.data?.count ?? 0);
+            const countResponse = (res) => Array.isArray(res.data)
+                ? res.data.length
+                : (res.data?.total ?? res.data?.count ?? 0);
+            const rasPendentes = countResponse(rasDraftRes) + countResponse(rasAnalysisRes);
             const checklistsAtivos = Array.isArray(ckRes.data)
                 ? ckRes.data.length
                 : (ckRes.data?.total ?? ckRes.data?.count ?? 0);

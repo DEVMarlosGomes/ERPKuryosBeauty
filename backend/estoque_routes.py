@@ -173,6 +173,31 @@ async def _get_item_or_404(item_id: str, tenant_id: str) -> dict:
     return item
 
 
+def _item_cq_position(item: dict) -> str:
+    return item.get("posicao_cq") or item.get("cq_status") or "livre"
+
+
+async def _assert_saida_liberada_por_cq(item: dict, tipo_movimento: str):
+    if tipo_movimento not in MOVIMENTOS_SAIDA:
+        return
+
+    posicao_cq = _item_cq_position(item)
+    if posicao_cq in {"quarentena", "reprovado"}:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "hard_stop_estoque_sem_liberacao_cq",
+                "message": f"Item '{item.get('nome', item.get('id'))}' esta em {posicao_cq}. Saida bloqueada ate liberacao de CQ.",
+            },
+        )
+
+    lote_id = item.get("cq_lote_id")
+    if lote_id:
+        await cq_verificar_lote_aprovado(db, item["tenant_id"], lote_id)
+        if tipo_movimento == "SAIDA_EXPEDICAO":
+            await cq_verificar_liberacao_palete(db, item["tenant_id"], lote_id)
+
+
 # ============ ITEMS CRUD ============
 
 @estoque_router.post("/items")
@@ -364,10 +389,7 @@ async def create_movimento(data: MovimentoCreate, request: Request):
     item = await _get_item_or_404(data.item_id, user["tenant_id"])
 
     # CQ hard stops — check lote status before any movement
-    if data.referencia:
-        await cq_verificar_lote_aprovado(db, user["tenant_id"], data.referencia)
-    if data.tipo == "SAIDA_EXPEDICAO" and data.referencia:
-        await cq_verificar_liberacao_palete(db, user["tenant_id"], data.referencia)
+    await _assert_saida_liberada_por_cq(item, data.tipo)
 
     quantidade_antes = item.get("quantidade_atual", 0)
     delta = data.quantidade if data.tipo in MOVIMENTOS_ENTRADA else -data.quantidade
@@ -419,6 +441,7 @@ async def create_transferencia(data: TransferenciaCreate, request: Request):
         raise HTTPException(status_code=400, detail="Quantidade deve ser > 0")
 
     origem = await _get_item_or_404(data.item_origem_id, user["tenant_id"])
+    await _assert_saida_liberada_por_cq(origem, "TRANSFERENCIA_SAIDA")
     if origem["setor"] == data.setor_destino:
         raise HTTPException(status_code=400, detail="Setor destino é igual ao origem")
 
@@ -443,6 +466,8 @@ async def create_transferencia(data: TransferenciaCreate, request: Request):
         dest_query["produto_id"] = origem["produto_id"]
     else:
         dest_query["nome"] = origem["nome"]
+    if origem.get("lote"):
+        dest_query["lote"] = origem["lote"]
 
     destino = await db.estoque_items.find_one(dest_query, {"_id": 0})
     now = _now_iso()
@@ -465,6 +490,11 @@ async def create_transferencia(data: TransferenciaCreate, request: Request):
             "localizacao": "",
             "lote": origem.get("lote", ""),
             "validade": origem.get("validade"),
+            "posicao_cq": origem.get("posicao_cq", "livre"),
+            "cq_status": origem.get("cq_status"),
+            "cq_lote_id": origem.get("cq_lote_id"),
+            "cq_ra_id": origem.get("cq_ra_id"),
+            "prazo_analise_qualidade": origem.get("prazo_analise_qualidade"),
             "observacoes": f"Criado automaticamente por transferência de {SETOR_LABELS.get(origem['setor'], origem['setor'])}",
             "created_by": user["id"],
             "created_by_name": user["name"],
