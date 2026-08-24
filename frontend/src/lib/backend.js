@@ -40,8 +40,8 @@ function getLocalDevBackendUrls() {
 
     if (/^3\d{3}$/.test(port || "")) {
         return hosts.flatMap((host) => [
-            `${protocol}//${host}:8001`,
             `${protocol}//${host}:8000`,
+            `${protocol}//${host}:8001`,
         ]);
     }
 

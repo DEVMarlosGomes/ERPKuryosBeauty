@@ -351,9 +351,9 @@ export default function OrderDetail() {
   const generateOP = async () => {
     try {
       const res = await api.post(`/orders/${id}/create-op`);
-      toast.success(`OP ${res.data.numero_op} gerada!`);
+      toast.success(`OP ${res.data.numero_op} enviada ao PCP!`);
       fetchOrder();
-      navigate(`/ops/${res.data.id}`);
+      navigate(`/pcp/controle-ops?op=${encodeURIComponent(res.data.id)}`);
     } catch (err) {
       toast.error(err.response?.data?.detail || "Erro ao gerar OP");
     }
@@ -467,8 +467,8 @@ export default function OrderDetail() {
               </Button>
             )}
             {form.op_id && (
-              <Button variant="outline" onClick={() => navigate(`/ops/${form.op_id}`)} className="gap-1.5" data-testid="view-op-btn">
-                <Factory className="h-4 w-4" /> Ver OP
+              <Button variant="outline" onClick={() => navigate(`/pcp/controle-ops?op=${encodeURIComponent(form.op_id)}`)} className="gap-1.5" data-testid="view-op-btn">
+                <Factory className="h-4 w-4" /> Abrir no PCP
               </Button>
             )}
             {STATUSES_IMUTAVEL.has(form.status) && ["admin", "vendedor", "sales_ops"].includes(user?.role) && !editing && (

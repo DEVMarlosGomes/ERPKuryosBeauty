@@ -266,14 +266,15 @@ export default function CRM3Page() {
     const handleResultadoCliente = async (sampleId, variacaoId) => {
         const form = resultadoForm[variacaoId] || {};
         if (!form.resultado) return toast.error("Selecione o resultado do cliente");
-        if (form.resultado === "retrabalho" && !(form.feedback || "").trim())
-            return toast.error("Informe o feedback do cliente para o retrabalho");
+        if (["retrabalho", "reprovada", "arquivado"].includes(form.resultado) && !(form.feedback || "").trim())
+            return toast.error("Informe o feedback do cliente para registrar este resultado");
 
         setResultadoForm(prev => ({ ...prev, [variacaoId]: { ...prev[variacaoId], loading: true } }));
         try {
             const { data: res } = await api.post(`/crm/samples/${sampleId}/variacoes/${variacaoId}/resultado-cliente`, {
                 resultado: form.resultado,
                 feedback_cliente: form.feedback || "",
+                direcoes_retrabalho: form.direcoes_retrabalho || "",
             });
 
             if (form.resultado === "aprovada") {
@@ -894,7 +895,7 @@ export default function CRM3Page() {
                                                             Registrar resultado do cliente
                                                         </p>
                                                         <div className="flex flex-col gap-1.5 mb-2">
-                                                            {["aprovada", "reprovada", "retrabalho"].map(opt => (
+                                                            {["aprovada", "retrabalho", "reprovada"].map(opt => (
                                                                 <label
                                                                     key={opt}
                                                                     className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer border text-xs font-medium capitalize transition-colors ${
@@ -915,22 +916,37 @@ export default function CRM3Page() {
                                                                         }))}
                                                                         className="accent-purple-600"
                                                                     />
-                                                                    {opt}
+                                                                    {opt === "aprovada" ? "Aprovada" : opt === "retrabalho" ? "Retrabalho" : "Reprovada / Arquivar"}
                                                                 </label>
                                                             ))}
                                                         </div>
                                                         {(vForm.resultado === "retrabalho" || vForm.resultado === "reprovada") && (
-                                                            <Textarea
-                                                                className="text-xs mb-2"
-                                                                rows={2}
-                                                                placeholder="Feedback do cliente (obrigatório para retrabalho)..."
-                                                                value={vForm.feedback || ""}
-                                                                onChange={(e) => setResultadoForm(prev => ({
-                                                                    ...prev,
-                                                                    [v.id]: { ...prev[v.id], feedback: e.target.value }
-                                                                }))}
-                                                                data-testid="feedback-cliente-input"
-                                                            />
+                                                            <div className="space-y-2 mb-2">
+                                                                <Textarea
+                                                                    className="text-xs"
+                                                                    rows={2}
+                                                                    placeholder="Feedback do cliente / motivo da reprovação..."
+                                                                    value={vForm.feedback || ""}
+                                                                    onChange={(e) => setResultadoForm(prev => ({
+                                                                        ...prev,
+                                                                        [v.id]: { ...prev[v.id], feedback: e.target.value }
+                                                                    }))}
+                                                                    data-testid="feedback-cliente-input"
+                                                                />
+                                                                {vForm.resultado === "retrabalho" && (
+                                                                    <Textarea
+                                                                        className="text-xs"
+                                                                        rows={2}
+                                                                        placeholder="Orientações para o P&D retrabalhar..."
+                                                                        value={vForm.direcoes_retrabalho || ""}
+                                                                        onChange={(e) => setResultadoForm(prev => ({
+                                                                            ...prev,
+                                                                            [v.id]: { ...prev[v.id], direcoes_retrabalho: e.target.value }
+                                                                        }))}
+                                                                        data-testid="direcoes-retrabalho-input"
+                                                                    />
+                                                                )}
+                                                            </div>
                                                         )}
                                                         <Button
                                                             size="sm"

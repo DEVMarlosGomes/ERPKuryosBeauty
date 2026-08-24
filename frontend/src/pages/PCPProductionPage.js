@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
@@ -81,6 +81,7 @@ function ActionButton({ children, icon: Icon, className = "", ...props }) {
 export default function PCPProductionPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
   const setorAtual = SETOR_PROFILES.some((s) => s.key === params.setor) ? params.setor : "envase";
   const setorCfg = SETOR_PROFILES.find((s) => s.key === setorAtual) || SETOR_PROFILES[1];
@@ -98,6 +99,7 @@ export default function PCPProductionPage() {
   const [pauseForm, setPauseForm] = useState({ tipo: "outro", motivo: "" });
   const [lossForm, setLossForm] = useState({ item_idx: "0", tipo: "processo", quantidade: "", unidade: "un", motivo: "" });
   const [retroForm, setRetroForm] = useState({ data: new Date().toISOString().slice(0, 10), hora: nowHM(), qtd: "", observacoes: "" });
+  const opIdFromUrl = useMemo(() => new URLSearchParams(location.search).get("op") || "", [location.search]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -109,13 +111,16 @@ export default function PCPProductionPage() {
       const list = Array.isArray(opsRes.data) ? opsRes.data : [];
       setOps(list);
       setLinhas(Array.isArray(linhasRes.data) ? linhasRes.data : []);
-      setSelectedId((current) => current || list.find((op) => ["em_processo", "pausada", "aberta"].includes(op.status))?.id || "");
+      setSelectedId((current) => {
+        if (opIdFromUrl && list.some((op) => op.id === opIdFromUrl)) return opIdFromUrl;
+        return current || list.find((op) => ["em_processo", "pausada", "aberta"].includes(op.status))?.id || "";
+      });
     } catch {
       toast.error("Erro ao carregar producao");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [opIdFromUrl]);
 
   useEffect(() => { load(); }, [load]);
 

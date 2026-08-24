@@ -611,7 +611,7 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
         },
     )
 
-    response = {k: v for k, v in contrato_doc.items() if k != "pdf_data"}
+    response = {k: v for k, v in contrato_doc.items() if k not in ("_id", "pdf_data")}
     return response
 
 

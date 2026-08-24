@@ -491,7 +491,11 @@ function HorizonPage({ data }) {
 
 function ControlOpsPage({ data }) {
   const navigate = useNavigate();
-  const activeOps = data.ops.filter(op => ["aberta", "em_processo", "pausada"].includes(op.status));
+  const location = useLocation();
+  const opIdFromUrl = new URLSearchParams(location.search).get("op") || "";
+  const activeOps = data.ops
+    .filter(op => ["aberta", "em_processo", "pausada"].includes(op.status))
+    .sort((a, b) => (b.id === opIdFromUrl) - (a.id === opIdFromUrl));
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-start justify-between gap-4 md:flex-row">
@@ -520,7 +524,7 @@ function ControlOpsPage({ data }) {
                 const planned = Number(item.qtd_planejada || 0);
                 const progress = pct(done, planned);
                 return (
-                  <tr key={op.id} className="border-b border-white/20">
+                  <tr key={op.id} className={`border-b border-white/20 ${op.id === opIdFromUrl ? "bg-[#6485f2]/15" : ""}`}>
                     <td className="p-4 font-black">{op.numero_op}</td>
                     <td className="p-4">{op.cliente_nome || "-"}</td>
                     <td className="p-4 font-black">{item.item || op.project_name || "-"}<p className="text-xs font-normal text-zinc-500">SKU: {item.codigo_kuryos || "-"}</p></td>

@@ -4263,6 +4263,9 @@ async def get_pd_full_detail(req_id: str, request: Request):
                 "referencias_fotos": sample.get("referencias_fotos", []) or [],
                 "observacoes": (variacao or {}).get("observacoes_especificas", "")
                 or sample.get("observacao_tecnica", ""),
+                "feedback_cliente": (variacao or {}).get("feedback_cliente") or sample.get("feedback_cliente", ""),
+                "direcoes_retrabalho": (variacao or {}).get("direcoes_retrabalho") or sample.get("direcoes_retrabalho", ""),
+                "resultado_cliente": (variacao or {}).get("resultado_cliente") or (variacao or {}).get("resultado") or sample.get("resultado", ""),
                 "_source": "crm_sample",
                 "_amostra_id": sample.get("id"),
                 "_variacao_id": (variacao or {}).get("id"),

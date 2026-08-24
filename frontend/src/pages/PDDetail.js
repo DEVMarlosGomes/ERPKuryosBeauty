@@ -1319,6 +1319,33 @@ function OverviewTab({ req, dev, formulas, tests, samples, approval, costs, hist
                     </div>
                   </section>
                 )}
+                {(clientInfo.feedback_cliente || clientInfo.direcoes_retrabalho || clientInfo.resultado_cliente) && (
+                  <section>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2">
+                      <span className="w-1 h-4 bg-amber-500 rounded" /> Retorno Comercial / Cliente
+                    </h4>
+                    <div className="space-y-3 pl-3">
+                      {clientInfo.resultado_cliente && (
+                        <div>
+                          <span className="text-muted-foreground text-xs font-medium block mb-1">Resultado</span>
+                          <p className="whitespace-pre-wrap bg-muted/40 p-3 rounded-md">{clientInfo.resultado_cliente}</p>
+                        </div>
+                      )}
+                      {clientInfo.feedback_cliente && (
+                        <div>
+                          <span className="text-muted-foreground text-xs font-medium block mb-1">Feedback do cliente</span>
+                          <p className="whitespace-pre-wrap bg-muted/40 p-3 rounded-md">{clientInfo.feedback_cliente}</p>
+                        </div>
+                      )}
+                      {clientInfo.direcoes_retrabalho && (
+                        <div>
+                          <span className="text-muted-foreground text-xs font-medium block mb-1">Orientações para retrabalho</span>
+                          <p className="whitespace-pre-wrap bg-muted/40 p-3 rounded-md">{clientInfo.direcoes_retrabalho}</p>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                )}
                 <section className="pt-3 border-t">
                   <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                     <span>

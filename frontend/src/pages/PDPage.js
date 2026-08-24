@@ -552,6 +552,20 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
                                             <p className="text-sm">{selectedCard.observacoes_especificas}</p>
                                         </div>
                                     )}
+                                    {(selectedCard.feedback_cliente || selectedCard.direcoes_retrabalho || selectedCard.resultado_cliente) && (
+                                        <div className="rounded-md border border-amber-200 bg-amber-50 p-3 dark:border-amber-900/50 dark:bg-amber-950/20">
+                                            <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-2">Retorno Comercial / Cliente</p>
+                                            {selectedCard.resultado_cliente && (
+                                                <p className="text-xs text-muted-foreground mb-1">Resultado: {selectedCard.resultado_cliente}</p>
+                                            )}
+                                            {selectedCard.feedback_cliente && (
+                                                <p className="text-sm whitespace-pre-wrap"><span className="font-medium">Feedback:</span> {selectedCard.feedback_cliente}</p>
+                                            )}
+                                            {selectedCard.direcoes_retrabalho && (
+                                                <p className="text-sm whitespace-pre-wrap mt-2"><span className="font-medium">Orientações para retrabalho:</span> {selectedCard.direcoes_retrabalho}</p>
+                                            )}
+                                        </div>
+                                    )}
                                     <div>
                                         <p className="text-xs font-semibold text-muted-foreground mb-1">Responsável P&D</p>
                                         <p className="text-sm">{selectedCard.responsavel_pd || 'Não atribuído'}</p>

@@ -1063,7 +1063,16 @@ async def _advance_project_stage_if_needed(
 
     allowed = [_normalize_project_stage(stage) for stage in PROJECT_TRANSITIONS.get(old_stage, [])]
     if new_stage not in allowed:
-        return project
+        old_rank = _project_stage_rank(old_stage)
+        new_rank = _project_stage_rank(new_stage)
+        can_auto_advance = (
+            old_rank >= 0
+            and new_rank > old_rank
+            and new_stage != "projeto_arquivado"
+            and old_stage != "projeto_arquivado"
+        )
+        if not can_auto_advance:
+            return project
 
     now = _now_iso()
     movement = {
