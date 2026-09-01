@@ -5,6 +5,7 @@ Implements Modulo 6 of the KURYOS ERP specification.
 
 Endpoints:
 - POST /api/contratos/gerar  - generates a CGI PDF from an approved Kickoff
+- POST /api/contratos/{id}/assinar - marks the CGI as signed through the official API
 - GET  /api/contratos        - lists generated contracts (filterable by kickoff/cliente)
 - GET  /api/contratos/{id}   - retrieves a specific contract record
 - GET  /api/contratos/{id}/pdf - downloads the PDF inline
@@ -15,8 +16,9 @@ Business rules:
   (inscricao_estadual, endereco completo, representante_legal CPF/RG) can be
   provided as overrides in the request payload.
 - The FABRICANTE block is fixed to KURYOS BEAUTY PACKING INDUSTRIAL LTDA.
-- Generated contracts are persisted in the `contratos` collection. They are
-  immutable once generated; updates produce a new version.
+- Generated contracts are persisted in the `contratos` collection. PDF/legal
+  contents are immutable once generated; operational status transitions are
+  recorded in status_history and audit_logs.
 """
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -95,6 +97,11 @@ class ContratoGerarInput(BaseModel):
     kickoff_id: str
     contratante: Optional[ContratanteOverride] = None
     observacoes: Optional[str] = ""
+
+
+class ContratoAssinarInput(BaseModel):
+    observacoes: Optional[str] = ""
+    assinatura_ref: Optional[str] = Field(default="", description="Optional external signature/document reference")
 
 
 # ============ HELPERS ============
@@ -582,6 +589,7 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
         "kickoff_id": kickoff["id"],
         "numero_kickoff": kickoff.get("numero_kickoff"),
         "kickoff_versao": kickoff.get("versao"),
+        "projeto_id": kickoff.get("projeto_id"),
         "client_id": (client or {}).get("id"),
         "contratante": contratante,
         "fabricante": KURYOS_FABRICANTE,
@@ -592,6 +600,14 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
         "created_by": user["id"],
         "created_by_name": user.get("name", ""),
         "status": "gerado",
+        "status_history": [{
+            "from": None,
+            "to": "gerado",
+            "at": now_iso(),
+            "by": user["id"],
+            "by_name": user.get("name", ""),
+            "observacoes": "",
+        }],
         "version": 1,
     }
     await db.contratos.insert_one(contrato_doc)
@@ -613,6 +629,75 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
 
     response = {k: v for k, v in contrato_doc.items() if k not in ("_id", "pdf_data")}
     return response
+
+
+@contratos_router.post("/{contrato_id}/assinar")
+async def assinar_contrato(contrato_id: str, data: ContratoAssinarInput, request: Request):
+    """Official CGI signature transition used by the order confirmation gate."""
+    user = await get_current_user(request)
+    require_roles(user, WRITE_ROLES)
+    contrato = await db.contratos.find_one(
+        {"id": contrato_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "pdf_data": 0}
+    )
+    if not contrato:
+        raise HTTPException(status_code=404, detail="Contrato nao encontrado.")
+
+    current_status = contrato.get("status") or "gerado"
+    if current_status in {"assinado", "vigente"}:
+        return contrato
+    if current_status not in {"gerado", "enviado"}:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Contrato em status '{current_status}' nao pode ser assinado.",
+        )
+
+    ts = now_iso()
+    assinatura = {
+        "status": "assinado",
+        "assinado_em": ts,
+        "assinado_por": user["id"],
+        "assinado_por_nome": user.get("name", ""),
+        "assinatura_ref": data.assinatura_ref or "",
+        "observacoes": data.observacoes or "",
+    }
+    history = {
+        "from": current_status,
+        "to": "assinado",
+        "at": ts,
+        "by": user["id"],
+        "by_name": user.get("name", ""),
+        "observacoes": data.observacoes or "",
+    }
+    await db.contratos.update_one(
+        {"id": contrato_id, "tenant_id": user["tenant_id"]},
+        {"$set": {
+            "status": "assinado",
+            "assinatura": assinatura,
+            "signed_at": ts,
+            "signed_by": user["id"],
+            "signed_by_name": user.get("name", ""),
+            "updated_at": ts,
+        }, "$push": {"status_history": history}},
+    )
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="contrato_assinado",
+        entity_type="contrato_cgi",
+        entity_id=contrato_id,
+        before={"status": current_status},
+        after={"status": "assinado", "assinatura": assinatura},
+        metadata={
+            "kickoff_id": contrato.get("kickoff_id"),
+            "projeto_id": contrato.get("projeto_id"),
+            "client_id": contrato.get("client_id"),
+        },
+    )
+    updated = await db.contratos.find_one(
+        {"id": contrato_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "pdf_data": 0}
+    )
+    return updated
 
 
 @contratos_router.get("")

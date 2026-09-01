@@ -235,6 +235,7 @@ class OrderCreate(BaseModel):
     pd_request_id: Optional[str] = None
     kickoff_id: Optional[str] = None          # Gap A: optional FK to kickoffs collection
     client_card_id: Optional[str] = None
+    cliente_id: Optional[str] = None          # CRM client FK; mandatory for origem=gerador
     numero_pedido: Optional[str] = None
     pedido_cliente_ref: Optional[str] = None
     gerador_origem: Optional[str] = None
@@ -391,9 +392,10 @@ def _order_duplicate_fingerprint(
     items: List[Dict[str, Any]],
     data_pedido: Optional[str],
     pedido_cliente_ref: Optional[str] = None,
+    cliente_id: Optional[str] = None,
 ) -> str:
     """Stable same-day fingerprint to block accidental duplicate order creation."""
-    client_key = _digits_only(cliente.get("cnpj")) or _normalize_key_text(
+    client_key = f"id:{cliente_id}" if cliente_id else _digits_only(cliente.get("cnpj")) or _normalize_key_text(
         cliente.get("razao_social") or cliente.get("nome")
     )
     ref_key = _normalize_key_text(pedido_cliente_ref) or str(data_pedido or "")[:10]
@@ -666,15 +668,15 @@ async def _enrich_from_crm_client(cliente_id: str, tenant_id: str) -> Dict[str, 
     if not crm_client:
         return cliente
     cliente["nome"] = crm_client.get("nome_empresa", "")
-    cliente["razao_social"] = crm_client.get("nome_empresa", "")
+    cliente["razao_social"] = crm_client.get("razao_social") or crm_client.get("nome_empresa", "")
     cliente["cnpj"] = crm_client.get("cnpj", "")
     cidade = crm_client.get("cidade", "") or crm_client.get("regiao", "")
     uf = crm_client.get("uf", "") or crm_client.get("estado", "")
     cliente["cidade_uf"] = f"{cidade}/{uf}" if cidade and uf else (cidade or uf)
     contato = crm_client.get("contato_principal") or {}
-    cliente["responsavel"] = contato.get("nome", "")
-    cliente["telefone"] = contato.get("whatsapp", "")
-    cliente["email"] = contato.get("email", "")
+    cliente["responsavel"] = contato.get("nome") or crm_client.get("responsavel", "")
+    cliente["telefone"] = contato.get("whatsapp") or crm_client.get("telefone", "")
+    cliente["email"] = contato.get("email") or crm_client.get("email", "")
     return cliente
 
 
@@ -960,7 +962,22 @@ async def _create_order_document(
     # Gap A: validate kickoff FK if provided
     await _validate_kickoff_fk(data.kickoff_id, user["tenant_id"])
 
-    cliente = data.cliente.model_dump()
+    cliente_id = (data.cliente_id or "").strip()
+    if origem == "gerador":
+        if not cliente_id:
+            raise HTTPException(
+                status_code=422,
+                detail="Selecione um cliente cadastrado antes de gerar o pedido.",
+            )
+        crm_client = await db.crm_clients.find_one(
+            {"id": cliente_id, "tenant_id": user["tenant_id"]},
+            {"_id": 0},
+        )
+        if not crm_client:
+            raise HTTPException(status_code=404, detail="Cliente cadastrado nao encontrado.")
+        cliente = await _enrich_from_crm_client(cliente_id, user["tenant_id"])
+    else:
+        cliente = data.cliente.model_dump()
     if data.client_card_id and not cliente.get("razao_social"):
         cliente = await _enrich_from_crm(data.client_card_id, user["tenant_id"])
 
@@ -995,6 +1012,7 @@ async def _create_order_document(
         items,
         data.data_pedido or now_iso(),
         data.pedido_cliente_ref,
+        cliente_id=cliente_id or None,
     )
     if not data.allow_duplicate:
         await _assert_no_duplicate_order(
@@ -1008,6 +1026,7 @@ async def _create_order_document(
         "pd_request_id": data.pd_request_id,
         "kickoff_id": data.kickoff_id,
         "client_card_id": data.client_card_id,
+        "cliente_id": cliente_id or None,
         "pedido_cliente_ref": data.pedido_cliente_ref or "",
         "gerador_origem": data.gerador_origem or "",
         "duplicate_fingerprint": duplicate_fingerprint,
@@ -1134,6 +1153,7 @@ async def create_direct_order(data: DirectOrderCreate, request: Request):
     )
 
     order_data = OrderCreate(
+        cliente_id=data.cliente_id,
         tipo_servico=data.tipo_servico,
         nivel_formalizacao=data.nivel_formalizacao,
         pedido_cliente_ref=data.pedido_cliente_ref,

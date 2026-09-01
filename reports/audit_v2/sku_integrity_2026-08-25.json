@@ -1,0 +1,13 @@
+{
+  "script": "audit_sku_integrity",
+  "mode": "dry-run",
+  "generated_at": "2026-08-25T23:13:38.522600+00:00",
+  "summary": {
+    "skus_scanned": 51,
+    "clients_scanned": 29,
+    "product_parents_scanned": 17,
+    "legacy_product_parents_scanned": 0,
+    "findings": 0
+  },
+  "findings": []
+}

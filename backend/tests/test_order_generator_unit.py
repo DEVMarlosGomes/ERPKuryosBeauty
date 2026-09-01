@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 from types import SimpleNamespace
+from itertools import count
 
 import pytest
 from fastapi import HTTPException
@@ -41,13 +42,33 @@ class FakeCollection:
         self.docs.append(dict(doc))
         return SimpleNamespace(inserted_id=doc.get("id"))
 
+    async def update_one(self, query, update):
+        for doc in self.docs:
+            if self._matches(doc, query):
+                for key, value in update.get("$set", {}).items():
+                    self._set_path(doc, key, value)
+                for key, value in update.get("$push", {}).items():
+                    current = self._get_path(doc, key) or []
+                    if isinstance(value, dict) and "$each" in value:
+                        current.extend(value["$each"])
+                    else:
+                        current.append(value)
+                    self._set_path(doc, key, current)
+                return SimpleNamespace(matched_count=1, modified_count=1)
+        return SimpleNamespace(matched_count=0, modified_count=0)
+
+    async def count_documents(self, query):
+        return sum(1 for doc in self.docs if self._matches(doc, query))
+
     def _matches(self, doc, query):
         for key, value in query.items():
-            current = doc.get(key)
+            current = self._get_path(doc, key)
             if isinstance(value, dict):
                 if "$in" in value and current not in value["$in"]:
                     return False
                 if "$nin" in value and current in value["$nin"]:
+                    return False
+                if "$gte" in value and current < value["$gte"]:
                     return False
                 continue
             if current != value:
@@ -58,6 +79,21 @@ class FakeCollection:
         if projection and projection.get("_id") == 0:
             return {key: value for key, value in doc.items() if key != "_id"}
         return dict(doc)
+
+    def _get_path(self, doc, key):
+        current = doc
+        for part in str(key).split("."):
+            if not isinstance(current, dict):
+                return None
+            current = current.get(part)
+        return current
+
+    def _set_path(self, doc, key, value):
+        current = doc
+        parts = str(key).split(".")
+        for part in parts[:-1]:
+            current = current.setdefault(part, {})
+        current[parts[-1]] = value
 
 
 def test_order_duplicate_fingerprint_is_stable_for_same_items_in_any_order():
@@ -196,3 +232,167 @@ def test_queue_email_without_smtp_records_pending(monkeypatch):
 
     assert log["status"] == "pendente"
     assert orders_routes.db.email_logs.docs[0]["to"] == "cliente@example.com"
+
+
+def test_generator_order_requires_registered_client_id():
+    orders_routes.db = SimpleNamespace()
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(orders_routes._create_order_document(
+            orders_routes.OrderCreate(
+                cliente=orders_routes.ClienteData(nome="Cliente digitado"),
+                items=[orders_routes.OrderItem(item="Produto", codigo_kuryos="A definir", qtd=10, valor_unitario=1)],
+            ),
+            {"id": "user-1", "tenant_id": "tenant-1", "name": "Admin"},
+            origem="gerador",
+        ))
+
+    assert exc.value.status_code == 422
+    assert "cliente cadastrado" in str(exc.value.detail).lower()
+
+
+def test_generator_order_uses_registered_client_snapshot(monkeypatch):
+    ids = count(1)
+    orders_routes.new_id_func = lambda: f"id-{next(ids)}"
+    orders_routes.now_iso_func = lambda: "2026-08-24T10:00:00+00:00"
+    orders_routes.db = SimpleNamespace(
+        crm_clients=FakeCollection([{
+            "id": "cli-1",
+            "tenant_id": "tenant-1",
+            "nome_empresa": "Cliente Oficial",
+            "razao_social": "Cliente Oficial LTDA",
+            "cnpj": "12.345.678/0001-90",
+            "cidade": "Sao Paulo",
+            "uf": "SP",
+            "responsavel": "Maria",
+            "telefone": "11999990000",
+            "email": "cliente@example.com",
+        }]),
+        skus=FakeCollection([]),
+        orders=FakeCollection([]),
+        email_logs=FakeCollection([]),
+    )
+
+    order = asyncio.run(orders_routes._create_order_document(
+        orders_routes.OrderCreate(
+            cliente_id="cli-1",
+            cliente=orders_routes.ClienteData(
+                nome="Texto divergente",
+                razao_social="Texto divergente",
+                cnpj="00.000.000/0000-00",
+                email="errado@example.com",
+            ),
+            items=[orders_routes.OrderItem(item="Produto Manual", codigo_kuryos="A definir", qtd=10, valor_unitario=2)],
+        ),
+        {"id": "user-1", "tenant_id": "tenant-1", "name": "Admin"},
+        origem="gerador",
+    ))
+
+    assert order["cliente_id"] == "cli-1"
+    assert order["cliente"]["razao_social"] == "Cliente Oficial LTDA"
+    assert order["cliente"]["cnpj"] == "12.345.678/0001-90"
+    assert order["cliente"]["email"] == "cliente@example.com"
+    assert order["cadastro_pendente"] is True
+    assert len(orders_routes.db.orders.docs) == 1
+    assert len(orders_routes.db.email_logs.docs) == 2
+
+
+def test_direct_order_preserves_client_sku_and_currency(monkeypatch):
+    ids = count(1)
+    orders_routes.new_id_func = lambda: f"id-{next(ids)}"
+    orders_routes.now_iso_func = lambda: "2026-08-25T21:00:00+00:00"
+    orders_routes.db = SimpleNamespace(
+        crm_clients=FakeCollection([{
+            "id": "cli-1",
+            "tenant_id": "tenant-1",
+            "nome_empresa": "Cliente Oficial",
+            "razao_social": "Cliente Oficial LTDA",
+            "cnpj": "12.345.678/0001-90",
+            "cidade": "Sao Paulo",
+            "uf": "SP",
+            "responsavel": "Maria",
+            "telefone": "11999990000",
+            "email": "cliente@example.com",
+        }]),
+        skus=FakeCollection([{
+            "id": "sku-1",
+            "tenant_id": "tenant-1",
+            "cliente_id": "cli-1",
+            "codigo_interno": "PER-MISS-0001",
+            "status": "ativo",
+            "nome_produto": "Body Splash Teste",
+            "preco_unitario": 7.5,
+            "preco_unitario_currency": "USD",
+            "amostra_id": "sample-1",
+            "amostra_variacao_id": "var-1",
+        }]),
+        pd_requests=FakeCollection([]),
+        orders=FakeCollection([]),
+        email_logs=FakeCollection([]),
+    )
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "tenant_id": "tenant-1", "name": "Admin"}
+
+    monkeypatch.setattr(orders_routes, "get_current_user", fake_get_current_user)
+
+    order = asyncio.run(
+        orders_routes.create_direct_order(
+            orders_routes.DirectOrderCreate(
+                cliente_id="cli-1",
+                sku_id="sku-1",
+                qtd=12,
+                prazo_entrega="15 dias",
+            ),
+            SimpleNamespace(),
+        )
+    )
+
+    assert order["origem"] == "direto"
+    assert order["cliente_id"] == "cli-1"
+    assert order["cliente"]["razao_social"] == "Cliente Oficial LTDA"
+    assert order["items"][0]["sku_id"] == "sku-1"
+    assert order["items"][0]["sku_cliente_id"] == "cli-1"
+    assert order["items"][0]["codigo_kuryos"] == "PER-MISS-0001"
+    assert order["items"][0]["valor_unitario"] == 7.5
+    assert order["items"][0]["valor_unitario_currency"] == "USD"
+    assert order["items"][0]["qtd"] == 12
+    assert order["total_pedido"] == 90.0
+    assert orders_routes.db.orders.docs[0]["items"][0]["valor_unitario_currency"] == "USD"
+
+
+def test_direct_order_rejects_sku_from_another_client(monkeypatch):
+    orders_routes.db = SimpleNamespace(
+        crm_clients=FakeCollection([{
+            "id": "cli-1",
+            "tenant_id": "tenant-1",
+            "nome_empresa": "Cliente Oficial",
+        }]),
+        skus=FakeCollection([{
+            "id": "sku-1",
+            "tenant_id": "tenant-1",
+            "cliente_id": "cli-2",
+            "codigo_interno": "PER-OUTR-0001",
+            "status": "ativo",
+            "preco_unitario": 7.5,
+            "preco_unitario_currency": "USD",
+        }]),
+        orders=FakeCollection([]),
+    )
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "tenant_id": "tenant-1", "name": "Admin"}
+
+    monkeypatch.setattr(orders_routes, "get_current_user", fake_get_current_user)
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(
+            orders_routes.create_direct_order(
+                orders_routes.DirectOrderCreate(cliente_id="cli-1", sku_id="sku-1", qtd=1),
+                SimpleNamespace(),
+            )
+        )
+
+    assert exc.value.status_code == 400
+    assert "não pertence" in str(exc.value.detail).lower() or "nao pertence" in str(exc.value.detail).lower()
+    assert orders_routes.db.orders.docs == []

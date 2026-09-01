@@ -1,0 +1,541 @@
+{
+  "script": "audit_order_integrity",
+  "mode": "dry-run",
+  "generated_at": "2026-08-25T00:06:38.428245+00:00",
+  "summary": {
+    "orders_scanned": 22,
+    "clients_scanned": 29,
+    "skus_scanned": 51,
+    "findings": 23
+  },
+  "findings": [
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "3a360d35-2aab-4634-a6c1-64a8188a560d",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Máscara Capilar Reconstrução",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "e621cec7-4e8c-4c47-9381-31c4b6c0bf76",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Perfume Linha Verão",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "31de9154-0206-4331-89e8-fe807be8d8ea",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Tônico Facial Vitamina C",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "45f11eba-7e15-47d6-9e4c-3705e85002dc",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Sabonete Líquido Antibac",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "bc09dbcf-9b7c-464c-986c-8fe3a5e367af",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Máscara Capilar Reconstrução",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "2bb67ca9-ce1a-4528-9175-d7711df86bd7",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Perfume Linha Verão",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "ffd2027a-5c57-46a8-bc5c-9dd37dd898c0",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Tônico Facial Vitamina C",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "e783229b-ec11-439f-b5fd-0c388c1789c4",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Sabonete Líquido Antibac",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "15c17a5c-0179-4b2b-beac-bc790988ff4d",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Máscara Capilar Reconstrução",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "d9960f41-c79b-457c-b46d-379124e65bca",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Perfume Linha Verão",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "5b91a9a5-d1a6-4638-a2a4-b1a36e435b94",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Tônico Facial Vitamina C",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "b05ece65-d08d-4620-b2e1-d4a6ce401e99",
+      "item": {
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Sabonete Líquido Antibac",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "f5379040-387a-4de9-8e1a-463008701c85",
+      "item": {
+        "codigo_kuryos": "110/A",
+        "codigo_cliente": "",
+        "item": "Sabonete Líquido Antibac",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "11afd315-7579-49cb-a1c3-707d48a7c1c9",
+      "item": {
+        "codigo_kuryos": "111/A",
+        "codigo_cliente": "",
+        "item": "bodysplash 200ml 60.0ml",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0.0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "ff669a7d-3ffb-4228-bd2f-595f8f9d851d",
+      "item": {
+        "codigo_kuryos": "2026-1012-a",
+        "codigo_cliente": "",
+        "item": "BODY SPLASH HABIBI 60.0ml",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "46a4a5ee-c61f-4201-8f96-5d4e1c949336",
+      "item": {
+        "codigo_kuryos": "2026-1013-a",
+        "codigo_cliente": "",
+        "item": "bodysplash 300ml 60.0ml",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "f0ab08d9-8465-4258-82f8-26f65a2de504",
+      "item": {
+        "codigo_kuryos": "2026-1014-a",
+        "codigo_cliente": "",
+        "item": "Natura Homem Pulso 60.0ml",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "ef1ef3a2-d090-4bfe-a481-e846603e1c46",
+      "item": {
+        "codigo_kuryos": "2026-1015-a",
+        "codigo_cliente": "",
+        "item": "bodysplash A definir",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "daef0b26-3ae0-4a73-be2f-d47b254eb672",
+      "item": {
+        "sku_id": null,
+        "pd_request_id": null,
+        "pd_concluido": false,
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Produto A",
+        "prazo_entrega": "",
+        "valor_unitario": 10.5,
+        "valor_unitario_currency": "BRL",
+        "desconto_percentual": 0.0,
+        "qtd": 3.0,
+        "valor_total": 31.5,
+        "tipo_servico": "producao",
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "daef0b26-3ae0-4a73-be2f-d47b254eb672",
+      "item": {
+        "sku_id": null,
+        "pd_request_id": null,
+        "pd_concluido": false,
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Produto B",
+        "prazo_entrega": "",
+        "valor_unitario": 20.0,
+        "valor_unitario_currency": "BRL",
+        "desconto_percentual": 0.0,
+        "qtd": 2.0,
+        "valor_total": 40.0,
+        "tipo_servico": "producao",
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "manual_item_without_cadastro_pendente_flag",
+      "order_id": "2af75d55-3fca-464f-8fdb-a22b0e855359",
+      "item": {
+        "sku_id": null,
+        "pd_request_id": null,
+        "pd_concluido": false,
+        "codigo_kuryos": "",
+        "codigo_cliente": "",
+        "item": "Produto A",
+        "prazo_entrega": "",
+        "valor_unitario": 10.5,
+        "valor_unitario_currency": "BRL",
+        "desconto_percentual": 0.0,
+        "qtd": 3.0,
+        "valor_total": 31.5,
+        "tipo_servico": "producao",
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "order_item_sku_code_missing",
+      "order_id": "4f4bf8f8-5112-4e0e-a2f2-eb149479daf8",
+      "item": {
+        "codigo_kuryos": "2026-1018-a",
+        "codigo_cliente": "",
+        "item": "Bodysplash abe A definir",
+        "prazo_entrega": "20 Dias",
+        "valor_unitario": 0.0,
+        "qtd": 0,
+        "valor_total": 0.0,
+        "valor_desconto": 0.0
+      }
+    },
+    {
+      "type": "generator_order_without_cliente_id",
+      "order": {
+        "id": "9d639c69-66b8-467c-9840-f03a049e7c41",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "pd_request_id": null,
+        "kickoff_id": null,
+        "client_card_id": null,
+        "pedido_cliente_ref": "5024",
+        "gerador_origem": "gerador_web",
+        "duplicate_fingerprint": "51abd017b6f1d3e9bfe059b38857319e39500f3a",
+        "numero_pedido": "08_04",
+        "data_pedido": "2026-08-24",
+        "status": "em_producao",
+        "tipo_servico": "producao",
+        "nivel_formalizacao": 1,
+        "project_name": "",
+        "cliente": {
+          "nome": "Marlos",
+          "razao_social": "Marlos",
+          "cnpj": "00002004000152",
+          "cidade_uf": "",
+          "responsavel": "Marlos",
+          "telefone": "11976966827",
+          "email": "marlosjunior@gmail.com"
+        },
+        "frete": {
+          "tipo": "FOB",
+          "endereco": "",
+          "cidade_uf": "",
+          "prazo_coleta": ""
+        },
+        "items": [
+          {
+            "sku_id": "d7bc903a-0ac7-45ef-965a-ad49173019d5",
+            "pd_request_id": "67e9ccba-9464-4d10-b28c-93f542a1dc0d",
+            "pd_concluido": true,
+            "codigo_kuryos": "BSP-MGFJ-0001",
+            "codigo_cliente": "Mgfj",
+            "item": "Bodysplash abe - 2026-1018-a",
+            "prazo_entrega": "20 dias",
+            "valor_unitario": 25.0,
+            "valor_unitario_currency": "BRL",
+            "desconto_percentual": 0.0,
+            "qtd": 1000.0,
+            "valor_total": 25000.0,
+            "tipo_servico": "producao",
+            "produto_pai_id": "98ca8ddf-3fd6-4035-9de3-9c6b6b59b0bb",
+            "sku_cliente_id": "439c1725-520d-46a5-88b6-29969fd00649",
+            "valor_desconto": 0.0
+          }
+        ],
+        "condicoes": {
+          "prazo": "30-60",
+          "forma_pgto": "%NF 20",
+          "condicao_pagamento": "000/000/000"
+        },
+        "insumos": [],
+        "checklist_insumos": [
+          {
+            "categoria": "Arte / Aprovação de arte",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Cadastro ANVISA / Notificação",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Rótulos / Gravação",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Frascos / Potes",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Tampas / Sobretampa",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Cartucho",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Válvulas",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Celofane / Sleeve",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Display",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Caixa de embarque",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Essência / Fragrância",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          },
+          {
+            "categoria": "Matérias-primas específicas",
+            "ativo": false,
+            "origem": "kuryos",
+            "status": "pendente",
+            "responsavel": "",
+            "data_prevista": null,
+            "observacoes": ""
+          }
+        ],
+        "total_pedido": 25000.0,
+        "total_bruto": 25000.0,
+        "total_desconto": 0.0,
+        "desconto_pct_medio": 0.0,
+        "observacoes": "Gerado por: Admin Kuryos\nPedido do cliente: 5024\n% NF: 20\nSKU P&D concluido: BSP-MGFJ-0001 (sku_id d7bc903a-0ac7-45ef-965a-ad49173019d5)",
+        "attachments": [],
+        "pdf": {
+          "status": "gerado",
+          "filename": "ordem_producao_08_04.pdf",
+          "generated_at": "2026-08-24T22:20:49.777822+00:00",
+          "generated_by": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+          "generated_by_name": "Admin Kuryos",
+          "download_url": "/api/orders/9d639c69-66b8-467c-9840-f03a049e7c41/pdf"
+        },
+        "cgi_status": "assinado",
+        "cgi_assinado_em": "2026-08-24T22:20:53.432191+00:00",
+        "cgi_assinado_por": "Admin Kuryos",
+        "aprovacao_cliente": "aprovado",
+        "aprovacao_cliente_obs": "",
+        "aprovacao_cliente_em": "2026-08-24T22:21:00.681027+00:00",
+        "confirmacao_cliente": {
+          "status": "aprovado",
+          "destinatario": "marlosjunior@gmail.com",
+          "solicitada_em": "2026-08-24T22:20:49.732369+00:00",
+          "confirmada_em": "2026-08-24T22:21:00.681027+00:00",
+          "email_log_id": "31a9af82-8c3d-45a6-a13e-10f26ec5c405",
+          "confirmada_por": "Admin Kuryos",
+          "observacoes": ""
+        },
+        "cadastro_pendente_items": [],
+        "cadastro_pendente": false,
+        "aprovacao_comercial": "nao_necessaria",
+        "aprovacao_comercial_nivel": null,
+        "aprovacao_comercial_por": null,
+        "aprovacao_comercial_em": null,
+        "aprovacao_comercial_obs": "",
+        "op_id": "058ebc29-b2fd-419c-bd9e-47412bfb1b07",
+        "created_at": "2026-08-24T22:20:49.642255+00:00",
+        "updated_at": "2026-08-24T22:21:31.149965+00:00",
+        "created_by": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+        "created_by_name": "Admin Kuryos",
+        "auto_created": false,
+        "origem": "gerador",
+        "aprovacao_cliente_por": "Admin Kuryos"
+      }
+    }
+  ]
+}

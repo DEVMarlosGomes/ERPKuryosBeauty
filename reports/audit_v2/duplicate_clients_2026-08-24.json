@@ -1,0 +1,193 @@
+{
+  "script": "audit_duplicate_clients",
+  "mode": "dry-run",
+  "generated_at": "2026-08-25T00:06:38.415224+00:00",
+  "summary": {
+    "clients_scanned": 29,
+    "findings": 1
+  },
+  "findings": [
+    {
+      "type": "duplicate_nome",
+      "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+      "key": "marlos",
+      "count": 2,
+      "clients": [
+        {
+          "id": "a3429247-756e-447a-859c-23fb4810c787",
+          "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+          "stage": "projeto_em_discussao",
+          "nome_empresa": "MARLOS",
+          "cnpj": "01.004.587/0001-98",
+          "cnpj_normalized": "01004587000198",
+          "contato_principal": {
+            "nome": "MARLOS",
+            "whatsapp": "5511976966827",
+            "email": "marlos@email.com"
+          },
+          "contatos_adicionais": [],
+          "canal_origem": "linkedin_engajamento_organico",
+          "categoria_interesse": [
+            "body_splash_colonia"
+          ],
+          "origem_lead": "indicacao_fornecedor",
+          "temperatura_lead": "morno",
+          "responsavel_comercial": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+          "segmento": "marca_propria",
+          "porte": "pequeno",
+          "regiao": "SP",
+          "site": "",
+          "instagram": "",
+          "observacoes": "",
+          "cli3": "MRL",
+          "cli4": "MARL",
+          "cli4_congelado": true,
+          "has_grau2_anvisa": false,
+          "ultima_atualizacao_temperatura": "2026-08-03T22:29:10.925623+00:00",
+          "decisores": [
+            {
+              "nome": "Marlos",
+              "cargo": "comprador",
+              "contato": "11976966827"
+            }
+          ],
+          "tem_marca_propria": false,
+          "tem_anvisa": "depende",
+          "volume_estimado_mensal": "5k_20k",
+          "fornecedor_atual": {
+            "tem": false,
+            "motivo_troca": ""
+          },
+          "prazo_urgencia": "2026-06-30",
+          "amostras_aprovadas": [],
+          "valor_estimado_projeto": null,
+          "moq_negociado": "",
+          "condicao_pagamento": "",
+          "anvisa_necessario": {
+            "necessario": false,
+            "status": ""
+          },
+          "concorrentes_envolvidos": [],
+          "data_pedido": null,
+          "skus_confirmados": [],
+          "valor_primeiro_pedido": null,
+          "previsao_segundo_pedido": null,
+          "motivo_perda": "",
+          "historico_movimentacoes": [
+            {
+              "de": "prospeccao",
+              "para": "qualificado",
+              "data": "2026-06-20T17:44:36.871055+00:00",
+              "usuario": "Admin Kuryos",
+              "usuario_id": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+              "is_regression": false
+            },
+            {
+              "de": "qualificado",
+              "para": "projeto_em_discussao",
+              "data": "2026-08-03T22:29:54.445742+00:00",
+              "usuario": "Admin Kuryos",
+              "usuario_id": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+              "is_regression": false
+            }
+          ],
+          "created_by": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+          "created_by_name": "Admin Kuryos",
+          "created_at": "2026-06-20T17:44:31.174940+00:00",
+          "updated_at": "2026-08-03T22:29:54.445742+00:00"
+        },
+        {
+          "id": "439c1725-520d-46a5-88b6-29969fd00649",
+          "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+          "stage": "negociacao",
+          "nome_empresa": "Marlos",
+          "cnpj": "00002004000152",
+          "cnpj_normalized": "00002004000152",
+          "contato_principal": {
+            "nome": "Marlos",
+            "whatsapp": "11976966827",
+            "email": "marlosjunior@gmail.com"
+          },
+          "contatos_adicionais": [],
+          "canal_origem": "linkedin_engajamento_organico",
+          "categoria_interesse": [
+            "body_splash_colonia"
+          ],
+          "origem_lead": "",
+          "temperatura_lead": "quente",
+          "responsavel_comercial": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+          "segmento": "marca_propria",
+          "porte": "pequeno",
+          "regiao": "SP",
+          "site": "",
+          "instagram": "",
+          "observacoes": "",
+          "cli3": "GEN",
+          "cli4": "MGFJ",
+          "cli4_congelado": true,
+          "has_grau2_anvisa": false,
+          "ultima_atualizacao_temperatura": "2026-08-24T21:14:54.997133+00:00",
+          "decisores": [
+            {
+              "nome": "Marlos",
+              "cargo": "desenvolvimento",
+              "contato": "11976966827"
+            }
+          ],
+          "tem_marca_propria": true,
+          "tem_anvisa": "nao",
+          "volume_estimado_mensal": "5k_20k",
+          "fornecedor_atual": {
+            "tem": true,
+            "motivo_troca": "prazo"
+          },
+          "prazo_urgencia": "2026-09-01",
+          "amostras_aprovadas": [],
+          "valor_estimado_projeto": null,
+          "moq_negociado": "",
+          "condicao_pagamento": "",
+          "anvisa_necessario": {
+            "necessario": false,
+            "status": ""
+          },
+          "concorrentes_envolvidos": [],
+          "data_pedido": null,
+          "skus_confirmados": [],
+          "valor_primeiro_pedido": null,
+          "previsao_segundo_pedido": null,
+          "motivo_perda": "",
+          "historico_movimentacoes": [
+            {
+              "de": "prospeccao",
+              "para": "qualificado",
+              "data": "2026-08-24T21:15:02.433012+00:00",
+              "usuario": "Admin Kuryos",
+              "usuario_id": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+              "is_regression": false
+            },
+            {
+              "de": "qualificado",
+              "para": "projeto_em_discussao",
+              "data": "2026-08-24T21:17:10.019621+00:00",
+              "usuario": "Admin Kuryos",
+              "usuario_id": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+              "is_regression": false
+            },
+            {
+              "de": "projeto_em_discussao",
+              "para": "negociacao",
+              "data": "2026-08-24T21:44:13.778562+00:00",
+              "usuario": "Admin Kuryos",
+              "usuario_id": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+              "origem": "espelho_crm2_em_negociacao"
+            }
+          ],
+          "created_by": "4fb64562-9778-48eb-9065-5cfa9a689a72",
+          "created_by_name": "Admin Kuryos",
+          "created_at": "2026-08-24T21:14:54.997133+00:00",
+          "updated_at": "2026-08-24T21:44:13.778562+00:00"
+        }
+      ]
+    }
+  ]
+}

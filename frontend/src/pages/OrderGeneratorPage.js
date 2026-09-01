@@ -213,7 +213,20 @@ export default function OrderGeneratorPage() {
     setField("cliente", name);
     const found = uniqueClients.find((client) => clientName(client).toLowerCase() === name.toLowerCase());
     if (!found) {
-      setForm((prev) => ({ ...prev, cliente: name, cliente_id: "" }));
+      setForm((prev) => ({
+        ...prev,
+        cliente: name,
+        cliente_id: "",
+        cnpj: "",
+        razao_social: "",
+        cidade_uf: "",
+        cidade_uf_frete: "",
+        endereco: "",
+        responsavel: "",
+        telefone: "",
+        email: "",
+        email_destinatario: prev.enviar_email ? "" : prev.email_destinatario,
+      }));
       return;
     }
     setForm((prev) => ({
@@ -280,6 +293,7 @@ export default function OrderGeneratorPage() {
 
   const validate = () => {
     if (!form.cliente.trim()) return "Informe o cliente.";
+    if (!form.cliente_id) return "Selecione um cliente cadastrado da lista.";
     const cnpjDigits = String(form.cnpj || "").replace(/\D/g, "");
     if (cnpjDigits && cnpjDigits.length !== 14) return "CNPJ deve ter 14 digitos.";
     if (!validItems.length) return "Inclua pelo menos um item com descricao.";
@@ -360,6 +374,7 @@ export default function OrderGeneratorPage() {
 
     return {
       data_pedido: form.data,
+      cliente_id: form.cliente_id,
       pedido_cliente_ref: form.pedido_num_cliente.trim(),
       gerador_origem: "gerador_web",
       tipo_servico: "producao",
@@ -502,6 +517,11 @@ export default function OrderGeneratorPage() {
                     <Input list="order-generator-clients" value={form.cliente} onChange={(e) => applyClient(e.target.value)} className="pl-9" placeholder="Nome do cliente" />
                     <datalist id="order-generator-clients">{clientOptions.map((name) => <option key={name} value={name} />)}</datalist>
                   </div>
+                  {form.cliente && !form.cliente_id && (
+                    <p className="mt-1 text-xs font-medium text-amber-600 dark:text-amber-400">
+                      Selecione um cliente cadastrado da lista para liberar o pedido.
+                    </p>
+                  )}
                 </Field>
                 <Field label="Data"><Input type="date" value={form.data} onChange={(e) => setField("data", e.target.value)} /></Field>
                 <Field label="Resumo p/ nome do arquivo"><Input value={form.resumo} onChange={(e) => setField("resumo", e.target.value)} placeholder="ex: 60k MR125" /></Field>

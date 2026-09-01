@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
+from pymongo.errors import DuplicateKeyError, OperationFailure
 import os
 import logging
 import uuid
@@ -2050,6 +2051,7 @@ async def startup():
     await db.ordens_compra.create_index([("tenant_id", 1), ("numero_oc", 1)], unique=True, sparse=True)
     # Contratos CGI
     await db.contratos.create_index([("tenant_id", 1), ("kickoff_id", 1)])
+    await db.contratos.create_index([("tenant_id", 1), ("projeto_id", 1), ("status", 1)])
     await db.contratos.create_index([("tenant_id", 1), ("client_id", 1)])
     await db.contratos.create_index([("tenant_id", 1), ("numero_contrato", 1)], unique=True, sparse=True)
 
@@ -2112,6 +2114,19 @@ async def startup():
     await db.skus.create_index([("tenant_id", 1), ("status", 1)])
     await db.skus.create_index([("tenant_id", 1), ("cliente_id", 1)])
     await db.skus.create_index([("tenant_id", 1), ("codigo_interno", 1)], unique=True)
+    try:
+        await db.skus.create_index(
+            [("tenant_id", 1), ("amostra_id", 1), ("amostra_variacao_id", 1)],
+            unique=True,
+            name="uniq_active_sku_sample_variation",
+            partialFilterExpression={
+                "amostra_id": {"$exists": True},
+                "amostra_variacao_id": {"$exists": True},
+                "status": "ativo",
+            },
+        )
+    except (DuplicateKeyError, OperationFailure) as exc:
+        logger.warning("Nao foi possivel criar indice unico de SKU por amostra/variacao: %s", exc)
     await db.crm_alerts.create_index([("tenant_id", 1), ("status", 1)])
     await db.crm_alerts.create_index([("tenant_id", 1), ("tipo", 1)])
     await db.crm_column_configs.create_index([("tenant_id", 1), ("crm_type", 1)])
