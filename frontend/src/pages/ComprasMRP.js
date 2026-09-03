@@ -48,7 +48,7 @@ export default function ComprasMRP() {
     const loadNecessidades = useCallback(async () => {
         setLoadingNec(true);
         try {
-            const { data } = await api.get("/api/compras/necessidades");
+            const { data } = await api.get("/compras/necessidades");
             setNecessidades(data || []);
         } catch { /* silencioso */ }
         finally { setLoadingNec(false); }

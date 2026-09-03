@@ -37,7 +37,7 @@ export default function ComprasFornecedorDetalhe() {
     const carregar = useCallback(async () => {
         setLoading(true);
         try {
-            const { data } = await api.get(`/api/compras/fornecedores/${id}`);
+            const { data } = await api.get(`/compras/fornecedores/${id}`);
             setForn(data);
         } catch { toast.error("Erro ao carregar fornecedor"); }
         finally { setLoading(false); }
@@ -48,7 +48,7 @@ export default function ComprasFornecedorDetalhe() {
     const acao = async (endpoint, body = {}) => {
         setSaving(true);
         try {
-            await api.post(`/api/compras/fornecedores/${id}/homologacao/${endpoint}`, body);
+            await api.post(`/compras/fornecedores/${id}/homologacao/${endpoint}`, body);
             toast.success("Ação realizada com sucesso");
             setModal(null);
             carregar();

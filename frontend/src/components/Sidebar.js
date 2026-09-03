@@ -85,10 +85,10 @@ const NAV_MODULES = [
         roles: ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "sales_ops", "gestor"],
         children: [
             { path: "/logistica", label: "Visao Geral", icon: Truck },
-            { path: "/estoque", label: "Estoque", icon: Warehouse },
-            { path: "/estoque/movimentacao", label: "WMS / Movimentacao", icon: ArrowLeftRight },
-            { path: "/recebimento", label: "Recebimento", icon: Package },
-            { path: "/expedicao", label: "Expedicao", icon: Truck },
+            { path: "/recebimento", label: "Recebimento / CQ", icon: Package },
+            { path: "/estoque", label: "Estoque / WMS", icon: Warehouse },
+            { path: "/estoque/movimentacao", label: "Historico WMS", icon: ArrowLeftRight },
+            { path: "/expedicao", label: "Expedicao / Romaneio", icon: Truck },
             { path: "/logistica/agendamentos", label: "Agendamentos", icon: Calendar },
         ],
     },
@@ -113,16 +113,8 @@ const NAV_MODULES = [
         key: "orders",
         type: "link",
         path: "/orders",
-        label: "Pedidos (PI)",
+        label: "Pedidos",
         icon: ShoppingCart,
-        roles: null,
-    },
-    {
-        key: "ops",
-        type: "link",
-        path: "/ops",
-        label: "Ordens de Produção",
-        icon: Factory,
         roles: null,
     },
     {
@@ -134,11 +126,20 @@ const NAV_MODULES = [
         roles: ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor", "sales_ops"],
         children: [
             { path: "/pcp/dashboard", label: "Dashboard Diário", icon: LayoutDashboard },
-            { path: "/pcp/planejamento", label: "Planejamento", icon: Calendar },
+            { path: "/pcp/historico", label: "Histórico/Pedidos Vendas", icon: History },
+            { path: "/pcp/planejamento", label: "PCP / Planejamento", icon: Calendar },
             { path: "/pcp/horizonte", label: "Horizonte de Produção", icon: BarChart3 },
             { path: "/pcp/controle-ops", label: "Controle de OPs", icon: Factory },
-            { path: "/pcp/apontamento/envase", label: "Apontamento por Setor", icon: Factory },
+            { path: "/pcp/emitir-op", label: "Emitir OP", icon: FileText },
         ],
+    },
+    {
+        key: "matriz-insumos",
+        type: "link",
+        path: "/pcp/matriz-insumos",
+        label: "Matriz de Insumos",
+        icon: Database,
+        roles: ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor", "sales_ops"],
     },
     {
         key: "faturamento",
@@ -156,10 +157,10 @@ const NAV_MODULES = [
         basePaths: ["/compras"],
         roles: ["admin", "compras", "engenharia_produto", "lider_pd", "qa", "sales_ops"],
         children: [
-            { path: "/compras", label: "Dashboard" },
+            { path: "/compras", label: "Esteira Compras" },
+            { path: "/compras/mrp", label: "Solicitacoes / MRP" },
+            { path: "/compras/itens", label: "Itens / Cotacoes" },
             { path: "/compras/fornecedores", label: "Fornecedores" },
-            { path: "/compras/itens", label: "Itens" },
-            { path: "/compras/mrp", label: "MRP" },
             { path: "/compras/pos", label: "Pedidos de Compra" },
             { path: "/compras/estoque-projetado", label: "Estoque Projetado" },
         ],
@@ -273,25 +274,25 @@ export default function Sidebar() {
 
     const sidebarContent = ({ compact = false } = {}) => (
         <>
-            <div className={`flex items-center gap-2 ${compact ? "justify-center p-3" : "justify-between p-5"}`}>
+            <div className={`flex items-center gap-2 ${compact ? "justify-center p-3" : "justify-between p-4"}`}>
                 <div className="min-w-0" data-testid="sidebar-logo">
                     <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-md bg-[#0f2044] flex items-center justify-center flex-shrink-0">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[#0f2044] shadow-sm ring-1 ring-white/10">
                             <span className="text-white font-bold text-sm font-heading">K</span>
                         </div>
                         {!compact && <div>
-                            <h2 className="font-heading font-bold text-sm tracking-widest uppercase text-foreground leading-none">Kuryos</h2>
-                            <p className="text-[9px] text-muted-foreground tracking-widest uppercase leading-none mt-0.5">ERP</p>
+                            <h2 className="font-heading text-sm font-semibold uppercase leading-none text-foreground">Kuryos</h2>
+                            <p className="mt-0.5 text-[10px] uppercase leading-none text-muted-foreground">ERP</p>
                         </div>}
                     </div>
-                    {!compact && <p className="text-xs text-muted-foreground mt-2 truncate">
+                    {!compact && <p className="mt-3 truncate rounded-lg bg-muted/55 px-2.5 py-2 text-xs text-muted-foreground">
                         {user?.name} <span className="opacity-60">· {user?.role}</span>
                     </p>}
                 </div>
                 {!compact && (
                     <button
                         type="button"
-                        className="hidden md:inline-flex p-2 rounded-md hover:bg-accent text-muted-foreground"
+                        className="hidden rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground md:inline-flex"
                         onClick={() => setCollapsed(true)}
                         data-testid="sidebar-collapse-btn"
                         aria-label="Minimizar menu"
@@ -303,7 +304,7 @@ export default function Sidebar() {
                 {compact && (
                     <button
                         type="button"
-                        className="hidden md:inline-flex absolute left-[52px] top-4 rounded-md border border-border bg-card p-1.5 text-muted-foreground shadow-sm hover:bg-accent hover:text-foreground"
+                        className="absolute left-[52px] top-4 hidden rounded-lg border border-border/70 bg-card/95 p-1.5 text-muted-foreground shadow-sm backdrop-blur hover:bg-muted hover:text-foreground md:inline-flex"
                         onClick={() => setCollapsed(false)}
                         data-testid="sidebar-expand-btn"
                         aria-label="Expandir menu"
@@ -314,7 +315,7 @@ export default function Sidebar() {
                 )}
                 <button
                     type="button"
-                    className={`${compact ? "hidden" : "md:hidden"} p-2 rounded-md hover:bg-accent text-muted-foreground`}
+                    className={`${compact ? "hidden" : "md:hidden"} rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground`}
                     onClick={() => setMobileOpen(false)}
                     data-testid="sidebar-close-mobile"
                     aria-label="Fechar menu"
@@ -325,7 +326,7 @@ export default function Sidebar() {
 
             <Separator />
 
-            <nav ref={navRef} className={`flex-1 space-y-1 overflow-y-auto ${compact ? "p-2" : "p-3"}`} data-testid="sidebar-nav">
+            <nav ref={navRef} className={`flex-1 space-y-1 overflow-y-auto ${compact ? "p-2" : "px-3 py-2"}`} data-testid="sidebar-nav">
                 {filteredModules.map((mod) => {
                     const Icon = mod.icon;
                     if (mod.type === "link") {
@@ -336,7 +337,7 @@ export default function Sidebar() {
                                 onClick={() => handleNavigate(mod.path)}
                                 data-testid={`nav-${mod.key}`}
                                 title={compact ? mod.label : undefined}
-                                className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-md text-sm ${
+                                className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 text-sm ${
                                     active ? "active bg-accent text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
                                 }`}
                             >
@@ -354,7 +355,7 @@ export default function Sidebar() {
                                 onClick={() => toggleGroup(mod.key)}
                                 data-testid={`nav-group-${mod.key}`}
                                 title={compact ? mod.label : undefined}
-                                className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-md text-sm ${
+                                className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 text-sm ${
                                     hasActiveChild ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
                                 }`}
                             >
@@ -376,7 +377,7 @@ export default function Sidebar() {
                                                 key={child.path}
                                                 onClick={() => handleNavigate(child.path)}
                                                 data-testid={`nav-${mod.key}-${child.path.split("/").pop()}`}
-                                                className={`sidebar-item w-full flex items-center gap-2 px-3 py-2 rounded-md text-xs ${
+                                                className={`sidebar-item w-full flex items-center gap-2 px-3 py-2 text-xs ${
                                                     childActive ? "active bg-accent text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
                                                 }`}
                                             >
@@ -399,7 +400,7 @@ export default function Sidebar() {
                     onClick={() => setDark(!dark)}
                     data-testid="theme-toggle"
                     title={compact ? (dark ? "Modo Claro" : "Modo Escuro") : undefined}
-                    className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-md text-sm text-muted-foreground hover:text-foreground`}
+                    className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 text-sm text-muted-foreground hover:text-foreground`}
                 >
                     {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                     {!compact && (dark ? "Modo Claro" : "Modo Escuro")}
@@ -408,7 +409,7 @@ export default function Sidebar() {
                     onClick={logout}
                     data-testid="logout-btn"
                     title={compact ? "Sair" : undefined}
-                    className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 rounded-md text-sm text-muted-foreground hover:text-foreground`}
+                    className={`sidebar-item w-full flex items-center ${compact ? "justify-center px-0" : "gap-3 px-3"} py-2.5 text-sm text-muted-foreground hover:text-foreground`}
                 >
                     <LogOut className="h-4 w-4" />
                     {!compact && "Sair"}
@@ -420,28 +421,28 @@ export default function Sidebar() {
     return (
         <TooltipProvider delayDuration={200}>
             {/* Mobile top bar */}
-            <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-card border-b border-border flex items-center justify-between px-4" data-testid="mobile-topbar">
+            <div className="fixed left-0 right-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border/70 bg-card/85 px-4 shadow-sm backdrop-blur-xl md:hidden" data-testid="mobile-topbar">
                 <button
                     type="button"
                     onClick={() => setMobileOpen(true)}
                     data-testid="mobile-menu-btn"
                     aria-label="Abrir menu"
-                    className="p-2 rounded-md hover:bg-accent text-foreground"
+                    className="rounded-lg p-2 text-foreground hover:bg-muted"
                 >
                     <Menu className="h-5 w-5" />
                 </button>
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-md bg-[#0f2044] flex items-center justify-center">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0f2044] shadow-sm">
                         <span className="text-white font-bold text-xs">K</span>
                     </div>
-                    <span className="font-heading font-bold text-sm tracking-widest uppercase">Kuryos</span>
+                    <span className="font-heading text-sm font-semibold uppercase">Kuryos</span>
                 </div>
                 <div className="w-9" />
             </div>
 
             {/* Desktop sidebar */}
             <aside
-                className={`${collapsed ? "w-[72px]" : "w-[240px]"} relative hidden md:flex h-screen flex-col border-r border-border bg-card shrink-0 transition-[width] duration-200`}
+                className={`${collapsed ? "w-[72px]" : "w-[260px]"} relative hidden h-screen shrink-0 flex-col border-r border-border/70 bg-card/82 shadow-sm backdrop-blur-xl transition-[width] duration-200 md:flex`}
                 data-testid="sidebar"
             >
                 {sidebarContent({ compact: collapsed })}
@@ -451,11 +452,11 @@ export default function Sidebar() {
             {mobileOpen && (
                 <div className="md:hidden fixed inset-0 z-50 flex" data-testid="mobile-sidebar-drawer">
                     <div
-                        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/45 backdrop-blur-sm"
                         onClick={() => setMobileOpen(false)}
                         aria-hidden="true"
                     />
-                    <aside className="relative w-[280px] h-screen flex flex-col border-r border-border bg-card shadow-2xl">
+                    <aside className="relative flex h-screen w-[min(86vw,300px)] flex-col border-r border-border/70 bg-card/95 shadow-2xl backdrop-blur-xl">
                         {sidebarContent({ compact: false })}
                     </aside>
                 </div>

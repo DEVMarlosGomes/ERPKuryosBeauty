@@ -3,7 +3,7 @@ PCP — Programação e Controle da Produção.
 Fluxo:
   1. OP aberta → Criar slot de programação (linha + data + turno)
   2. Slot planejado → em_execucao   (atualiza OP para em_processo)
-  3. Slot em_execucao → concluido   (atualiza OP para concluida)
+  3. Slot em_execucao -> concluido   (envia OP para confirmacao PCP)
   4. Qualquer ativo → cancelado
 """
 from fastapi import APIRouter, HTTPException, Request
@@ -817,7 +817,13 @@ async def update_slot(slot_id: str, data: SlotUpdate, request: Request):
         elif novo_status == "concluido":
             await db.ops.update_one(
                 {"id": slot["op_id"], "tenant_id": tid},
-                {"$set": {"status": "concluida", "updated_at": now}}
+                {"$set": {
+                    "status": "aguardando_confirmacao_pcp",
+                    "pcp_status": "aguardando_confirmacao",
+                    "fechado_producao_por": user["name"],
+                    "fechado_producao_em": now,
+                    "updated_at": now,
+                }}
             )
 
     if "linha_id" in payload and payload["linha_id"]:
@@ -829,10 +835,25 @@ async def update_slot(slot_id: str, data: SlotUpdate, request: Request):
             updates["linha_nome"] = linha["nome"]
             updates["linha_tipo"] = linha.get("tipo", "geral")
 
-    for field in ("data_inicio", "data_fim", "turno", "qtd_planejada", "qtd_produzida", "observacoes"):
+    for field in (
+        "data",
+        "hora_inicio",
+        "hora_fim",
+        "data_inicio",
+        "data_fim",
+        "turno",
+        "tipo",
+        "setup_tempo_min",
+        "lote_id",
+        "qtd_planejada",
+        "qtd_produzida",
+        "observacoes",
+    ):
         if field in payload and payload[field] is not None:
             if field == "turno" and payload[field] not in TURNOS:
                 raise HTTPException(status_code=400, detail=f"Turno inválido: {payload[field]}")
+            if field == "tipo" and payload[field] not in TIPOS_SLOT:
+                raise HTTPException(status_code=400, detail=f"Tipo inválido: {payload[field]}")
             updates[field] = payload[field]
 
     await db.pcp_programacao.update_one({"id": slot_id}, {"$set": updates})
@@ -892,7 +913,7 @@ async def recalcular_status_pcp(request: Request):
         novo_status = slot.get("status")
         op_status = op.get("status")
 
-        if op_status == "concluida" or (planejado > 0 and produzido >= planejado):
+        if op_status in {"aguardando_confirmacao_pcp", "concluida"}:
             novo_status = "concluido"
             concluidos += 1
         elif op_status == "em_processo":

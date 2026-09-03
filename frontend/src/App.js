@@ -116,7 +116,7 @@ function AppLayout() {
     const CADASTROS_ROLES = ["admin", "vendedor", "sales_ops", "sucesso_cliente", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"];
 
     return (
-        <div className="flex min-h-screen md:h-screen overflow-hidden bg-background">
+        <div className="app-shell flex min-h-screen md:h-screen overflow-hidden bg-background">
             <Sidebar />
             <main className="flex-1 overflow-auto pt-14 md:pt-0">
                 <Suspense fallback={<PageLoader />}>
@@ -141,16 +141,20 @@ function AppLayout() {
                         <Route path="/pd/:id" element={<RoleGuard allowed={[...PD_READ, ...COMERCIAL]}><PDDetail /></RoleGuard>} />
                         <Route path="/tasks" element={<TasksPage />} />
                         <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/pedidos" element={<Navigate to="/orders" replace />} />
                         <Route path="/orders/gerador" element={<OrderGeneratorPage />} />
                         <Route path="/orders/:id" element={<OrderDetail />} />
                         <Route path="/ops" element={<OPPage />} />
                         <Route path="/ops/:id" element={<OPDetail />} />
                         <Route path="/pcp/dashboard" element={<PCPDailyDashboard />} />
+                        <Route path="/pcp/historico" element={<PCPClonePage mode="historico" />} />
                         <Route path="/pcp/planejamento" element={<PCPClonePage mode="planejamento" />} />
                         <Route path="/pcp/horizonte" element={<PCPClonePage mode="horizonte" />} />
                         <Route path="/pcp/controle-ops" element={<PCPClonePage mode="controle" />} />
+                        <Route path="/pcp/emitir-op" element={<PCPClonePage mode="emitir-op" />} />
+                        <Route path="/pcp/matriz-insumos" element={<PCPClonePage mode="matriz" />} />
                         <Route path="/pcp/produtos" element={<Navigate to="/cadastros" replace />} />
-                        <Route path="/pcp/insumos" element={<Navigate to="/cadastros" replace />} />
+                        <Route path="/pcp/insumos" element={<Navigate to="/pcp/matriz-insumos" replace />} />
                         <Route path="/pcp/apontamento" element={<Navigate to="/pcp/apontamento/envase" replace />} />
                         <Route path="/pcp/apontamento/:setor" element={<PCPProductionPage />} />
                         <Route path="/pcp" element={<Navigate to="/pcp/dashboard" replace />} />

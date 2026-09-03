@@ -28,7 +28,7 @@ export default function ComprasCotacao() {
         setLoading(true);
         try {
             const [dRes, fornRes] = await Promise.all([
-                api.get(`/api/compras/demandas/${demanda_id}`).catch(() => ({ data: null })),
+                api.get(`/compras/demandas/${demanda_id}`).catch(() => ({ data: null })),
                 api.get("/compras/fornecedores", { params: { limit: 200 } }),
             ]);
             const d = dRes.data;
@@ -36,8 +36,8 @@ export default function ComprasCotacao() {
             setFornecedores(fornRes.data?.fornecedores || []);
             if (d?.item_id) {
                 const [iRes, hRes] = await Promise.all([
-                    api.get(`/api/compras/itens/${d.item_id}`),
-                    api.get(`/api/compras/itens/${d.item_id}/historico-precos`),
+                    api.get(`/compras/itens/${d.item_id}`),
+                    api.get(`/compras/itens/${d.item_id}/historico-precos`),
                 ]);
                 setItem(iRes.data);
                 setHist(hRes.data);
@@ -57,7 +57,7 @@ export default function ComprasCotacao() {
         setSaving(true);
         try {
             const body = { ...form, preco_unitario: parseFloat(form.preco_unitario), prazo_pagamento_dias: parseInt(form.prazo_pagamento_dias), prazo_entrega_dias_uteis: parseInt(form.prazo_entrega_dias_uteis), moq: parseFloat(form.moq), frete_valor: parseFloat(form.frete_valor || 0) };
-            await api.post(`/api/compras/itens/${item.id}/cotar`, body);
+            await api.post(`/compras/itens/${item.id}/cotar`, body);
             toast.success("Cotação registrada");
             carregar();
         } catch (e) { toast.error(e.response?.data?.detail || "Erro ao registrar cotação"); }

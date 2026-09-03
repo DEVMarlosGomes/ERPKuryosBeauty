@@ -57,7 +57,7 @@ export default function ComprasPOLista() {
                 </h1>
                 <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={carregar}><RefreshCw className="h-4 w-4" /></Button>
-                    <Button size="sm" data-testid="btn-nova-po" onClick={() => nav("/compras/pos/novo")}><Plus className="h-4 w-4 mr-1" /> Nova PO</Button>
+                    <Button size="sm" data-testid="btn-nova-po" onClick={() => nav("/compras/mrp")}><Plus className="h-4 w-4 mr-1" /> Gerar via MRP</Button>
                 </div>
             </div>
 

@@ -102,7 +102,7 @@ function SheetDetalhe({ item, onClose }) {
     useEffect(() => {
         if (!item) return;
         setLoading(true);
-        api.get(`/api/compras/estoque-projetado/${item.item_id}`)
+        api.get(`/compras/estoque-projetado/${item.item_id}`)
             .then(r => setDetalhe(r.data))
             .catch(() => toast.error("Erro ao carregar detalhes do item"))
             .finally(() => setLoading(false));

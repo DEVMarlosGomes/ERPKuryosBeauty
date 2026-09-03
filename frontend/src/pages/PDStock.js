@@ -100,7 +100,7 @@ export default function PDStock() {
     const t = setTimeout(async () => {
       setLoadingFrags(true);
       try {
-        const { data } = await api.get("/api/cadastros/fragrancias", { params: { search: fragSearch } });
+        const { data } = await api.get("/cadastros/fragrancias", { params: { search: fragSearch } });
         setFragOptions(data.fragrancias || []);
         setShowFragDropdown(true);
       } catch { setFragOptions([]); }

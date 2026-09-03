@@ -26,6 +26,7 @@ from cq_routes import (
     cq_verificar_assepsia_envase,
     cq_verificar_setup_linha,
 )
+from rbac import require_roles
 
 logger = logging.getLogger(__name__)
 
@@ -308,7 +309,7 @@ class OPCreate(BaseModel):
 
 
 class OPUpdate(BaseModel):
-    status: Optional[str] = None  # "aberta" | "em_processo" | "pausada" | "concluida" | "cancelada"
+    status: Optional[str] = None  # "aberta" | "em_processo" | "pausada" | "aguardando_confirmacao_pcp" | "concluida" | "cancelada"
     items: Optional[List[OPItem]] = None
     observacoes: Optional[str] = None
     linha_id: Optional[str] = None
@@ -316,7 +317,8 @@ class OPUpdate(BaseModel):
     pcp_numero: Optional[str] = None
 
 
-OP_STATUSES = ["aberta", "em_processo", "pausada", "concluida", "cancelada"]
+OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"]
+PCP_CONFIRM_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
 
 
 class OPReworkCreate(BaseModel):
@@ -2270,7 +2272,9 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
     payload = data.model_dump(exclude_unset=True)
     if "status" in payload and payload["status"] not in OP_STATUSES:
         raise HTTPException(status_code=400, detail=f"Status inválido. Permitidos: {OP_STATUSES}")
-    if payload.get("status") in {"em_processo", "concluida"}:
+    if payload.get("status") == "concluida":
+        require_roles(user, PCP_CONFIRM_ROLES)
+    if payload.get("status") in {"em_processo", "aguardando_confirmacao_pcp", "concluida"}:
         bloqueios = _technical_review_blocks_operation(op)
         if bloqueios:
             raise HTTPException(
@@ -2281,7 +2285,16 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
                 },
             )
     update_fields: Dict[str, Any] = {k: v for k, v in payload.items() if v is not None or k == "observacoes"}
-    update_fields["updated_at"] = now_iso()
+    now = now_iso()
+    update_fields["updated_at"] = now
+    if payload.get("status") == "aguardando_confirmacao_pcp":
+        update_fields["pcp_status"] = "aguardando_confirmacao"
+        update_fields["fechado_producao_por"] = user["name"]
+        update_fields["fechado_producao_em"] = now
+    elif payload.get("status") == "concluida":
+        update_fields["pcp_status"] = "confirmado"
+        update_fields["pcp_confirmed_by"] = user["name"]
+        update_fields["pcp_confirmed_at"] = now
     await db.ops.update_one({"id": op_id}, {"$set": update_fields})
     updated = await db.ops.find_one({"id": op_id}, {"_id": 0})
 

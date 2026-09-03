@@ -13,6 +13,7 @@ const STATUS_CONFIG = {
   em_processo: { label: "Em Processo", color: "bg-amber-500/10 text-amber-700 border-amber-300 dark:text-amber-300" },
   pausada:     { label: "Pausada",     color: "bg-orange-500/10 text-orange-600 border-orange-300 dark:text-orange-300" },
   concluida:   { label: "Concluída",   color: "bg-green-500/10 text-green-700 border-green-300 dark:text-green-300" },
+  aguardando_confirmacao_pcp: { label: "Aguardando PCP", color: "bg-indigo-500/10 text-indigo-700 border-indigo-300 dark:text-indigo-300" },
   cancelada:   { label: "Cancelada",   color: "bg-red-500/10 text-red-700 border-red-300 dark:text-red-300" },
 };
 
@@ -48,6 +49,7 @@ export default function OPPage() {
   const counts = {
     aberta: ops.filter(o => o.status === "aberta").length,
     em_processo: ops.filter(o => o.status === "em_processo").length,
+    aguardando_confirmacao_pcp: ops.filter(o => o.status === "aguardando_confirmacao_pcp").length,
     concluida: ops.filter(o => o.status === "concluida").length,
   };
 
@@ -67,10 +69,11 @@ export default function OPPage() {
         </div>
 
         {/* Mini stats */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
             { key: "aberta", label: "Abertas", color: "text-blue-600" },
             { key: "em_processo", label: "Em Processo", color: "text-amber-600" },
+            { key: "aguardando_confirmacao_pcp", label: "Aguard. PCP", color: "text-indigo-600" },
             { key: "concluida", label: "Concluídas", color: "text-green-600" },
           ].map(({ key, label, color }) => (
             <div key={key} className="rounded-xl border bg-card p-4 text-center cursor-pointer hover:bg-accent/50" onClick={() => setStatusFilter(key)}>

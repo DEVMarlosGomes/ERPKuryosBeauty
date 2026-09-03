@@ -14,9 +14,13 @@ import { Separator } from "@/components/ui/separator";
 import {
   Building2,
   CheckCircle2,
+  ClipboardList,
   Database,
   Factory,
+  FileText,
+  GitBranch,
   Layers3,
+  MapPinned,
   Package,
   Plus,
   RefreshCw,
@@ -191,6 +195,29 @@ function Field({ label, children }) {
   );
 }
 
+function FlowCard({ icon: Icon, title, description, meta, tone = "primary" }) {
+  const tones = {
+    primary: "bg-primary/10 text-primary",
+    success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+    warning: "bg-amber-500/10 text-amber-600 dark:text-amber-300",
+    muted: "bg-muted text-muted-foreground",
+  };
+  return (
+    <Card className="rounded-lg">
+      <CardContent className="flex h-full gap-3 p-4">
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${tones[tone] || tones.primary}`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <div className="min-w-0">
+          <h3 className="font-semibold">{title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          {meta && <p className="mt-3 text-xs font-medium uppercase text-muted-foreground">{meta}</p>}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function CadastroDialog({ title, open, onOpenChange, onSubmit, saving, children }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -271,6 +298,10 @@ export default function CadastrosPage() {
       categoriasMp: categoriasMp.filter((c) => has(c, ["catmp3", "nome", "tipo", "status"])),
     };
   }, [search, clientes, fornecedores, produtos, materiais, categoriasProduto, categoriasMp]);
+
+  const produtosComSku = produtos.filter((p) => p.codigo_interno).length;
+  const produtosComPd = produtos.filter((p) => p.pd_concluido || p.pd_request_id).length;
+  const materiaisHomologados = materiais.filter((m) => ["homologado", "homologada", "ativo", "ativa"].includes(String(m.status || "").toLowerCase())).length;
 
   const submit = async (kind) => {
     setSaving(true);
@@ -366,12 +397,14 @@ export default function CadastrosPage() {
       <SearchBar value={search} onChange={setSearch} onRefresh={loadAll} placeholder="Buscar por SKU, cliente, fornecedor, CNPJ ou categoria..." />
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="grid h-auto grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-7">
+        <TabsList className="grid h-auto grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-9">
           <TabsTrigger value="dashboard">Visao</TabsTrigger>
           <TabsTrigger value="clientes">Clientes</TabsTrigger>
           <TabsTrigger value="fornecedores">Fornecedores</TabsTrigger>
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
           <TabsTrigger value="materiais">MPs/Insumos</TabsTrigger>
+          <TabsTrigger value="engenharia">Engenharia</TabsTrigger>
+          <TabsTrigger value="fichas">Fichas</TabsTrigger>
           <TabsTrigger value="categorias">Categorias</TabsTrigger>
           <TabsTrigger value="integracoes">Integracoes</TabsTrigger>
         </TabsList>
@@ -396,6 +429,35 @@ export default function CadastrosPage() {
               ))}
             </CardContent>
           </Card>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <FlowCard
+              icon={GitBranch}
+              title="SKU e produto final"
+              description="Produto aprovado pelo P&D entra aqui com categoria CAT3, cliente CLI4 e sequencial congelado para alimentar pedidos e PCP."
+              meta={`${produtosComSku}/${produtos.length} com SKU`}
+            />
+            <FlowCard
+              icon={ClipboardList}
+              title="Engenharia do produto"
+              description="Aba de formula, BOM de embalagem e ficha tecnica amarra produto acabado, MPs, insumos e materiais de apoio."
+              meta={`${produtosComPd}/${produtos.length} vinculados ao P&D`}
+              tone="success"
+            />
+            <FlowCard
+              icon={ShieldCheck}
+              title="Homologacao unica"
+              description="Materiais e fornecedores devem sair de homologacoes para Cadastros, Compras, Banco de Custos e Estoque sem nova digitacao."
+              meta={`${materiaisHomologados}/${materiais.length} materiais ativos`}
+              tone="warning"
+            />
+            <FlowCard
+              icon={MapPinned}
+              title="Enderecamento WMS"
+              description="Materiais cadastrados carregam unidade, categoria, fornecedor e endereco preferencial para recebimento e armazenagem."
+              meta="base para estoque/lote"
+              tone="muted"
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="clientes">
@@ -459,6 +521,54 @@ export default function CadastrosPage() {
               { key: "status", label: "Status", render: (r) => <StatusBadge value={r.status} /> },
             ]}
           />
+        </TabsContent>
+
+        <TabsContent value="engenharia" className="space-y-4">
+          <div className="grid gap-3 lg:grid-cols-3">
+            <FlowCard icon={Factory} title="Produto final" description="Cadastro mestre do SKU comercial, cliente, categoria, volume e status de venda." meta={`${produtos.length} produtos`} />
+            <FlowCard icon={Database} title="Formula / granel" description="Base tecnica do P&D para variacoes com mesma base, alterando apenas cor, ativo e fragrancia quando permitido." meta="base tecnica" tone="success" />
+            <FlowCard icon={Package} title="BOM de embalagem" description="Lista estruturada de frasco, tampa, valvula, rotulo, caixa e demais insumos que Compras e PCP usam no MRP." meta={`${materiais.length} materiais`} tone="warning" />
+          </div>
+          <ResponsiveTable
+            rows={filtered.produtos}
+            getKey={(r) => r.id}
+            emptyText={loading ? "Carregando..." : "Nenhum produto para engenharia."}
+            columns={[
+              { key: "codigo_interno", label: "SKU", render: (r) => <span className="font-mono">{r.codigo_interno || "A definir"}</span> },
+              { key: "nome_produto", label: "Produto" },
+              { key: "cliente_nome", label: "Cliente" },
+              { key: "formula", label: "Formula", render: (r) => r.pd_concluido || r.pd_request_id ? <StatusBadge value="ativo" /> : <StatusBadge value="pendente" /> },
+              { key: "bom", label: "BOM", render: () => <Badge variant="outline">Em cadastro</Badge> },
+              { key: "custos", label: "Custos", render: () => <Badge variant="outline">Banco de custos</Badge> },
+            ]}
+          />
+        </TabsContent>
+
+        <TabsContent value="fichas" className="space-y-4">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <FlowCard icon={FileText} title="Ficha tecnica" description="Dados automaticos vindos de SKU, formula, BOM, cliente, volume e categoria." meta="documento mestre" />
+            <FlowCard icon={ShieldCheck} title="Qualidade" description="Status de homologacao, restricoes, validade e aprovacao tecnica devem bloquear uso indevido." meta="gate CQ" tone="success" />
+            <FlowCard icon={Warehouse} title="Estoque/WMS" description="Unidade, fator de conversao, lote e endereco preferencial alimentam recebimento e consumo." meta="rastreabilidade" tone="warning" />
+            <FlowCard icon={Building2} title="Comercial" description="Pedido puxa cliente, CNPJ, endereco, e-mail e SKU aprovado sem redigitar." meta="pedido direto" tone="muted" />
+          </div>
+          <Card className="rounded-lg">
+            <CardHeader><CardTitle className="text-base">Fila de fichas tecnicas</CardTitle></CardHeader>
+            <CardContent>
+              <ResponsiveTable
+                rows={filtered.produtos}
+                getKey={(r) => r.id}
+                emptyText="Nenhuma ficha pendente."
+                columns={[
+                  { key: "codigo_interno", label: "SKU", render: (r) => <span className="font-mono">{r.codigo_interno || "A definir"}</span> },
+                  { key: "nome_produto", label: "Produto" },
+                  { key: "cliente_nome", label: "Cliente" },
+                  { key: "categoria", label: "Categoria" },
+                  { key: "dados", label: "Dados automaticos", render: (r) => r.codigo_interno && r.cliente_nome ? <StatusBadge value="ativo" /> : <StatusBadge value="pendente" /> },
+                  { key: "acao", label: "Acao", render: () => <Button size="sm" variant="outline">Revisar</Button> },
+                ]}
+              />
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="categorias" className="space-y-4">

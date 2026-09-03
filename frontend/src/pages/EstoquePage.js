@@ -80,6 +80,7 @@ export default function EstoquePage() {
     const [showNewItem, setShowNewItem] = useState(false);
     const [showMov, setShowMov] = useState(false);
     const [movDirection, setMovDirection] = useState("entrada"); // entrada | saida | transferencia
+    const [wmsView, setWmsView] = useState("agregado");
 
     const setorConfig = useMemo(() => SETORES.find(s => s.key === setorAtivo), [setorAtivo]);
 
@@ -153,6 +154,37 @@ export default function EstoquePage() {
     };
 
     const isLowStock = (item) => item.estoque_minimo > 0 && item.quantidade_atual <= item.estoque_minimo;
+    const lotes = useMemo(
+        () => items.filter((item) => item.lote || item.localizacao_estruturada || item.localizacao || item.validade),
+        [items]
+    );
+    const vencendo = useMemo(() => {
+        const hoje = new Date();
+        const limite = new Date();
+        limite.setDate(limite.getDate() + 45);
+        return lotes
+            .filter((item) => item.validade)
+            .map((item) => ({ ...item, validadeDate: new Date(`${item.validade}T00:00:00`) }))
+            .filter((item) => item.validadeDate <= limite)
+            .sort((a, b) => a.validadeDate - b.validadeDate)
+            .map((item) => ({
+                ...item,
+                vencido: item.validadeDate < hoje,
+                dias: Math.ceil((item.validadeDate - hoje) / 86400000),
+            }));
+    }, [lotes]);
+    const enderecoStats = useMemo(() => {
+        const map = new Map();
+        items.forEach((item) => {
+            const endereco = item.localizacao_estruturada || item.localizacao || "Sem endereco";
+            const atual = map.get(endereco) || { endereco, itens: 0, saldo: 0, quarentena: 0 };
+            atual.itens += 1;
+            atual.saldo += Number(item.quantidade_atual || 0);
+            if ((item.posicao_cq || "livre") === "quarentena") atual.quarentena += 1;
+            map.set(endereco, atual);
+        });
+        return Array.from(map.values()).sort((a, b) => a.endereco.localeCompare(b.endereco));
+    }, [items]);
 
     return (
         <div className="p-6 space-y-5 min-h-screen" data-testid="estoque-page">
@@ -246,6 +278,140 @@ export default function EstoquePage() {
                     </div>
                 </div>
             )}
+
+            <Tabs value={wmsView} onValueChange={setWmsView} className="w-full">
+                <TabsList className="grid h-auto grid-cols-2 gap-1 md:grid-cols-5">
+                    <TabsTrigger value="agregado">Saldo Agregado</TabsTrigger>
+                    <TabsTrigger value="lotes">Lote/Endereco</TabsTrigger>
+                    <TabsTrigger value="vencendo">Vencimento</TabsTrigger>
+                    <TabsTrigger value="historico">Historico</TabsTrigger>
+                    <TabsTrigger value="enderecos">Enderecos</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="agregado" className="space-y-3">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <Card>
+                            <CardContent className="p-4">
+                                <p className="text-xs uppercase tracking-wide text-muted-foreground">Itens no setor</p>
+                                <p className="mt-1 text-2xl font-semibold mono-num">{items.length}</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-4">
+                                <p className="text-xs uppercase tracking-wide text-muted-foreground">Abaixo do minimo</p>
+                                <p className="mt-1 text-2xl font-semibold mono-num text-amber-600">{items.filter(isLowStock).length}</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-4">
+                                <p className="text-xs uppercase tracking-wide text-muted-foreground">Em quarentena</p>
+                                <p className="mt-1 text-2xl font-semibold mono-num text-amber-600">{items.filter((i) => (i.posicao_cq || "livre") === "quarentena").length}</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-4">
+                                <p className="text-xs uppercase tracking-wide text-muted-foreground">Enderecos usados</p>
+                                <p className="mt-1 text-2xl font-semibold mono-num">{enderecoStats.length}</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                        Saldo atual, minimo, CQ e acoes de entrada/saida ficam na grade operacional abaixo. Clique em um item para abrir Kardex e alterar posicao CQ.
+                    </p>
+                </TabsContent>
+
+                <TabsContent value="lotes" className="space-y-3">
+                    <div className="rounded-lg border overflow-hidden">
+                        <table className="w-full text-xs">
+                            <thead className="bg-muted/60 border-b">
+                                <tr>
+                                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Item</th>
+                                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Lote</th>
+                                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Endereco</th>
+                                    <th className="px-3 py-2 text-right font-medium text-muted-foreground">Saldo</th>
+                                    <th className="px-3 py-2 text-center font-medium text-muted-foreground">CQ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {lotes.length === 0 ? (
+                                    <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Nenhum lote/endereco registrado neste setor.</td></tr>
+                                ) : lotes.map((item) => (
+                                    <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => openItemDetail(item)}>
+                                        <td className="px-3 py-2 font-medium">{item.nome}</td>
+                                        <td className="px-3 py-2 font-mono">{item.lote || "-"}</td>
+                                        <td className="px-3 py-2 font-mono">{item.localizacao_estruturada || item.localizacao || "-"}</td>
+                                        <td className="px-3 py-2 text-right font-mono">{item.quantidade_atual} {item.unidade}</td>
+                                        <td className="px-3 py-2 text-center"><PosicaoBadge posicao={item.posicao_cq || "livre"} /></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="vencendo" className="space-y-3">
+                    <div className="grid gap-2">
+                        {vencendo.length === 0 ? (
+                            <Card><CardContent className="py-8 text-center text-sm text-muted-foreground">Nenhum lote vencido ou vencendo nos proximos 45 dias.</CardContent></Card>
+                        ) : vencendo.map((item) => (
+                            <Card key={item.id} className={item.vencido ? "border-red-500/40" : "border-amber-500/30"}>
+                                <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <span className="font-semibold">{item.nome}</span>
+                                            <Badge className={item.vencido ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"}>
+                                                {item.vencido ? "Vencido" : `${Math.max(0, item.dias)} dias`}
+                                            </Badge>
+                                        </div>
+                                        <p className="mt-1 text-xs text-muted-foreground">Lote {item.lote || "-"} - {item.localizacao_estruturada || item.localizacao || "sem endereco"}</p>
+                                    </div>
+                                    <div className="text-left sm:text-right">
+                                        <p className="font-mono text-sm">{new Date(`${item.validade}T00:00:00`).toLocaleDateString("pt-BR")}</p>
+                                        <p className="text-xs text-muted-foreground">{item.quantidade_atual} {item.unidade}</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="historico" className="space-y-3">
+                    <Card>
+                        <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                                <History className="mt-0.5 h-5 w-5 text-primary" />
+                                <div>
+                                    <h3 className="font-semibold">Historico por item</h3>
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        O Kardex detalhado abre no painel lateral ao clicar em qualquer item da grade. Para historico consolidado, use WMS / Movimentacao.
+                                    </p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="enderecos" className="space-y-3">
+                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                        {enderecoStats.map((endereco) => (
+                            <Card key={endereco.endereco}>
+                                <CardContent className="p-4">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p className="font-mono text-sm font-semibold">{endereco.endereco}</p>
+                                            <p className="mt-1 text-xs text-muted-foreground">{endereco.itens} item(ns) armazenado(s)</p>
+                                        </div>
+                                        <Badge variant="outline">{endereco.quarentena ? `${endereco.quarentena} CQ` : "Livre"}</Badge>
+                                    </div>
+                                    <div className="mt-3 h-2 rounded-full bg-muted">
+                                        <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.min(100, endereco.itens * 18)}%` }} />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+            </Tabs>
 
             {/* Setor header + actions */}
             <div className="flex items-center justify-between flex-wrap gap-3 pt-2">
