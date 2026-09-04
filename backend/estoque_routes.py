@@ -31,6 +31,14 @@ def init_estoque(database, get_user_fn, new_id_fn, now_iso_fn):
     logger.info("Estoque module initialized")
 
 
+async def create_estoque_indexes():
+    await db.wms_enderecos.create_index([("tenant_id", 1), ("codigo", 1)], unique=True)
+    await db.wms_enderecos.create_index([("tenant_id", 1), ("setor", 1), ("status", 1)])
+    await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("item_id", 1), ("lote", 1), ("endereco_id", 1)])
+    await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("endereco_id", 1), ("quantidade", 1)])
+    await db.estoque_movimentos_lote.create_index([("tenant_id", 1), ("created_at", -1)])
+
+
 # ============ CONSTANTS ============
 
 SETORES = ["MANIPULACAO", "ROTULAGEM", "LOGISTICA", "FABRICA", "DEVOLUCAO"]
@@ -124,6 +132,64 @@ class TransferenciaCreate(BaseModel):
     # Se item destino não existir, será criado automaticamente espelhando origem
 
 
+class WMSEnderecoCreate(BaseModel):
+    predio: str = "P01"
+    rua: str
+    nivel: str
+    posicao: str
+    setor: str = "LOGISTICA"
+    tipo: str = "porta_palete"
+    status: str = "livre"
+    capacidade_paletes: int = 1
+    capacidade_unidades: float = 0
+    observacoes: str = ""
+
+
+class WMSEnderecoUpdate(BaseModel):
+    predio: Optional[str] = None
+    rua: Optional[str] = None
+    nivel: Optional[str] = None
+    posicao: Optional[str] = None
+    setor: Optional[str] = None
+    tipo: Optional[str] = None
+    status: Optional[str] = None
+    capacidade_paletes: Optional[int] = None
+    capacidade_unidades: Optional[float] = None
+    observacoes: Optional[str] = None
+
+
+class WMSGerarEnderecos(BaseModel):
+    predios: int = Field(1, ge=1, le=20)
+    ruas_por_predio: int = Field(1, ge=1, le=50)
+    niveis_por_rua: int = Field(1, ge=1, le=20)
+    posicoes_por_nivel: int = Field(1, ge=1, le=100)
+    setor: str = "LOGISTICA"
+    tipo: str = "porta_palete"
+    capacidade_paletes: int = Field(1, ge=0)
+    capacidade_unidades: float = Field(0, ge=0)
+
+
+class AjusteSaldoLoteCreate(BaseModel):
+    item_id: str
+    lote: str
+    endereco_id: str
+    quantidade: float
+    modo: str = "absoluto"  # absoluto | entrada | saida
+    motivo: str
+    documento: str = ""
+    validade: Optional[str] = None
+
+
+class TransferenciaLoteCreate(BaseModel):
+    item_id: str
+    lote: str
+    endereco_origem_id: str
+    endereco_destino_id: str
+    quantidade: float
+    motivo: str = ""
+    documento: str = ""
+
+
 # ============ HELPERS ============
 
 def _serialize(doc: dict) -> dict:
@@ -177,6 +243,92 @@ def _item_cq_position(item: dict) -> str:
     return item.get("posicao_cq") or item.get("cq_status") or "livre"
 
 
+def _wms_codigo(predio: str, rua: str, nivel: str, posicao: str) -> str:
+    return "-".join(
+        [
+            str(predio or "P01").strip().upper(),
+            str(rua or "").strip().upper(),
+            str(nivel or "").strip().upper(),
+            str(posicao or "").strip().upper(),
+        ]
+    )
+
+
+def _numeric_code(prefix: str, number: int, width: int = 2) -> str:
+    return f"{prefix}{number:0{width}d}"
+
+
+def _saldo_quantidade(saldo: Optional[dict]) -> float:
+    if not saldo:
+        return 0.0
+    if saldo.get("quantidade") is not None:
+        return float(saldo.get("quantidade") or 0)
+    return float(saldo.get("quantidade_atual") or 0)
+
+
+async def _get_wms_endereco_or_404(endereco_id: str, tenant_id: str) -> dict:
+    endereco = await db.wms_enderecos.find_one(
+        {"id": endereco_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not endereco:
+        raise HTTPException(status_code=404, detail="Endereco WMS nao encontrado")
+    if endereco.get("status") == "inativo":
+        raise HTTPException(status_code=422, detail="Endereco WMS inativo")
+    return endereco
+
+
+async def _get_saldo_lote(item_id: str, lote: str, endereco_id: str, tenant_id: str) -> Optional[dict]:
+    return await db.estoque_saldos_lote.find_one(
+        {
+            "tenant_id": tenant_id,
+            "item_id": item_id,
+            "lote": lote,
+            "endereco_id": endereco_id,
+            "status": {"$ne": "zerado"},
+        },
+        {"_id": 0},
+    )
+
+
+async def _log_movimento_lote(
+    saldo: dict,
+    tipo: str,
+    quantidade: float,
+    motivo: str,
+    documento: str,
+    user: dict,
+    quantidade_antes: float,
+    quantidade_depois: float,
+    referencia: str = "",
+):
+    movimento = {
+        "id": _new_id(),
+        "tenant_id": user["tenant_id"],
+        "saldo_lote_id": saldo.get("id"),
+        "item_id": saldo.get("item_id"),
+        "item_nome": saldo.get("item_nome", ""),
+        "codigo_item": saldo.get("codigo_item", ""),
+        "lote": saldo.get("lote", ""),
+        "endereco_id": saldo.get("endereco_id"),
+        "endereco_codigo": saldo.get("endereco_codigo", ""),
+        "setor": saldo.get("setor", ""),
+        "tipo": tipo,
+        "direcao": "entrada" if tipo.endswith("_ENTRADA") or tipo == "AJUSTE_ENTRADA" or float(quantidade_depois) >= float(quantidade_antes) else "saida",
+        "quantidade": float(quantidade),
+        "unidade": saldo.get("unidade", "un"),
+        "quantidade_antes": float(quantidade_antes),
+        "quantidade_depois": float(quantidade_depois),
+        "motivo": motivo,
+        "documento": documento,
+        "referencia": referencia,
+        "usuario": user["name"],
+        "usuario_id": user["id"],
+        "created_at": _now_iso(),
+    }
+    await db.estoque_movimentos_lote.insert_one(movimento)
+    return _serialize(movimento)
+
+
 async def _assert_saida_liberada_por_cq(item: dict, tipo_movimento: str):
     if tipo_movimento not in MOVIMENTOS_SAIDA:
         return
@@ -196,7 +348,6 @@ async def _assert_saida_liberada_por_cq(item: dict, tipo_movimento: str):
         await cq_verificar_lote_aprovado(db, item["tenant_id"], lote_id)
         if tipo_movimento == "SAIDA_EXPEDICAO":
             await cq_verificar_liberacao_palete(db, item["tenant_id"], lote_id)
-
 
 # ============ ITEMS CRUD ============
 
@@ -539,6 +690,402 @@ async def create_transferencia(data: TransferenciaCreate, request: Request):
         "mov_entrada": mov_entrada,
         "item_origem": await db.estoque_items.find_one({"id": origem["id"]}, {"_id": 0}),
         "item_destino": await db.estoque_items.find_one({"id": destino["id"]}, {"_id": 0}),
+    }
+
+
+# ============ WMS ENDERECOS / LOTES ============
+
+@estoque_router.get("/wms/enderecos")
+async def listar_wms_enderecos(
+    request: Request,
+    setor: Optional[str] = None,
+    status: Optional[str] = None,
+    q: Optional[str] = None,
+):
+    user = await _get_current_user(request)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if setor:
+        query["setor"] = setor
+    if status:
+        query["status"] = status
+    if q:
+        query["$or"] = [
+            {"codigo": {"$regex": q, "$options": "i"}},
+            {"predio": {"$regex": q, "$options": "i"}},
+            {"rua": {"$regex": q, "$options": "i"}},
+        ]
+    enderecos = await db.wms_enderecos.find(query, {"_id": 0}).sort("codigo", 1).to_list(10000)
+    return {"enderecos": enderecos, "total": len(enderecos)}
+
+
+@estoque_router.post("/wms/enderecos", status_code=201)
+async def criar_wms_endereco(data: WMSEnderecoCreate, request: Request):
+    user = await _get_current_user(request)
+    if data.setor not in SETORES:
+        raise HTTPException(status_code=422, detail=f"Setor invalido. Valores: {SETORES}")
+    codigo = _wms_codigo(data.predio, data.rua, data.nivel, data.posicao)
+    existing = await db.wms_enderecos.find_one(
+        {"tenant_id": user["tenant_id"], "codigo": codigo}, {"_id": 0}
+    )
+    if existing:
+        raise HTTPException(status_code=409, detail=f"Endereco WMS ja cadastrado: {codigo}")
+    now = _now_iso()
+    doc = {
+        "id": _new_id(),
+        "tenant_id": user["tenant_id"],
+        "codigo": codigo,
+        "predio": data.predio.strip().upper(),
+        "rua": data.rua.strip().upper(),
+        "nivel": data.nivel.strip().upper(),
+        "posicao": data.posicao.strip().upper(),
+        "setor": data.setor,
+        "tipo": data.tipo,
+        "status": data.status,
+        "capacidade_paletes": int(data.capacidade_paletes),
+        "capacidade_unidades": float(data.capacidade_unidades),
+        "ocupacao_atual": 0.0,
+        "ocupacao_paletes": 0,
+        "observacoes": data.observacoes,
+        "created_by": user["id"],
+        "created_by_name": user["name"],
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.wms_enderecos.insert_one(doc)
+    return _serialize(doc)
+
+
+@estoque_router.post("/wms/enderecos/gerar", status_code=201)
+async def gerar_wms_enderecos(data: WMSGerarEnderecos, request: Request):
+    user = await _get_current_user(request)
+    if data.setor not in SETORES:
+        raise HTTPException(status_code=422, detail=f"Setor invalido. Valores: {SETORES}")
+
+    created = []
+    skipped = []
+    now = _now_iso()
+    for predio_n in range(1, data.predios + 1):
+        predio = _numeric_code("P", predio_n)
+        for rua_n in range(1, data.ruas_por_predio + 1):
+            rua = _numeric_code("R", rua_n)
+            for nivel_n in range(1, data.niveis_por_rua + 1):
+                nivel = _numeric_code("N", nivel_n)
+                for pos_n in range(1, data.posicoes_por_nivel + 1):
+                    posicao = _numeric_code("P", pos_n)
+                    codigo = _wms_codigo(predio, rua, nivel, posicao)
+                    existing = await db.wms_enderecos.find_one(
+                        {"tenant_id": user["tenant_id"], "codigo": codigo}, {"_id": 0}
+                    )
+                    if existing:
+                        skipped.append(codigo)
+                        continue
+                    doc = {
+                        "id": _new_id(),
+                        "tenant_id": user["tenant_id"],
+                        "codigo": codigo,
+                        "predio": predio,
+                        "rua": rua,
+                        "nivel": nivel,
+                        "posicao": posicao,
+                        "setor": data.setor,
+                        "tipo": data.tipo,
+                        "status": "livre",
+                        "capacidade_paletes": int(data.capacidade_paletes),
+                        "capacidade_unidades": float(data.capacidade_unidades),
+                        "ocupacao_atual": 0.0,
+                        "ocupacao_paletes": 0,
+                        "observacoes": "Gerado automaticamente",
+                        "created_by": user["id"],
+                        "created_by_name": user["name"],
+                        "created_at": now,
+                        "updated_at": now,
+                    }
+                    await db.wms_enderecos.insert_one(doc)
+                    created.append(_serialize(doc))
+
+    return {"enderecos": created, "created": len(created), "skipped": skipped, "skipped_count": len(skipped)}
+
+
+@estoque_router.put("/wms/enderecos/{endereco_id}")
+async def atualizar_wms_endereco(endereco_id: str, data: WMSEnderecoUpdate, request: Request):
+    user = await _get_current_user(request)
+    existing = await _get_wms_endereco_or_404(endereco_id, user["tenant_id"])
+    payload = data.model_dump(exclude_unset=True)
+    if not payload:
+        raise HTTPException(status_code=400, detail="Nenhum campo para atualizar")
+    if "setor" in payload and payload["setor"] not in SETORES:
+        raise HTTPException(status_code=422, detail=f"Setor invalido. Valores: {SETORES}")
+
+    next_parts = {
+        "predio": payload.get("predio", existing.get("predio")),
+        "rua": payload.get("rua", existing.get("rua")),
+        "nivel": payload.get("nivel", existing.get("nivel")),
+        "posicao": payload.get("posicao", existing.get("posicao")),
+    }
+    payload["codigo"] = _wms_codigo(**next_parts)
+    payload["updated_at"] = _now_iso()
+    await db.wms_enderecos.update_one(
+        {"id": endereco_id, "tenant_id": user["tenant_id"]}, {"$set": payload}
+    )
+    return await db.wms_enderecos.find_one({"id": endereco_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+
+
+@estoque_router.delete("/wms/enderecos/{endereco_id}")
+async def inativar_wms_endereco(endereco_id: str, request: Request):
+    user = await _get_current_user(request)
+    await _get_wms_endereco_or_404(endereco_id, user["tenant_id"])
+    saldos_endereco = await db.estoque_saldos_lote.find(
+        {"tenant_id": user["tenant_id"], "endereco_id": endereco_id, "status": {"$ne": "zerado"}}, {"_id": 0}
+    ).to_list(5000)
+    saldo = next((s for s in saldos_endereco if _saldo_quantidade(s) > 0), None)
+    if saldo:
+        raise HTTPException(status_code=409, detail="Endereco possui saldo. Transfira ou ajuste o lote antes de inativar.")
+    await db.wms_enderecos.update_one(
+        {"id": endereco_id, "tenant_id": user["tenant_id"]},
+        {"$set": {"status": "inativo", "updated_at": _now_iso()}},
+    )
+    return {"inactivated": endereco_id}
+
+
+@estoque_router.get("/wms/planta")
+async def planta_wms(request: Request, setor: Optional[str] = None):
+    user = await _get_current_user(request)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"], "status": {"$ne": "inativo"}}
+    if setor:
+        query["setor"] = setor
+    enderecos = await db.wms_enderecos.find(query, {"_id": 0}).sort("codigo", 1).to_list(10000)
+    saldos_raw = await db.estoque_saldos_lote.find(
+        {"tenant_id": user["tenant_id"], "status": {"$ne": "zerado"}}, {"_id": 0}
+    ).to_list(20000)
+    saldos = [s for s in saldos_raw if _saldo_quantidade(s) > 0]
+    por_endereco: Dict[str, List[dict]] = {}
+    for saldo in saldos:
+        por_endereco.setdefault(saldo.get("endereco_id"), []).append(saldo)
+
+    planta: Dict[str, Dict[str, Dict[str, List[dict]]]] = {}
+    for endereco in enderecos:
+        predio = endereco.get("predio", "P01")
+        rua = endereco.get("rua", "")
+        nivel = endereco.get("nivel", "")
+        celula = {**endereco, "saldos": por_endereco.get(endereco["id"], [])}
+        planta.setdefault(predio, {}).setdefault(rua, {}).setdefault(nivel, []).append(celula)
+
+    ocupados = len([e for e in enderecos if por_endereco.get(e["id"])])
+    return {
+        "planta": planta,
+        "enderecos": enderecos,
+        "total_enderecos": len(enderecos),
+        "enderecos_ocupados": ocupados,
+        "enderecos_livres": max(0, len(enderecos) - ocupados),
+    }
+
+
+async def _recalcular_ocupacao_endereco(endereco_id: str, tenant_id: str):
+    saldos_raw = await db.estoque_saldos_lote.find(
+        {"tenant_id": tenant_id, "endereco_id": endereco_id, "status": {"$ne": "zerado"}}, {"_id": 0}
+    ).to_list(10000)
+    saldos = [s for s in saldos_raw if _saldo_quantidade(s) > 0]
+    ocupacao = sum(_saldo_quantidade(s) for s in saldos)
+    paletes = len({s.get("palete_id") for s in saldos if s.get("palete_id")})
+    status = "ocupado" if ocupacao > 0 else "livre"
+    await db.wms_enderecos.update_one(
+        {"id": endereco_id, "tenant_id": tenant_id},
+        {"$set": {"ocupacao_atual": ocupacao, "ocupacao_paletes": paletes, "status": status, "updated_at": _now_iso()}},
+    )
+
+
+@estoque_router.get("/wms/saldos")
+async def listar_saldos_lote(
+    request: Request,
+    item_id: Optional[str] = None,
+    lote: Optional[str] = None,
+    endereco_id: Optional[str] = None,
+    setor: Optional[str] = None,
+    somente_com_saldo: bool = True,
+):
+    user = await _get_current_user(request)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if item_id:
+        query["item_id"] = item_id
+    if lote:
+        query["lote"] = lote
+    if endereco_id:
+        query["endereco_id"] = endereco_id
+    if setor:
+        query["setor"] = setor
+    saldos = await db.estoque_saldos_lote.find(query, {"_id": 0}).sort("updated_at", -1).to_list(20000)
+    if somente_com_saldo:
+        saldos = [s for s in saldos if _saldo_quantidade(s) > 0]
+    return {"saldos": saldos, "total": len(saldos)}
+
+
+@estoque_router.post("/wms/saldos/ajustar")
+async def ajustar_saldo_lote(data: AjusteSaldoLoteCreate, request: Request):
+    user = await _get_current_user(request)
+    if not data.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio para ajuste de lote")
+    if data.quantidade < 0:
+        raise HTTPException(status_code=422, detail="Quantidade nao pode ser negativa")
+    if data.modo not in {"absoluto", "entrada", "saida"}:
+        raise HTTPException(status_code=422, detail="Modo invalido. Use: absoluto, entrada ou saida")
+
+    item = await _get_item_or_404(data.item_id, user["tenant_id"])
+    endereco = await _get_wms_endereco_or_404(data.endereco_id, user["tenant_id"])
+    saldo = await _get_saldo_lote(data.item_id, data.lote, data.endereco_id, user["tenant_id"])
+    atual = _saldo_quantidade(saldo)
+    if data.modo == "absoluto":
+        novo = float(data.quantidade)
+        delta = novo - atual
+    elif data.modo == "entrada":
+        novo = atual + float(data.quantidade)
+        delta = float(data.quantidade)
+    else:
+        if data.quantidade > atual:
+            raise HTTPException(status_code=409, detail=f"Saldo insuficiente no lote/endereco: {atual}")
+        novo = atual - float(data.quantidade)
+        delta = -float(data.quantidade)
+
+    now = _now_iso()
+    if not saldo:
+        saldo = {
+            "id": _new_id(),
+            "tenant_id": user["tenant_id"],
+            "item_id": item["id"],
+            "item_nome": item.get("nome", ""),
+            "codigo_item": item.get("codigo", ""),
+            "tipo_item": item.get("tipo_item", ""),
+            "lote": data.lote,
+            "validade": data.validade or item.get("validade"),
+            "endereco_id": endereco["id"],
+            "endereco_codigo": endereco.get("codigo", ""),
+            "setor": endereco.get("setor", item.get("setor")),
+            "quantidade": 0.0,
+            "quantidade_atual": 0.0,
+            "unidade": item.get("unidade", "un"),
+            "posicao_cq": item.get("posicao_cq", "livre"),
+            "status": "disponivel",
+            "created_at": now,
+            "updated_at": now,
+        }
+        await db.estoque_saldos_lote.insert_one(saldo)
+
+    await db.estoque_saldos_lote.update_one(
+        {"id": saldo["id"], "tenant_id": user["tenant_id"]},
+        {"$set": {"quantidade": novo, "quantidade_atual": novo, "status": "zerado" if novo == 0 else "disponivel", "updated_at": now}},
+    )
+    item_qtd = float(item.get("quantidade_atual", 0)) + delta
+    if item_qtd < -0.0001:
+        raise HTTPException(status_code=409, detail="Ajuste deixaria saldo agregado negativo")
+    await db.estoque_items.update_one(
+        {"id": item["id"], "tenant_id": user["tenant_id"]},
+        {"$set": {"quantidade_atual": max(0.0, item_qtd), "updated_at": now}},
+    )
+    saldo_atualizado = await db.estoque_saldos_lote.find_one({"id": saldo["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+    movimento = await _log_movimento_lote(
+        saldo_atualizado,
+        "AJUSTE_ENTRADA" if delta >= 0 else "AJUSTE_SAIDA",
+        abs(delta),
+        data.motivo,
+        data.documento,
+        user,
+        atual,
+        novo,
+    )
+    await _recalcular_ocupacao_endereco(data.endereco_id, user["tenant_id"])
+    return {"saldo": saldo_atualizado, "movimento": movimento}
+
+
+@estoque_router.post("/wms/transferencias-lote")
+async def transferir_lote_endereco(data: TransferenciaLoteCreate, request: Request):
+    user = await _get_current_user(request)
+    if data.quantidade <= 0:
+        raise HTTPException(status_code=422, detail="Quantidade deve ser maior que zero")
+    if data.endereco_origem_id == data.endereco_destino_id:
+        raise HTTPException(status_code=422, detail="Endereco destino igual ao origem")
+
+    item = await _get_item_or_404(data.item_id, user["tenant_id"])
+    await _assert_saida_liberada_por_cq(item, "TRANSFERENCIA_SAIDA")
+    origem_end = await _get_wms_endereco_or_404(data.endereco_origem_id, user["tenant_id"])
+    destino_end = await _get_wms_endereco_or_404(data.endereco_destino_id, user["tenant_id"])
+    origem = await _get_saldo_lote(data.item_id, data.lote, data.endereco_origem_id, user["tenant_id"])
+    if not origem:
+        raise HTTPException(status_code=404, detail="Saldo de origem nao encontrado")
+    origem_qtd = _saldo_quantidade(origem)
+    if data.quantidade > origem_qtd:
+        raise HTTPException(status_code=409, detail=f"Saldo insuficiente no endereco origem: {origem_qtd}")
+
+    destino = await _get_saldo_lote(data.item_id, data.lote, data.endereco_destino_id, user["tenant_id"])
+    now = _now_iso()
+    if not destino:
+        destino = {
+            "id": _new_id(),
+            "tenant_id": user["tenant_id"],
+            "item_id": item["id"],
+            "item_nome": item.get("nome", origem.get("item_nome", "")),
+            "codigo_item": item.get("codigo", origem.get("codigo_item", "")),
+            "tipo_item": item.get("tipo_item", origem.get("tipo_item", "")),
+            "lote": data.lote,
+            "validade": origem.get("validade") or item.get("validade"),
+            "endereco_id": destino_end["id"],
+            "endereco_codigo": destino_end.get("codigo", ""),
+            "setor": destino_end.get("setor", item.get("setor")),
+            "quantidade": 0.0,
+            "quantidade_atual": 0.0,
+            "unidade": origem.get("unidade", item.get("unidade", "un")),
+            "posicao_cq": origem.get("posicao_cq", item.get("posicao_cq", "livre")),
+            "status": "disponivel",
+            "created_at": now,
+            "updated_at": now,
+        }
+        await db.estoque_saldos_lote.insert_one(destino)
+
+    ref = f"WMS-TRANSF-{_new_id()[:8]}"
+    origem_novo = origem_qtd - float(data.quantidade)
+    destino_antes = _saldo_quantidade(destino)
+    destino_novo = destino_antes + float(data.quantidade)
+
+    await db.estoque_saldos_lote.update_one(
+        {"id": origem["id"], "tenant_id": user["tenant_id"]},
+        {"$set": {"quantidade": origem_novo, "quantidade_atual": origem_novo, "status": "zerado" if origem_novo == 0 else "disponivel", "updated_at": now}},
+    )
+    await db.estoque_saldos_lote.update_one(
+        {"id": destino["id"], "tenant_id": user["tenant_id"]},
+        {"$set": {"quantidade": destino_novo, "quantidade_atual": destino_novo, "status": "disponivel", "updated_at": now}},
+    )
+    origem_atualizada = await db.estoque_saldos_lote.find_one({"id": origem["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+    destino_atualizado = await db.estoque_saldos_lote.find_one({"id": destino["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+    mov_saida = await _log_movimento_lote(origem_atualizada, "TRANSFERENCIA_SAIDA", data.quantidade, data.motivo, data.documento, user, origem_qtd, origem_novo, ref)
+    mov_entrada = await _log_movimento_lote(destino_atualizado, "TRANSFERENCIA_ENTRADA", data.quantidade, data.motivo, data.documento, user, destino_antes, destino_novo, ref)
+    await _recalcular_ocupacao_endereco(origem_end["id"], user["tenant_id"])
+    await _recalcular_ocupacao_endereco(destino_end["id"], user["tenant_id"])
+    return {"referencia": ref, "origem": origem_atualizada, "destino": destino_atualizado, "mov_saida": mov_saida, "mov_entrada": mov_entrada}
+
+
+@estoque_router.get("/wms/relatorio-saldos")
+async def relatorio_saldos_lote(request: Request, setor: Optional[str] = None):
+    user = await _get_current_user(request)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"], "status": {"$ne": "zerado"}}
+    if setor:
+        query["setor"] = setor
+    saldos_raw = await db.estoque_saldos_lote.find(query, {"_id": 0}).sort("endereco_codigo", 1).to_list(50000)
+    saldos = [s for s in saldos_raw if _saldo_quantidade(s) > 0]
+    total_por_item: Dict[str, float] = {}
+    total_por_endereco: Dict[str, float] = {}
+    total_por_lote: Dict[str, float] = {}
+    for saldo in saldos:
+        qtd = _saldo_quantidade(saldo)
+        total_por_item[saldo.get("item_id", "")] = total_por_item.get(saldo.get("item_id", ""), 0) + qtd
+        total_por_endereco[saldo.get("endereco_codigo", "")] = total_por_endereco.get(saldo.get("endereco_codigo", ""), 0) + qtd
+        lote_key = f"{saldo.get('item_id', '')}|{saldo.get('lote', '')}"
+        total_por_lote[lote_key] = total_por_lote.get(lote_key, 0) + qtd
+    return {
+        "base": "estoque_saldos_lote",
+        "saldos": saldos,
+        "total_linhas": len(saldos),
+        "total_quantidade": round(sum(_saldo_quantidade(s) for s in saldos), 6),
+        "total_por_item": total_por_item,
+        "total_por_endereco": total_por_endereco,
+        "total_por_lote": total_por_lote,
     }
 
 

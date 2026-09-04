@@ -504,6 +504,12 @@ def _date_plus_days(days: int) -> str:
     return (datetime.now(timezone.utc) + timedelta(days=days)).date().isoformat()
 
 
+async def _next_demanda_numero(tenant_id: str) -> str:
+    year = datetime.now(timezone.utc).year
+    seq = await next_sequence(tenant_id, f"compras_demanda_{year}", start=1)
+    return f"SC-{year}-{seq:03d}"
+
+
 # ── 405 guards — novas coleções nunca deletam ──────────────────────────────────
 
 @compras_router.delete("/fornecedores/{forn_id}")
@@ -555,6 +561,110 @@ async def listar_demandas(
     total = await db.compras_demandas.count_documents(query)
     docs = await db.compras_demandas.find(query, {"_id": 0}).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
     return {"demandas": docs, "total": total, "limit": limit, "offset": offset}
+
+
+class DemandaCompraCreate(BaseModel):
+    item_id: str
+    quantidade: float
+    data_limite_pedido: Optional[str] = None
+    motivo: str = "solicitacao_manual"
+    fornecedor_selecionado_id: Optional[str] = None
+    observacoes: str = ""
+
+
+class DemandaCompraUpdate(BaseModel):
+    quantidade: Optional[float] = None
+    data_limite_pedido: Optional[str] = None
+    motivo: Optional[str] = None
+    fornecedor_selecionado_id: Optional[str] = None
+    status: Optional[str] = None
+    observacoes: Optional[str] = None
+
+
+@compras_router.post("/demandas", status_code=201)
+async def criar_demanda(data: DemandaCompraCreate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, _CMP_WRITE)
+    tenant_id = user["tenant_id"]
+
+    item = await db.compras_itens.find_one({"id": data.item_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item nao encontrado.")
+    if data.quantidade <= 0:
+        raise HTTPException(status_code=422, detail="Quantidade deve ser maior que zero.")
+
+    fornecedor_nome = ""
+    if data.fornecedor_selecionado_id:
+        fornecedor = await db.compras_fornecedores.find_one(
+            {"id": data.fornecedor_selecionado_id, "tenant_id": tenant_id}, {"_id": 0}
+        )
+        if not fornecedor:
+            raise HTTPException(status_code=404, detail="Fornecedor preferencial nao encontrado.")
+        fornecedor_nome = fornecedor.get("razao_social", "")
+
+    hoje = _today_iso()
+    doc = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "numero_solicitacao": await _next_demanda_numero(tenant_id),
+        "origem": "manual",
+        "mrp_rodada_id": None,
+        "mrp_numero": "",
+        "item_id": data.item_id,
+        "item_codigo": item.get("codigo_interno", ""),
+        "item_descricao": item.get("descricao", ""),
+        "unidade_compra": item.get("unidade_compra", ""),
+        "quantidade": float(data.quantidade),
+        "data_limite_pedido": data.data_limite_pedido,
+        "urgente": bool(data.data_limite_pedido and data.data_limite_pedido < hoje),
+        "motivo": data.motivo,
+        "fornecedor_selecionado_id": data.fornecedor_selecionado_id,
+        "fornecedor_selecionado_nome": fornecedor_nome,
+        "condicao_comercial_id": None,
+        "po_id": None,
+        "status": "pendente",
+        "observacoes": data.observacoes,
+        "solicitante_id": user["id"],
+        "solicitante_nome": user.get("name", ""),
+        "created_at": now_iso(),
+        "updated_at": now_iso(),
+    }
+    await db.compras_demandas.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@compras_router.put("/demandas/{demanda_id}")
+async def atualizar_demanda(demanda_id: str, data: DemandaCompraUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, _CMP_WRITE)
+    tenant_id = user["tenant_id"]
+    existing = await db.compras_demandas.find_one({"id": demanda_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Demanda nao encontrada.")
+    if existing.get("po_id") or existing.get("status") == "po_emitida":
+        raise HTTPException(status_code=409, detail="Demanda ja vinculada a PO. Nao e possivel editar.")
+
+    payload = data.dict(exclude_unset=True)
+    if "status" in payload and payload["status"] not in STATUS_DEMANDA:
+        raise HTTPException(status_code=422, detail=f"status invalido. Use: {sorted(STATUS_DEMANDA)}")
+    if "quantidade" in payload and payload["quantidade"] is not None and payload["quantidade"] <= 0:
+        raise HTTPException(status_code=422, detail="Quantidade deve ser maior que zero.")
+
+    if "fornecedor_selecionado_id" in payload and payload["fornecedor_selecionado_id"]:
+        fornecedor = await db.compras_fornecedores.find_one(
+            {"id": payload["fornecedor_selecionado_id"], "tenant_id": tenant_id}, {"_id": 0}
+        )
+        if not fornecedor:
+            raise HTTPException(status_code=404, detail="Fornecedor preferencial nao encontrado.")
+        payload["fornecedor_selecionado_nome"] = fornecedor.get("razao_social", "")
+
+    if "data_limite_pedido" in payload:
+        payload["urgente"] = bool(payload["data_limite_pedido"] and payload["data_limite_pedido"] < _today_iso())
+
+    payload["updated_at"] = now_iso()
+    await db.compras_demandas.update_one({"id": demanda_id, "tenant_id": tenant_id}, {"$set": payload})
+    return await db.compras_demandas.find_one({"id": demanda_id, "tenant_id": tenant_id}, {"_id": 0})
 
 
 @compras_router.get("/demandas/{demanda_id}")
@@ -1408,6 +1518,82 @@ async def historico_precos(item_id: str, request: Request):
 # ══════════════════════════════════════════════════════════════════════════════
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
+
+@compras_router.get("/historico-precos")
+async def historico_precos_consolidado(
+    request: Request,
+    q: Optional[str] = Query(None),
+    item_id: Optional[str] = Query(None),
+    fornecedor_id: Optional[str] = Query(None),
+    limit: int = Query(120, ge=1, le=500),
+):
+    user = await get_current_user(request)
+    require_roles(user, _CMP_READ)
+    tenant_id = user["tenant_id"]
+
+    query: Dict[str, Any] = {"tenant_id": tenant_id}
+    if item_id:
+        query["item_id"] = item_id
+    if fornecedor_id:
+        query["fornecedor_id"] = fornecedor_id
+
+    condicoes = await db.compras_condicoes_comerciais.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    item_ids = sorted({c.get("item_id") for c in condicoes if c.get("item_id")})
+    fornecedor_ids = sorted({c.get("fornecedor_id") for c in condicoes if c.get("fornecedor_id")})
+
+    itens = {}
+    fornecedores = {}
+    if item_ids:
+        item_docs = await db.compras_itens.find({"tenant_id": tenant_id, "id": {"$in": item_ids}}, {"_id": 0}).to_list(len(item_ids))
+        itens = {it["id"]: it for it in item_docs}
+    if fornecedor_ids:
+        fornecedor_docs = await db.compras_fornecedores.find(
+            {"tenant_id": tenant_id, "id": {"$in": fornecedor_ids}},
+            {"_id": 0, "id": 1, "razao_social": 1, "codigo_interno": 1, "homologacao": 1},
+        ).to_list(len(fornecedor_ids))
+        fornecedores = {f["id"]: f for f in fornecedor_docs}
+
+    menor_por_item: Dict[str, float] = {}
+    for c in condicoes:
+        iid = c.get("item_id")
+        preco = c.get("preco_unitario")
+        if iid and preco is not None:
+            menor_por_item[iid] = min(float(preco), menor_por_item.get(iid, float("inf")))
+
+    rows = []
+    for c in condicoes:
+        item = itens.get(c.get("item_id"), {})
+        fornecedor = fornecedores.get(c.get("fornecedor_id"), {})
+        row = {
+            **c,
+            "item_codigo": item.get("codigo_interno", ""),
+            "item_categoria": item.get("categoria", ""),
+            "item_unidade_compra": item.get("unidade_compra", ""),
+            "fornecedor_codigo": fornecedor.get("codigo_interno", ""),
+            "status_homologacao": (fornecedor.get("homologacao") or {}).get("status", ""),
+            "menor_preco_item": menor_por_item.get(c.get("item_id")),
+        }
+        rows.append(row)
+
+    if q:
+        q_norm = q.lower()
+        rows = [
+            r for r in rows
+            if q_norm in " ".join([
+                str(r.get("item_descricao", "")),
+                str(r.get("item_codigo", "")),
+                str(r.get("fornecedor_nome", "")),
+                str(r.get("fornecedor_codigo", "")),
+            ]).lower()
+        ]
+
+    return {
+        "historico": rows,
+        "total": len(rows),
+        "total_itens": len({r.get("item_id") for r in rows if r.get("item_id")}),
+        "total_fornecedores": len({r.get("fornecedor_id") for r in rows if r.get("fornecedor_id")}),
+    }
+
 
 class MRPBOMItem(BaseModel):
     item_id: str

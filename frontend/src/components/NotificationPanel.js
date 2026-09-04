@@ -54,7 +54,7 @@ export default function NotificationPanel() {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <button className="sidebar-item relative w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm text-muted-foreground hover:text-foreground"
+                <button className="relative flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground"
                     data-testid="notifications-btn">
                     <Bell className="h-4 w-4 shrink-0" />
                     Notificações

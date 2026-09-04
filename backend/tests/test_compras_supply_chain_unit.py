@@ -195,3 +195,93 @@ def test_criar_po_recusa_demanda_ja_vinculada():
         asyncio.run(compras_routes.criar_po(payload, request=SimpleNamespace()))
 
     assert exc.value.status_code == 409
+
+
+def test_criar_demanda_manual_com_numero_e_item(monkeypatch):
+    _install_ids()
+    compras_routes.db = SimpleNamespace(
+        compras_itens=FakeCollection([
+            {"id": "item-1", "tenant_id": "t1", "codigo_interno": "MP-AGU", "descricao": "Agua", "unidade_compra": "kg"}
+        ]),
+        compras_fornecedores=FakeCollection([]),
+        compras_demandas=FakeCollection([]),
+    )
+
+    async def fake_user(_request):
+        return {"id": "u1", "tenant_id": "t1", "role": "admin", "name": "Admin"}
+
+    async def fake_next_sequence(_tenant_id, _key, start=1):
+        return 12
+
+    compras_routes.get_current_user = fake_user
+    monkeypatch.setattr(compras_routes, "next_sequence", fake_next_sequence)
+
+    payload = compras_routes.DemandaCompraCreate(
+        item_id="item-1",
+        quantidade=25,
+        data_limite_pedido="2026-08-30",
+        motivo="reposicao",
+    )
+
+    result = asyncio.run(compras_routes.criar_demanda(payload, request=SimpleNamespace()))
+
+    assert result["numero_solicitacao"] == "SC-2026-012"
+    assert result["item_codigo"] == "MP-AGU"
+    assert result["status"] == "pendente"
+    assert compras_routes.db.compras_demandas.docs[0]["quantidade"] == 25
+
+
+def test_historico_precos_consolidado_junta_item_fornecedor():
+    _install_ids()
+    compras_routes.db = SimpleNamespace(
+        compras_condicoes_comerciais=FakeCollection([
+            {
+                "id": "cot-1",
+                "tenant_id": "t1",
+                "fornecedor_id": "forn-1",
+                "fornecedor_nome": "Fornecedor A",
+                "item_id": "item-1",
+                "item_descricao": "Agua",
+                "preco_unitario": 10.0,
+                "prazo_pagamento_texto": "30 DDL",
+                "created_at": "2026-08-20T10:00:00",
+            },
+            {
+                "id": "cot-2",
+                "tenant_id": "t1",
+                "fornecedor_id": "forn-2",
+                "fornecedor_nome": "Fornecedor B",
+                "item_id": "item-1",
+                "item_descricao": "Agua",
+                "preco_unitario": 8.0,
+                "prazo_pagamento_texto": "28 DDL",
+                "created_at": "2026-08-21T10:00:00",
+            },
+        ]),
+        compras_itens=FakeCollection([
+            {"id": "item-1", "tenant_id": "t1", "codigo_interno": "MP-AGU", "descricao": "Agua", "categoria": "mp", "unidade_compra": "kg"}
+        ]),
+        compras_fornecedores=FakeCollection([
+            {"id": "forn-1", "tenant_id": "t1", "codigo_interno": "FOR-0001", "razao_social": "Fornecedor A", "homologacao": {"status": "homologado"}},
+            {"id": "forn-2", "tenant_id": "t1", "codigo_interno": "FOR-0002", "razao_social": "Fornecedor B", "homologacao": {"status": "homologado"}},
+        ]),
+    )
+
+    async def fake_user(_request):
+        return {"id": "u1", "tenant_id": "t1", "role": "admin", "name": "Admin"}
+
+    compras_routes.get_current_user = fake_user
+
+    result = asyncio.run(compras_routes.historico_precos_consolidado(
+        request=SimpleNamespace(),
+        q=None,
+        item_id=None,
+        fornecedor_id=None,
+        limit=120,
+    ))
+
+    assert result["total"] == 2
+    assert result["total_itens"] == 1
+    assert result["historico"][0]["item_codigo"] == "MP-AGU"
+    assert result["historico"][0]["menor_preco_item"] == 8.0
+    assert result["historico"][0]["status_homologacao"] == "homologado"

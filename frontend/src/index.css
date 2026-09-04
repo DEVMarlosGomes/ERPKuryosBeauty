@@ -126,32 +126,6 @@
         backdrop-filter: blur(18px);
     }
 
-    .sidebar-item {
-        min-height: 2.5rem;
-        border-radius: 0.5rem;
-        transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    }
-
-    .sidebar-item:hover {
-        background: hsl(var(--muted) / 0.8);
-        color: hsl(var(--foreground));
-    }
-
-    .sidebar-item.active {
-        background: hsl(var(--primary));
-        color: hsl(var(--primary-foreground));
-        box-shadow: 0 10px 28px hsl(var(--primary) / 0.22);
-    }
-
-    .dark .sidebar-item:hover {
-        background: hsl(var(--muted) / 0.7);
-    }
-
-    .dark .sidebar-item.active {
-        background: hsl(var(--accent));
-        color: hsl(var(--accent-foreground));
-    }
-
     .rounded-xl,
     .rounded-2xl,
     .rounded-3xl {
@@ -179,6 +153,25 @@
     select,
     [role="combobox"] {
         min-height: 2.5rem;
+    }
+
+    input[type="date"],
+    input[type="time"],
+    input[type="datetime-local"] {
+        color-scheme: light;
+    }
+
+    .dark input[type="date"],
+    .dark input[type="time"],
+    .dark input[type="datetime-local"] {
+        color-scheme: dark;
+    }
+
+    .dark input[type="date"]::-webkit-calendar-picker-indicator,
+    .dark input[type="time"]::-webkit-calendar-picker-indicator,
+    .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 0.72;
     }
 
     table {

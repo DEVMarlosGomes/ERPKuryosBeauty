@@ -116,7 +116,9 @@ function TipoBadge({ tipo }) {
     const entrada = isTipoEntrada(tipo);
     return (
         <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
-            entrada ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"
+            entrada
+                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/45 dark:text-emerald-300"
+                : "bg-red-100 text-red-700 dark:bg-red-950/45 dark:text-red-300"
         }`}>
             {entrada ? <TrendingUp className="h-2.5 w-2.5" /> : <TrendingDown className="h-2.5 w-2.5" />}
             {TIPO_LABELS[tipo] || tipo}
@@ -237,6 +239,18 @@ export default function MovimentacaoPage() {
         return filtered.filter(m => (m.item_nome || m.item_id) === drillItem);
     }, [filtered, drillItem]);
 
+    const chartTheme = {
+        grid: "hsl(var(--border))",
+        tick: { fontSize: 10, fill: "hsl(var(--muted-foreground))" },
+        tooltip: {
+            backgroundColor: "hsl(var(--popover))",
+            border: "1px solid hsl(var(--border))",
+            borderRadius: 8,
+            color: "hsl(var(--popover-foreground))",
+            boxShadow: "var(--shadow-soft)",
+        },
+    };
+
     return (
         <div className="p-4 md:p-6 space-y-5 max-w-7xl mx-auto print:p-2">
             {/* Header */}
@@ -310,14 +324,42 @@ export default function MovimentacaoPage() {
             {/* KPIs */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                    { label: "Total Entradas", value: fmtQtd(kpis.entradas), icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" },
-                    { label: "Total Saídas",   value: fmtQtd(kpis.saidas),   icon: TrendingDown, color: "text-red-500",    bg: "bg-red-50 border-red-200" },
-                    { label: "Saldo Líquido",  value: fmtQtd(kpis.saldo),    icon: ArrowLeftRight, color: kpis.saldo >= 0 ? "text-blue-600" : "text-red-600", bg: "bg-blue-50 border-blue-200" },
-                    { label: "Abaixo do Mínimo (Lab)", value: kpis.abaixoMinimo, icon: AlertTriangle, color: "text-amber-600", bg: "bg-amber-50 border-amber-200" },
-                ].map(({ label, value, icon: Icon, color, bg }) => (
+                    {
+                        label: "Total Entradas",
+                        value: fmtQtd(kpis.entradas),
+                        icon: TrendingUp,
+                        color: "text-emerald-600 dark:text-emerald-300",
+                        bg: "border-emerald-200 bg-emerald-50 dark:border-emerald-900/60 dark:bg-emerald-950/30",
+                        iconBg: "bg-white/75 dark:bg-emerald-400/10",
+                    },
+                    {
+                        label: "Total Saídas",
+                        value: fmtQtd(kpis.saidas),
+                        icon: TrendingDown,
+                        color: "text-red-500 dark:text-red-300",
+                        bg: "border-red-200 bg-red-50 dark:border-red-900/60 dark:bg-red-950/30",
+                        iconBg: "bg-white/75 dark:bg-red-400/10",
+                    },
+                    {
+                        label: "Saldo Líquido",
+                        value: fmtQtd(kpis.saldo),
+                        icon: ArrowLeftRight,
+                        color: kpis.saldo >= 0 ? "text-blue-600 dark:text-blue-300" : "text-red-600 dark:text-red-300",
+                        bg: "border-blue-200 bg-blue-50 dark:border-blue-900/60 dark:bg-blue-950/30",
+                        iconBg: "bg-white/75 dark:bg-blue-400/10",
+                    },
+                    {
+                        label: "Abaixo do Mínimo (Lab)",
+                        value: kpis.abaixoMinimo,
+                        icon: AlertTriangle,
+                        color: "text-amber-600 dark:text-amber-300",
+                        bg: "border-amber-200 bg-amber-50 dark:border-amber-900/60 dark:bg-amber-950/30",
+                        iconBg: "bg-white/75 dark:bg-amber-400/10",
+                    },
+                ].map(({ label, value, icon: Icon, color, bg, iconBg }) => (
                     <Card key={label} className={`border ${bg}`}>
                         <CardContent className="p-4 flex items-center gap-3">
-                            <div className={`p-2 rounded-lg bg-white/70 ${color}`}>
+                            <div className={`p-2 rounded-lg ${iconBg} ${color}`}>
                                 <Icon className="h-5 w-5" />
                             </div>
                             <div>
@@ -339,11 +381,11 @@ export default function MovimentacaoPage() {
                         <CardContent className="p-3">
                             <ResponsiveContainer width="100%" height={200}>
                                 <LineChart data={timeSeries} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                                    <YAxis tick={{ fontSize: 10 }} width={40} />
-                                    <Tooltip formatter={(v) => fmtQtd(v)} />
-                                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                                    <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                                    <XAxis dataKey="date" tick={chartTheme.tick} />
+                                    <YAxis tick={chartTheme.tick} width={40} />
+                                    <Tooltip formatter={(v) => fmtQtd(v)} contentStyle={chartTheme.tooltip} cursor={{ stroke: "hsl(var(--muted-foreground) / 0.25)" }} />
+                                    <Legend wrapperStyle={{ fontSize: 11, color: "hsl(var(--muted-foreground))" }} />
                                     <Line type="monotone" dataKey="entradas" stroke="#10b981" strokeWidth={2} dot={false} name="Entradas" />
                                     <Line type="monotone" dataKey="saidas"   stroke="#ef4444" strokeWidth={2} dot={false} name="Saídas" />
                                 </LineChart>
@@ -359,10 +401,10 @@ export default function MovimentacaoPage() {
                             <CardContent className="p-3">
                                 <ResponsiveContainer width="100%" height={200}>
                                     <BarChart data={topItems} layout="vertical" margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                        <XAxis type="number" tick={{ fontSize: 10 }} />
-                                        <YAxis dataKey="nome" type="category" tick={{ fontSize: 9 }} width={100} />
-                                        <Tooltip formatter={(v) => fmtQtd(v)} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
+                                        <XAxis type="number" tick={chartTheme.tick} />
+                                        <YAxis dataKey="nome" type="category" tick={{ ...chartTheme.tick, fontSize: 9 }} width={100} />
+                                        <Tooltip formatter={(v) => fmtQtd(v)} contentStyle={chartTheme.tooltip} cursor={{ fill: "hsl(var(--muted) / 0.35)" }} />
                                         <Bar dataKey="total" fill="#6366f1" name="Volume total" radius={[0, 3, 3, 0]} />
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -414,7 +456,9 @@ export default function MovimentacaoPage() {
                                             <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">{fmtDateTime(m.created_at || m.data)}</td>
                                             <td className="px-3 py-2">
                                                 <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                                                    m.deposito === "lab" ? "bg-violet-100 text-violet-700" : "bg-blue-100 text-blue-700"
+                                                    m.deposito === "lab"
+                                                        ? "bg-violet-100 text-violet-700 dark:bg-violet-950/45 dark:text-violet-300"
+                                                        : "bg-blue-100 text-blue-700 dark:bg-blue-950/45 dark:text-blue-300"
                                                 }`}>
                                                     {m.deposito === "lab" ? <FlaskConical className="h-2.5 w-2.5" /> : <Package className="h-2.5 w-2.5" />}
                                                     {m.deposito === "lab" ? "Lab" : "Geral"}
@@ -424,7 +468,7 @@ export default function MovimentacaoPage() {
                                             <td className="px-3 py-2 font-mono text-muted-foreground">{m.item_codigo || "—"}</td>
                                             <td className="px-3 py-2"><TipoBadge tipo={m.tipo} /></td>
                                             <td className="px-3 py-2 tabular-nums font-medium text-right">
-                                                <span className={isTipoEntrada(m.tipo) ? "text-emerald-600" : "text-red-500"}>
+                                                <span className={isTipoEntrada(m.tipo) ? "text-emerald-600 dark:text-emerald-300" : "text-red-500 dark:text-red-300"}>
                                                     {isTipoEntrada(m.tipo) ? "+" : "−"}{fmtQtd(m.quantidade)}
                                                 </span>
                                             </td>

@@ -289,6 +289,7 @@ class OrderUpdate(BaseModel):
     aprovacao_cliente: Optional[str] = None   # pendente | aprovado
     aprovacao_cliente_obs: Optional[str] = None
     aprovacao_cliente_em: Optional[str] = None
+    prioridade_pcp: Optional[int] = None       # ordem visual/operacional em Pedidos -> PCP
     justificativa: Optional[str] = None        # R21: required to edit locked fields
 
 
@@ -1249,7 +1250,7 @@ async def update_order(order_id: str, data: OrderUpdate, request: Request):
 
     for key in ("kickoff_id", "numero_pedido", "data_pedido", "status", "observacoes", "cgi_status",
                 "tipo_servico", "nivel_formalizacao",
-                "aprovacao_cliente", "aprovacao_cliente_obs", "aprovacao_cliente_em"):
+                "aprovacao_cliente", "aprovacao_cliente_obs", "aprovacao_cliente_em", "prioridade_pcp"):
         if key in payload:
             update_fields[key] = payload[key]
 

@@ -483,11 +483,13 @@ function PlanningPage({ data }) {
             <h2 className="mb-4 text-base font-black">Slots da semana</h2>
             <div className="grid gap-2">
               {data.slots.filter((slot) => slot.status !== "cancelado").map((slot) => (
-                <div key={slot.id} className="grid gap-3 rounded-lg border border-white/10 bg-black p-4 md:grid-cols-[130px_1fr_120px_120px_100px] md:items-center">
-                  <span className="font-mono text-sm">{dateLabel(slot.data || slot.data_inicio)} - {slot.hora_inicio}</span>
+                <div key={slot.id} className="grid gap-3 rounded-lg border border-white/10 bg-black p-4 md:grid-cols-[minmax(0,130px)_minmax(0,1fr)_minmax(96px,120px)_minmax(96px,120px)_100px] md:items-center">
+                  <span className="block min-w-0 truncate font-mono text-sm" title={`${dateLabel(slot.data || slot.data_inicio)} - ${slot.hora_inicio}`}>
+                    {dateLabel(slot.data || slot.data_inicio)} - {slot.hora_inicio}
+                  </span>
                   <div className="min-w-0">
                     <p className="truncate font-black">{slot.produto_nome || slot.op_numero || "Slot"}</p>
-                    <p className="text-xs text-zinc-500">{slot.linha_nome} - {slot.op_numero || "-"}</p>
+                    <p className="truncate text-xs text-zinc-500">{slot.linha_nome} - {slot.op_numero || "-"}</p>
                   </div>
                   <Badge className="bg-blue-100 text-blue-700">{slot.status}</Badge>
                   <span className="font-mono text-sm">{fmt(slot.qtd_planejada)} un</span>
@@ -803,10 +805,10 @@ function HorizonPage({ data }) {
         <h2 className="mb-5 text-base font-black">Capacidade por Linha</h2>
         <div className="space-y-5">
           {(scheduledByLine.length ? scheduledByLine : [{ linha: { nome: "Linha 1", capacidade_diaria: 6000 }, planned: 0, pctLine: 0 }]).map(({ linha, planned, pctLine }, idx) => (
-            <div key={linha.id || idx} className="grid grid-cols-1 gap-2 md:grid-cols-[120px_1fr_180px] md:items-center md:gap-4">
-              <span className="font-black">{linha.nome}</span>
+            <div key={linha.id || idx} className="grid grid-cols-1 gap-2 md:grid-cols-[minmax(0,120px)_minmax(0,1fr)_minmax(150px,180px)] md:items-center md:gap-4">
+              <span className="block min-w-0 truncate font-black" title={linha.nome}>{linha.nome}</span>
               <div className="h-2 overflow-hidden rounded-full bg-zinc-300"><div className="h-full bg-[#6485f2]" style={{ width: `${Math.min(100, pctLine)}%` }} /></div>
-              <span className="text-right text-xs text-zinc-500">{fmt(planned)} / {fmt(Number(linha.capacidade_diaria || 0) * 5)} un na semana</span>
+              <span className="block min-w-0 truncate text-right text-xs text-zinc-500">{fmt(planned)} / {fmt(Number(linha.capacidade_diaria || 0) * 5)} un na semana</span>
             </div>
           ))}
         </div>
@@ -987,15 +989,32 @@ function HistorySalesPage({ data }) {
         <div className="border-b border-white/10 px-4 py-4 text-xs font-black uppercase tracking-wide text-zinc-500">Pedidos de vendas ({salesOrders.length})</div>
         <div className="divide-y divide-white/10">
           {salesOrders.slice(0, 80).map((order) => (
-            <button key={order.id} className="grid w-full grid-cols-1 gap-3 px-4 py-3 text-left hover:bg-white/5 md:grid-cols-[120px_1fr_130px_120px_40px]" onClick={() => navigate(`/orders/${order.id}`)}>
-              <span className="font-mono text-sm font-black text-[#6485f2]">#{order.numero_pedido || order.id}</span>
-              <span className="min-w-0">
-                <b className="block truncate">{order.cliente?.nome || order.cliente?.razao_social || "Cliente"}</b>
-                <span className="block truncate text-xs text-zinc-500">{(order.items || []).map((item) => item.item).filter(Boolean).join(" | ") || order.project_name || "-"}</span>
+            <button
+              key={order.id}
+              className="grid w-full grid-cols-1 gap-3 px-4 py-3 text-left hover:bg-white/5 md:grid-cols-[minmax(0,132px)_minmax(0,1fr)_minmax(112px,130px)_minmax(86px,120px)_24px] md:items-center"
+              onClick={() => navigate(`/orders/${order.id}`)}
+            >
+              <span className="block min-w-0 overflow-hidden font-mono text-sm font-black text-[#6485f2]">
+                <span className="block truncate" title={`#${order.numero_pedido || order.id}`}>#{order.numero_pedido || order.id}</span>
               </span>
-              <Badge className={statusBadgeClass(order.status)}>{String(order.status || "rascunho").replaceAll("_", " ")}</Badge>
-              <span className="text-xs text-zinc-500">{order.op_id ? "OP emitida" : "Sem OP"}</span>
-              <ArrowRight className="h-4 w-4 text-zinc-500" />
+              <span className="block min-w-0 overflow-hidden">
+                <b className="block truncate" title={order.cliente?.nome || order.cliente?.razao_social || "Cliente"}>
+                  {order.cliente?.nome || order.cliente?.razao_social || "Cliente"}
+                </b>
+                <span
+                  className="block truncate text-xs text-zinc-500"
+                  title={(order.items || []).map((item) => item.item).filter(Boolean).join(" | ") || order.project_name || "-"}
+                >
+                  {(order.items || []).map((item) => item.item).filter(Boolean).join(" | ") || order.project_name || "-"}
+                </span>
+              </span>
+              <span className="block min-w-0 overflow-hidden">
+                <Badge className={`${statusBadgeClass(order.status)} max-w-full truncate`}>
+                  {String(order.status || "rascunho").replaceAll("_", " ")}
+                </Badge>
+              </span>
+              <span className="block min-w-0 truncate text-xs text-zinc-500">{order.op_id ? "OP emitida" : "Sem OP"}</span>
+              <ArrowRight className="h-4 w-4 shrink-0 justify-self-start text-zinc-500 md:justify-self-end" />
             </button>
           ))}
           {salesOrders.length === 0 && <p className="p-8 text-center text-sm text-zinc-500">Nenhum pedido de venda encontrado.</p>}

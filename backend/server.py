@@ -41,8 +41,8 @@ from openpyxl import Workbook
 from openpyxl.styles import Font as XlFont, Alignment, PatternFill
 from pd_routes import pd_router, init_pd, run_stability_scheduler, check_stability_alerts_for_tenant
 from crm_routes import crm_router, init_crm, run_alert_scheduler
-from estoque_routes import estoque_router, init_estoque
-from recebimento_routes import recebimento_router, init_recebimento
+from estoque_routes import estoque_router, init_estoque, create_estoque_indexes
+from recebimento_routes import recebimento_router, init_recebimento, create_recebimento_indexes
 from retrabalho_routes import retrabalho_router, init_retrabalho
 from expedicao_routes import expedicao_router, init_expedicao
 from faturamento_routes import faturamento_router, init_faturamento
@@ -2031,6 +2031,8 @@ async def startup():
     init_kickoff(db, get_current_user, new_id, now_iso)
     init_compras(db, get_current_user, new_id, now_iso)
     await create_compras_indexes()
+    await create_estoque_indexes()
+    await create_recebimento_indexes()
     init_contratos(db, get_current_user, new_id, now_iso)
 
     # Initialize CQ (Controle de Qualidade) module

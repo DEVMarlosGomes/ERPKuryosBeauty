@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
     Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
@@ -20,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import {
     Warehouse, Plus, Search, ArrowDown, ArrowUp, ArrowLeftRight,
-    AlertTriangle, Trash2, History, Package, FlaskConical, Tag, Box, ShieldCheck, RotateCcw,
+    AlertTriangle, Trash2, History, Package, FlaskConical, Tag, Box, ShieldCheck, RotateCcw, MapPinned, Layers3,
 } from "lucide-react";
 
 const POSICAO_CQ_CONFIG = {
@@ -81,6 +82,11 @@ export default function EstoquePage() {
     const [showMov, setShowMov] = useState(false);
     const [movDirection, setMovDirection] = useState("entrada"); // entrada | saida | transferencia
     const [wmsView, setWmsView] = useState("agregado");
+    const [wmsPlanta, setWmsPlanta] = useState({ enderecos: [], total_enderecos: 0, enderecos_ocupados: 0, enderecos_livres: 0 });
+    const [wmsRelatorio, setWmsRelatorio] = useState({ saldos: [], total_linhas: 0, total_quantidade: 0 });
+    const [showGerarEnderecos, setShowGerarEnderecos] = useState(false);
+    const [selectedSaldoLote, setSelectedSaldoLote] = useState(null);
+    const [wmsAction, setWmsAction] = useState(null);
 
     const setorConfig = useMemo(() => SETORES.find(s => s.key === setorAtivo), [setorAtivo]);
 
@@ -107,8 +113,22 @@ export default function EstoquePage() {
         }
     }, [setorAtivo, search]);
 
+    const loadWMS = useCallback(async () => {
+        try {
+            const [plantaRes, relatorioRes] = await Promise.all([
+                api.get("/estoque/wms/planta", { params: { setor: setorAtivo } }),
+                api.get("/estoque/wms/relatorio-saldos", { params: { setor: setorAtivo } }),
+            ]);
+            setWmsPlanta(plantaRes.data || { enderecos: [] });
+            setWmsRelatorio(relatorioRes.data || { saldos: [] });
+        } catch (e) {
+            toast.error(formatApiError(e, "Nao foi possivel carregar WMS."));
+        }
+    }, [setorAtivo]);
+
     useEffect(() => { loadDashboard(); }, [loadDashboard]);
     useEffect(() => { loadItems(); }, [loadItems]);
+    useEffect(() => { loadWMS(); }, [loadWMS]);
 
     const openItemDetail = async (item) => {
         setSelectedItem(item);
@@ -154,10 +174,11 @@ export default function EstoquePage() {
     };
 
     const isLowStock = (item) => item.estoque_minimo > 0 && item.quantidade_atual <= item.estoque_minimo;
-    const lotes = useMemo(
-        () => items.filter((item) => item.lote || item.localizacao_estruturada || item.localizacao || item.validade),
-        [items]
-    );
+    const lotes = useMemo(() => {
+        if (wmsRelatorio.saldos?.length) return wmsRelatorio.saldos;
+        return items.filter((item) => item.lote || item.localizacao_estruturada || item.localizacao || item.validade)
+            .map((item) => ({ ...item, item_nome: item.nome, codigo_item: item.codigo, quantidade: item.quantidade_atual, endereco_codigo: item.localizacao_estruturada || item.localizacao }));
+    }, [items, wmsRelatorio.saldos]);
     const vencendo = useMemo(() => {
         const hoje = new Date();
         const limite = new Date();
@@ -321,6 +342,11 @@ export default function EstoquePage() {
                 </TabsContent>
 
                 <TabsContent value="lotes" className="space-y-3">
+                    <div className="grid gap-3 sm:grid-cols-3">
+                        <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Linhas rastreadas</p><p className="mt-1 text-2xl font-semibold mono-num">{wmsRelatorio.total_linhas || lotes.length}</p></CardContent></Card>
+                        <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Quantidade total</p><p className="mt-1 text-2xl font-semibold mono-num">{wmsRelatorio.total_quantidade || 0}</p></CardContent></Card>
+                        <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Base</p><p className="mt-1 text-sm font-semibold">{wmsRelatorio.base || "estoque_items legado"}</p></CardContent></Card>
+                    </div>
                     <div className="rounded-lg border overflow-hidden">
                         <table className="w-full text-xs">
                             <thead className="bg-muted/60 border-b">
@@ -330,18 +356,27 @@ export default function EstoquePage() {
                                     <th className="px-3 py-2 text-left font-medium text-muted-foreground">Endereco</th>
                                     <th className="px-3 py-2 text-right font-medium text-muted-foreground">Saldo</th>
                                     <th className="px-3 py-2 text-center font-medium text-muted-foreground">CQ</th>
+                                    <th className="px-3 py-2 text-right font-medium text-muted-foreground">Acoes</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {lotes.length === 0 ? (
-                                    <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">Nenhum lote/endereco registrado neste setor.</td></tr>
+                                    <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">Nenhum lote/endereco registrado neste setor.</td></tr>
                                 ) : lotes.map((item) => (
-                                    <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30 cursor-pointer" onClick={() => openItemDetail(item)}>
-                                        <td className="px-3 py-2 font-medium">{item.nome}</td>
+                                    <tr key={item.id} className="border-b last:border-0 hover:bg-muted/30">
+                                        <td className="px-3 py-2 font-medium">{item.item_nome || item.nome}</td>
                                         <td className="px-3 py-2 font-mono">{item.lote || "-"}</td>
-                                        <td className="px-3 py-2 font-mono">{item.localizacao_estruturada || item.localizacao || "-"}</td>
-                                        <td className="px-3 py-2 text-right font-mono">{item.quantidade_atual} {item.unidade}</td>
+                                        <td className="px-3 py-2 font-mono">{item.endereco_codigo || item.localizacao_estruturada || item.localizacao || "-"}</td>
+                                        <td className="px-3 py-2 text-right font-mono">{item.quantidade ?? item.quantidade_atual} {item.unidade}</td>
                                         <td className="px-3 py-2 text-center"><PosicaoBadge posicao={item.posicao_cq || "livre"} /></td>
+                                        <td className="px-3 py-2 text-right">
+                                            {item.endereco_id && (
+                                                <div className="flex justify-end gap-1">
+                                                    <Button size="sm" variant="outline" onClick={() => { setSelectedSaldoLote(item); setWmsAction("transferir"); }}>Transferir</Button>
+                                                    <Button size="sm" variant="outline" onClick={() => { setSelectedSaldoLote(item); setWmsAction("ajustar"); }}>Ajustar</Button>
+                                                </div>
+                                            )}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -358,16 +393,16 @@ export default function EstoquePage() {
                                 <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                                     <div>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <span className="font-semibold">{item.nome}</span>
+                                            <span className="font-semibold">{item.item_nome || item.nome}</span>
                                             <Badge className={item.vencido ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"}>
                                                 {item.vencido ? "Vencido" : `${Math.max(0, item.dias)} dias`}
                                             </Badge>
                                         </div>
-                                        <p className="mt-1 text-xs text-muted-foreground">Lote {item.lote || "-"} - {item.localizacao_estruturada || item.localizacao || "sem endereco"}</p>
+                                        <p className="mt-1 text-xs text-muted-foreground">Lote {item.lote || "-"} - {item.endereco_codigo || item.localizacao_estruturada || item.localizacao || "sem endereco"}</p>
                                     </div>
                                     <div className="text-left sm:text-right">
                                         <p className="font-mono text-sm">{new Date(`${item.validade}T00:00:00`).toLocaleDateString("pt-BR")}</p>
-                                        <p className="text-xs text-muted-foreground">{item.quantidade_atual} {item.unidade}</p>
+                                        <p className="text-xs text-muted-foreground">{item.quantidade ?? item.quantidade_atual} {item.unidade}</p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -392,19 +427,81 @@ export default function EstoquePage() {
                 </TabsContent>
 
                 <TabsContent value="enderecos" className="space-y-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="grid flex-1 gap-3 sm:grid-cols-3">
+                            <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Enderecos</p><p className="mt-1 text-2xl font-semibold mono-num">{wmsPlanta.total_enderecos || 0}</p></CardContent></Card>
+                            <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Ocupados</p><p className="mt-1 text-2xl font-semibold mono-num text-amber-600">{wmsPlanta.enderecos_ocupados || 0}</p></CardContent></Card>
+                            <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Livres</p><p className="mt-1 text-2xl font-semibold mono-num text-emerald-600">{wmsPlanta.enderecos_livres || 0}</p></CardContent></Card>
+                        </div>
+                        <Button onClick={() => setShowGerarEnderecos(true)} className="gap-2">
+                            <Layers3 className="h-4 w-4" />
+                            Gerar estrutura
+                        </Button>
+                    </div>
+
+                    <Card>
+                        <CardContent className="p-4">
+                            <div className="mb-3 flex items-center gap-2">
+                                <MapPinned className="h-5 w-5 text-primary" />
+                                <h3 className="font-semibold">Planta visual de enderecos</h3>
+                            </div>
+                            <div className="space-y-5 overflow-x-auto pb-2">
+                                {Object.entries(wmsPlanta.planta || {}).map(([predio, ruas]) => (
+                                    <div key={predio} className="min-w-[620px] rounded-lg border p-3">
+                                        <h4 className="mb-3 font-mono text-sm font-semibold">{predio}</h4>
+                                        <div className="grid gap-4">
+                                            {Object.entries(ruas).map(([rua, niveis]) => (
+                                                <div key={`${predio}-${rua}`} className="rounded-md bg-muted/30 p-3">
+                                                    <div className="mb-2 text-xs font-semibold uppercase text-muted-foreground">Rua {rua}</div>
+                                                    <div className="grid gap-2">
+                                                        {Object.entries(niveis).map(([nivel, posicoes]) => (
+                                                            <div key={`${predio}-${rua}-${nivel}`} className="flex items-center gap-2">
+                                                                <span className="w-12 shrink-0 text-right text-[11px] text-muted-foreground">{nivel}</span>
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {posicoes.map((endereco) => {
+                                                                        const ocupado = (endereco.saldos || []).length > 0 || endereco.status === "ocupado";
+                                                                        return (
+                                                                            <button
+                                                                                key={endereco.id}
+                                                                                type="button"
+                                                                                title={`${endereco.codigo} - ${ocupado ? "ocupado" : "livre"}`}
+                                                                                className={`h-9 min-w-10 rounded-md border px-2 font-mono text-[11px] transition hover:ring-2 hover:ring-primary/40 ${ocupado ? "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200" : "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200"}`}
+                                                                            >
+                                                                                {endereco.posicao}
+                                                                            </button>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                {!wmsPlanta.total_enderecos && (
+                                    <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+                                        Nenhuma estrutura WMS cadastrada. Gere predios, ruas, niveis e posicoes para iniciar o enderecamento.
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+
                     <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                        {enderecoStats.map((endereco) => (
-                            <Card key={endereco.endereco}>
+                        {(wmsPlanta.enderecos?.length ? wmsPlanta.enderecos : enderecoStats).map((endereco) => (
+                            <Card key={endereco.id || endereco.endereco}>
                                 <CardContent className="p-4">
                                     <div className="flex items-start justify-between gap-3">
                                         <div>
-                                            <p className="font-mono text-sm font-semibold">{endereco.endereco}</p>
-                                            <p className="mt-1 text-xs text-muted-foreground">{endereco.itens} item(ns) armazenado(s)</p>
+                                            <p className="font-mono text-sm font-semibold">{endereco.codigo || endereco.endereco}</p>
+                                            <p className="mt-1 text-xs text-muted-foreground">{endereco.setor || `${endereco.itens || 0} item(ns) armazenado(s)`}</p>
                                         </div>
-                                        <Badge variant="outline">{endereco.quarentena ? `${endereco.quarentena} CQ` : "Livre"}</Badge>
+                                        <Badge variant="outline">{endereco.status || (endereco.quarentena ? `${endereco.quarentena} CQ` : "Livre")}</Badge>
                                     </div>
                                     <div className="mt-3 h-2 rounded-full bg-muted">
-                                        <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.min(100, endereco.itens * 18)}%` }} />
+                                        <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.min(100, Number(endereco.ocupacao_atual || endereco.itens || 0) * 18)}%` }} />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -671,6 +768,29 @@ export default function EstoquePage() {
                 setor={setorAtivo}
                 onCreated={() => {
                     setShowNewItem(false);
+                    loadItems();
+                    loadDashboard();
+                }}
+            />
+            <GerarEnderecosDialog
+                open={showGerarEnderecos}
+                onOpenChange={setShowGerarEnderecos}
+                setor={setorAtivo}
+                onDone={() => {
+                    setShowGerarEnderecos(false);
+                    loadWMS();
+                }}
+            />
+            <WMSLoteActionDialog
+                open={!!wmsAction && !!selectedSaldoLote}
+                onOpenChange={(v) => { if (!v) { setWmsAction(null); setSelectedSaldoLote(null); } }}
+                action={wmsAction}
+                saldo={selectedSaldoLote}
+                enderecos={wmsPlanta.enderecos || []}
+                onDone={() => {
+                    setWmsAction(null);
+                    setSelectedSaldoLote(null);
+                    loadWMS();
                     loadItems();
                     loadDashboard();
                 }}
@@ -959,6 +1079,175 @@ function MovDialog({ open, onOpenChange, item, direction, onSuccess }) {
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
                     <Button onClick={handleSubmit} data-testid="btn-submit-mov">Registrar {titulo}</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function GerarEnderecosDialog({ open, onOpenChange, setor, onDone }) {
+    const [form, setForm] = useState({
+        predios: 1,
+        ruas_por_predio: 4,
+        niveis_por_rua: 4,
+        posicoes_por_nivel: 10,
+        setor,
+        tipo: "porta_palete",
+        capacidade_paletes: 1,
+        capacidade_unidades: 0,
+    });
+
+    useEffect(() => {
+        if (open) setForm((prev) => ({ ...prev, setor }));
+    }, [open, setor]);
+
+    const submit = async () => {
+        try {
+            const { data } = await api.post("/estoque/wms/enderecos/gerar", {
+                ...form,
+                predios: Number(form.predios) || 1,
+                ruas_por_predio: Number(form.ruas_por_predio) || 1,
+                niveis_por_rua: Number(form.niveis_por_rua) || 1,
+                posicoes_por_nivel: Number(form.posicoes_por_nivel) || 1,
+                capacidade_paletes: Number(form.capacidade_paletes) || 0,
+                capacidade_unidades: Number(form.capacidade_unidades) || 0,
+            });
+            toast.success(`${data.created || data.criados || 0} endereco(s) gerado(s)`);
+            onDone();
+        } catch (e) {
+            toast.error(formatApiError(e, "Erro ao gerar enderecos WMS."));
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-lg">
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                        <Layers3 className="h-5 w-5 text-primary" />
+                        Gerar estrutura WMS
+                    </DialogTitle>
+                    <DialogDescription className="text-xs">
+                        Cria predios, ruas, niveis e posicoes sem duplicar enderecos existentes.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="space-y-1"><Label className="text-xs">Predios</Label><Input type="number" value={form.predios} onChange={(e) => setForm({ ...form, predios: e.target.value })} /></div>
+                    <div className="space-y-1"><Label className="text-xs">Ruas por predio</Label><Input type="number" value={form.ruas_por_predio} onChange={(e) => setForm({ ...form, ruas_por_predio: e.target.value })} /></div>
+                    <div className="space-y-1"><Label className="text-xs">Niveis por rua</Label><Input type="number" value={form.niveis_por_rua} onChange={(e) => setForm({ ...form, niveis_por_rua: e.target.value })} /></div>
+                    <div className="space-y-1"><Label className="text-xs">Posicoes por nivel</Label><Input type="number" value={form.posicoes_por_nivel} onChange={(e) => setForm({ ...form, posicoes_por_nivel: e.target.value })} /></div>
+                    <div className="space-y-1">
+                        <Label className="text-xs">Setor</Label>
+                        <Select value={form.setor} onValueChange={(v) => setForm({ ...form, setor: v })}>
+                            <SelectTrigger><SelectValue /></SelectTrigger>
+                            <SelectContent>{SETORES.map((s) => <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>)}</SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-1"><Label className="text-xs">Capacidade paletes</Label><Input type="number" value={form.capacidade_paletes} onChange={(e) => setForm({ ...form, capacidade_paletes: e.target.value })} /></div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+                    <Button onClick={submit}>Gerar</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function WMSLoteActionDialog({ open, onOpenChange, action, saldo, enderecos, onDone }) {
+    const [form, setForm] = useState({ quantidade: "", motivo: "", endereco_destino_id: "", modo: "absoluto" });
+
+    useEffect(() => {
+        if (!open) return;
+        const destino = enderecos.find((e) => e.id !== saldo?.endereco_id && e.status !== "inativo");
+        setForm({ quantidade: action === "ajustar" ? String(saldo?.quantidade ?? "") : "", motivo: "", endereco_destino_id: destino?.id || "", modo: "absoluto" });
+    }, [open, action, saldo, enderecos]);
+
+    const submit = async () => {
+        const quantidade = Number(form.quantidade);
+        if (!quantidade && quantidade !== 0) {
+            toast.error("Informe a quantidade");
+            return;
+        }
+        if (!form.motivo.trim()) {
+            toast.error("Motivo obrigatorio");
+            return;
+        }
+        try {
+            if (action === "transferir") {
+                await api.post("/estoque/wms/transferencias-lote", {
+                    item_id: saldo.item_id,
+                    lote: saldo.lote,
+                    endereco_origem_id: saldo.endereco_id,
+                    endereco_destino_id: form.endereco_destino_id,
+                    quantidade,
+                    motivo: form.motivo,
+                });
+                toast.success("Transferencia de lote registrada");
+            } else {
+                await api.post("/estoque/wms/saldos/ajustar", {
+                    item_id: saldo.item_id,
+                    lote: saldo.lote,
+                    endereco_id: saldo.endereco_id,
+                    quantidade,
+                    modo: form.modo,
+                    motivo: form.motivo,
+                });
+                toast.success("Saldo do lote ajustado");
+            }
+            onDone();
+        } catch (e) {
+            toast.error(formatApiError(e, "Erro na operacao WMS."));
+        }
+    };
+
+    if (!saldo) return null;
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>{action === "transferir" ? "Transferir lote/endereco" : "Ajustar saldo por lote"}</DialogTitle>
+                    <DialogDescription className="text-xs">
+                        {saldo.item_nome} - lote {saldo.lote || "-"} - saldo atual {saldo.quantidade} {saldo.unidade}
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3">
+                    {action === "transferir" && (
+                        <div className="space-y-1">
+                            <Label className="text-xs">Endereco destino</Label>
+                            <Select value={form.endereco_destino_id} onValueChange={(v) => setForm({ ...form, endereco_destino_id: v })}>
+                                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                                <SelectContent>
+                                    {enderecos.filter((e) => e.id !== saldo.endereco_id && e.status !== "inativo").map((e) => <SelectItem key={e.id} value={e.id}>{e.codigo} - {e.status}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    {action === "ajustar" && (
+                        <div className="space-y-1">
+                            <Label className="text-xs">Modo</Label>
+                            <Select value={form.modo} onValueChange={(v) => setForm({ ...form, modo: v })}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="absoluto">Saldo final absoluto</SelectItem>
+                                    <SelectItem value="entrada">Entrada adicional</SelectItem>
+                                    <SelectItem value="saida">Saida manual</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                    <div className="space-y-1">
+                        <Label className="text-xs">Quantidade</Label>
+                        <Input type="number" step="0.001" value={form.quantidade} onChange={(e) => setForm({ ...form, quantidade: e.target.value })} autoFocus />
+                    </div>
+                    <div className="space-y-1">
+                        <Label className="text-xs">Motivo</Label>
+                        <Textarea rows={3} value={form.motivo} onChange={(e) => setForm({ ...form, motivo: e.target.value })} />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+                    <Button onClick={submit}>{action === "transferir" ? "Transferir" : "Ajustar"}</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
