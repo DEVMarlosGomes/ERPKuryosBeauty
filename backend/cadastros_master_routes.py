@@ -10,7 +10,7 @@ import re
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from rbac import COMERCIAL_FULL, COMPRAS_FULL, PD_FULL, PD_READ, require_roles
 from validation_utils import is_valid_cnpj, normalize_cnpj
@@ -129,6 +129,24 @@ class ProdutoFinalCreate(BaseModel):
     unidade_volume: str = "ml"
     pd_request_id: str = ""
     observacoes: str = ""
+    formula: List[Dict[str, Any]] = Field(default_factory=list)
+    bom: List[Dict[str, Any]] = Field(default_factory=list)
+    especificacoes_tecnicas: Dict[str, Any] = Field(default_factory=dict)
+    enderecamento: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ProdutoFinalUpdate(BaseModel):
+    nome_produto: Optional[str] = None
+    categoria: Optional[str] = None
+    volume: Optional[float] = None
+    unidade_volume: Optional[str] = None
+    pd_request_id: Optional[str] = None
+    observacoes: Optional[str] = None
+    status: Optional[str] = None
+    formula: Optional[List[Dict[str, Any]]] = None
+    bom: Optional[List[Dict[str, Any]]] = None
+    especificacoes_tecnicas: Optional[Dict[str, Any]] = None
+    enderecamento: Optional[Dict[str, Any]] = None
 
 
 class MaterialCadastroCreate(BaseModel):
@@ -141,6 +159,23 @@ class MaterialCadastroCreate(BaseModel):
     fator_conversao: float = 1.0
     fornecedor_id: str = ""
     observacoes: str = ""
+    especificacoes_tecnicas: Dict[str, Any] = Field(default_factory=dict)
+    enderecamento: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MaterialCadastroUpdate(BaseModel):
+    tipo: Optional[str] = None
+    nome: Optional[str] = None
+    categoria_mp_id: Optional[str] = None
+    subtipo: Optional[str] = None
+    unidade_estoque: Optional[str] = None
+    unidade_compra: Optional[str] = None
+    fator_conversao: Optional[float] = None
+    fornecedor_id: Optional[str] = None
+    observacoes: Optional[str] = None
+    status: Optional[str] = None
+    especificacoes_tecnicas: Optional[Dict[str, Any]] = None
+    enderecamento: Optional[Dict[str, Any]] = None
 
 
 def _clean(value: Any) -> str:
@@ -389,6 +424,21 @@ async def update_cliente(cliente_id: str, data: ClienteCadastroUpdate, request: 
     return _normalize_cliente(updated)
 
 
+@cadastros_master_router.delete("/clientes/{cliente_id}")
+async def delete_cliente(cliente_id: str, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CLIENT_WRITE_ROLES)
+    existing = await db.crm_clients.find_one({"tenant_id": user["tenant_id"], "id": cliente_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Cliente nao encontrado.")
+    now = _now_iso()
+    payload = {"status_cadastro": "inativo", "deleted_at": now, "updated_at": now}
+    await db.crm_clients.update_one({"tenant_id": user["tenant_id"], "id": cliente_id}, {"$set": payload})
+    updated = await db.crm_clients.find_one({"tenant_id": user["tenant_id"], "id": cliente_id}, {"_id": 0})
+    await _audit(user, "cadastro_cliente_inativado", "cliente", cliente_id, before=existing, after=updated)
+    return _normalize_cliente(updated)
+
+
 @cadastros_master_router.get("/fornecedores")
 async def list_fornecedores(request: Request, q: Optional[str] = Query(None), status: Optional[str] = None):
     user = await _get_current_user(request)
@@ -486,6 +536,24 @@ async def update_fornecedor(fornecedor_id: str, data: FornecedorCadastroUpdate, 
     return _normalize_fornecedor(updated)
 
 
+@cadastros_master_router.delete("/fornecedores/{fornecedor_id}")
+async def delete_fornecedor(fornecedor_id: str, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, SUPPLIER_WRITE_ROLES)
+    existing = await db.compras_fornecedores.find_one({"tenant_id": user["tenant_id"], "id": fornecedor_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Fornecedor nao encontrado.")
+    now = _now_iso()
+    payload = {"status_cadastro": "inativo", "deleted_at": now, "updated_at": now}
+    await db.compras_fornecedores.update_one(
+        {"tenant_id": user["tenant_id"], "id": fornecedor_id},
+        {"$set": payload, "$push": {"log_auditoria": {"acao": "fornecedor_inativado_cadastros", "por_id": user["id"], "por_nome": user.get("name", ""), "em": now}}},
+    )
+    updated = await db.compras_fornecedores.find_one({"tenant_id": user["tenant_id"], "id": fornecedor_id}, {"_id": 0})
+    await _audit(user, "cadastro_fornecedor_inativado", "fornecedor", fornecedor_id, before=existing, after=updated)
+    return _normalize_fornecedor(updated)
+
+
 @cadastros_master_router.get("/categorias-mp")
 async def list_categorias_mp(request: Request, status: Optional[str] = None):
     user = await _get_current_user(request)
@@ -549,6 +617,39 @@ async def approve_categoria_mp(categoria_id: str, request: Request):
     return updated
 
 
+@cadastros_master_router.put("/categorias-mp/{categoria_id}")
+async def update_categoria_mp(categoria_id: str, data: CategoriaMPUpdate, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CATEGORY_WRITE_ROLES)
+    existing = await db.cad_categorias_mp.find_one({"tenant_id": user["tenant_id"], "id": categoria_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Categoria de MP nao encontrada.")
+    payload = data.model_dump(exclude_unset=True)
+    for field in ("nome", "tipo", "descricao", "status"):
+        if field in payload:
+            payload[field] = _clean(payload[field])
+    payload["updated_at"] = _now_iso()
+    await db.cad_categorias_mp.update_one({"tenant_id": user["tenant_id"], "id": categoria_id}, {"$set": payload})
+    updated = await db.cad_categorias_mp.find_one({"tenant_id": user["tenant_id"], "id": categoria_id}, {"_id": 0})
+    await _audit(user, "categoria_mp_atualizada", "categoria_mp", categoria_id, before=existing, after=updated)
+    return updated
+
+
+@cadastros_master_router.delete("/categorias-mp/{categoria_id}")
+async def delete_categoria_mp(categoria_id: str, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CATEGORY_WRITE_ROLES)
+    existing = await db.cad_categorias_mp.find_one({"tenant_id": user["tenant_id"], "id": categoria_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Categoria de MP nao encontrada.")
+    now = _now_iso()
+    payload = {"status": "inativa", "deleted_at": now, "updated_at": now}
+    await db.cad_categorias_mp.update_one({"tenant_id": user["tenant_id"], "id": categoria_id}, {"$set": payload})
+    updated = await db.cad_categorias_mp.find_one({"tenant_id": user["tenant_id"], "id": categoria_id}, {"_id": 0})
+    await _audit(user, "categoria_mp_inativada", "categoria_mp", categoria_id, before=existing, after=updated)
+    return updated
+
+
 @cadastros_master_router.get("/produtos")
 async def list_produtos(request: Request, q: Optional[str] = Query(None), status: Optional[str] = None):
     user = await _get_current_user(request)
@@ -604,6 +705,10 @@ async def create_produto_final(data: ProdutoFinalCreate, request: Request):
         "status": "ativo",
         "origem": "cadastros",
         "observacoes": _clean(data.observacoes),
+        "formula": data.formula or [],
+        "bom": data.bom or [],
+        "especificacoes_tecnicas": data.especificacoes_tecnicas or {},
+        "enderecamento": data.enderecamento or {},
         "created_by": user["id"],
         "created_by_name": user.get("name", ""),
         "created_at": now,
@@ -614,6 +719,44 @@ async def create_produto_final(data: ProdutoFinalCreate, request: Request):
     doc.pop("_id", None)
     await _audit(user, "produto_final_criado", "sku", doc["id"], after=doc)
     return doc
+
+
+@cadastros_master_router.put("/produtos/{produto_id}")
+async def update_produto_final(produto_id: str, data: ProdutoFinalUpdate, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, PRODUCT_WRITE_ROLES)
+    existing = await db.skus.find_one({"tenant_id": user["tenant_id"], "id": produto_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Produto nao encontrado.")
+    payload = data.model_dump(exclude_unset=True)
+    updates: Dict[str, Any] = {"updated_at": _now_iso()}
+    for field in ("nome_produto", "categoria", "volume", "unidade_volume", "pd_request_id", "observacoes", "status"):
+        if field in payload:
+            updates[field] = payload[field]
+    if "pd_request_id" in payload:
+        updates["pd_concluido"] = bool(_clean(payload.get("pd_request_id")))
+    for field in ("formula", "bom", "especificacoes_tecnicas", "enderecamento"):
+        if field in payload:
+            updates[field] = payload[field] if payload[field] is not None else ([] if field in ("formula", "bom") else {})
+    await db.skus.update_one({"tenant_id": user["tenant_id"], "id": produto_id}, {"$set": updates})
+    updated = await db.skus.find_one({"tenant_id": user["tenant_id"], "id": produto_id}, {"_id": 0})
+    await _audit(user, "produto_final_atualizado", "sku", produto_id, before=existing, after=updated)
+    return updated
+
+
+@cadastros_master_router.delete("/produtos/{produto_id}")
+async def delete_produto_final(produto_id: str, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, PRODUCT_WRITE_ROLES)
+    existing = await db.skus.find_one({"tenant_id": user["tenant_id"], "id": produto_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Produto nao encontrado.")
+    now = _now_iso()
+    payload = {"status": "inativo", "deleted_at": now, "updated_at": now}
+    await db.skus.update_one({"tenant_id": user["tenant_id"], "id": produto_id}, {"$set": payload})
+    updated = await db.skus.find_one({"tenant_id": user["tenant_id"], "id": produto_id}, {"_id": 0})
+    await _audit(user, "produto_final_inativado", "sku", produto_id, before=existing, after=updated)
+    return updated
 
 
 @cadastros_master_router.get("/materiais-cadastro")
@@ -674,6 +817,8 @@ async def create_material_cadastro(data: MaterialCadastroCreate, request: Reques
             "adicionado_em": now,
         }] if fornecedor else [],
         "atributos": {},
+        "especificacoes_tecnicas": data.especificacoes_tecnicas or {},
+        "enderecamento": data.enderecamento or {},
         "status": "ativo",
         "created_by": user["id"],
         "created_by_name": user.get("name", ""),
@@ -684,3 +829,70 @@ async def create_material_cadastro(data: MaterialCadastroCreate, request: Reques
     doc.pop("_id", None)
     await _audit(user, "material_cadastro_criado", "material", doc["id"], after=doc)
     return doc
+
+
+@cadastros_master_router.put("/materiais-cadastro/{material_id}")
+async def update_material_cadastro(material_id: str, data: MaterialCadastroUpdate, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CATEGORY_WRITE_ROLES)
+    existing = await db.materiais.find_one({"tenant_id": user["tenant_id"], "id": material_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Material nao encontrado.")
+    payload = data.model_dump(exclude_unset=True)
+    updates: Dict[str, Any] = {"updated_at": _now_iso()}
+    if "tipo" in payload:
+        updates["tipo2"] = _material_tipo_from_business(payload["tipo"])
+    if "nome" in payload:
+        nome = _clean(payload.get("nome"))
+        if not nome:
+            raise HTTPException(status_code=422, detail="Nome do material e obrigatorio.")
+        updates["nome"] = nome
+    if "categoria_mp_id" in payload:
+        categoria = None
+        if payload.get("categoria_mp_id"):
+            categoria = await db.cad_categorias_mp.find_one({"tenant_id": user["tenant_id"], "id": payload["categoria_mp_id"], "status": "ativa"}, {"_id": 0})
+            if not categoria:
+                raise HTTPException(status_code=409, detail="Categoria de MP/Insumo nao esta ativa.")
+        updates["categoria_mp_id"] = payload.get("categoria_mp_id") or ""
+        updates["categoria_mp_codigo"] = (categoria or {}).get("catmp3", "")
+        updates["categoria_mp_nome"] = (categoria or {}).get("nome", "")
+    if "fornecedor_id" in payload:
+        fornecedor = None
+        if payload.get("fornecedor_id"):
+            fornecedor = await db.compras_fornecedores.find_one({"tenant_id": user["tenant_id"], "id": payload["fornecedor_id"]}, {"_id": 0})
+            if not fornecedor:
+                raise HTTPException(status_code=404, detail="Fornecedor nao encontrado.")
+        updates["fornecedores"] = [{
+            "fornecedor_id": fornecedor.get("id"),
+            "fornecedor_nome": fornecedor.get("razao_social"),
+            "codigo_fornecedor": "",
+            "status_homologacao": (fornecedor.get("homologacao") or {}).get("status", "nao_iniciada"),
+            "adicionado_em": _now_iso(),
+        }] if fornecedor else []
+    for field in ("subtipo", "unidade_estoque", "unidade_compra", "fator_conversao", "status"):
+        if field in payload:
+            updates[field] = payload[field]
+    if "observacoes" in payload:
+        updates["descricao"] = _clean(payload.get("observacoes"))
+    for field in ("especificacoes_tecnicas", "enderecamento"):
+        if field in payload:
+            updates[field] = payload[field] if payload[field] is not None else {}
+    await db.materiais.update_one({"tenant_id": user["tenant_id"], "id": material_id}, {"$set": updates})
+    updated = await db.materiais.find_one({"tenant_id": user["tenant_id"], "id": material_id}, {"_id": 0})
+    await _audit(user, "material_cadastro_atualizado", "material", material_id, before=existing, after=updated)
+    return updated
+
+
+@cadastros_master_router.delete("/materiais-cadastro/{material_id}")
+async def delete_material_cadastro(material_id: str, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CATEGORY_WRITE_ROLES)
+    existing = await db.materiais.find_one({"tenant_id": user["tenant_id"], "id": material_id}, {"_id": 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Material nao encontrado.")
+    now = _now_iso()
+    payload = {"status": "inativo", "deleted_at": now, "updated_at": now}
+    await db.materiais.update_one({"tenant_id": user["tenant_id"], "id": material_id}, {"$set": payload})
+    updated = await db.materiais.find_one({"tenant_id": user["tenant_id"], "id": material_id}, {"_id": 0})
+    await _audit(user, "material_cadastro_inativado", "material", material_id, before=existing, after=updated)
+    return updated

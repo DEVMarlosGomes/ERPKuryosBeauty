@@ -1,0 +1,1771 @@
+{
+  "script": "saneamento_audit_v2",
+  "mode": "dry-run",
+  "generated_at": "2026-08-25T23:14:07.287099+00:00",
+  "safety": {
+    "default": "dry-run",
+    "destructive_actions": false,
+    "allowed_actions": [
+      "insert_one",
+      "update_one"
+    ],
+    "apply_confirmation_required": "APPLY_AUDIT_V2_SANITATION"
+  },
+  "summary": {
+    "skus_scanned": 51,
+    "orders_scanned": 22,
+    "clients_scanned": 29,
+    "produtos_pai_scanned": 17,
+    "materiais_scanned": 0,
+    "pd_stock_items_scanned": 41,
+    "operations": 67,
+    "issues": 0,
+    "operations_by_collection": {
+      "materiais": 11,
+      "orders": 15,
+      "pd_stock_items": 41
+    },
+    "operations_by_action": {
+      "insert_one": 11,
+      "update_one": 56
+    },
+    "issues_by_type": {}
+  },
+  "operations": [
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "3a360d35-2aab-4634-a6c1-64a8188a560d"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Máscara Capilar Reconstrução",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "e621cec7-4e8c-4c47-9381-31c4b6c0bf76"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Perfume Linha Verão",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "31de9154-0206-4331-89e8-fe807be8d8ea"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Tônico Facial Vitamina C",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "45f11eba-7e15-47d6-9e4c-3705e85002dc"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Sabonete Líquido Antibac",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "bc09dbcf-9b7c-464c-986c-8fe3a5e367af"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Máscara Capilar Reconstrução",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "2bb67ca9-ce1a-4528-9175-d7711df86bd7"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Perfume Linha Verão",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "ffd2027a-5c57-46a8-bc5c-9dd37dd898c0"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Tônico Facial Vitamina C",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "e783229b-ec11-439f-b5fd-0c388c1789c4"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Sabonete Líquido Antibac",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "15c17a5c-0179-4b2b-beac-bc790988ff4d"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Máscara Capilar Reconstrução",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "d9960f41-c79b-457c-b46d-379124e65bca"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Perfume Linha Verão",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "5b91a9a5-d1a6-4638-a2a4-b1a36e435b94"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Tônico Facial Vitamina C",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "b05ece65-d08d-4620-b2e1-d4a6ce401e99"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Sabonete Líquido Antibac",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "daef0b26-3ae0-4a73-be2f-d47b254eb672"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Produto A",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            },
+            {
+              "item": "Produto B",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "2af75d55-3fca-464f-8fdb-a22b0e855359"
+      },
+      "update": {
+        "$set": {
+          "cadastro_pendente": true,
+          "cadastro_pendente_items": [
+            {
+              "item": "Produto A",
+              "codigo_kuryos": "A definir",
+              "motivo": "Produto sem SKU cadastrado em pedido legado",
+              "origem": "saneamento_audit_v2_2026_08"
+            }
+          ],
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "itens manuais antigos marcados para cadastro pendente."
+            ]
+          }
+        }
+      },
+      "reason": "itens manuais antigos marcados para cadastro pendente."
+    },
+    {
+      "action": "update_one",
+      "collection": "orders",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "9d639c69-66b8-467c-9840-f03a049e7c41"
+      },
+      "update": {
+        "$set": {
+          "cliente_id": "439c1725-520d-46a5-88b6-29969fd00649",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "em": "2026-08-25T23:14:07.287099+00:00",
+            "motivos": [
+              "cliente_id recuperado por CNPJ/nome unico no CRM."
+            ]
+          }
+        }
+      },
+      "reason": "cliente_id recuperado por CNPJ/nome unico no CRM."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "b4df7040-490c-4a6f-855e-4afbdbd3fedc",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90001",
+        "tipo2": "MP",
+        "subtipo": "insumo",
+        "nome": "AGUA",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "L",
+        "unidade_compra": "L",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "POÁ",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "1efb03af-12f2-40a2-84cc-bbd7856aa20c",
+          "pd_stock_codigo_interno": "MP-001",
+          "custo_unitario_referencia": 5.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "1efb03af-12f2-40a2-84cc-bbd7856aa20c"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "b4df7040-490c-4a6f-855e-4afbdbd3fedc",
+          "material_master_codigo": "MP-90001",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "8b75bd53-fd8c-497f-9d5a-9eb4b5eea7e2",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90002",
+        "tipo2": "MP",
+        "subtipo": "insumo",
+        "nome": "ALCOOL ETILICO",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "L",
+        "unidade_compra": "L",
+        "fator_conversao": 1.0,
+        "fornecedores": [],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "3a2e76c4-36a2-416e-98e8-51f69adf4cea",
+          "pd_stock_codigo_interno": "MP-002",
+          "custo_unitario_referencia": 25.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "3a2e76c4-36a2-416e-98e8-51f69adf4cea"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "8b75bd53-fd8c-497f-9d5a-9eb4b5eea7e2",
+          "material_master_codigo": "MP-90002",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "70406cae-38f3-480a-b3d9-f519ce52b7bf",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90003",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "BBB26 FRAG",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "g",
+        "unidade_compra": "g",
+        "fator_conversao": 1.0,
+        "fornecedores": [],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "e89c677a-9c42-4c68-a973-6ebd7f0de942",
+          "pd_stock_codigo_interno": "MP05-6",
+          "custo_unitario_referencia": 35.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "e89c677a-9c42-4c68-a973-6ebd7f0de942"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "70406cae-38f3-480a-b3d9-f519ce52b7bf",
+          "material_master_codigo": "MP-90003",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "edeacfa0-02f1-479d-a38a-4fb06587a97d",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90004",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "Carbomer 940",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "kg",
+        "unidade_compra": "kg",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "Lubrizol",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "9f4f8384-efe0-45e7-bc43-3cbc2476dacd",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "9f4f8384-efe0-45e7-bc43-3cbc2476dacd"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "edeacfa0-02f1-479d-a38a-4fb06587a97d",
+          "material_master_codigo": "MP-90004",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "c5b86c92-c9d9-4429-90f5-43bae5e29727",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90005",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "Glicerina Vegetal USP",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "kg",
+        "unidade_compra": "kg",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "Brenntag",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "87dc80ea-00ed-41c1-bfc4-04fd8af1aabe",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "87dc80ea-00ed-41c1-bfc4-04fd8af1aabe"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "c5b86c92-c9d9-4429-90f5-43bae5e29727",
+          "material_master_codigo": "MP-90005",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "d2a25676-e531-4685-9df9-7a578eff7459",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90006",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "Niacinamida 99%",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "kg",
+        "unidade_compra": "kg",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "DSM",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "94d2c3cc-05dd-47f7-90af-43c5a4ef07ec",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "94d2c3cc-05dd-47f7-90af-43c5a4ef07ec"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "d2a25676-e531-4685-9df9-7a578eff7459",
+          "material_master_codigo": "MP-90006",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "755c9984-2ac9-4fd1-8fee-3e71a18f9df6",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90007",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "Acido Hialuronico",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "g",
+        "unidade_compra": "g",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "Givaudan",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "019a1186-a1c0-451b-a471-b20582cf6902",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "019a1186-a1c0-451b-a471-b20582cf6902"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "755c9984-2ac9-4fd1-8fee-3e71a18f9df6",
+          "material_master_codigo": "MP-90007",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "0e165330-f76f-4d92-b53a-29201689d366",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90008",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "Extrato de Camomila",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "kg",
+        "unidade_compra": "kg",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "Beraca",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "26bd5da7-f2ca-4b88-a190-6fa6c28c5025",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "26bd5da7-f2ca-4b88-a190-6fa6c28c5025"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "0e165330-f76f-4d92-b53a-29201689d366",
+          "material_master_codigo": "MP-90008",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "da4a9366-6218-4bf2-acce-8ee82ad90749"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "edeacfa0-02f1-479d-a38a-4fb06587a97d",
+          "material_master_codigo": "MP-90004",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "59618861-349b-4ad4-baa0-27173afa2864"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "c5b86c92-c9d9-4429-90f5-43bae5e29727",
+          "material_master_codigo": "MP-90005",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "6f88bed9-f8a7-4607-968f-d7193e42d8ec"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "d2a25676-e531-4685-9df9-7a578eff7459",
+          "material_master_codigo": "MP-90006",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "c54b83b4-99f7-4c95-bc61-e40fc767da08"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "755c9984-2ac9-4fd1-8fee-3e71a18f9df6",
+          "material_master_codigo": "MP-90007",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "42d61fd6-55a6-4fdb-9d1a-959027404156",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90009",
+        "tipo2": "MP",
+        "subtipo": "insumo",
+        "nome": "Phenoxyethanol",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "kg",
+        "unidade_compra": "kg",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "Ashland",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "27508119-b406-44e9-8611-2a801bfedf00",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "27508119-b406-44e9-8611-2a801bfedf00"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "42d61fd6-55a6-4fdb-9d1a-959027404156",
+          "material_master_codigo": "MP-90009",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "1593455b-b2c8-4080-afb3-08fd2b8f7ad5",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90010",
+        "tipo2": "MP",
+        "subtipo": "insumo",
+        "nome": "Fragrance FRA-101",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "kg",
+        "unidade_compra": "kg",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "IFF",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "9d08cc4e-a5e8-4bff-8432-01af0b852d5a",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "9d08cc4e-a5e8-4bff-8432-01af0b852d5a"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "1593455b-b2c8-4080-afb3-08fd2b8f7ad5",
+          "material_master_codigo": "MP-90010",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "7b134fb7-2741-4924-a3d9-aebe04591125"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "0e165330-f76f-4d92-b53a-29201689d366",
+          "material_master_codigo": "MP-90008",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "insert_one",
+      "collection": "materiais",
+      "document": {
+        "id": "769d511b-33fa-4575-81bf-e98ee4f2e070",
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "codigo_interno": "MP-90011",
+        "tipo2": "MP",
+        "subtipo": "mp",
+        "nome": "Agua Purificada RO",
+        "descricao": "",
+        "categoria_mp_id": "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": "L",
+        "unidade_compra": "L",
+        "fator_conversao": 1.0,
+        "fornecedores": [
+          {
+            "fornecedor_id": "",
+            "fornecedor_nome": "Interno",
+            "codigo_fornecedor": "",
+            "status_homologacao": "pendente_identificacao",
+            "adicionado_em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        ],
+        "atributos": {
+          "origem_saneamento": "saneamento_audit_v2_2026_08",
+          "pd_stock_item_id": "75ff8c1d-5812-4d58-a38d-a3495adb1cf4",
+          "pd_stock_codigo_interno": "",
+          "custo_unitario_referencia": 50.0
+        },
+        "status": "ativo",
+        "created_by": "system",
+        "created_by_name": "Saneamento Auditoria V2",
+        "created_at": "2026-08-25T23:14:07.287099+00:00",
+        "updated_at": "2026-08-25T23:14:07.287099+00:00"
+      },
+      "reason": "Material master criado a partir de item de estoque lab sem cadastro."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "75ff8c1d-5812-4d58-a38d-a3495adb1cf4"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "769d511b-33fa-4575-81bf-e98ee4f2e070",
+          "material_master_codigo": "MP-90011",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado ao material master planejado/criado pelo saneamento."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "58124415-c0c5-4e5c-889f-a32eebcd320b"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "edeacfa0-02f1-479d-a38a-4fb06587a97d",
+          "material_master_codigo": "MP-90004",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "3e6ee072-04bb-4cd9-abcc-174396e4b0be"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "c5b86c92-c9d9-4429-90f5-43bae5e29727",
+          "material_master_codigo": "MP-90005",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "b8001cf8-bd47-4459-8b3a-d08cbd1e3a1c"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "d2a25676-e531-4685-9df9-7a578eff7459",
+          "material_master_codigo": "MP-90006",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "c082b334-b522-4dbb-bf1d-9eeec424ebeb"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "755c9984-2ac9-4fd1-8fee-3e71a18f9df6",
+          "material_master_codigo": "MP-90007",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "c68c3871-55e2-4d0e-b9ec-208e7d541f9c"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "42d61fd6-55a6-4fdb-9d1a-959027404156",
+          "material_master_codigo": "MP-90009",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "3a2b1860-cab2-4e5d-aa97-434aa809f85a"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "1593455b-b2c8-4080-afb3-08fd2b8f7ad5",
+          "material_master_codigo": "MP-90010",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "a65542da-cdb1-4250-9f78-2233708fd29f"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "0e165330-f76f-4d92-b53a-29201689d366",
+          "material_master_codigo": "MP-90008",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "34a24ce1-7206-4d9b-a3a1-50e4a1c51da0"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "769d511b-33fa-4575-81bf-e98ee4f2e070",
+          "material_master_codigo": "MP-90011",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "292b9803-a61f-44e1-9f7b-b32386313632"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "edeacfa0-02f1-479d-a38a-4fb06587a97d",
+          "material_master_codigo": "MP-90004",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "a1ab69a8-b4d4-45ee-9ec8-087d5ef05be4"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "c5b86c92-c9d9-4429-90f5-43bae5e29727",
+          "material_master_codigo": "MP-90005",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "da4af735-a7e2-4b51-af73-55d6c0acbb06"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "d2a25676-e531-4685-9df9-7a578eff7459",
+          "material_master_codigo": "MP-90006",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "415455bd-abeb-43a4-ba15-9a372b4d9d9a"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "755c9984-2ac9-4fd1-8fee-3e71a18f9df6",
+          "material_master_codigo": "MP-90007",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "5fbc3f77-a2bb-45b5-8cec-8be3bc9ed133"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "42d61fd6-55a6-4fdb-9d1a-959027404156",
+          "material_master_codigo": "MP-90009",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "e2e199cb-af87-466f-93cd-4a8cfa307edf"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "1593455b-b2c8-4080-afb3-08fd2b8f7ad5",
+          "material_master_codigo": "MP-90010",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "6e236114-7d9b-4cf2-b469-32df258e2a9c"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "0e165330-f76f-4d92-b53a-29201689d366",
+          "material_master_codigo": "MP-90008",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "c90cfc94-9342-4b69-8129-92b5e55f354c"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "769d511b-33fa-4575-81bf-e98ee4f2e070",
+          "material_master_codigo": "MP-90011",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "42bac887-c8b8-4d28-8c46-732a4e0f0908"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "edeacfa0-02f1-479d-a38a-4fb06587a97d",
+          "material_master_codigo": "MP-90004",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "eda8044e-8c9c-459c-9677-6c188331420c"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "c5b86c92-c9d9-4429-90f5-43bae5e29727",
+          "material_master_codigo": "MP-90005",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "ce9e3b46-e86d-4eda-aa01-26b564c23f74"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "d2a25676-e531-4685-9df9-7a578eff7459",
+          "material_master_codigo": "MP-90006",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "c9340954-4db1-4f3e-8b00-20d3e7df3bc7"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "755c9984-2ac9-4fd1-8fee-3e71a18f9df6",
+          "material_master_codigo": "MP-90007",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "ce7f819e-bf0b-4688-96c1-aac626152713"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "42d61fd6-55a6-4fdb-9d1a-959027404156",
+          "material_master_codigo": "MP-90009",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "81d73633-705c-43da-ba4b-e8eba0b98f90"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "1593455b-b2c8-4080-afb3-08fd2b8f7ad5",
+          "material_master_codigo": "MP-90010",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "f7669ee3-dfbd-4d4d-86ed-700ab631fbfb"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "0e165330-f76f-4d92-b53a-29201689d366",
+          "material_master_codigo": "MP-90008",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "e4d285a6-c6a7-44ec-b44d-9b9d3f72905a"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "769d511b-33fa-4575-81bf-e98ee4f2e070",
+          "material_master_codigo": "MP-90011",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    },
+    {
+      "action": "update_one",
+      "collection": "pd_stock_items",
+      "query": {
+        "tenant_id": "aaa11112-7878-44f1-a906-cc5232a6d360",
+        "id": "701a0bef-addd-42de-9dff-8c351b2d56c2"
+      },
+      "update": {
+        "$set": {
+          "material_master_id": "b4df7040-490c-4a6f-855e-4afbdbd3fedc",
+          "material_master_codigo": "MP-90001",
+          "updated_at": "2026-08-25T23:14:07.287099+00:00",
+          "saneamento_audit_v2": {
+            "origem": "saneamento_audit_v2_2026_08",
+            "campo": "material_master_id",
+            "em": "2026-08-25T23:14:07.287099+00:00"
+          }
+        }
+      },
+      "reason": "Estoque lab vinculado a material master existente por codigo/nome."
+    }
+  ],
+  "issues": [],
+  "database": "kuryos_crm"
+}

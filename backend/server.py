@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from bson import ObjectId
+from pymongo.errors import DuplicateKeyError, OperationFailure
 import os
 import logging
 import uuid
@@ -40,8 +41,8 @@ from openpyxl import Workbook
 from openpyxl.styles import Font as XlFont, Alignment, PatternFill
 from pd_routes import pd_router, init_pd, run_stability_scheduler, check_stability_alerts_for_tenant
 from crm_routes import crm_router, init_crm, run_alert_scheduler
-from estoque_routes import estoque_router, init_estoque
-from recebimento_routes import recebimento_router, init_recebimento
+from estoque_routes import estoque_router, init_estoque, create_estoque_indexes
+from recebimento_routes import recebimento_router, init_recebimento, create_recebimento_indexes
 from retrabalho_routes import retrabalho_router, init_retrabalho
 from expedicao_routes import expedicao_router, init_expedicao
 from faturamento_routes import faturamento_router, init_faturamento
@@ -2030,6 +2031,8 @@ async def startup():
     init_kickoff(db, get_current_user, new_id, now_iso)
     init_compras(db, get_current_user, new_id, now_iso)
     await create_compras_indexes()
+    await create_estoque_indexes()
+    await create_recebimento_indexes()
     init_contratos(db, get_current_user, new_id, now_iso)
 
     # Initialize CQ (Controle de Qualidade) module
@@ -2050,6 +2053,7 @@ async def startup():
     await db.ordens_compra.create_index([("tenant_id", 1), ("numero_oc", 1)], unique=True, sparse=True)
     # Contratos CGI
     await db.contratos.create_index([("tenant_id", 1), ("kickoff_id", 1)])
+    await db.contratos.create_index([("tenant_id", 1), ("projeto_id", 1), ("status", 1)])
     await db.contratos.create_index([("tenant_id", 1), ("client_id", 1)])
     await db.contratos.create_index([("tenant_id", 1), ("numero_contrato", 1)], unique=True, sparse=True)
 
@@ -2112,6 +2116,19 @@ async def startup():
     await db.skus.create_index([("tenant_id", 1), ("status", 1)])
     await db.skus.create_index([("tenant_id", 1), ("cliente_id", 1)])
     await db.skus.create_index([("tenant_id", 1), ("codigo_interno", 1)], unique=True)
+    try:
+        await db.skus.create_index(
+            [("tenant_id", 1), ("amostra_id", 1), ("amostra_variacao_id", 1)],
+            unique=True,
+            name="uniq_active_sku_sample_variation",
+            partialFilterExpression={
+                "amostra_id": {"$exists": True},
+                "amostra_variacao_id": {"$exists": True},
+                "status": "ativo",
+            },
+        )
+    except (DuplicateKeyError, OperationFailure) as exc:
+        logger.warning("Nao foi possivel criar indice unico de SKU por amostra/variacao: %s", exc)
     await db.crm_alerts.create_index([("tenant_id", 1), ("status", 1)])
     await db.crm_alerts.create_index([("tenant_id", 1), ("tipo", 1)])
     await db.crm_column_configs.create_index([("tenant_id", 1), ("crm_type", 1)])

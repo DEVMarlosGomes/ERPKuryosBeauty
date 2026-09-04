@@ -3,6 +3,9 @@ import os
 import sys
 from types import SimpleNamespace
 
+import pytest
+from fastapi import HTTPException
+
 sys.path.insert(0, os.path.abspath("backend"))
 
 import crm_routes
@@ -12,6 +15,14 @@ import pd_routes
 class FakeResult:
     def __init__(self, matched_count=1):
         self.matched_count = matched_count
+
+
+class FakeCursor:
+    def __init__(self, docs):
+        self.docs = [dict(doc) for doc in docs]
+
+    async def to_list(self, limit):
+        return self.docs[:limit]
 
 
 class TrackingCollection:
@@ -25,6 +36,9 @@ class TrackingCollection:
             if self._matches(doc, query):
                 return self._project(doc, projection)
         return None
+
+    def find(self, query, projection=None):
+        return FakeCursor([self._project(doc, projection) for doc in self.docs if self._matches(doc, query)])
 
     async def insert_one(self, doc):
         snapshot = dict(doc)
@@ -267,6 +281,102 @@ def test_save_lab_results_auto_moves_request_to_tests(monkeypatch):
     sample_update = fake_db.crm_samples.update_calls[-1][1]["$set"]
     assert sample_update["variacoes.$.status_pd_raw"] == "em_testes"
     assert sample_update["variacoes.$.status_pd_label"] == "Em Testes"
+
+
+def test_transition_to_waiting_approval_is_blocked_without_d48(monkeypatch):
+    fake_db = SimpleNamespace(
+        pd_requests=TrackingCollection([
+            {"id": "req-1", "tenant_id": "tenant-1", "status": "IN_TESTS"}
+        ]),
+        pd_stability_studies=TrackingCollection([]),
+    )
+    pd_routes.db = fake_db
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "name": "Tester", "tenant_id": "tenant-1", "role": "lider_pd"}
+
+    monkeypatch.setattr(pd_routes, "get_current_user", fake_get_current_user)
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(
+            pd_routes.transition_status(
+                "req-1",
+                pd_routes.StatusTransition(new_status="WAITING_APPROVAL"),
+                SimpleNamespace(),
+            )
+        )
+
+    assert exc.value.status_code == 400
+    assert "d48h" in str(exc.value.detail).lower()
+    assert fake_db.pd_requests.update_calls == []
+
+
+def test_update_sample_sent_to_client_is_blocked_without_d48(monkeypatch):
+    fake_db = SimpleNamespace(
+        pd_samples=TrackingCollection([
+            {"id": "sample-pd-1", "development_id": "dev-1", "sent_to_client": False}
+        ]),
+        pd_developments=TrackingCollection([
+            {"id": "dev-1", "tenant_id": "tenant-1", "pd_request_id": "req-1"}
+        ]),
+        pd_stability_studies=TrackingCollection([]),
+    )
+    pd_routes.db = fake_db
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "name": "Tester", "tenant_id": "tenant-1", "role": "lider_pd"}
+
+    monkeypatch.setattr(pd_routes, "get_current_user", fake_get_current_user)
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(
+            pd_routes.update_sample(
+                "sample-pd-1",
+                pd_routes.SampleUpdate(sent_to_client=True),
+                SimpleNamespace(),
+            )
+        )
+
+    assert exc.value.status_code == 400
+    assert "d48h" in str(exc.value.detail).lower()
+    assert fake_db.pd_samples.update_calls == []
+
+
+def test_pd_card_kanban_approval_gate_uses_same_d48_rule():
+    fake_db = SimpleNamespace(
+        pd_cards=TrackingCollection([
+            {"id": "card-1", "tenant_id": "tenant-1", "amostra_id": "sample-1", "amostra_variacao_id": "var-1"}
+        ]),
+        pd_requests=TrackingCollection([
+            {"id": "req-1", "tenant_id": "tenant-1", "amostra_id": "sample-1"}
+        ]),
+        pd_stability_studies=TrackingCollection([]),
+    )
+    pd_routes.db = fake_db
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(pd_routes.assert_pd_card_ready_for_approval("card-1", "tenant-1"))
+
+    assert exc.value.status_code == 400
+    assert "d48h" in str(exc.value.detail).lower()
+
+
+def test_d48_gate_accepts_any_condition_with_completed_48h():
+    fake_db = SimpleNamespace(
+        pd_stability_studies=TrackingCollection([
+            {
+                "tenant_id": "tenant-1",
+                "pd_card_id": "req-1",
+                "conditions": [
+                    {"condition_code": "ambiente", "completed_day_offsets": [1]},
+                    {"condition_code": "estufa", "completed_day_offsets": [2]},
+                ],
+            }
+        ])
+    )
+    pd_routes.db = fake_db
+
+    asyncio.run(pd_routes.assert_d48h_stability_ok("req-1", "tenant-1"))
 
 
 def test_sync_request_status_to_pipeline_advances_linked_project(monkeypatch):
@@ -556,5 +666,76 @@ def test_sync_linked_variacao_from_pd_rejection_pushes_rework_notes():
     sample_set = fake_db.crm_samples.update_calls[-1][1]["$set"]
     assert sample_set["variacoes.$.status"] == "retrabalho"
     assert sample_set["variacoes.$.retrabalho_anotacoes"] == "Trocar fragrancia para uma opcao menos doce e manter base."
+    assert sample_set["variacoes.$.reprovacao_motivo"] == "Trocar fragrancia para uma opcao menos doce e manter base."
     assert fake_db.pd_updates.insert_calls[-1]["tipo"] == "retrabalho"
+    assert fake_db.pd_updates.insert_calls[-1]["visivel_comercial"] is True
+    assert fake_db.pd_updates.insert_calls[-1]["user_role"] == "vendedor"
     assert "menos doce" in fake_db.pd_updates.insert_calls[-1]["mensagem"]
+
+
+def test_resultado_cliente_retrabalho_syncs_feedback_and_directions_to_pd_card(monkeypatch):
+    fake_db = SimpleNamespace(
+        crm_samples=TrackingCollection([
+            {
+                "id": "sample-1",
+                "tenant_id": "tenant-1",
+                "variacoes": [
+                    {
+                        "id": "var-1",
+                        "status": "enviada",
+                        "aprovacao_interna": True,
+                    }
+                ],
+            }
+        ]),
+        pd_cards=TrackingCollection([
+            {
+                "id": "card-1",
+                "tenant_id": "tenant-1",
+                "status_pd": "aguardando_aprovacao",
+                "amostra_id": "sample-1",
+                "amostra_variacao_id": "var-1",
+            }
+        ]),
+    )
+    crm_routes.db = fake_db
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "name": "Comercial", "tenant_id": "tenant-1", "role": "vendedor"}
+
+    async def fake_audit_log(**_kwargs):
+        return None
+
+    monkeypatch.setattr(crm_routes, "_get_current_user", fake_get_current_user)
+    monkeypatch.setattr(crm_routes, "audit_log", fake_audit_log)
+    monkeypatch.setattr(crm_routes, "_now_iso", lambda: "2026-08-25T20:30:00+00:00")
+
+    result = asyncio.run(
+        crm_routes.resultado_cliente(
+            "sample-1",
+            "var-1",
+            crm_routes.ResultadoClienteRequest(
+                resultado="retrabalho",
+                feedback_cliente="Cliente achou a fragrancia doce demais.",
+                direcoes_retrabalho="Manter base e reduzir dulcor da fragrancia.",
+            ),
+            SimpleNamespace(),
+        )
+    )
+
+    assert result["success"] is True
+    assert result["resultado"] == "retrabalho"
+    assert result["pd_card_notificado"] is True
+    sample_set = fake_db.crm_samples.update_calls[-1][1]["$set"]
+    assert sample_set["variacoes.$.feedback_cliente"] == "Cliente achou a fragrancia doce demais."
+    assert sample_set["variacoes.$.direcoes_retrabalho"] == "Manter base e reduzir dulcor da fragrancia."
+
+    pd_card_updates = [
+        update for _query, update in fake_db.pd_cards.update_calls
+        if update.get("$set", {}).get("status_pd") == "retrabalho_interno"
+    ]
+    assert pd_card_updates
+    pd_set = pd_card_updates[-1]["$set"]
+    assert pd_set["feedback_cliente"] == "Cliente achou a fragrancia doce demais."
+    assert pd_set["direcoes_retrabalho"] == "Manter base e reduzir dulcor da fragrancia."
+    assert pd_set["resultado_cliente"] == "retrabalho"

@@ -50,7 +50,7 @@ export default function ComprasPODetalhe() {
     const carregar = useCallback(async () => {
         setLoading(true);
         try {
-            const { data } = await api.get(`/api/compras/pos/${id}`);
+            const { data } = await api.get(`/compras/pos/${id}`);
             setPo(data);
         } catch { toast.error("Erro ao carregar PO"); }
         finally { setLoading(false); }
@@ -61,7 +61,7 @@ export default function ComprasPODetalhe() {
     const emitir = async () => {
         setSaving(true);
         try {
-            const { data } = await api.post(`/api/compras/pos/${id}/emitir`);
+            const { data } = await api.post(`/compras/pos/${id}/emitir`);
             if (data._alerta) toast.warning(data._alerta);
             else toast.success("PO emitida");
             carregar();
@@ -77,7 +77,7 @@ export default function ComprasPODetalhe() {
 
     const abrirPDF = async () => {
         try {
-            const res = await api.get(`/api/compras/pos/${id}/pdf`, { responseType: "blob" });
+            const res = await api.get(`/compras/pos/${id}/pdf`, { responseType: "blob" });
             const url = window.URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
             const a = document.createElement("a");
             a.href = url; a.download = `PO_${po?.numero_po || id}.pdf`; a.click();
@@ -88,7 +88,7 @@ export default function ComprasPODetalhe() {
     const abrirWA = async () => {
         setSaving(true);
         try {
-            const { data } = await api.get(`/api/compras/pos/${id}/whatsapp`);
+            const { data } = await api.get(`/compras/pos/${id}/whatsapp`);
             setWaText(data.texto);
             setModal("whatsapp");
         } catch { toast.error("Erro ao gerar texto WhatsApp"); }
@@ -103,7 +103,7 @@ export default function ComprasPODetalhe() {
         if (!form.data_entrega_confirmada) { toast.error("Informe a data de entrega confirmada"); return; }
         setSaving(true);
         try {
-            await api.post(`/api/compras/pos/${id}/confirmar`, { data_entrega_confirmada: form.data_entrega_confirmada });
+            await api.post(`/compras/pos/${id}/confirmar`, { data_entrega_confirmada: form.data_entrega_confirmada });
             toast.success("PO confirmada"); setModal(null); carregar();
         } catch (e) { toast.error(e.response?.data?.detail || "Erro ao confirmar"); }
         finally { setSaving(false); }
@@ -113,7 +113,7 @@ export default function ComprasPODetalhe() {
         if (!form.motivo?.trim()) { toast.error("Motivo obrigatório"); return; }
         setSaving(true);
         try {
-            await api.post(`/api/compras/pos/${id}/cancelar`, { motivo: form.motivo });
+            await api.post(`/compras/pos/${id}/cancelar`, { motivo: form.motivo });
             toast.success("PO cancelada"); setModal(null); carregar();
         } catch (e) { toast.error(e.response?.data?.detail || "Erro ao cancelar"); }
         finally { setSaving(false); }
@@ -128,7 +128,7 @@ export default function ComprasPODetalhe() {
                 quantidade_recebida: parseFloat(form[`rec_${it.item_id}`] || 0),
             })).filter(i => i.quantidade_recebida > 0);
             if (!itens_recebidos.length) { toast.error("Informe pelo menos uma quantidade recebida"); setSaving(false); return; }
-            const { data } = await api.post(`/api/compras/pos/${id}/receber-parcial`, { nf_numero: form.nf_numero, nf_data: form.nf_data, itens_recebidos });
+            const { data } = await api.post(`/compras/pos/${id}/receber-parcial`, { nf_numero: form.nf_numero, nf_data: form.nf_data, itens_recebidos });
             if (data.divergencias?.length > 0) toast.warning(`Divergências detectadas: ${data.divergencias.join("; ")}`);
             else toast.success("Recebimento registrado");
             setModal(null); carregar();

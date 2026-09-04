@@ -33,7 +33,7 @@ function NovaCotacaoDialog({ open, itemId, onClose, onCreated }) {
         setSaving(true);
         try {
             const body = { ...form, preco_unitario: parseFloat(form.preco_unitario), prazo_pagamento_dias: parseInt(form.prazo_pagamento_dias), prazo_entrega_dias_uteis: parseInt(form.prazo_entrega_dias_uteis), moq: parseFloat(form.moq), frete_valor: parseFloat(form.frete_valor || 0) };
-            await api.post(`/api/compras/itens/${itemId}/cotar`, body);
+            await api.post(`/compras/itens/${itemId}/cotar`, body);
             toast.success("Cotação registrada");
             onCreated(); onClose();
         } catch (e) { toast.error(e.response?.data?.detail || "Erro ao registrar cotação"); }
@@ -112,8 +112,8 @@ export default function ComprasItemDetalhe() {
         setLoading(true);
         try {
             const [itemRes, histRes] = await Promise.all([
-                api.get(`/api/compras/itens/${id}`),
-                api.get(`/api/compras/itens/${id}/historico-precos`),
+                api.get(`/compras/itens/${id}`),
+                api.get(`/compras/itens/${id}/historico-precos`),
             ]);
             setItem(itemRes.data);
             setHist(histRes.data);

@@ -26,6 +26,7 @@ from cq_routes import (
     cq_verificar_assepsia_envase,
     cq_verificar_setup_linha,
 )
+from rbac import require_roles
 
 logger = logging.getLogger(__name__)
 
@@ -235,6 +236,7 @@ class OrderCreate(BaseModel):
     pd_request_id: Optional[str] = None
     kickoff_id: Optional[str] = None          # Gap A: optional FK to kickoffs collection
     client_card_id: Optional[str] = None
+    cliente_id: Optional[str] = None          # CRM client FK; mandatory for origem=gerador
     numero_pedido: Optional[str] = None
     pedido_cliente_ref: Optional[str] = None
     gerador_origem: Optional[str] = None
@@ -287,6 +289,7 @@ class OrderUpdate(BaseModel):
     aprovacao_cliente: Optional[str] = None   # pendente | aprovado
     aprovacao_cliente_obs: Optional[str] = None
     aprovacao_cliente_em: Optional[str] = None
+    prioridade_pcp: Optional[int] = None       # ordem visual/operacional em Pedidos -> PCP
     justificativa: Optional[str] = None        # R21: required to edit locked fields
 
 
@@ -307,7 +310,7 @@ class OPCreate(BaseModel):
 
 
 class OPUpdate(BaseModel):
-    status: Optional[str] = None  # "aberta" | "em_processo" | "pausada" | "concluida" | "cancelada"
+    status: Optional[str] = None  # "aberta" | "em_processo" | "pausada" | "aguardando_confirmacao_pcp" | "concluida" | "cancelada"
     items: Optional[List[OPItem]] = None
     observacoes: Optional[str] = None
     linha_id: Optional[str] = None
@@ -315,7 +318,8 @@ class OPUpdate(BaseModel):
     pcp_numero: Optional[str] = None
 
 
-OP_STATUSES = ["aberta", "em_processo", "pausada", "concluida", "cancelada"]
+OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"]
+PCP_CONFIRM_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
 
 
 class OPReworkCreate(BaseModel):
@@ -391,9 +395,10 @@ def _order_duplicate_fingerprint(
     items: List[Dict[str, Any]],
     data_pedido: Optional[str],
     pedido_cliente_ref: Optional[str] = None,
+    cliente_id: Optional[str] = None,
 ) -> str:
     """Stable same-day fingerprint to block accidental duplicate order creation."""
-    client_key = _digits_only(cliente.get("cnpj")) or _normalize_key_text(
+    client_key = f"id:{cliente_id}" if cliente_id else _digits_only(cliente.get("cnpj")) or _normalize_key_text(
         cliente.get("razao_social") or cliente.get("nome")
     )
     ref_key = _normalize_key_text(pedido_cliente_ref) or str(data_pedido or "")[:10]
@@ -666,15 +671,15 @@ async def _enrich_from_crm_client(cliente_id: str, tenant_id: str) -> Dict[str, 
     if not crm_client:
         return cliente
     cliente["nome"] = crm_client.get("nome_empresa", "")
-    cliente["razao_social"] = crm_client.get("nome_empresa", "")
+    cliente["razao_social"] = crm_client.get("razao_social") or crm_client.get("nome_empresa", "")
     cliente["cnpj"] = crm_client.get("cnpj", "")
     cidade = crm_client.get("cidade", "") or crm_client.get("regiao", "")
     uf = crm_client.get("uf", "") or crm_client.get("estado", "")
     cliente["cidade_uf"] = f"{cidade}/{uf}" if cidade and uf else (cidade or uf)
     contato = crm_client.get("contato_principal") or {}
-    cliente["responsavel"] = contato.get("nome", "")
-    cliente["telefone"] = contato.get("whatsapp", "")
-    cliente["email"] = contato.get("email", "")
+    cliente["responsavel"] = contato.get("nome") or crm_client.get("responsavel", "")
+    cliente["telefone"] = contato.get("whatsapp") or crm_client.get("telefone", "")
+    cliente["email"] = contato.get("email") or crm_client.get("email", "")
     return cliente
 
 
@@ -960,7 +965,22 @@ async def _create_order_document(
     # Gap A: validate kickoff FK if provided
     await _validate_kickoff_fk(data.kickoff_id, user["tenant_id"])
 
-    cliente = data.cliente.model_dump()
+    cliente_id = (data.cliente_id or "").strip()
+    if origem == "gerador":
+        if not cliente_id:
+            raise HTTPException(
+                status_code=422,
+                detail="Selecione um cliente cadastrado antes de gerar o pedido.",
+            )
+        crm_client = await db.crm_clients.find_one(
+            {"id": cliente_id, "tenant_id": user["tenant_id"]},
+            {"_id": 0},
+        )
+        if not crm_client:
+            raise HTTPException(status_code=404, detail="Cliente cadastrado nao encontrado.")
+        cliente = await _enrich_from_crm_client(cliente_id, user["tenant_id"])
+    else:
+        cliente = data.cliente.model_dump()
     if data.client_card_id and not cliente.get("razao_social"):
         cliente = await _enrich_from_crm(data.client_card_id, user["tenant_id"])
 
@@ -995,6 +1015,7 @@ async def _create_order_document(
         items,
         data.data_pedido or now_iso(),
         data.pedido_cliente_ref,
+        cliente_id=cliente_id or None,
     )
     if not data.allow_duplicate:
         await _assert_no_duplicate_order(
@@ -1008,6 +1029,7 @@ async def _create_order_document(
         "pd_request_id": data.pd_request_id,
         "kickoff_id": data.kickoff_id,
         "client_card_id": data.client_card_id,
+        "cliente_id": cliente_id or None,
         "pedido_cliente_ref": data.pedido_cliente_ref or "",
         "gerador_origem": data.gerador_origem or "",
         "duplicate_fingerprint": duplicate_fingerprint,
@@ -1134,6 +1156,7 @@ async def create_direct_order(data: DirectOrderCreate, request: Request):
     )
 
     order_data = OrderCreate(
+        cliente_id=data.cliente_id,
         tipo_servico=data.tipo_servico,
         nivel_formalizacao=data.nivel_formalizacao,
         pedido_cliente_ref=data.pedido_cliente_ref,
@@ -1227,7 +1250,7 @@ async def update_order(order_id: str, data: OrderUpdate, request: Request):
 
     for key in ("kickoff_id", "numero_pedido", "data_pedido", "status", "observacoes", "cgi_status",
                 "tipo_servico", "nivel_formalizacao",
-                "aprovacao_cliente", "aprovacao_cliente_obs", "aprovacao_cliente_em"):
+                "aprovacao_cliente", "aprovacao_cliente_obs", "aprovacao_cliente_em", "prioridade_pcp"):
         if key in payload:
             update_fields[key] = payload[key]
 
@@ -2250,7 +2273,9 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
     payload = data.model_dump(exclude_unset=True)
     if "status" in payload and payload["status"] not in OP_STATUSES:
         raise HTTPException(status_code=400, detail=f"Status inválido. Permitidos: {OP_STATUSES}")
-    if payload.get("status") in {"em_processo", "concluida"}:
+    if payload.get("status") == "concluida":
+        require_roles(user, PCP_CONFIRM_ROLES)
+    if payload.get("status") in {"em_processo", "aguardando_confirmacao_pcp", "concluida"}:
         bloqueios = _technical_review_blocks_operation(op)
         if bloqueios:
             raise HTTPException(
@@ -2261,7 +2286,16 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
                 },
             )
     update_fields: Dict[str, Any] = {k: v for k, v in payload.items() if v is not None or k == "observacoes"}
-    update_fields["updated_at"] = now_iso()
+    now = now_iso()
+    update_fields["updated_at"] = now
+    if payload.get("status") == "aguardando_confirmacao_pcp":
+        update_fields["pcp_status"] = "aguardando_confirmacao"
+        update_fields["fechado_producao_por"] = user["name"]
+        update_fields["fechado_producao_em"] = now
+    elif payload.get("status") == "concluida":
+        update_fields["pcp_status"] = "confirmado"
+        update_fields["pcp_confirmed_by"] = user["name"]
+        update_fields["pcp_confirmed_at"] = now
     await db.ops.update_one({"id": op_id}, {"$set": update_fields})
     updated = await db.ops.find_one({"id": op_id}, {"_id": 0})
 

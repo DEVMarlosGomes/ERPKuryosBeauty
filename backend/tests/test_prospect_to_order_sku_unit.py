@@ -109,7 +109,7 @@ class FakeCollection:
         return doc
 
 
-def test_projeto_aprovado_gera_sku_sem_cgi_e_sem_duplicar(monkeypatch):
+def test_variacao_aprovada_gera_sku_sem_cgi_e_sem_duplicar(monkeypatch):
     seq = {"id": 0, "sku": 0}
 
     def new_id():
@@ -143,7 +143,7 @@ def test_projeto_aprovado_gera_sku_sem_cgi_e_sem_duplicar(monkeypatch):
         crm_projects=FakeCollection([{
             "id": "proj-1",
             "tenant_id": "t1",
-            "stage": "pedido_aprovado",
+            "stage": "em_negociacao",
             "categoria": "Body Splash",
         }]),
         categorias=FakeCollection([{

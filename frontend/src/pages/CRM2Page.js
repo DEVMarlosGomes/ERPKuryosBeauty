@@ -360,7 +360,7 @@ export default function CRM2Page() {
 
     const handleReorder = async (clienteId) => {
         try {
-            const { data } = await api.get(`/api/orders/reorder/${clienteId}`);
+            const { data } = await api.get(`/orders/reorder/${clienteId}`);
             navigate("/orders/new", { state: { draft: data } });
         } catch (e) {
             if (e.response?.status === 404) {

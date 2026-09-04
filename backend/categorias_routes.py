@@ -68,6 +68,12 @@ class CategoriaApprove(BaseModel):
     justificativa: Optional[str] = ""
 
 
+class CategoriaUpdate(BaseModel):
+    nome: Optional[str] = None
+    justificativa: Optional[str] = None
+    status: Optional[str] = None
+
+
 # ======================================================================
 #   HELPERS
 # ======================================================================
@@ -197,6 +203,34 @@ async def approve_categoria(cat3: str, data: CategoriaApprove, request: Request)
     )
     logger.info(f"Categoria {cat3} aprovada por {user.get('name')}")
     return {"categoria": updated, "msg": f"Categoria {cat3} aprovada e ativa."}
+
+
+@categorias_router.put("/categorias/{cat3}")
+async def update_categoria(cat3: str, data: CategoriaUpdate, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, _APROVAR_ROLES)
+
+    cat3 = _validate_cat3(cat3)
+    doc = await db.categorias.find_one(
+        {"tenant_id": user["tenant_id"], "cat3": cat3}, {"_id": 0}
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail=f"Categoria {cat3} nao encontrada")
+
+    payload = data.model_dump(exclude_unset=True)
+    updates = {"updated_at": _now_iso()}
+    for field in ("nome", "justificativa", "status"):
+        if field in payload:
+            updates[field] = (payload[field] or "").strip()
+
+    await db.categorias.update_one(
+        {"tenant_id": user["tenant_id"], "cat3": cat3},
+        {"$set": updates},
+    )
+    updated = await db.categorias.find_one(
+        {"tenant_id": user["tenant_id"], "cat3": cat3}, {"_id": 0}
+    )
+    return {"categoria": updated, "msg": f"Categoria {cat3} atualizada."}
 
 
 @categorias_router.post("/categorias/{cat3}/inactivate")

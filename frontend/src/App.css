@@ -51,7 +51,7 @@
 
 .kanban-card-dragging {
     transform: scale(1.03);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-hover);
     opacity: 0.95;
 }
 
@@ -94,18 +94,6 @@
     color: hsl(var(--foreground));
     border-radius: 1rem 1rem 1rem 0.25rem;
     max-width: 80%;
-}
-
-/* Sidebar */
-.sidebar-item {
-    transition: background-color 0.15s ease, color 0.15s ease;
-}
-.sidebar-item:hover {
-    background: hsl(var(--accent));
-}
-.sidebar-item.active {
-    background: hsl(var(--accent));
-    font-weight: 500;
 }
 
 /* Page transitions */

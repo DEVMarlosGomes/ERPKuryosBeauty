@@ -15,7 +15,7 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-    Package, Plus, Search, Trash2, Loader2, AlertTriangle, Zap, Link,
+    Package, Plus, Search, Trash2, Loader2, AlertTriangle, Zap, Link, ClipboardCheck, MapPinned, QrCode, Printer,
 } from "lucide-react";
 
 const TIPO_MP_OPTIONS = [
@@ -30,8 +30,40 @@ const STATUS_CONFIG = {
     reprovado:  { label: "Reprovado",      cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
 
+const CHECKLIST_TEMPLATE = [
+    { codigo: "nf", descricao: "NF recebida e legivel", obrigatorio: true },
+    { codigo: "po", descricao: "PO conferida contra a entrega", obrigatorio: true },
+    { codigo: "quantidade", descricao: "Quantidade fisica conferida", obrigatorio: true },
+    { codigo: "lote_validade", descricao: "Lote e validade informados", obrigatorio: true },
+    { codigo: "integridade", descricao: "Embalagem sem avaria", obrigatorio: true },
+    { codigo: "certificado", descricao: "Certificado/laudo anexado quando aplicavel", obrigatorio: false },
+];
+
+function defaultChecklist(item = {}) {
+    return CHECKLIST_TEMPLATE.map(check => ({
+        ...check,
+        status: check.codigo === "lote_validade" && !item.lote ? "pendente" : "ok",
+        observacao: "",
+    }));
+}
+
 function emptyItem() {
-    return { nome: "", codigo: "", tipo_mp: "FORMULACAO", quantidade: "", unidade: "kg", lote: "", validade: "", urgente: false };
+    return {
+        nome: "",
+        codigo: "",
+        tipo_mp: "FORMULACAO",
+        quantidade: "",
+        unidade: "kg",
+        lote: "",
+        validade: "",
+        urgente: false,
+        po_item_id: "",
+        mp_id: "",
+        endereco_id: "",
+        endereco_codigo: "",
+        checklist: [],
+        palete: { quantidade_paletes: 1, volumes_por_palete: "", peso_bruto: "", dimensoes: "", observacoes: "" },
+    };
 }
 
 function emptyForm() {
@@ -65,6 +97,7 @@ export default function RecebimentoPage() {
     const [poSugestoes, setPoSugestoes] = useState([]);
     const [loadingSugestao, setLoadingSugestao] = useState(false);
     const [checkingUrgente, setCheckingUrgente] = useState({});
+    const [enderecos, setEnderecos] = useState([]);
 
     const loadEntradas = useCallback(async () => {
         setLoading(true);
@@ -90,12 +123,20 @@ export default function RecebimentoPage() {
     const loadPOs = useCallback(async () => {
         try {
             const { data } = await api.get("/compras/pos");
-            setPOs((data || []).filter(p => p.status === "aprovada" || p.status === "em_entrega"));
+            const lista = Array.isArray(data) ? data : (data.pos || []);
+            setPOs(lista.filter(p => ["emitida", "confirmada", "parcialmente_recebida", "aprovada", "em_entrega"].includes(p.status)));
+        } catch { /* optional */ }
+    }, []);
+
+    const loadEnderecos = useCallback(async () => {
+        try {
+            const { data } = await api.get("/estoque/wms/enderecos");
+            setEnderecos(data.enderecos || []);
         } catch { /* optional */ }
     }, []);
 
     useEffect(() => { loadEntradas(); }, [loadEntradas]);
-    useEffect(() => { loadFornecedores(); loadPOs(); }, [loadFornecedores, loadPOs]);
+    useEffect(() => { loadFornecedores(); loadPOs(); loadEnderecos(); }, [loadFornecedores, loadPOs, loadEnderecos]);
 
     const openForm = () => {
         setForm(emptyForm());
@@ -109,6 +150,24 @@ export default function RecebimentoPage() {
         setForm(f => {
             const items = [...f.items];
             items[idx] = { ...items[idx], [key]: val };
+            return { ...f, items };
+        });
+    };
+
+    const setNestedItem = (idx, group, key, val) => {
+        setForm(f => {
+            const items = [...f.items];
+            items[idx] = { ...items[idx], [group]: { ...(items[idx][group] || {}), [key]: val } };
+            return { ...f, items };
+        });
+    };
+
+    const setChecklistItem = (idx, checkIdx, key, val) => {
+        setForm(f => {
+            const items = [...f.items];
+            const checklist = [...(items[idx].checklist?.length ? items[idx].checklist : defaultChecklist(items[idx]))];
+            checklist[checkIdx] = { ...checklist[checkIdx], [key]: val };
+            items[idx] = { ...items[idx], checklist };
             return { ...f, items };
         });
     };
@@ -160,12 +219,31 @@ export default function RecebimentoPage() {
         const po = pos.find(p => p.id === poId) || pool.find(p => p.id === poId);
         if (!po) { setField("po_id", ""); setField("po_numero", ""); return; }
         const forn = fornecedores.find(f => f.id === po.fornecedor_id);
+        const itensPO = (po.itens || po.items || [])
+            .map(poItem => {
+                const solicitado = Number(poItem.quantidade_solicitada ?? poItem.quantidade ?? poItem.qtd ?? 0);
+                const recebido = Number(poItem.quantidade_recebida ?? 0);
+                const pendente = Math.max(0, solicitado - recebido);
+                const base = {
+                    ...emptyItem(),
+                    nome: poItem.item_descricao || poItem.nome || poItem.descricao || "",
+                    codigo: poItem.item_codigo || poItem.codigo_interno || poItem.codigo || "",
+                    mp_id: poItem.item_id || poItem.mp_id || "",
+                    po_item_id: poItem.id || "",
+                    quantidade: pendente || solicitado || "",
+                    unidade: poItem.unidade_compra || poItem.unidade || "kg",
+                    tipo_mp: poItem.tipo_mp || "FORMULACAO",
+                };
+                return { ...base, checklist: defaultChecklist(base) };
+            })
+            .filter(item => item.nome || item.codigo);
         setForm(f => ({
             ...f,
             po_id: po.id,
             po_numero: po.numero_po || po.id.slice(-6),
             fornecedor_id: po.fornecedor_id || "",
             fornecedor_nome: forn?.razao_social || forn?.nome_fantasia || po.fornecedor_nome || "",
+            items: itensPO.length ? itensPO : f.items,
         }));
     };
 
@@ -204,6 +282,24 @@ export default function RecebimentoPage() {
                     unidade: i.unidade || "kg",
                     lote: i.lote.trim(),
                     validade: i.validade || null,
+                    po_item_id: i.po_item_id || null,
+                    mp_id: i.mp_id || null,
+                    endereco_id: i.endereco_id || null,
+                    endereco_codigo: i.endereco_codigo || null,
+                    checklist: (i.checklist?.length ? i.checklist : defaultChecklist(i)).map(check => ({
+                        codigo: check.codigo,
+                        descricao: check.descricao,
+                        obrigatorio: Boolean(check.obrigatorio),
+                        status: check.status || "pendente",
+                        observacao: check.observacao || "",
+                    })),
+                    palete: {
+                        quantidade_paletes: Number(i.palete?.quantidade_paletes || 1),
+                        volumes_por_palete: i.palete?.volumes_por_palete ? Number(i.palete.volumes_por_palete) : null,
+                        peso_bruto: i.palete?.peso_bruto ? Number(i.palete.peso_bruto) : null,
+                        dimensoes: i.palete?.dimensoes || "",
+                        observacoes: i.palete?.observacoes || "",
+                    },
                 })),
             };
             const { data: result } = await api.post("/recebimento/entradas", payload);
@@ -219,6 +315,23 @@ export default function RecebimentoPage() {
             toast.error(formatApiError(e));
         } finally {
             setSaving(false);
+        }
+    };
+
+    const marcarPaleteImpresso = async (palete) => {
+        if (!palete?.id) return;
+        try {
+            const { data } = await api.post(`/recebimento/paletes/${palete.id}/imprimir`);
+            setSelectedEntrada(prev => ({
+                ...prev,
+                items: (prev.items || []).map(item => ({
+                    ...item,
+                    paletes: (item.paletes || []).map(p => p.id === palete.id ? data : p),
+                })),
+            }));
+            toast.success(`Etiqueta ${data.etiqueta_codigo || palete.etiqueta_codigo || palete.id} marcada como impressa.`);
+        } catch (error) {
+            toast.error(formatApiError(error, "Nao foi possivel marcar a etiqueta como impressa."));
         }
     };
 
@@ -327,7 +440,7 @@ export default function RecebimentoPage() {
                             <DialogTitle>Recebimento NF {selectedEntrada.numero_nf}</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4 text-sm">
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid gap-3 md:grid-cols-2">
                                 <div><span className="text-muted-foreground">Fornecedor:</span> {selectedEntrada.fornecedor_nome || "—"}</div>
                                 <div><span className="text-muted-foreground">Data NF:</span> {formatDate(selectedEntrada.data_nf)}</div>
                                 <div><span className="text-muted-foreground">PO Vinculada:</span> {selectedEntrada.po_numero || "—"}</div>
@@ -357,10 +470,59 @@ export default function RecebimentoPage() {
                                                 <span>Qtd: {item.quantidade} {item.unidade}</span>
                                                 {item.lote && <span>Lote: {item.lote}</span>}
                                                 {item.validade && <span>Validade: {formatDate(item.validade)}</span>}
+                                                {item.po_item_id && <span>Item PO: {item.po_item_id}</span>}
+                                                {(item.endereco_codigo || item.endereco_id) && (
+                                                    <span>Endereco: {item.endereco_codigo || item.endereco_id}</span>
+                                                )}
                                                 {item.data_limite_cq && (
                                                     <span className="text-amber-600">Prazo CQ: {formatDate(item.data_limite_cq)}</span>
                                                 )}
                                             </div>
+                                            {item.checklist?.length > 0 && (
+                                                <div className="mt-2 grid gap-1">
+                                                    {item.checklist.map(check => (
+                                                        <div key={check.codigo} className="flex flex-wrap items-center justify-between gap-2 rounded bg-muted/40 px-2 py-1">
+                                                            <span className="text-[11px]">{check.descricao}</span>
+                                                            <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                                                                check.status === "ok"
+                                                                    ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
+                                                                    : check.status === "divergente"
+                                                                        ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
+                                                                        : "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                                                            }`}>
+                                                                {check.status || "pendente"}
+                                                            </span>
+                                                            {check.observacao && (
+                                                                <span className="basis-full text-[10px] text-muted-foreground">{check.observacao}</span>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {item.paletes?.length > 0 && (
+                                                <div className="mt-2 grid gap-1">
+                                                    {item.paletes.map(palete => (
+                                                        <div key={palete.id || palete.etiqueta_codigo} className="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-background px-2 py-1">
+                                                            <div className="min-w-0">
+                                                                <p className="truncate text-[11px] font-medium">{palete.etiqueta_codigo || palete.id}</p>
+                                                                <p className="text-[10px] text-muted-foreground">
+                                                                    Capa: {palete.capa_palete_codigo || "a gerar"}
+                                                                    {palete.impresso_em ? ` - impresso em ${formatDate(palete.impresso_em)}` : ""}
+                                                                </p>
+                                                            </div>
+                                                            <Button
+                                                                size="sm"
+                                                                variant={palete.impresso_em ? "outline" : "default"}
+                                                                className="h-7 text-[11px]"
+                                                                onClick={() => marcarPaleteImpresso(palete)}
+                                                            >
+                                                                <Printer className="mr-1 h-3 w-3" />
+                                                                {palete.impresso_em ? "Reimprimir" : "Imprimir"}
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {item.ra_id && (
                                                 <div className="mt-1 text-[10px] text-amber-600 flex items-center gap-1">
                                                     <AlertTriangle className="h-3 w-3" />
@@ -394,7 +556,7 @@ export default function RecebimentoPage() {
 
                     <div className="space-y-5">
                         {/* Fornecedor + PO auto-link */}
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid gap-3 md:grid-cols-2">
                             <div>
                                 <Label>Fornecedor</Label>
                                 {fornecedores.length > 0 ? (
@@ -551,7 +713,7 @@ export default function RecebimentoPage() {
                                                 </Button>
                                             )}
                                         </div>
-                                        <div className="grid grid-cols-2 gap-2">
+                                        <div className="grid gap-2 md:grid-cols-2">
                                             <div>
                                                 <Label className="text-xs">Nome *</Label>
                                                 <Input
@@ -632,6 +794,97 @@ export default function RecebimentoPage() {
                                                     onChange={e => setItem(idx, "validade", e.target.value)}
                                                     className="mt-0.5 h-8 text-sm"
                                                 />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-3 rounded-md border bg-muted/20 p-3 md:grid-cols-[1fr_220px]">
+                                            <div>
+                                                <Label className="flex items-center gap-1 text-xs">
+                                                    <MapPinned className="h-3.5 w-3.5" /> Endereco WMS / quarentena
+                                                </Label>
+                                                <Select
+                                                    value={item.endereco_id || "sem_endereco"}
+                                                    onValueChange={value => {
+                                                        const endereco = enderecos.find(e => e.id === value);
+                                                        setItem(idx, "endereco_id", value === "sem_endereco" ? "" : value);
+                                                        setItem(idx, "endereco_codigo", value === "sem_endereco" ? "" : (endereco?.codigo || ""));
+                                                    }}
+                                                >
+                                                    <SelectTrigger className="mt-1 h-8 text-sm">
+                                                        <SelectValue placeholder="Selecionar endereco" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="sem_endereco">Sem endereco definido</SelectItem>
+                                                        {enderecos.map(endereco => (
+                                                            <SelectItem key={endereco.id} value={endereco.id}>
+                                                                {endereco.codigo} - {endereco.setor || "WMS"}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                            <div>
+                                                <Label className="flex items-center gap-1 text-xs">
+                                                    <QrCode className="h-3.5 w-3.5" /> Paletes / etiqueta
+                                                </Label>
+                                                <div className="mt-1 grid grid-cols-2 gap-2">
+                                                    <Input
+                                                        type="number"
+                                                        min="1"
+                                                        value={item.palete?.quantidade_paletes || 1}
+                                                        onChange={e => setNestedItem(idx, "palete", "quantidade_paletes", e.target.value)}
+                                                        className="h-8 text-sm"
+                                                        placeholder="Paletes"
+                                                    />
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.001"
+                                                        value={item.palete?.peso_bruto || ""}
+                                                        onChange={e => setNestedItem(idx, "palete", "peso_bruto", e.target.value)}
+                                                        className="h-8 text-sm"
+                                                        placeholder="Peso"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="rounded-md border p-3">
+                                            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-muted-foreground">
+                                                <ClipboardCheck className="h-3.5 w-3.5" />
+                                                Checklist granular de recebimento
+                                            </div>
+                                            <div className="grid gap-2">
+                                                {(item.checklist?.length ? item.checklist : defaultChecklist(item)).map((check, checkIdx) => (
+                                                    <div key={check.codigo} className="grid gap-2 rounded-md bg-muted/30 p-2 md:grid-cols-[1fr_150px_1.2fr] md:items-center">
+                                                        <div className="min-w-0">
+                                                            <p className="truncate text-xs font-medium">{check.descricao}</p>
+                                                            <p className="text-[10px] text-muted-foreground">
+                                                                {check.obrigatorio ? "Obrigatorio" : "Opcional"}
+                                                            </p>
+                                                        </div>
+                                                        <Select
+                                                            value={check.status || "pendente"}
+                                                            onValueChange={value => setChecklistItem(idx, checkIdx, "status", value)}
+                                                        >
+                                                            <SelectTrigger className="h-8 text-xs">
+                                                                <SelectValue />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="ok">OK</SelectItem>
+                                                                <SelectItem value="pendente">Pendente</SelectItem>
+                                                                <SelectItem value="divergente">Divergente</SelectItem>
+                                                                <SelectItem value="nao_aplicavel">Nao aplicavel</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <Input
+                                                            value={check.observacao || ""}
+                                                            onChange={e => setChecklistItem(idx, checkIdx, "observacao", e.target.value)}
+                                                            className="h-8 text-xs"
+                                                            placeholder="Observacao"
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>

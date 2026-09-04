@@ -568,7 +568,7 @@ export default function CRM3Page() {
                                                     {/* Alerta: aprovada mas sem SKU */}
                                                     {variacao.status === "aprovada" && !variacao.sku_id && (
                                                         <div className="mt-1.5 flex items-center gap-1 rounded px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 w-fit"
-                                                             title="SKU não foi gerado na aprovação — verifique CLI4 do cliente, categoria ativa, CGI assinado e stage do projeto">
+                                                             title="SKU não foi gerado na aprovação — verifique CLI4 do cliente, categoria ativa e status da amostra">
                                                             <AlertTriangle className="h-2.5 w-2.5 text-amber-600 shrink-0" />
                                                             <span className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">SKU pendente</span>
                                                         </div>

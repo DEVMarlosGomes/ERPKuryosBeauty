@@ -1,9 +1,9 @@
-import { createContext, lazy, Suspense, useContext, useEffect, useState } from "react";
+import { createContext, lazy, Suspense, useContext, useEffect, useRef, useState } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import LoginPage from "@/pages/LoginPage";
-import Sidebar from "@/components/Sidebar";
+import TopNav from "@/components/TopNav";
 import RoleGuard, { ROLE_GROUPS } from "@/components/RoleGuard";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -104,6 +104,7 @@ function ProtectedRoute({ children }) {
 }
 
 function AppLayout() {
+    const mainRef = useRef(null);
     const COMERCIAL = ROLE_GROUPS.COMERCIAL_FULL;
     const PD_READ = ROLE_GROUPS.PD_READ;
     const PD_FULL = ROLE_GROUPS.PD_FULL;
@@ -116,9 +117,9 @@ function AppLayout() {
     const CADASTROS_ROLES = ["admin", "vendedor", "sales_ops", "sucesso_cliente", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"];
 
     return (
-        <div className="flex min-h-screen md:h-screen overflow-hidden bg-background">
-            <Sidebar />
-            <main className="flex-1 overflow-auto pt-14 md:pt-0">
+        <div className="app-shell min-h-screen overflow-hidden bg-background">
+            <TopNav scrollContainerRef={mainRef} />
+            <main ref={mainRef} className="h-screen overflow-auto pt-14 md:pt-16" data-app-main="true">
                 <Suspense fallback={<PageLoader />}>
                     <Routes>
                         <Route path="/" element={<Navigate to="/tasks" replace />} />
@@ -141,16 +142,20 @@ function AppLayout() {
                         <Route path="/pd/:id" element={<RoleGuard allowed={[...PD_READ, ...COMERCIAL]}><PDDetail /></RoleGuard>} />
                         <Route path="/tasks" element={<TasksPage />} />
                         <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/pedidos" element={<Navigate to="/orders" replace />} />
                         <Route path="/orders/gerador" element={<OrderGeneratorPage />} />
                         <Route path="/orders/:id" element={<OrderDetail />} />
                         <Route path="/ops" element={<OPPage />} />
                         <Route path="/ops/:id" element={<OPDetail />} />
                         <Route path="/pcp/dashboard" element={<PCPDailyDashboard />} />
+                        <Route path="/pcp/historico" element={<PCPClonePage mode="historico" />} />
                         <Route path="/pcp/planejamento" element={<PCPClonePage mode="planejamento" />} />
                         <Route path="/pcp/horizonte" element={<PCPClonePage mode="horizonte" />} />
                         <Route path="/pcp/controle-ops" element={<PCPClonePage mode="controle" />} />
+                        <Route path="/pcp/emitir-op" element={<PCPClonePage mode="emitir-op" />} />
+                        <Route path="/pcp/matriz-insumos" element={<PCPClonePage mode="matriz" />} />
                         <Route path="/pcp/produtos" element={<Navigate to="/cadastros" replace />} />
-                        <Route path="/pcp/insumos" element={<Navigate to="/cadastros" replace />} />
+                        <Route path="/pcp/insumos" element={<Navigate to="/pcp/matriz-insumos" replace />} />
                         <Route path="/pcp/apontamento" element={<Navigate to="/pcp/apontamento/envase" replace />} />
                         <Route path="/pcp/apontamento/:setor" element={<PCPProductionPage />} />
                         <Route path="/pcp" element={<Navigate to="/pcp/dashboard" replace />} />
@@ -159,6 +164,7 @@ function AppLayout() {
                         <Route path="/logistica/agendamentos" element={<LogisticaAgendamentosPage />} />
                         <Route path="/expedicao" element={<ExpedicaoPage />} />
                         <Route path="/faturamento" element={<FaturamentoPage />} />
+                        <Route path="/rh" element={<RoleGuard allowed={ADMIN_ONLY}><TeamPage /></RoleGuard>} />
                         <Route path="/compras" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasDashboard /></RoleGuard>} />
                         <Route path="/compras/fornecedores" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasFornecedores /></RoleGuard>} />
                         <Route path="/compras/fornecedores/:id" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasFornecedorDetalhe /></RoleGuard>} />

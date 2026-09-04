@@ -16,12 +16,13 @@ import {
   Play, Pause, RotateCcw, Plus, AlertTriangle, CheckCircle2,
 } from "lucide-react";
 
-const OP_STATUSES = ["aberta", "em_processo", "pausada", "concluida", "cancelada"];
+const OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"];
 const STATUS_CONFIG = {
   aberta:      { label: "Aberta",      cls: "bg-blue-500/10 text-blue-600 border-blue-300 dark:text-blue-300" },
   em_processo: { label: "Em Processo", cls: "bg-amber-500/10 text-amber-700 border-amber-300 dark:text-amber-300" },
   pausada:     { label: "Pausada",     cls: "bg-orange-500/10 text-orange-600 border-orange-300 dark:text-orange-300" },
   concluida:   { label: "Concluída",   cls: "bg-green-500/10 text-green-700 border-green-300 dark:text-green-300" },
+  aguardando_confirmacao_pcp: { label: "Aguardando PCP", cls: "bg-indigo-500/10 text-indigo-700 border-indigo-300 dark:text-indigo-300" },
   cancelada:   { label: "Cancelada",   cls: "bg-red-500/10 text-red-700 border-red-300 dark:text-red-300" },
 };
 
@@ -263,10 +264,15 @@ export default function OPDetail() {
                 <Button size="sm" variant="outline" onClick={() => { setPerdaForm({ item_idx: 0, tipo: "processo", quantidade: "", unidade: "un", motivo: "" }); setShowPerda(true); }}>
                   <AlertTriangle className="h-3.5 w-3.5 mr-1" />Perda
                 </Button>
-                <Button size="sm" onClick={() => quickStatus("concluida")}>
-                  <CheckCircle2 className="h-3.5 w-3.5 mr-1" />Concluir
+                <Button size="sm" onClick={() => quickStatus("aguardando_confirmacao_pcp")}>
+                  <CheckCircle2 className="h-3.5 w-3.5 mr-1" />Enviar ao PCP
                 </Button>
               </>
+            )}
+            {form.status === "aguardando_confirmacao_pcp" && !editing && (
+              <Button size="sm" onClick={() => quickStatus("concluida")}>
+                <CheckCircle2 className="h-3.5 w-3.5 mr-1" />Confirmar PCP
+              </Button>
             )}
             {!editing && (tecnico.revisao_obrigatoria || bloqueiosTecnicos.length > 0) && (
               <Button size="sm" variant="outline" onClick={() => setShowRework(true)}>

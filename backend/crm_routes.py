@@ -4371,9 +4371,10 @@ async def _check_sku_dependency_chain(
     R25: Validate full dependency chain before generating SKU.
     Raises HTTPException 409 with the first missing prerequisite.
     Chain: Categoria exists -> Cliente com CLI4 -> Projeto ->
-           Amostra/Variacao aprovada -> Negociacao/Pedido aprovado.
-    O CGI/Kickoff vem depois do SKU no fluxo Prospect->Pedido; contrato nao pode
-    bloquear a criacao do produto comercial.
+           Amostra/Variacao aprovada.
+    O SKU nasce quando a amostra/variacao e aprovada pelo cliente para ficar
+    disponivel no pedido de venda em negociacao. CGI permanece como gate posterior
+    do pedido, antes da confirmacao.
     Retorna o CAT3 resolvido (reaproveitado pelo caller na montagem do código do SKU,
     garantindo que a checagem e a geração usam exatamente a mesma resolução).
     """
@@ -4396,8 +4397,12 @@ async def _check_sku_dependency_chain(
     if not cat3:
         raise HTTPException(status_code=409, detail=f"[R25] Categoria '{categoria}' não possui CAT3 ativo cadastrado — solicite a categoria antes de gerar o SKU")
 
-    # 3. O CGI/Kickoff vem depois do SKU no fluxo Prospect->Pedido.
-    # Contrato assinado nao pode bloquear a criacao do produto comercial.
+    # 3. Projeto must exist, but commercial closing/CGI cannot block SKU creation.
+    project = await db.crm_projects.find_one({"id": projeto_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=409, detail="[R25] Projeto não encontrado — pré-requisito para geração de SKU")
+    if project.get("stage") == "projeto_arquivado":
+        raise HTTPException(status_code=409, detail="[R25] Projeto arquivado — não é possível gerar SKU")
 
     # 4. Amostra (ou variação, quando geração é por variação — R11) aprovada
     if variacao is not None:
@@ -4410,17 +4415,6 @@ async def _check_sku_dependency_chain(
         raise HTTPException(
             status_code=409,
             detail=f"[R25] Amostra deve estar em stage 'aprovada' — atual: {sample.get('stage')}"
-        )
-
-    # 5. Pedido de Industrialização aprovado (pedido_aprovado stage on project)
-    project = await db.crm_projects.find_one({"id": projeto_id, "tenant_id": tenant_id}, {"_id": 0})
-    if not project:
-        raise HTTPException(status_code=409, detail="[R25] Projeto nÃ£o encontrado â€” prÃ©-requisito para geraÃ§Ã£o de SKU")
-    if not (variacao is not None and fasttrack_variacao) and project.get("stage") not in ("pedido_aprovado", "cliente_fechado"):
-        proj_stage = (project or {}).get("stage", "não encontrado")
-        raise HTTPException(
-            status_code=409,
-            detail=f"[R25] Projeto deve estar em 'pedido_aprovado' — atual: {proj_stage}"
         )
 
     return cat3

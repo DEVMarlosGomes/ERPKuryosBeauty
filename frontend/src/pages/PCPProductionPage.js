@@ -25,6 +25,7 @@ const STATUS = {
   aberta: { label: "Aberta", cls: "bg-blue-100 text-blue-700", live: "Aguardando" },
   em_processo: { label: "Em producao", cls: "bg-green-100 text-green-700", live: "Operando" },
   pausada: { label: "Pausada", cls: "bg-red-100 text-red-700", live: "Parada" },
+  aguardando_confirmacao_pcp: { label: "Aguardando PCP", cls: "bg-amber-100 text-amber-700", live: "Aguardando PCP" },
   concluida: { label: "Concluida", cls: "bg-zinc-100 text-zinc-700", live: "Encerrada" },
   cancelada: { label: "Cancelada", cls: "bg-red-100 text-red-700", live: "Cancelada" },
 };
@@ -262,7 +263,7 @@ export default function PCPProductionPage() {
     if (!selected) return;
     const progress = pct(produced(selected), planned(selected));
     if (progress < 100 && !window.confirm(`A OP esta com ${progress}% produzido. Finalizar mesmo assim?`)) return;
-    await setStatus(selected, "concluida");
+    await setStatus(selected, "aguardando_confirmacao_pcp");
   };
 
   if (loading) {
@@ -430,7 +431,7 @@ export default function PCPProductionPage() {
                       <ActionButton icon={TimerReset} disabled={saving} className="bg-[#6485f2] hover:bg-[#7593ff]" onClick={() => setApontOpen(true)}>Apontamento Total</ActionButton>
                       <ActionButton icon={Pause} disabled={saving} className="bg-amber-600 hover:bg-amber-700" onClick={() => setPauseOpen(true)}>Parar Linha</ActionButton>
                       <ActionButton icon={AlertTriangle} disabled={saving} className="bg-red-600 hover:bg-red-700" onClick={() => setLossOpen(true)}>Adicionar Perda</ActionButton>
-                      <ActionButton icon={CheckCircle2} disabled={saving} className="bg-[#00bf20] hover:bg-[#00a91c]" onClick={finish}>Finalizar OP</ActionButton>
+                      <ActionButton icon={CheckCircle2} disabled={saving} className="bg-[#00bf20] hover:bg-[#00a91c]" onClick={finish}>Enviar ao PCP</ActionButton>
                     </>
                   )}
                   {selected.status === "pausada" && (

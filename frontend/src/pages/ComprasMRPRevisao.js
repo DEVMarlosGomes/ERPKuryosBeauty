@@ -33,7 +33,7 @@ export default function ComprasMRPRevisao() {
     const carregar = useCallback(async () => {
         setLoading(true);
         try {
-            const { data } = await api.get(`/api/compras/mrp/${id}`);
+            const { data } = await api.get(`/compras/mrp/${id}`);
             setRodada(data);
         } catch { toast.error("Erro ao carregar rodada MRP"); }
         finally { setLoading(false); }
@@ -44,7 +44,7 @@ export default function ComprasMRPRevisao() {
     const salvarItem = async (item_id, acao, qtd, just) => {
         setSalvandoItem(item_id);
         try {
-            await api.put(`/api/compras/mrp/${id}/revisar-item`, { item_id, acao, quantidade_ajustada: qtd ? parseFloat(qtd) : null, justificativa: just || null });
+            await api.put(`/compras/mrp/${id}/revisar-item`, { item_id, acao, quantidade_ajustada: qtd ? parseFloat(qtd) : null, justificativa: just || null });
             toast.success("Item revisado");
             setEditando(e => ({ ...e, [item_id]: null }));
             carregar();
@@ -56,7 +56,7 @@ export default function ComprasMRPRevisao() {
     const aprovar = async () => {
         setAprovando(true);
         try {
-            const { data } = await api.post(`/api/compras/mrp/${id}/aprovar`);
+            const { data } = await api.post(`/compras/mrp/${id}/aprovar`);
             toast.success(`MRP aprovado — ${data.demandas_criadas} demandas criadas`);
             nav("/compras/mrp");
         } catch (e) {

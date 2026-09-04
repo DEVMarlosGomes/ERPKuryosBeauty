@@ -132,3 +132,56 @@ def test_create_produto_final_uses_cat3_cli4_sequence_and_freezes_client(monkeyp
     assert result["pd_concluido"] is True
     assert cad.db.skus.inserted[0]["codigo_interno"] == "BSP-MISS-0007"
     assert cad.db.crm_clients.updated[0][1]["$set"]["cli4_congelado"] is True
+
+
+def test_update_produto_final_saves_formula_bom_specs_and_address(monkeypatch):
+    cad.db = SimpleNamespace(
+        skus=FakeCollection([
+            {
+                "tenant_id": "tenant-1",
+                "id": "sku-1",
+                "codigo_interno": "BSP-MISS-0001",
+                "nome_produto": "Body Splash",
+                "status": "ativo",
+            }
+        ]),
+    )
+
+    async def fake_audit(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(cad, "_audit", fake_audit)
+
+    result = asyncio.run(cad.update_produto_final(
+        "sku-1",
+        cad.ProdutoFinalUpdate(
+            formula=[{"material_nome": "Agua", "percentual": 70, "funcao": "base"}],
+            bom=[{"material_nome": "Frasco 200 ml", "quantidade": 1, "unidade": "un"}],
+            especificacoes_tecnicas={"ph": "5.5", "odor": "caracteristico"},
+            enderecamento={"rua": "A", "modulo": "01", "nivel": "02", "posicao": "03"},
+        ),
+        request=SimpleNamespace(),
+    ))
+
+    assert result["formula"][0]["material_nome"] == "Agua"
+    assert result["bom"][0]["quantidade"] == 1
+    assert result["especificacoes_tecnicas"]["ph"] == "5.5"
+    assert result["enderecamento"]["rua"] == "A"
+
+
+def test_delete_material_cadastro_is_soft_delete(monkeypatch):
+    cad.db = SimpleNamespace(
+        materiais=FakeCollection([
+            {"tenant_id": "tenant-1", "id": "mat-1", "nome": "Frasco", "status": "ativo"}
+        ]),
+    )
+
+    async def fake_audit(*args, **kwargs):
+        return None
+
+    monkeypatch.setattr(cad, "_audit", fake_audit)
+
+    result = asyncio.run(cad.delete_material_cadastro("mat-1", request=SimpleNamespace()))
+
+    assert result["status"] == "inativo"
+    assert result["deleted_at"] == "2026-08-18T12:00:00+00:00"

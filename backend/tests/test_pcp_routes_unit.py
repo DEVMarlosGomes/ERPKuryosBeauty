@@ -1,6 +1,8 @@
 from datetime import date, datetime
+from pathlib import Path
 
 from backend import pcp_routes
+from backend import orders_routes
 
 
 def test_import_helpers_normalize_headers_and_dates():
@@ -52,3 +54,19 @@ def test_calendar_period_helpers_build_dynamic_shift_config():
     assert config["hora_inicio"] == "07:00"
     assert config["hora_fim"] == "18:30"
     assert len(config["turnos"]) == 2
+
+
+def test_op_status_requires_pcp_confirmation_step():
+    assert "aguardando_confirmacao_pcp" in orders_routes.OP_STATUSES
+
+    root = Path(__file__).resolve().parents[2]
+    production_page = root / "frontend" / "src" / "pages" / "PCPProductionPage.js"
+    pcp_routes_file = root / "backend" / "pcp_routes.py"
+
+    production_src = production_page.read_text(encoding="utf-8")
+    assert 'setStatus(selected, "aguardando_confirmacao_pcp")' in production_src
+    assert 'setStatus(selected, "concluida")' not in production_src
+
+    pcp_src = pcp_routes_file.read_text(encoding="utf-8")
+    assert '"status": "aguardando_confirmacao_pcp"' in pcp_src
+    assert '"status": "concluida", "updated_at": now' not in pcp_src
