@@ -39,6 +39,7 @@ venv/
 /coverage
 *_results.json
 *_REPORT.md
+!docs/PCP_DELTA_IMPLEMENTATION_REPORT.md
 test_result.md
 test_token.txt
 

@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.abspath("backend"))
 
 import estoque_routes
 import recebimento_routes
+from fastapi import HTTPException
 
 
 class FakeCursor:
@@ -217,6 +218,284 @@ def test_wms_gera_enderecos_ajusta_saldo_e_transfere_lote():
     assert relatorio["total_quantidade"] == 100
 
 
+def _install_wms_cycle_count_db(feature_enabled=True):
+    _install_estoque()
+    estoque_routes.db = SimpleNamespace(
+        tenant_settings=FakeCollection([{
+            "tenant_id": "t1",
+            "features": {estoque_routes.WMS_CYCLE_COUNT_FLAG: feature_enabled},
+        }]),
+        wms_inventarios_ciclicos=FakeCollection([]),
+        wms_enderecos=FakeCollection([
+            {"id": "end-1", "tenant_id": "t1", "codigo": "P01-A-01-01", "setor": "LOGISTICA", "status": "ocupado"},
+        ]),
+        estoque_items=FakeCollection([
+            {
+                "id": "est-1",
+                "tenant_id": "t1",
+                "tipo_item": "mp",
+                "setor": "LOGISTICA",
+                "nome": "Frasco 200ml",
+                "codigo": "FR200",
+                "quantidade_atual": 100,
+                "unidade": "un",
+                "posicao_cq": "aprovado",
+            }
+        ]),
+        estoque_saldos_lote=FakeCollection([
+            {
+                "id": "saldo-1",
+                "tenant_id": "t1",
+                "item_id": "est-1",
+                "item_nome": "Frasco 200ml",
+                "codigo_item": "FR200",
+                "tipo_item": "mp",
+                "lote": "L-001",
+                "validade": "2027-01-31",
+                "endereco_id": "end-1",
+                "endereco_codigo": "P01-A-01-01",
+                "setor": "LOGISTICA",
+                "quantidade": 100,
+                "quantidade_atual": 100,
+                "unidade": "un",
+                "status": "disponivel",
+            }
+        ]),
+        estoque_movimentos_lote=FakeCollection([]),
+    )
+
+
+def test_wms_inventario_ciclico_flag_starts_off():
+    _install_wms_cycle_count_db(feature_enabled=False)
+
+    try:
+        asyncio.run(estoque_routes.listar_inventarios_ciclicos(request=SimpleNamespace()))
+        raised = None
+    except HTTPException as exc:
+        raised = exc
+
+    assert raised is not None
+    assert raised.status_code == 403
+    assert estoque_routes.WMS_CYCLE_COUNT_FLAG in str(raised.detail)
+
+
+def test_wms_inventario_ciclico_counts_blind_and_applies_adjustment():
+    _install_wms_cycle_count_db()
+
+    created = asyncio.run(estoque_routes.criar_inventario_ciclico(
+        estoque_routes.InventarioCiclicoCreate(setor="LOGISTICA"),
+        request=SimpleNamespace(),
+    ))
+    assert created["status"] == "aberto"
+    assert "quantidade_sistema" not in created["linhas"][0]
+
+    counted = asyncio.run(estoque_routes.registrar_contagem_inventario_ciclico(
+        created["id"],
+        estoque_routes.InventarioCiclicoContagem(linhas=[
+            estoque_routes.InventarioCiclicoContagemLinha(
+                saldo_lote_id="saldo-1",
+                quantidade_contada=96,
+                observacoes="recontagem cega",
+            )
+        ]),
+        request=SimpleNamespace(),
+    ))
+    assert counted["status"] == "em_contagem"
+    assert counted["linhas_contadas"] == 1
+    assert counted["linhas_com_divergencia"] == 1
+    assert "divergencia" not in counted["linhas"][0]
+    assert estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade"] == 100
+
+    closed = asyncio.run(estoque_routes.fechar_inventario_ciclico(
+        created["id"],
+        estoque_routes.InventarioCiclicoFechamento(
+            aplicar_ajustes=True,
+            motivo="contagem mensal",
+            observacoes="aprovado pelo lider",
+        ),
+        request=SimpleNamespace(),
+    ))
+    assert closed["status"] == "fechado"
+    assert closed["ajustes_aplicados"] is True
+    assert len(closed["ajuste_movimento_ids"]) == 1
+    assert estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade"] == 96
+    assert estoque_routes.db.estoque_items.docs[0]["quantidade_atual"] == 96
+    assert estoque_routes.db.estoque_movimentos_lote.docs[0]["tipo"] == "AJUSTE_SAIDA"
+
+
+def test_wms_inventario_ciclico_blocks_stale_snapshot_adjustment():
+    _install_wms_cycle_count_db()
+    created = asyncio.run(estoque_routes.criar_inventario_ciclico(
+        estoque_routes.InventarioCiclicoCreate(setor="LOGISTICA"),
+        request=SimpleNamespace(),
+    ))
+    asyncio.run(estoque_routes.registrar_contagem_inventario_ciclico(
+        created["id"],
+        estoque_routes.InventarioCiclicoContagem(linhas=[
+            estoque_routes.InventarioCiclicoContagemLinha(saldo_lote_id="saldo-1", quantidade_contada=96)
+        ]),
+        request=SimpleNamespace(),
+    ))
+    estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade"] = 90
+    estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade_atual"] = 90
+
+    try:
+        asyncio.run(estoque_routes.fechar_inventario_ciclico(
+            created["id"],
+            estoque_routes.InventarioCiclicoFechamento(aplicar_ajustes=True, motivo="contagem mensal"),
+            request=SimpleNamespace(),
+        ))
+        raised = None
+    except HTTPException as exc:
+        raised = exc
+
+    assert raised is not None
+    assert raised.status_code == 409
+    assert "Saldo mudou" in str(raised.detail)
+
+
+def _install_wms_disposal_db(feature_enabled=True):
+    _install_estoque()
+    estoque_routes.db = SimpleNamespace(
+        tenant_settings=FakeCollection([{
+            "tenant_id": "t1",
+            "features": {estoque_routes.PCP_DISPOSAL_FLAG: feature_enabled},
+        }]),
+        wms_destinacoes=FakeCollection([]),
+        wms_enderecos=FakeCollection([
+            {"id": "end-1", "tenant_id": "t1", "codigo": "P01-A-01-01", "setor": "LOGISTICA", "status": "ocupado"},
+        ]),
+        estoque_items=FakeCollection([
+            {
+                "id": "est-1",
+                "tenant_id": "t1",
+                "tipo_item": "mp",
+                "setor": "LOGISTICA",
+                "nome": "Frasco 200ml",
+                "codigo": "FR200",
+                "quantidade_atual": 100,
+                "unidade": "un",
+                "posicao_cq": "aprovado",
+            }
+        ]),
+        estoque_saldos_lote=FakeCollection([
+            {
+                "id": "saldo-1",
+                "tenant_id": "t1",
+                "item_id": "est-1",
+                "item_nome": "Frasco 200ml",
+                "codigo_item": "FR200",
+                "tipo_item": "mp",
+                "lote": "L-001",
+                "validade": "2027-01-31",
+                "endereco_id": "end-1",
+                "endereco_codigo": "P01-A-01-01",
+                "setor": "LOGISTICA",
+                "quantidade": 100,
+                "quantidade_atual": 100,
+                "unidade": "un",
+                "status": "disponivel",
+            }
+        ]),
+        estoque_movimentos_lote=FakeCollection([]),
+    )
+
+
+def test_wms_destinacao_flag_starts_off():
+    _install_wms_disposal_db(feature_enabled=False)
+
+    try:
+        asyncio.run(estoque_routes.listar_wms_destinacoes(request=SimpleNamespace()))
+        raised = None
+    except HTTPException as exc:
+        raised = exc
+
+    assert raised is not None
+    assert raised.status_code == 403
+    assert estoque_routes.PCP_DISPOSAL_FLAG in str(raised.detail)
+
+
+def test_wms_destinacao_cria_sem_baixa_e_bloqueia_excesso_pendente():
+    _install_wms_disposal_db()
+
+    created = asyncio.run(estoque_routes.criar_wms_destinacao(
+        estoque_routes.WMSDestinacaoCreate(
+            saldo_lote_id="saldo-1",
+            quantidade=60,
+            tipo="descarte",
+            motivo="avaria na embalagem",
+            destino="Descarte controlado",
+        ),
+        request=SimpleNamespace(),
+    ))
+    assert created["status"] == "solicitado"
+    assert created["baixa_aplicada"] is False
+    assert estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade"] == 100
+
+    try:
+        asyncio.run(estoque_routes.criar_wms_destinacao(
+            estoque_routes.WMSDestinacaoCreate(
+                saldo_lote_id="saldo-1",
+                quantidade=50,
+                tipo="logistica_reversa",
+                motivo="devolucao parcial",
+                destino="Fornecedor",
+            ),
+            request=SimpleNamespace(),
+        ))
+        raised = None
+    except HTTPException as exc:
+        raised = exc
+
+    assert raised is not None
+    assert raised.status_code == 409
+    assert "excede saldo" in str(raised.detail)
+
+
+def test_wms_destinacao_programa_coleta_confirma_baixa_e_e_idempotente():
+    _install_wms_disposal_db()
+
+    created = asyncio.run(estoque_routes.criar_wms_destinacao(
+        estoque_routes.WMSDestinacaoCreate(
+            saldo_lote_id="saldo-1",
+            quantidade=40,
+            tipo="logistica_reversa",
+            motivo="nao conformidade do fornecedor",
+            destino="Fornecedor A",
+            origem_tipo="rnc",
+            origem_id="rnc-1",
+        ),
+        request=SimpleNamespace(),
+    ))
+    scheduled = asyncio.run(estoque_routes.programar_coleta_wms_destinacao(
+        created["id"],
+        estoque_routes.WMSDestinacaoColeta(data_coleta="2026-08-21", responsavel="Transportadora"),
+        request=SimpleNamespace(),
+    ))
+    assert scheduled["status"] == "coleta_programada"
+    assert scheduled["coleta"]["responsavel"] == "Transportadora"
+
+    confirmed = asyncio.run(estoque_routes.confirmar_wms_destinacao(
+        created["id"],
+        estoque_routes.WMSDestinacaoConfirm(documento_destino="COLETA-1", comprovante="canhoto-1"),
+        request=SimpleNamespace(),
+    ))
+    assert confirmed["status"] == "confirmado"
+    assert confirmed["baixa_aplicada"] is True
+    assert estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade"] == 60
+    assert estoque_routes.db.estoque_items.docs[0]["quantidade_atual"] == 60
+    assert estoque_routes.db.estoque_movimentos_lote.docs[0]["tipo"] == "AJUSTE_SAIDA"
+    assert estoque_routes.db.estoque_movimentos_lote.docs[0]["documento"] == "COLETA-1"
+
+    repeated = asyncio.run(estoque_routes.confirmar_wms_destinacao(
+        created["id"],
+        estoque_routes.WMSDestinacaoConfirm(documento_destino="COLETA-1"),
+        request=SimpleNamespace(),
+    ))
+    assert repeated["status"] == "confirmado"
+    assert len(estoque_routes.db.estoque_movimentos_lote.docs) == 1
+
+
 def test_recebimento_integrado_atualiza_po_cria_checklist_paletes_e_saldo_wms():
     _install_recebimento()
     recebimento_routes.db = SimpleNamespace(
@@ -293,6 +572,90 @@ def test_recebimento_integrado_atualiza_po_cria_checklist_paletes_e_saldo_wms():
     assert recebimento_routes.db.compras_pos.docs[0]["status"] == "parcialmente_recebida"
     assert recebimento_routes.db.estoque_saldos_lote.docs[0]["quantidade"] == 60
     assert recebimento_routes.db.recebimento_agendamentos.docs[0]["status"] == "em_recebimento"
+
+
+def test_recebimento_lote_interno_e_idempotency_key_preservam_efeitos_unicos():
+    _install_recebimento()
+    recebimento_routes.db = SimpleNamespace(
+        tenant_settings=FakeCollection([{
+            "tenant_id": "t1",
+            "features": {recebimento_routes.RECEIVING_INTERNAL_LOT_FLAG: True},
+        }]),
+        recebimento_sla_config=FakeCollection([]),
+        ops=FakeCollection([]),
+        compras_pos=FakeCollection([
+            {
+                "id": "po-1",
+                "tenant_id": "t1",
+                "numero_po": "PO-2026-001",
+                "fornecedor_id": "for-1",
+                "fornecedor_nome": "Fornecedor A",
+                "status": "confirmada",
+                "itens": [
+                    {
+                        "id": "poi-1",
+                        "item_id": "mp-1",
+                        "item_descricao": "Agua",
+                        "quantidade_solicitada": 100,
+                        "quantidade_recebida": 0,
+                        "unidade_compra": "kg",
+                    }
+                ],
+                "nfs_vinculadas": [],
+                "log_auditoria": [],
+            }
+        ]),
+        estoque_items=FakeCollection([]),
+        estoque_movimentos=FakeCollection([]),
+        cq_registros_analise=FakeCollection([]),
+        recebimentos=FakeCollection([]),
+        wms_enderecos=FakeCollection([
+            {"id": "end-1", "tenant_id": "t1", "codigo": "P01-R01-N01-P01", "setor": "LOGISTICA", "status": "livre"}
+        ]),
+        estoque_saldos_lote=FakeCollection([]),
+        wms_paletes=FakeCollection([]),
+        recebimento_agendamentos=FakeCollection([]),
+    )
+    payload = recebimento_routes.RecebimentoCreate(
+        po_id="po-1",
+        po_numero="PO-2026-001",
+        fornecedor_id="for-1",
+        fornecedor_nome="Fornecedor A",
+        numero_nf="NF-100",
+        data_nf="2026-08-20",
+        idempotency_key="po-1-nf-100-item-1",
+        items=[
+            recebimento_routes.RecebimentoItem(
+                nome="Agua",
+                codigo="MP-AGU",
+                tipo_mp="FORMULACAO",
+                quantidade=60,
+                unidade="kg",
+                lote="L-FORN-1",
+                mp_id="mp-1",
+                po_item_id="poi-1",
+                endereco_id="end-1",
+                endereco_codigo="P01-R01-N01-P01",
+                palete=recebimento_routes.RecebimentoPaleteInput(quantidade_paletes=1),
+            )
+        ],
+    )
+
+    entrada = asyncio.run(recebimento_routes.create_entrada(payload, request=SimpleNamespace()))
+    replay = asyncio.run(recebimento_routes.create_entrada(payload, request=SimpleNamespace()))
+
+    assert replay["id"] == entrada["id"]
+    assert replay["idempotent_replay"] is True
+    assert entrada["recebimento_key"] == "po-1-nf-100-item-1"
+    assert entrada["items"][0]["lote_interno"] == "AK-2026-000001"
+    assert recebimento_routes.db.cq_registros_analise.docs[0]["lote_interno"] == "AK-2026-000001"
+    assert recebimento_routes.db.estoque_saldos_lote.docs[0]["lote"] == "AK-2026-000001"
+    assert recebimento_routes.db.estoque_saldos_lote.docs[0]["lote_fornecedor"] == "L-FORN-1"
+    assert recebimento_routes.db.wms_paletes.docs[0]["lote_interno"] == "AK-2026-000001"
+    assert recebimento_routes.db.compras_pos.docs[0]["itens"][0]["quantidade_recebida"] == 60
+    assert len(recebimento_routes.db.recebimentos.docs) == 1
+    assert len(recebimento_routes.db.estoque_movimentos.docs) == 1
+    assert len(recebimento_routes.db.cq_registros_analise.docs) == 1
 
 
 def test_agendamento_calendario_filtra_coleta_entrega_e_status():

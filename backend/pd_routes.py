@@ -125,6 +125,89 @@ STATUS_LABELS = {
     "REJECTED": "Rejeitado",
 }
 
+CARD_GOVERNANCE_FLAG = "v21_card_governance"
+PD_GOVERNANCE_BLOCKED_STATUSES = {"APPROVED", "COMPLETED"}
+
+
+class GovernanceArchiveRequest(BaseModel):
+    reason: str
+
+
+class GovernanceRestoreRequest(BaseModel):
+    reason: str
+
+
+def _feature_value_enabled(value: Any) -> bool:
+    if value is True:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    return False
+
+
+async def _require_card_governance_feature(tenant_id: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _feature_value_enabled(features.get(CARD_GOVERNANCE_FLAG)):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Governanca de cards em rollout controlado.",
+                "feature": CARD_GOVERNANCE_FLAG,
+            },
+        )
+
+
+def _require_governance_reason(reason: str) -> str:
+    value = clean_text(reason)
+    if len(value) < 5:
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio com pelo menos 5 caracteres.")
+    return value
+
+
+def _governance_archive_fields(user: Dict[str, Any], reason: str, now: str) -> Dict[str, Any]:
+    return {
+        "is_deleted": True,
+        "deleted_at": now,
+        "deleted_by": user.get("id"),
+        "deleted_by_name": user.get("name", ""),
+        "delete_reason": reason,
+        "updated_at": now,
+    }
+
+
+def _governance_restore_fields(user: Dict[str, Any], reason: str, now: str) -> Dict[str, Any]:
+    return {
+        "is_deleted": False,
+        "restored_at": now,
+        "restored_by": user.get("id"),
+        "restored_by_name": user.get("name", ""),
+        "restore_reason": reason,
+        "updated_at": now,
+    }
+
+
+async def _audit_card_governance(
+    *,
+    tenant_id: str,
+    user: Dict[str, Any],
+    action: str,
+    entity_type: str,
+    entity_id: str,
+    reason: str,
+) -> None:
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action=action,
+        entity_type=entity_type,
+        entity_id=entity_id,
+        after={"reason": reason},
+        metadata={"feature": CARD_GOVERNANCE_FLAG},
+    )
+
+
 PD_STATUS_TO_KANBAN = {
     "OPEN": "solicitado",
     "IN_PROGRESS": "em_desenvolvimento",
@@ -1501,6 +1584,73 @@ async def update_pd_request(req_id: str, data: PDRequestUpdate, request: Request
             source_changes=source_changes,
         )
     return pd_req
+
+
+@pd_router.post("/requests/{req_id}/archive")
+async def archive_pd_request(req_id: str, data: GovernanceArchiveRequest, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao nao encontrada")
+    if pd_req.get("is_deleted"):
+        return pd_req
+    if pd_req.get("status") in PD_GOVERNANCE_BLOCKED_STATUSES:
+        raise HTTPException(status_code=409, detail="Solicitacao P&D aprovada/concluida nao pode ser arquivada.")
+
+    now = now_iso()
+    fields = _governance_archive_fields(user, reason, now)
+    await db.pd_requests.update_one({"id": req_id, "tenant_id": tenant_id}, {"$set": fields})
+    if hasattr(db, "pd_cards"):
+        await db.pd_cards.update_many(
+            {"pd_request_id": req_id, "tenant_id": tenant_id},
+            {"$set": fields},
+        )
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="pd_request_archived",
+        entity_type="pd_request",
+        entity_id=req_id,
+        reason=reason,
+    )
+    return {**pd_req, **fields}
+
+
+@pd_router.post("/requests/{req_id}/restore")
+async def restore_pd_request(req_id: str, data: GovernanceRestoreRequest, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE | ADMIN_ONLY)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao nao encontrada")
+    if not pd_req.get("is_deleted"):
+        return pd_req
+
+    now = now_iso()
+    fields = _governance_restore_fields(user, reason, now)
+    await db.pd_requests.update_one({"id": req_id, "tenant_id": tenant_id}, {"$set": fields})
+    if hasattr(db, "pd_cards"):
+        await db.pd_cards.update_many(
+            {"pd_request_id": req_id, "tenant_id": tenant_id},
+            {"$set": fields},
+        )
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="pd_request_restored",
+        entity_type="pd_request",
+        entity_id=req_id,
+        reason=reason,
+    )
+    return {**pd_req, **fields}
+
 
 @pd_router.delete("/requests/{req_id}")
 async def delete_pd_request(req_id: str, request: Request):

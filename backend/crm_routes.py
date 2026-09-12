@@ -655,6 +655,60 @@ class OrderAdd(BaseModel):
     valor_total: float
     observacao: str = ""
 
+COMMERCIAL_PACKAGE_FLAG = "v21_commercial_package"
+COMMERCIAL_PACKAGE_CONDICAO_RE = r"^\d{3}/\d{3}/\d{3}$"
+
+
+class CommercialPackageFreight(BaseModel):
+    tipo: str = "FOB"
+    valor: Optional[float] = None
+    endereco: str = ""
+    cidade_uf: str = ""
+    prazo_coleta: str = ""
+
+
+class CommercialPackageTerms(BaseModel):
+    percentual_nf: Optional[float] = None
+    condicao_pagamento: str = ""
+    prazo_entrega_dias: Optional[int] = None
+    preco_unitario: Optional[float] = None
+    preco_unitario_currency: str = "BRL"
+    validade_ate: Optional[str] = None
+    observacoes: str = ""
+
+
+class CommercialPackageAttachment(BaseModel):
+    id: Optional[str] = None
+    original_filename: str = ""
+    name: str = ""
+    url: str = ""
+    content_type: str = ""
+    source: str = "commercial_package"
+
+
+class CommercialPackageCreate(BaseModel):
+    idempotency_key: Optional[str] = None
+    pedido_cliente_ref: Optional[str] = None
+    frete: CommercialPackageFreight = Field(default_factory=CommercialPackageFreight)
+    condicoes: CommercialPackageTerms = Field(default_factory=CommercialPackageTerms)
+    anexos: List[CommercialPackageAttachment] = Field(default_factory=list)
+    observacoes: str = ""
+
+
+CARD_GOVERNANCE_FLAG = "v21_card_governance"
+PROJECT_GOVERNANCE_BLOCKED_STAGES = {"pedido_aprovado"}
+SAMPLE_GOVERNANCE_BLOCKED_STAGES = {"aprovada"}
+VARIATION_GOVERNANCE_BLOCKED_STATUSES = {"aprovada"}
+
+
+class GovernanceArchiveRequest(BaseModel):
+    reason: str
+
+
+class GovernanceRestoreRequest(BaseModel):
+    reason: str
+
+
 class AlertResolve(BaseModel):
     comment: str = ""
 
@@ -4114,6 +4168,539 @@ async def resultado_cliente(
         "pd_card_notificado": pd_card_notificado,
         "sku_created": sku_created,
     }
+
+
+def _commercial_feature_value_enabled(value: Any) -> bool:
+    if value is True:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    return False
+
+
+async def _require_commercial_package_feature(tenant_id: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _commercial_feature_value_enabled(features.get(COMMERCIAL_PACKAGE_FLAG)):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Pacote comercial em rollout controlado.",
+                "feature": COMMERCIAL_PACKAGE_FLAG,
+            },
+        )
+
+
+def _validate_commercial_package_input(data: CommercialPackageCreate) -> None:
+    frete_valor = data.frete.valor
+    if frete_valor is not None and frete_valor < 0:
+        raise HTTPException(status_code=422, detail="frete.valor nao pode ser negativo")
+
+    percentual_nf = data.condicoes.percentual_nf
+    if percentual_nf is not None and not (0 <= percentual_nf <= 100):
+        raise HTTPException(status_code=422, detail="percentual_nf deve estar entre 0 e 100")
+
+    prazo_entrega = data.condicoes.prazo_entrega_dias
+    if prazo_entrega is not None and prazo_entrega < 0:
+        raise HTTPException(status_code=422, detail="prazo_entrega_dias nao pode ser negativo")
+
+    preco = data.condicoes.preco_unitario
+    if preco is not None and preco < 0:
+        raise HTTPException(status_code=422, detail="preco_unitario nao pode ser negativo")
+
+    condicao = (data.condicoes.condicao_pagamento or "").strip()
+    if condicao and not re.match(COMMERCIAL_PACKAGE_CONDICAO_RE, condicao):
+        raise HTTPException(status_code=422, detail="condicao_pagamento deve ter formato NNN/NNN/NNN")
+
+    if len(data.anexos or []) > 20:
+        raise HTTPException(status_code=422, detail="Pacote comercial aceita no maximo 20 anexos por snapshot")
+
+
+def _sanitize_package_attachment(item: CommercialPackageAttachment) -> Dict[str, Any]:
+    original = clean_text(item.original_filename or item.name or "anexo")
+    name = clean_text(item.name or original)
+    return {
+        "id": clean_text(item.id) or _new_id(),
+        "original_filename": original,
+        "name": name,
+        "url": clean_text(item.url),
+        "content_type": clean_text(item.content_type),
+        "source": clean_text(item.source) or "commercial_package",
+    }
+
+
+async def _next_commercial_package_version(tenant_id: str, sample_id: str, variacao_id: str) -> int:
+    cursor = db.commercial_packages.find(
+        {"tenant_id": tenant_id, "sample_id": sample_id, "variacao_id": variacao_id},
+        {"_id": 0, "package_version": 1},
+    ).sort("package_version", -1)
+    latest = await cursor.to_list(1)
+    if not latest:
+        return 1
+    try:
+        return int(latest[0].get("package_version") or 0) + 1
+    except (TypeError, ValueError):
+        return 1
+
+
+def _commercial_package_snapshot(
+    *,
+    sample: Dict[str, Any],
+    variacao: Dict[str, Any],
+    project: Optional[Dict[str, Any]],
+    client: Optional[Dict[str, Any]],
+    sku: Optional[Dict[str, Any]],
+    data: CommercialPackageCreate,
+) -> Dict[str, Any]:
+    return {
+        "sample": {
+            "id": sample.get("id"),
+            "numero_amostra": sample.get("numero_amostra"),
+            "nome_produto": sample.get("nome_produto") or sample.get("nome_amostra"),
+            "categoria": sample.get("categoria"),
+            "projeto_id": sample.get("projeto_id"),
+            "projeto_nome": sample.get("projeto_nome"),
+            "cliente_id": sample.get("cliente_id"),
+            "cliente_nome": sample.get("cliente_nome"),
+        },
+        "variacao": {
+            "id": variacao.get("id"),
+            "codigo": variacao.get("codigo"),
+            "descricao_aplicacao": variacao.get("descricao_aplicacao"),
+            "status": variacao.get("status"),
+            "resultado": variacao.get("resultado"),
+            "aprovacao_externa": variacao.get("aprovacao_externa"),
+            "aprovado_cliente_em": variacao.get("aprovado_cliente_em"),
+            "sku_id": variacao.get("sku_id"),
+        },
+        "project": {
+            "id": (project or {}).get("id"),
+            "nome_projeto": (project or {}).get("nome_projeto"),
+            "stage": (project or {}).get("stage"),
+            "volume_estimado_pedido": (project or {}).get("volume_estimado_pedido"),
+            "faixa_preco_venda": (project or {}).get("faixa_preco_venda"),
+        },
+        "client": {
+            "id": (client or {}).get("id"),
+            "nome_empresa": (client or {}).get("nome_empresa"),
+            "cnpj": (client or {}).get("cnpj"),
+            "condicao_pagamento": (client or {}).get("condicao_pagamento"),
+            "moq_negociado": (client or {}).get("moq_negociado"),
+        },
+        "sku": {
+            "id": (sku or {}).get("id"),
+            "codigo_interno": (sku or {}).get("codigo_interno"),
+            "nome_produto": (sku or {}).get("nome_produto"),
+            "preco_unitario": (sku or {}).get("preco_unitario"),
+            "preco_unitario_currency": (sku or {}).get("preco_unitario_currency"),
+            "moq": (sku or {}).get("moq"),
+        },
+        "frete": data.frete.model_dump(),
+        "condicoes": data.condicoes.model_dump(),
+        "pedido_cliente_ref": data.pedido_cliente_ref or "",
+        "observacoes": data.observacoes or "",
+    }
+
+
+@crm_router.get("/samples/{sample_id}/variacoes/{variacao_id}/commercial-packages")
+async def list_commercial_packages_for_variacao(sample_id: str, variacao_id: str, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, COMERCIAL_FULL | PD_READ)
+    await _require_commercial_package_feature(user["tenant_id"])
+    docs = await db.commercial_packages.find(
+        {"tenant_id": user["tenant_id"], "sample_id": sample_id, "variacao_id": variacao_id},
+        {"_id": 0},
+    ).sort("package_version", -1).to_list(100)
+    return {"packages": docs, "count": len(docs)}
+
+
+@crm_router.post("/samples/{sample_id}/variacoes/{variacao_id}/commercial-packages")
+async def create_commercial_package_for_variacao(
+    sample_id: str,
+    variacao_id: str,
+    data: CommercialPackageCreate,
+    request: Request,
+):
+    user = await _get_current_user(request)
+    require_roles(user, COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_commercial_package_feature(tenant_id)
+    _validate_commercial_package_input(data)
+
+    idempotency_key = clean_text(data.idempotency_key)
+    if idempotency_key:
+        existing = await db.commercial_packages.find_one(
+            {
+                "tenant_id": tenant_id,
+                "sample_id": sample_id,
+                "variacao_id": variacao_id,
+                "idempotency_key": idempotency_key,
+            },
+            {"_id": 0},
+        )
+        if existing:
+            existing["idempotent_replay"] = True
+            return existing
+
+    sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not sample:
+        raise HTTPException(status_code=404, detail="Amostra nao encontrada")
+    variacao = next((v for v in sample.get("variacoes", []) if v.get("id") == variacao_id), None)
+    if not variacao:
+        raise HTTPException(status_code=404, detail="Variacao nao encontrada")
+    if variacao.get("status") != "aprovada" and variacao.get("resultado") != "aprovada" and not variacao.get("aprovacao_externa"):
+        raise HTTPException(
+            status_code=409,
+            detail="Pacote comercial so pode ser criado para variacao aprovada pelo cliente.",
+        )
+
+    project = None
+    if sample.get("projeto_id"):
+        project = await db.crm_projects.find_one({"id": sample.get("projeto_id"), "tenant_id": tenant_id}, {"_id": 0})
+    client = None
+    if sample.get("cliente_id"):
+        client = await db.crm_clients.find_one({"id": sample.get("cliente_id"), "tenant_id": tenant_id}, {"_id": 0})
+    sku = None
+    sku_id = variacao.get("sku_id")
+    if sku_id and hasattr(db, "skus"):
+        sku = await db.skus.find_one({"id": sku_id, "tenant_id": tenant_id}, {"_id": 0})
+
+    now = _now_iso()
+    package_id = _new_id()
+    package_version = await _next_commercial_package_version(tenant_id, sample_id, variacao_id)
+    attachments = [_sanitize_package_attachment(item) for item in (data.anexos or [])]
+    package = {
+        "id": package_id,
+        "tenant_id": tenant_id,
+        "sample_id": sample_id,
+        "variacao_id": variacao_id,
+        "sku_id": sku_id,
+        "projeto_id": sample.get("projeto_id"),
+        "cliente_id": sample.get("cliente_id"),
+        "status": "ativo",
+        "source": "aprovacao_amostra",
+        "feature": COMMERCIAL_PACKAGE_FLAG,
+        "package_version": package_version,
+        "pedido_cliente_ref": data.pedido_cliente_ref or "",
+        "frete": data.frete.model_dump(),
+        "condicoes": data.condicoes.model_dump(),
+        "anexos": attachments,
+        "snapshot": _commercial_package_snapshot(
+            sample=sample,
+            variacao=variacao,
+            project=project,
+            client=client,
+            sku=sku,
+            data=data,
+        ),
+        "observacoes": data.observacoes or "",
+        "created_by": user.get("id"),
+        "created_by_name": user.get("name", ""),
+        "created_at": now,
+        "updated_at": now,
+    }
+    if idempotency_key:
+        package["idempotency_key"] = idempotency_key
+    await db.commercial_packages.insert_one(package)
+
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="commercial_package_created",
+        entity_type="commercial_package",
+        entity_id=package_id,
+        after={
+            "sample_id": sample_id,
+            "variacao_id": variacao_id,
+            "package_version": package_version,
+        },
+        metadata={
+            "feature": COMMERCIAL_PACKAGE_FLAG,
+            "source": "aprovacao_amostra",
+            "sku_id": sku_id,
+        },
+    )
+
+    package.pop("_id", None)
+    return package
+
+
+async def _require_card_governance_feature(tenant_id: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _commercial_feature_value_enabled(features.get(CARD_GOVERNANCE_FLAG)):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Governanca de cards em rollout controlado.",
+                "feature": CARD_GOVERNANCE_FLAG,
+            },
+        )
+
+
+def _require_governance_reason(reason: str) -> str:
+    value = clean_text(reason)
+    if len(value) < 5:
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio com pelo menos 5 caracteres.")
+    return value
+
+
+def _governance_archive_fields(user: Dict[str, Any], reason: str, now: str) -> Dict[str, Any]:
+    return {
+        "is_deleted": True,
+        "deleted_at": now,
+        "deleted_by": user.get("id"),
+        "deleted_by_name": user.get("name", ""),
+        "delete_reason": reason,
+        "updated_at": now,
+    }
+
+
+def _governance_restore_fields(user: Dict[str, Any], reason: str, now: str) -> Dict[str, Any]:
+    return {
+        "is_deleted": False,
+        "restored_at": now,
+        "restored_by": user.get("id"),
+        "restored_by_name": user.get("name", ""),
+        "restore_reason": reason,
+        "updated_at": now,
+    }
+
+
+async def _audit_card_governance(
+    *,
+    tenant_id: str,
+    user: Dict[str, Any],
+    action: str,
+    entity_type: str,
+    entity_id: str,
+    reason: str,
+) -> None:
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action=action,
+        entity_type=entity_type,
+        entity_id=entity_id,
+        after={"reason": reason},
+        metadata={"feature": CARD_GOVERNANCE_FLAG},
+    )
+
+
+def _variation_is_governance_sensitive(variacao: Dict[str, Any]) -> bool:
+    status = clean_text(variacao.get("status")).lower()
+    resultado = clean_text(variacao.get("resultado")).lower()
+    return bool(
+        variacao.get("sku_id")
+        or variacao.get("aprovacao_externa")
+        or status in VARIATION_GOVERNANCE_BLOCKED_STATUSES
+        or resultado in VARIATION_GOVERNANCE_BLOCKED_STATUSES
+    )
+
+
+async def _project_has_sensitive_children(project_id: str, tenant_id: str) -> bool:
+    sku_count = await db.skus.count_documents({"projeto_id": project_id, "tenant_id": tenant_id}) if hasattr(db, "skus") else 0
+    if sku_count:
+        return True
+    samples = await db.crm_samples.find(
+        {"projeto_id": project_id, "tenant_id": tenant_id},
+        {"_id": 0, "stage": 1, "variacoes": 1},
+    ).to_list(1000)
+    for sample in samples:
+        if clean_text(sample.get("stage")).lower() in SAMPLE_GOVERNANCE_BLOCKED_STAGES:
+            return True
+        if any(_variation_is_governance_sensitive(v) for v in (sample.get("variacoes") or [])):
+            return True
+    return False
+
+
+@crm_router.post("/projects/{project_id}/archive")
+async def archive_project(project_id: str, data: GovernanceArchiveRequest, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, ADMIN_ONLY | {"sales_ops"})
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    project = await db.crm_projects.find_one({"id": project_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Projeto nao encontrado")
+    if project.get("is_deleted"):
+        return project
+    if clean_text(project.get("stage")).lower() in PROJECT_GOVERNANCE_BLOCKED_STAGES:
+        raise HTTPException(status_code=409, detail="Projeto em status sensivel nao pode ser arquivado.")
+    if await _project_has_sensitive_children(project_id, tenant_id):
+        raise HTTPException(status_code=409, detail="Projeto com SKU/amostra aprovada nao pode ser arquivado.")
+
+    now = _now_iso()
+    fields = _governance_archive_fields(user, reason, now)
+    await db.crm_projects.update_one({"id": project_id, "tenant_id": tenant_id}, {"$set": fields})
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="crm_project_archived",
+        entity_type="crm_project",
+        entity_id=project_id,
+        reason=reason,
+    )
+    return {**project, **fields}
+
+
+@crm_router.post("/projects/{project_id}/restore")
+async def restore_project(project_id: str, data: GovernanceRestoreRequest, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, ADMIN_ONLY | {"sales_ops"})
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    project = await db.crm_projects.find_one({"id": project_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not project:
+        raise HTTPException(status_code=404, detail="Projeto nao encontrado")
+    if not project.get("is_deleted"):
+        return project
+    now = _now_iso()
+    fields = _governance_restore_fields(user, reason, now)
+    await db.crm_projects.update_one({"id": project_id, "tenant_id": tenant_id}, {"$set": fields})
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="crm_project_restored",
+        entity_type="crm_project",
+        entity_id=project_id,
+        reason=reason,
+    )
+    return {**project, **fields}
+
+
+@crm_router.post("/samples/{sample_id}/archive")
+async def archive_sample(sample_id: str, data: GovernanceArchiveRequest, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, COMERCIAL_FULL | PD_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not sample:
+        raise HTTPException(status_code=404, detail="Amostra nao encontrada")
+    if sample.get("is_deleted"):
+        return sample
+    if clean_text(sample.get("stage")).lower() in SAMPLE_GOVERNANCE_BLOCKED_STAGES:
+        raise HTTPException(status_code=409, detail="Amostra em status sensivel nao pode ser arquivada.")
+    if any(_variation_is_governance_sensitive(v) for v in (sample.get("variacoes") or [])):
+        raise HTTPException(status_code=409, detail="Amostra com variacao aprovada/SKU nao pode ser arquivada.")
+
+    now = _now_iso()
+    fields = _governance_archive_fields(user, reason, now)
+    await db.crm_samples.update_one({"id": sample_id, "tenant_id": tenant_id}, {"$set": fields})
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="crm_sample_archived",
+        entity_type="crm_sample",
+        entity_id=sample_id,
+        reason=reason,
+    )
+    return {**sample, **fields}
+
+
+@crm_router.post("/samples/{sample_id}/restore")
+async def restore_sample(sample_id: str, data: GovernanceRestoreRequest, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, COMERCIAL_FULL | PD_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not sample:
+        raise HTTPException(status_code=404, detail="Amostra nao encontrada")
+    if not sample.get("is_deleted"):
+        return sample
+    now = _now_iso()
+    fields = _governance_restore_fields(user, reason, now)
+    await db.crm_samples.update_one({"id": sample_id, "tenant_id": tenant_id}, {"$set": fields})
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="crm_sample_restored",
+        entity_type="crm_sample",
+        entity_id=sample_id,
+        reason=reason,
+    )
+    return {**sample, **fields}
+
+
+@crm_router.post("/samples/{sample_id}/variacoes/{variacao_id}/archive")
+async def archive_variacao(sample_id: str, variacao_id: str, data: GovernanceArchiveRequest, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, COMERCIAL_FULL | PD_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not sample:
+        raise HTTPException(status_code=404, detail="Amostra nao encontrada")
+    variacoes = sample.get("variacoes") or []
+    variacao = next((v for v in variacoes if v.get("id") == variacao_id), None)
+    if not variacao:
+        raise HTTPException(status_code=404, detail="Variacao nao encontrada")
+    if variacao.get("is_deleted"):
+        return variacao
+    if _variation_is_governance_sensitive(variacao):
+        raise HTTPException(status_code=409, detail="Variacao aprovada ou com SKU nao pode ser arquivada.")
+    active_count = sum(1 for item in variacoes if not item.get("is_deleted"))
+    if active_count <= 1:
+        raise HTTPException(status_code=409, detail="Nao e possivel arquivar a ultima variacao ativa.")
+
+    now = _now_iso()
+    fields = _governance_archive_fields(user, reason, now)
+    update_fields = {f"variacoes.$.{key}": value for key, value in fields.items()}
+    await db.crm_samples.update_one(
+        {"id": sample_id, "tenant_id": tenant_id, "variacoes.id": variacao_id},
+        {"$set": update_fields},
+    )
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="crm_variacao_archived",
+        entity_type="crm_variacao",
+        entity_id=variacao_id,
+        reason=reason,
+    )
+    return {**variacao, **fields}
+
+
+@crm_router.post("/samples/{sample_id}/variacoes/{variacao_id}/restore")
+async def restore_variacao(sample_id: str, variacao_id: str, data: GovernanceRestoreRequest, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, COMERCIAL_FULL | PD_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    sample = await db.crm_samples.find_one({"id": sample_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not sample:
+        raise HTTPException(status_code=404, detail="Amostra nao encontrada")
+    variacao = next((v for v in (sample.get("variacoes") or []) if v.get("id") == variacao_id), None)
+    if not variacao:
+        raise HTTPException(status_code=404, detail="Variacao nao encontrada")
+    if not variacao.get("is_deleted"):
+        return variacao
+    now = _now_iso()
+    fields = _governance_restore_fields(user, reason, now)
+    update_fields = {f"variacoes.$.{key}": value for key, value in fields.items()}
+    await db.crm_samples.update_one(
+        {"id": sample_id, "tenant_id": tenant_id, "variacoes.id": variacao_id},
+        {"$set": update_fields},
+    )
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="crm_variacao_restored",
+        entity_type="crm_variacao",
+        entity_id=variacao_id,
+        reason=reason,
+    )
+    return {**variacao, **fields}
 
 # ======================================================================
 #  SAMPLE / VARIAÇÃO — DELETE & ADD VARIAÇÕES (pós-envio)

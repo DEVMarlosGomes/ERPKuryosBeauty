@@ -63,6 +63,7 @@ const LogisticaAgendamentosPage = lazy(() => import("@/pages/LogisticaAgendament
 const PCPDailyDashboard = lazy(() => import("@/pages/PCPDailyDashboard"));
 const PCPClonePage = lazy(() => import("@/pages/PCPClonePage"));
 const PCPProductionPage = lazy(() => import("@/pages/PCPProductionPage"));
+const PCPQuantityPlanningPage = lazy(() => import("@/pages/PCPQuantityPlanningPage"));
 const ContratosPage = lazy(() => import("@/pages/ContratosPage"));
 const CadastrosPage = lazy(() => import("@/pages/CadastrosPage"));
 
@@ -152,6 +153,7 @@ function AppLayout() {
                         <Route path="/ops/:id" element={<OPDetail />} />
                         <Route path="/pcp/dashboard" element={<PCPDailyDashboard />} />
                         <Route path="/pcp/historico" element={<PCPClonePage mode="historico" />} />
+                        <Route path="/pcp/planejamento/quantidades" element={<PCPQuantityPlanningPage />} />
                         <Route path="/pcp/planejamento" element={<PCPClonePage mode="planejamento" />} />
                         <Route path="/pcp/horizonte" element={<PCPClonePage mode="horizonte" />} />
                         <Route path="/pcp/controle-ops" element={<PCPClonePage mode="controle" />} />

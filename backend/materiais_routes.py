@@ -21,7 +21,7 @@ do fornecedor (R27/R45-display).
 
 import logging
 import re
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
@@ -45,6 +45,8 @@ TIPO2_CATALOG = {
     "RT": ("Rótulo / Etiqueta", ["Rótulo", "Etiqueta", "Outro"]),
 }
 # FR is managed separately in fragrancias_routes.py
+MATERIAL_TAX_DEFAULTS_FLAG = "material_tax_defaults_v2"
+ORIGENS_FISCAIS = {"0", "1", "2", "3", "4", "5", "6", "7", "8"}
 
 
 def init_materiais(database, get_current_user_fn, new_id_fn, now_iso_fn):
@@ -63,6 +65,7 @@ async def create_materiais_indexes():
     await db.materiais.create_index(
         [("tenant_id", 1), ("fornecedores.codigo_fornecedor", 1)]
     )
+    await db.materiais.create_index([("tenant_id", 1), ("ncm", 1)])
     await db.graneis.create_index([("tenant_id", 1), ("codigo_interno", 1)], unique=True)
     await db.graneis.create_index([("tenant_id", 1), ("produto_pai_id", 1)])
     await db.graneis.create_index([("tenant_id", 1), ("status", 1)])
@@ -95,6 +98,65 @@ def _validate_tipo2(tipo2: str, allow_new: bool = False) -> str:
     return t
 
 
+async def _material_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return bool(((settings or {}).get("features") or {}).get(flag))
+
+
+async def _require_material_feature(tenant_id: str, flag: str) -> None:
+    if await _material_feature_enabled(tenant_id, flag):
+        return
+    raise HTTPException(
+        status_code=403,
+        detail={
+            "message": "Funcionalidade de cadastro em rollout controlado.",
+            "feature": flag,
+        },
+    )
+
+
+def _normalize_digits(value: Optional[str]) -> str:
+    return re.sub(r"\D+", "", str(value or ""))
+
+
+def _fiscal_defaults_payload(data: Optional["MaterialFiscalDefaults"]) -> Dict[str, Any]:
+    if not data:
+        return {}
+
+    payload: Dict[str, Any] = {"material_tax_defaults_v2": True}
+    ncm = _normalize_digits(data.ncm)
+    if ncm:
+        if len(ncm) != 8:
+            raise HTTPException(status_code=422, detail="NCM deve ter 8 digitos")
+        payload["ncm"] = ncm
+
+    cest = _normalize_digits(data.cest)
+    if cest:
+        if len(cest) != 7:
+            raise HTTPException(status_code=422, detail="CEST deve ter 7 digitos")
+        payload["cest"] = cest
+
+    for field in ("ipi_default", "icms_st_default"):
+        value = getattr(data, field)
+        if value is None:
+            continue
+        if value < 0 or value > 100:
+            raise HTTPException(status_code=422, detail=f"{field} deve estar entre 0 e 100")
+        payload[field] = float(value)
+
+    origem = str(data.origem_fiscal or "").strip()
+    if origem:
+        if origem not in ORIGENS_FISCAIS:
+            raise HTTPException(status_code=422, detail=f"origem_fiscal invalida. Use: {sorted(ORIGENS_FISCAIS)}")
+        payload["origem_fiscal"] = origem
+
+    if data.observacoes_fiscais:
+        payload["observacoes_fiscais"] = data.observacoes_fiscais.strip()
+    return payload
+
+
 # ======================================================================
 #   SCHEMAS
 # ======================================================================
@@ -112,6 +174,15 @@ class FornecedorMaterial(BaseModel):
     observacoes: str = ""
 
 
+class MaterialFiscalDefaults(BaseModel):
+    ncm: Optional[str] = None
+    cest: Optional[str] = None
+    ipi_default: Optional[float] = None
+    icms_st_default: Optional[float] = None
+    origem_fiscal: Optional[str] = None
+    observacoes_fiscais: str = ""
+
+
 class MaterialCreate(BaseModel):
     tipo2: str                      # MP, EP, ES, RT
     subtipo: str                    # campo, nunca compõe o código
@@ -123,6 +194,7 @@ class MaterialCreate(BaseModel):
     # Atributos opcionais por subtipo (campos, não código)
     atributos: dict = {}
     fornecedores: List[FornecedorMaterial] = []
+    fiscal_defaults: Optional[MaterialFiscalDefaults] = None
 
 
 class MaterialUpdate(BaseModel):
@@ -133,6 +205,7 @@ class MaterialUpdate(BaseModel):
     unidade_compra: Optional[str] = None
     fator_conversao: Optional[float] = None
     atributos: Optional[dict] = None
+    fiscal_defaults: Optional[MaterialFiscalDefaults] = None
     status: Optional[str] = None
 
 
@@ -265,6 +338,10 @@ async def create_material(data: MaterialCreate, request: Request):
     fornecedores = [f.model_dump() for f in data.fornecedores]
     for f in fornecedores:
         f["adicionado_em"] = now
+    fiscal_defaults = {}
+    if data.fiscal_defaults:
+        await _require_material_feature(user["tenant_id"], MATERIAL_TAX_DEFAULTS_FLAG)
+        fiscal_defaults = _fiscal_defaults_payload(data.fiscal_defaults)
 
     doc = {
         "id": _new_id(),
@@ -280,6 +357,7 @@ async def create_material(data: MaterialCreate, request: Request):
         "atributos": data.atributos,
         "fornecedores": fornecedores,
         "status": "ativo",
+        **fiscal_defaults,
         "created_by": user["id"],
         "created_by_name": user.get("name", ""),
         "created_at": now,
@@ -307,6 +385,9 @@ async def update_material(codigo_interno: str, data: MaterialUpdate, request: Re
         val = getattr(data, field)
         if val is not None:
             updates[field] = val
+    if data.fiscal_defaults is not None:
+        await _require_material_feature(user["tenant_id"], MATERIAL_TAX_DEFAULTS_FLAG)
+        updates.update(_fiscal_defaults_payload(data.fiscal_defaults))
 
     await db.materiais.update_one(
         {"tenant_id": user["tenant_id"], "codigo_interno": codigo_interno.upper()},
@@ -316,6 +397,32 @@ async def update_material(codigo_interno: str, data: MaterialUpdate, request: Re
         {"tenant_id": user["tenant_id"], "codigo_interno": codigo_interno.upper()}, {"_id": 0}
     )
     return updated
+
+
+@materiais_router.patch("/materiais/{codigo_interno}/fiscal-defaults")
+async def update_material_fiscal_defaults(codigo_interno: str, data: MaterialFiscalDefaults, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, PD_FULL)
+    await _require_material_feature(user["tenant_id"], MATERIAL_TAX_DEFAULTS_FLAG)
+
+    existing = await db.materiais.find_one(
+        {"tenant_id": user["tenant_id"], "codigo_interno": codigo_interno.upper()}, {"_id": 0}
+    )
+    if not existing:
+        raise HTTPException(status_code=404, detail=f"Material {codigo_interno} nao encontrado")
+
+    updates = _fiscal_defaults_payload(data)
+    updates["updated_at"] = _now_iso()
+    updates["fiscal_updated_by"] = user["id"]
+    updates["fiscal_updated_by_name"] = user.get("name", "")
+    updates["fiscal_updated_at"] = updates["updated_at"]
+    await db.materiais.update_one(
+        {"tenant_id": user["tenant_id"], "codigo_interno": codigo_interno.upper()},
+        {"$set": updates},
+    )
+    return await db.materiais.find_one(
+        {"tenant_id": user["tenant_id"], "codigo_interno": codigo_interno.upper()}, {"_id": 0}
+    )
 
 
 @materiais_router.post("/materiais/{codigo_interno}/fornecedores")

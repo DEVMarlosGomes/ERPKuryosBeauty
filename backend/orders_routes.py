@@ -36,14 +36,18 @@ db = None
 get_current_user = None
 new_id_func = None
 now_iso_func = None
+put_object_func = None
+get_object_func = None
 
 
-def init_orders(database, auth_func, id_func, iso_func):
-    global db, get_current_user, new_id_func, now_iso_func
+def init_orders(database, auth_func, id_func, iso_func, storage_put_func=None, storage_get_func=None):
+    global db, get_current_user, new_id_func, now_iso_func, put_object_func, get_object_func
     db = database
     get_current_user = auth_func
     new_id_func = id_func
     now_iso_func = iso_func
+    put_object_func = storage_put_func
+    get_object_func = storage_get_func
 
 
 def new_id():
@@ -156,6 +160,8 @@ CATEGORIAS_INSUMO = [
 
 ORDER_ATTACHMENT_EXTENSIONS = {"pdf", "jpg", "jpeg", "png", "doc", "docx", "xls", "xlsx"}
 ORDER_ATTACHMENT_MAX_BYTES = 10 * 1024 * 1024
+UNIFIED_ATTACHMENTS_FLAG = "unified_attachments_v2"
+APP_STORAGE_PREFIX = "kuryos-crm"
 
 # Statuses that make the order immutable (RN-PI-05)
 STATUSES_IMUTAVEL = {"confirmado", "em_producao", "concluido"}
@@ -172,6 +178,7 @@ COMMERCIAL_ORDER_EMAIL = os.environ.get("COMMERCIAL_ORDER_EMAIL", "comercial@kur
 
 # ============ MODELS ============
 class OrderItem(BaseModel):
+    id: Optional[str] = None
     sku_id: Optional[str] = None
     pd_request_id: Optional[str] = None
     pd_concluido: bool = False
@@ -320,6 +327,9 @@ class OPUpdate(BaseModel):
 
 OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"]
 PCP_CONFIRM_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
+PCP_PLANNING_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
+PCP_QUANTITY_PLANNING_FLAG = "pcp_quantity_planning_v2"
+PCP_MATERIAL_PICKING_FLAG = "pcp_material_picking_v2"
 
 
 class OPReworkCreate(BaseModel):
@@ -341,6 +351,57 @@ class ReproduzirInput(BaseModel):
     items_override: List[ItemOverride] = []
     endereco_entrega: Optional[str] = None
     observacoes: Optional[str] = None
+
+
+class PCPAllocationCreate(BaseModel):
+    planned_quantity: float
+    line_id: Optional[str] = None
+    planned_start: Optional[str] = None
+    planned_end: Optional[str] = None
+    priority: int = 0
+    notes: str = ""
+    override_excess: bool = False
+    override_reason: Optional[str] = None
+
+
+class PCPAllocationOPCreate(BaseModel):
+    quantity: float
+    observacoes: str = ""
+    override_excess: bool = False
+    override_reason: Optional[str] = None
+
+
+class MaterialPickingConfirmLine(BaseModel):
+    saldo_lote_id: str
+    item_id: str
+    quantidade: float
+    lote: str = ""
+    endereco_id: Optional[str] = None
+    endereco_codigo: str = ""
+    validade: Optional[str] = None
+
+
+class MaterialPickingConfirmCreate(BaseModel):
+    idempotency_key: str
+    linhas: List[MaterialPickingConfirmLine] = []
+    observacoes: str = ""
+
+
+class WMSPickingConfirm(MaterialPickingConfirmCreate):
+    pass
+
+
+class WMSPickingConfirmLine(BaseModel):
+    material_key: str = ""
+    saldo_lote_id: str
+    quantidade: float
+    observacoes: str = ""
+
+
+class WMSPickingConfirm(BaseModel):
+    linhas: List[WMSPickingConfirmLine] = []
+    idempotency_key: Optional[str] = None
+    observacoes: str = ""
 
 
 # ============ HELPERS ============
@@ -492,6 +553,132 @@ def _orders_upload_root() -> Path:
 def _safe_attachment_filename(filename: str) -> str:
     name = Path(filename or "anexo").name.strip() or "anexo"
     return re.sub(r"[^A-Za-z0-9._ -]+", "_", name)[:180]
+
+
+async def _order_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return _feature_value_enabled(((settings or {}).get("features") or {}).get(flag))
+
+
+async def _write_order_attachment_storage(
+    *,
+    tenant_id: str,
+    order_id: str,
+    attachment_id: str,
+    ext: str,
+    content_type: str,
+    data: bytes,
+    use_object_storage: bool,
+) -> Dict[str, Any]:
+    if use_object_storage and put_object_func:
+        object_path = f"{APP_STORAGE_PREFIX}/order-attachments/{tenant_id}/{order_id}/{attachment_id}.{ext}"
+        try:
+            result = put_object_func(object_path, data, content_type)
+            return {
+                "storage_backend": "object",
+                "storage_path": result.get("path", object_path),
+                "storage_status": "stored",
+                "storage_error": "",
+                "size": result.get("size", len(data)),
+            }
+        except Exception as exc:
+            logger.warning("Order attachment object storage failed; falling back to local storage: %s", exc)
+
+    stored_name = f"{attachment_id}.{ext}"
+    relative_path = Path(tenant_id) / order_id / stored_name
+    target_path = _orders_upload_root() / relative_path
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_bytes(data)
+    return {
+        "storage_backend": "local",
+        "storage_path": str(relative_path).replace("\\", "/"),
+        "storage_status": "stored",
+        "storage_error": "",
+        "size": len(data),
+    }
+
+
+async def _insert_order_attachment_metadata(
+    *,
+    tenant_id: str,
+    order_id: str,
+    attachment: Dict[str, Any],
+    file_id: Optional[str],
+) -> None:
+    if not hasattr(db, "attachments"):
+        return
+    now = attachment.get("uploaded_at") or now_iso()
+    doc = {
+        "id": attachment["id"],
+        "tenant_id": tenant_id,
+        "entity_type": "order",
+        "entity_id": order_id,
+        "owner_type": "order",
+        "owner_id": order_id,
+        "relation": "order_attachment",
+        "legacy_attachment_id": attachment["id"],
+        "file_id": file_id,
+        "original_filename": attachment.get("original_filename", ""),
+        "content_type": attachment.get("content_type", "application/octet-stream"),
+        "size": attachment.get("size", 0),
+        "storage_backend": attachment.get("storage_backend", "local"),
+        "storage_path": attachment.get("storage_path", ""),
+        "download_url": attachment.get("download_url", ""),
+        "uploaded_by": attachment.get("uploaded_by", ""),
+        "uploaded_by_name": attachment.get("uploaded_by_name", ""),
+        "uploaded_at": now,
+        "created_at": now,
+        "updated_at": now,
+        "is_deleted": False,
+        "source": "orders.attachments",
+        "feature": UNIFIED_ATTACHMENTS_FLAG,
+    }
+    await db.attachments.insert_one(doc)
+
+
+async def _insert_object_file_record(
+    *,
+    tenant_id: str,
+    attachment_id: str,
+    original_filename: str,
+    content_type: str,
+    size: int,
+    storage_path: str,
+    user: Dict[str, Any],
+) -> Optional[str]:
+    if not hasattr(db, "files"):
+        return None
+    file_id = new_id()
+    await db.files.insert_one({
+        "id": file_id,
+        "tenant_id": tenant_id,
+        "storage_path": storage_path,
+        "original_filename": original_filename,
+        "content_type": content_type,
+        "size": size,
+        "uploaded_by": user["id"],
+        "is_deleted": False,
+        "created_at": now_iso(),
+        "source": "orders.attachments",
+        "attachment_id": attachment_id,
+    })
+    return file_id
+
+
+def _legacy_attachment_metadata(order_id: str, item: Dict[str, Any]) -> Dict[str, Any]:
+    doc = dict(item)
+    doc.setdefault("entity_type", "order")
+    doc.setdefault("entity_id", order_id)
+    doc.setdefault("owner_type", doc.get("entity_type", "order"))
+    doc.setdefault("owner_id", doc.get("entity_id", order_id))
+    doc.setdefault("relation", "order_attachment")
+    doc.setdefault("legacy_attachment_id", item.get("id"))
+    doc.setdefault("storage_backend", item.get("storage_backend") or "local")
+    doc.setdefault("source", item.get("source") or "orders.attachments")
+    doc.setdefault("is_deleted", False)
+    return doc
 
 
 async def _assert_no_duplicate_order(
@@ -1001,6 +1188,9 @@ async def _create_order_document(
             if float(it.get("qtd") or 0) <= 0:
                 raise HTTPException(status_code=400, detail=f"Item '{it.get('item')}' precisa ter quantidade maior que zero.")
         items = usable_items
+    for item in items:
+        if not item.get("id"):
+            item["id"] = new_id()
     cadastro_pendente_items = _cadastro_pendente_items(items)
 
     # Build default checklist if not provided
@@ -1465,6 +1655,601 @@ async def _generate_op_number(tenant_id: str) -> str:
     return f"OP-{year}-{count + 1:03d}"
 
 
+def _as_float(value: Any) -> float:
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _feature_value_enabled(value: Any) -> bool:
+    if value is True:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    return False
+
+
+async def _require_feature_flag(tenant_id: str, flag: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _feature_value_enabled(features.get(flag)):
+        raise HTTPException(status_code=403, detail=f"Feature flag desligada: {flag}")
+
+
+def _ensure_item_ids_in_memory(items: List[Dict[str, Any]]) -> bool:
+    changed = False
+    used = {str(item.get("id")) for item in items if item.get("id")}
+    for idx, item in enumerate(items):
+        if item.get("id"):
+            continue
+        candidate = f"item-{idx + 1}"
+        suffix = 1
+        while candidate in used:
+            suffix += 1
+            candidate = f"item-{idx + 1}-{suffix}"
+        item["id"] = candidate
+        used.add(candidate)
+        changed = True
+    return changed
+
+
+async def _ensure_order_item_ids(order: Dict[str, Any], tenant_id: str) -> List[Dict[str, Any]]:
+    items = [dict(item) for item in (order.get("items") or [])]
+    if _ensure_item_ids_in_memory(items):
+        await db.orders.update_one(
+            {"id": order["id"], "tenant_id": tenant_id},
+            {"$set": {"items": items, "updated_at": now_iso()}},
+        )
+        order["items"] = items
+    return items
+
+
+def _find_order_item(items: List[Dict[str, Any]], item_id: str) -> Dict[str, Any]:
+    for item in items:
+        if str(item.get("id") or "") == item_id:
+            return item
+    raise HTTPException(status_code=404, detail="Item do pedido nao encontrado")
+
+
+async def _active_allocations_for_item(tenant_id: str, order_id: str, item_id: str) -> List[Dict[str, Any]]:
+    return await db.pcp_allocations.find(
+        {
+            "tenant_id": tenant_id,
+            "sales_order_id": order_id,
+            "sales_order_item_id": item_id,
+            "status": {"$nin": ["cancelado", "cancelled"]},
+        },
+        {"_id": 0},
+    ).to_list(1000)
+
+
+def _allocation_remaining(allocation: Dict[str, Any]) -> float:
+    planned = _as_float(allocation.get("planned_quantity"))
+    consumed = _as_float(allocation.get("consumed_quantity"))
+    return round(max(planned - consumed, 0.0), 6)
+
+
+def _op_item_from_order_item(item: Dict[str, Any], quantity: float) -> Dict[str, Any]:
+    return {
+        "order_item_id": item.get("id", ""),
+        "sku_id": item.get("sku_id"),
+        "item": item.get("item", ""),
+        "codigo_kuryos": item.get("codigo_kuryos", ""),
+        "qtd_planejada": quantity,
+        "qtd_produzida": 0,
+        "lote": "",
+        "prazo_sla": item.get("prazo_entrega", ""),
+    }
+
+
+async def _insert_production_order_event(
+    *,
+    tenant_id: str,
+    op_id: str,
+    order_id: str,
+    allocation_id: Optional[str],
+    action: str,
+    user: Dict[str, Any],
+    payload: Optional[Dict[str, Any]] = None,
+) -> None:
+    event = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "op_id": op_id,
+        "sales_order_id": order_id,
+        "allocation_id": allocation_id,
+        "action": action,
+        "payload": payload or {},
+        "created_at": now_iso(),
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+    }
+    await db.production_order_events.insert_one(event)
+
+
+def _material_requirement_identity(formula_item: Dict[str, Any]) -> Dict[str, str]:
+    item_id = str(
+        formula_item.get("catalog_id")
+        or formula_item.get("item_id")
+        or formula_item.get("codigo_interno")
+        or formula_item.get("mp_codigo")
+        or ""
+    ).strip()
+    name = str(
+        formula_item.get("ingredient_name")
+        or formula_item.get("nome_material")
+        or formula_item.get("nome_tecnico")
+        or formula_item.get("mp_codigo")
+        or item_id
+        or "Material"
+    ).strip()
+    code = str(
+        formula_item.get("codigo_interno")
+        or formula_item.get("mp_codigo")
+        or formula_item.get("codigo")
+        or item_id
+        or ""
+    ).strip()
+    return {"item_id": item_id or code or name, "codigo": code, "nome": name}
+
+
+def _material_quantity_for_op(formula_item: Dict[str, Any], op_quantity: float) -> float:
+    for key in ("quantidade_total", "quantidade_necessaria"):
+        value = _as_float(formula_item.get(key))
+        if value > 0:
+            return round(value, 6)
+    for key in ("quantidade_por_unidade", "qtd_por_unidade", "quantidade_unitaria"):
+        value = _as_float(formula_item.get(key))
+        if value > 0:
+            return round(value * op_quantity, 6)
+    pct = _as_float(formula_item.get("percentage") or formula_item.get("percentual_mm"))
+    if pct > 0:
+        return round(op_quantity * pct / 100, 6)
+    return 0.0
+
+
+def _op_planned_quantity(op: Dict[str, Any]) -> float:
+    return round(sum(_as_float(item.get("qtd_planejada")) for item in (op.get("items") or [])), 6)
+
+
+def _build_material_requirements_from_op(op: Dict[str, Any]) -> List[Dict[str, Any]]:
+    op_quantity = _op_planned_quantity(op)
+    grouped: Dict[str, Dict[str, Any]] = {}
+    tecnico = op.get("tecnico") or {}
+    for review in tecnico.get("items") or []:
+        for formula_item in review.get("itens_formula") or []:
+            identity = _material_requirement_identity(formula_item)
+            quantity = _material_quantity_for_op(formula_item, op_quantity)
+            if quantity <= 0:
+                continue
+            key = identity["item_id"]
+            current = grouped.setdefault(key, {
+                "item_id": identity["item_id"],
+                "codigo": identity["codigo"],
+                "nome": identity["nome"],
+                "quantidade_necessaria": 0.0,
+                "fonte": "op_tecnico",
+            })
+            current["quantidade_necessaria"] = round(current["quantidade_necessaria"] + quantity, 6)
+    return list(grouped.values())
+
+
+def _stock_quantity(saldo: Dict[str, Any]) -> float:
+    if saldo.get("quantidade_atual") is not None:
+        return _as_float(saldo.get("quantidade_atual"))
+    return _as_float(saldo.get("quantidade"))
+
+
+def _stock_is_pickable(saldo: Dict[str, Any]) -> bool:
+    if _stock_quantity(saldo) <= 0:
+        return False
+    status = str(saldo.get("status") or "").strip().lower()
+    posicao_cq = str(saldo.get("posicao_cq") or saldo.get("cq_status") or "").strip().lower()
+    blocked = {"quarentena", "reprovado", "bloqueado", "segregado", "inativo"}
+    return status not in blocked and posicao_cq not in blocked
+
+
+def _validity_sort_key(saldo: Dict[str, Any]) -> str:
+    return str(saldo.get("validade") or saldo.get("data_validade") or "9999-99-99")
+
+
+async def _suggest_fefo_for_requirement(tenant_id: str, requirement: Dict[str, Any]) -> Dict[str, Any]:
+    needed = _as_float(requirement.get("quantidade_necessaria"))
+    saldos = await db.estoque_saldos_lote.find(
+        {"tenant_id": tenant_id, "item_id": requirement["item_id"]},
+        {"_id": 0},
+    ).sort("validade", 1).to_list(1000)
+    saldos = [saldo for saldo in saldos if _stock_is_pickable(saldo)]
+    saldos.sort(key=_validity_sort_key)
+
+    remaining = needed
+    linhas: List[Dict[str, Any]] = []
+    for saldo in saldos:
+        if remaining <= 0:
+            break
+        available = _stock_quantity(saldo)
+        take = round(min(available, remaining), 6)
+        if take <= 0:
+            continue
+        linhas.append({
+            "saldo_lote_id": saldo.get("id"),
+            "item_id": saldo.get("item_id"),
+            "item_nome": saldo.get("item_nome") or saldo.get("nome") or requirement.get("nome"),
+            "codigo": requirement.get("codigo"),
+            "lote": saldo.get("lote", ""),
+            "endereco_id": saldo.get("endereco_id"),
+            "endereco_codigo": saldo.get("endereco_codigo", ""),
+            "validade": saldo.get("validade"),
+            "quantidade_disponivel": available,
+            "quantidade_sugerida": take,
+            "posicao_cq": saldo.get("posicao_cq") or saldo.get("cq_status") or "",
+            "status": saldo.get("status", ""),
+        })
+        remaining = round(remaining - take, 6)
+
+    return {
+        **requirement,
+        "quantidade_sugerida": round(needed - max(remaining, 0.0), 6),
+        "quantidade_faltante": max(remaining, 0.0),
+        "linhas": linhas,
+    }
+
+
+async def _assert_confirm_lines_pickable(tenant_id: str, lines: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    confirmed: List[Dict[str, Any]] = []
+    totals_by_saldo: Dict[str, float] = {}
+    for line in lines:
+        saldo_id = line["saldo_lote_id"]
+        qty = _as_float(line.get("quantidade"))
+        if qty <= 0:
+            raise HTTPException(status_code=400, detail="Quantidade de separacao deve ser maior que zero.")
+        totals_by_saldo[saldo_id] = round(totals_by_saldo.get(saldo_id, 0.0) + qty, 6)
+
+    for saldo_id, requested in totals_by_saldo.items():
+        saldo = await db.estoque_saldos_lote.find_one({"id": saldo_id, "tenant_id": tenant_id}, {"_id": 0})
+        if not saldo:
+            raise HTTPException(status_code=404, detail=f"Saldo/lote nao encontrado: {saldo_id}")
+        endereco = None
+        if saldo.get("endereco_id") and hasattr(db, "wms_enderecos"):
+            endereco = await db.wms_enderecos.find_one(
+                {"id": saldo.get("endereco_id"), "tenant_id": tenant_id},
+                {"_id": 0},
+            )
+        if not _stock_is_pickable(saldo) or not _saldo_is_pickable(saldo, endereco):
+            raise HTTPException(status_code=422, detail=f"Lote bloqueado por CQ/WMS: {saldo.get('lote') or saldo_id}")
+        available = _stock_quantity(saldo)
+        if requested > available:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "Quantidade solicitada excede saldo disponivel do lote/endereco.",
+                    "saldo_lote_id": saldo_id,
+                    "requested": requested,
+                    "available": available,
+                },
+            )
+        confirmed.append(saldo)
+    return confirmed
+
+
+def _normalize_match_token(value: Any) -> str:
+    return re.sub(r"\s+", " ", str(value or "").strip().lower())
+
+
+def _positive_quantity(value: Any) -> float:
+    quantity = _as_float(value)
+    return quantity if quantity > 0 else 0.0
+
+
+def _validade_sort_key(value: Any) -> str:
+    return str(value or "9999-99-99")
+
+
+def _saldo_lote_quantity(saldo: Dict[str, Any]) -> float:
+    if saldo.get("quantidade") is not None:
+        return _as_float(saldo.get("quantidade"))
+    return _as_float(saldo.get("quantidade_atual"))
+
+
+def _saldo_cq_position(saldo: Dict[str, Any]) -> str:
+    return _normalize_match_token(
+        saldo.get("posicao_cq") or saldo.get("cq_status") or saldo.get("status_cq") or "livre"
+    )
+
+
+def _saldo_is_pickable(saldo: Dict[str, Any], endereco: Optional[Dict[str, Any]]) -> bool:
+    if _saldo_lote_quantity(saldo) <= 0:
+        return False
+    if _normalize_match_token(saldo.get("status")) in {"zerado", "bloqueado", "bloqueada", "inativo", "inativa"}:
+        return False
+    if _saldo_cq_position(saldo) in {"quarentena", "reprovado", "bloqueado", "bloqueada"}:
+        return False
+    if endereco and _normalize_match_token(endereco.get("status")) in {"inativo", "inativa", "bloqueado", "bloqueada"}:
+        return False
+    return True
+
+
+def _bom_material_key(item: Dict[str, Any]) -> str:
+    for field in ("material_id", "mp_id", "codigo_material", "codigo_interno", "codigo", "item_id"):
+        value = item.get(field)
+        if value:
+            return str(value)
+    return str(item.get("nome_material") or item.get("item_nome") or item.get("nome") or "").strip()
+
+
+def _bom_material_name(item: Dict[str, Any]) -> str:
+    return str(item.get("nome_material") or item.get("item_nome") or item.get("nome") or item.get("ingredient_name") or "").strip()
+
+
+def _bom_item_required_quantity(item: Dict[str, Any], op_quantity: float, sku: Dict[str, Any]) -> float:
+    camada = item.get("camada")
+    if camada == "embalagem":
+        per_unit = _positive_quantity(item.get("quantidade_por_unidade") or item.get("quantidade") or item.get("qtd"))
+        return round(op_quantity * per_unit, 6)
+
+    percentual = _positive_quantity(item.get("percentual") or item.get("percentage") or item.get("percentual_mm"))
+    apresentacao = sku.get("apresentacao") or {}
+    base_bulk = _positive_quantity(apresentacao.get("qtd_envase") or apresentacao.get("volume")) or 1.0
+    return round(op_quantity * base_bulk * percentual / 100.0, 6)
+
+
+def _merge_requirement(requirements: Dict[str, Dict[str, Any]], item: Dict[str, Any], quantity: float) -> None:
+    key = _bom_material_key(item)
+    if not key or quantity <= 0:
+        return
+    existing = requirements.get(key)
+    if not existing:
+        requirements[key] = {
+            "material_key": key,
+            "codigo_material": item.get("codigo_material") or item.get("codigo") or item.get("codigo_interno") or "",
+            "nome_material": _bom_material_name(item),
+            "tipo": item.get("tipo") or "",
+            "camada": item.get("camada") or "",
+            "unidade": item.get("unidade_consumo") or item.get("unidade") or "",
+            "required_quantity": round(quantity, 6),
+            "sources": [item.get("id") or ""],
+        }
+        return
+    existing["required_quantity"] = round(_as_float(existing.get("required_quantity")) + quantity, 6)
+    source = item.get("id") or ""
+    if source and source not in existing["sources"]:
+        existing["sources"].append(source)
+
+
+async def _resolve_sku_for_op_item(op: Dict[str, Any], item: Dict[str, Any], tenant_id: str) -> Optional[Dict[str, Any]]:
+    sku_id = item.get("sku_id") or op.get("sku_id")
+    if sku_id:
+        sku = await db.skus.find_one({"id": sku_id, "tenant_id": tenant_id}, {"_id": 0})
+        if sku:
+            return sku
+    codigo = (item.get("codigo_kuryos") or "").strip()
+    if codigo:
+        return await db.skus.find_one({"codigo_interno": codigo, "tenant_id": tenant_id}, {"_id": 0})
+    return None
+
+
+async def _active_bom_items_for_sku(sku: Dict[str, Any], tenant_id: str) -> List[Dict[str, Any]]:
+    items: List[Dict[str, Any]] = []
+    sku_id = sku.get("id")
+    produto_pai_id = sku.get("produto_pai_id")
+    if produto_pai_id:
+        bulk = await db.bom_items.find(
+            {"tenant_id": tenant_id, "produto_pai_id": produto_pai_id, "camada": "bulk"},
+            {"_id": 0},
+        ).to_list(500)
+        vigente_bulk = [item for item in bulk if item.get("vigente") is True]
+        items.extend(vigente_bulk or bulk)
+    if sku_id:
+        embalagem = await db.bom_items.find(
+            {"tenant_id": tenant_id, "sku_id": sku_id, "camada": "embalagem"},
+            {"_id": 0},
+        ).to_list(500)
+        vigente_embalagem = [item for item in embalagem if item.get("vigente") is True]
+        items.extend(vigente_embalagem or embalagem)
+    return items
+
+
+async def _build_op_material_requirements(op: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    requirements: Dict[str, Dict[str, Any]] = {}
+    alertas: List[str] = []
+    for op_item in op.get("items") or []:
+        op_quantity = _positive_quantity(op_item.get("qtd_planejada") or op_item.get("qtd"))
+        if op_quantity <= 0:
+            continue
+        sku = await _resolve_sku_for_op_item(op, op_item, tenant_id)
+        if not sku:
+            alertas.append(f"SKU nao encontrado para item {op_item.get('item') or op_item.get('codigo_kuryos') or ''}".strip())
+            continue
+        bom_items = await _active_bom_items_for_sku(sku, tenant_id)
+        if not bom_items:
+            alertas.append(f"BOM nao encontrado para SKU {sku.get('codigo_interno') or sku.get('id')}")
+            continue
+        for bom_item in bom_items:
+            quantity = _bom_item_required_quantity(bom_item, op_quantity, sku)
+            _merge_requirement(requirements, bom_item, quantity)
+    return {"requirements": list(requirements.values()), "alertas": alertas}
+
+
+def _saldo_matches_requirement(saldo: Dict[str, Any], requirement: Dict[str, Any]) -> bool:
+    wanted = {
+        _normalize_match_token(requirement.get("material_key")),
+        _normalize_match_token(requirement.get("codigo_material")),
+        _normalize_match_token(requirement.get("nome_material")),
+    }
+    wanted.discard("")
+    available = {
+        _normalize_match_token(saldo.get("item_id")),
+        _normalize_match_token(saldo.get("material_id")),
+        _normalize_match_token(saldo.get("mp_id")),
+        _normalize_match_token(saldo.get("codigo_item")),
+        _normalize_match_token(saldo.get("item_codigo")),
+        _normalize_match_token(saldo.get("codigo")),
+        _normalize_match_token(saldo.get("item_nome")),
+        _normalize_match_token(saldo.get("nome_item")),
+    }
+    available.discard("")
+    return bool(wanted.intersection(available))
+
+
+async def _load_pickable_saldos(tenant_id: str) -> Dict[str, Any]:
+    saldos = await db.estoque_saldos_lote.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(50000)
+    endereco_ids = {saldo.get("endereco_id") for saldo in saldos if saldo.get("endereco_id")}
+    enderecos = []
+    if endereco_ids:
+        enderecos = await db.wms_enderecos.find(
+            {"tenant_id": tenant_id, "id": {"$in": list(endereco_ids)}},
+            {"_id": 0},
+        ).to_list(50000)
+    endereco_map = {endereco.get("id"): endereco for endereco in enderecos}
+    pickable = [
+        saldo for saldo in saldos
+        if _saldo_is_pickable(saldo, endereco_map.get(saldo.get("endereco_id")))
+    ]
+    return {"saldos": pickable, "enderecos": endereco_map}
+
+
+def _suggest_fefo_for_requirements(
+    requirements: List[Dict[str, Any]],
+    saldos: List[Dict[str, Any]],
+    endereco_map: Dict[str, Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    sugestoes: List[Dict[str, Any]] = []
+    for requirement in requirements:
+        remaining = _as_float(requirement.get("required_quantity"))
+        matches = [
+            saldo for saldo in saldos
+            if _saldo_matches_requirement(saldo, requirement)
+        ]
+        matches.sort(key=lambda saldo: (
+            _validade_sort_key(saldo.get("validade")),
+            str(saldo.get("lote") or ""),
+            str(saldo.get("endereco_codigo") or ""),
+        ))
+        separacoes = []
+        total_available = 0.0
+        for saldo in matches:
+            available = _saldo_lote_quantity(saldo)
+            total_available = round(total_available + available, 6)
+            if remaining <= 0:
+                continue
+            suggested = round(min(available, remaining), 6)
+            remaining = round(remaining - suggested, 6)
+            endereco = endereco_map.get(saldo.get("endereco_id")) or {}
+            separacoes.append({
+                "saldo_lote_id": saldo.get("id"),
+                "item_id": saldo.get("item_id"),
+                "codigo_item": saldo.get("codigo_item") or saldo.get("codigo") or "",
+                "item_nome": saldo.get("item_nome") or saldo.get("nome_item") or "",
+                "lote": saldo.get("lote") or "",
+                "validade": saldo.get("validade"),
+                "endereco_id": saldo.get("endereco_id"),
+                "endereco_codigo": saldo.get("endereco_codigo") or endereco.get("codigo") or "",
+                "setor": saldo.get("setor") or endereco.get("setor") or "",
+                "posicao_cq": saldo.get("posicao_cq") or saldo.get("cq_status") or saldo.get("status_cq") or "livre",
+                "quantidade_disponivel": available,
+                "quantidade_sugerida": suggested,
+                "unidade": saldo.get("unidade") or requirement.get("unidade") or "",
+            })
+        sugestao = dict(requirement)
+        sugestao["available_quantity"] = round(total_available, 6)
+        sugestao["shortage_quantity"] = round(max(remaining, 0.0), 6)
+        sugestao["separacoes"] = separacoes
+        sugestoes.append(sugestao)
+    return sugestoes
+
+
+async def _build_wms_picking_suggestion(op: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    required = await _build_op_material_requirements(op, tenant_id)
+    stock = await _load_pickable_saldos(tenant_id)
+    sugestoes = _suggest_fefo_for_requirements(required["requirements"], stock["saldos"], stock["enderecos"])
+    total_faltas = round(sum(_as_float(item.get("shortage_quantity")) for item in sugestoes), 6)
+    return {
+        "op_id": op["id"],
+        "numero_op": op.get("numero_op"),
+        "pedido_id": op.get("pedido_id"),
+        "allocation_id": op.get("allocation_id"),
+        "sales_order_item_id": op.get("sales_order_item_id"),
+        "base": "bom_items + estoque_saldos_lote",
+        "destructive_stock_movement": False,
+        "suggestions": sugestoes,
+        "shortages": [item for item in sugestoes if _as_float(item.get("shortage_quantity")) > 0],
+        "alertas": required["alertas"],
+        "summary": {
+            "materials": len(sugestoes),
+            "materials_with_shortage": sum(1 for item in sugestoes if _as_float(item.get("shortage_quantity")) > 0),
+            "total_shortage_quantity": total_faltas,
+        },
+        "generated_at": now_iso(),
+    }
+
+
+def _flatten_suggested_picking_lines(suggestion: Dict[str, Any]) -> List[Dict[str, Any]]:
+    lines: List[Dict[str, Any]] = []
+    for material in suggestion.get("suggestions") or []:
+        for pick in material.get("separacoes") or []:
+            quantity = _positive_quantity(pick.get("quantidade_sugerida"))
+            if quantity <= 0:
+                continue
+            line = dict(pick)
+            line["material_key"] = material.get("material_key") or ""
+            line["codigo_material"] = material.get("codigo_material") or ""
+            line["nome_material"] = material.get("nome_material") or ""
+            line["required_quantity"] = material.get("required_quantity")
+            line["quantidade"] = quantity
+            lines.append(line)
+    return lines
+
+
+def _validate_picking_confirm_lines(
+    payload_lines: List[Dict[str, Any]],
+    suggestion: Dict[str, Any],
+) -> Dict[str, Any]:
+    saldo_index: Dict[str, Dict[str, Any]] = {}
+    required_by_material: Dict[str, float] = {}
+    picked_by_material: Dict[str, float] = {}
+    for material in suggestion.get("suggestions") or []:
+        material_key = material.get("material_key") or ""
+        required_by_material[material_key] = _as_float(material.get("required_quantity"))
+        for pick in material.get("separacoes") or []:
+            saldo_id = pick.get("saldo_lote_id")
+            if saldo_id:
+                entry = dict(pick)
+                entry["material_key"] = material_key
+                entry["codigo_material"] = material.get("codigo_material") or ""
+                entry["nome_material"] = material.get("nome_material") or ""
+                saldo_index[saldo_id] = entry
+
+    selected: List[Dict[str, Any]] = []
+    picked_by_saldo: Dict[str, float] = {}
+    for raw in payload_lines:
+        saldo_id = raw.get("saldo_lote_id")
+        if not saldo_id or saldo_id not in saldo_index:
+            raise HTTPException(status_code=422, detail=f"Saldo/lote nao elegivel para separacao: {saldo_id or 'sem id'}")
+        quantity = _positive_quantity(raw.get("quantidade"))
+        if quantity <= 0:
+            raise HTTPException(status_code=422, detail="Quantidade de separacao deve ser maior que zero.")
+        stock_line = saldo_index[saldo_id]
+        material_key = raw.get("material_key") or stock_line.get("material_key") or ""
+        if material_key != stock_line.get("material_key"):
+            raise HTTPException(status_code=422, detail="material_key nao corresponde ao saldo sugerido.")
+        picked_by_saldo[saldo_id] = round(picked_by_saldo.get(saldo_id, 0.0) + quantity, 6)
+        if picked_by_saldo[saldo_id] > _as_float(stock_line.get("quantidade_disponivel")):
+            raise HTTPException(status_code=409, detail=f"Separacao excede saldo disponivel no lote/endereco {saldo_id}.")
+        picked_by_material[material_key] = round(picked_by_material.get(material_key, 0.0) + quantity, 6)
+        selected_line = dict(stock_line)
+        selected_line["quantidade"] = quantity
+        selected_line["observacoes"] = raw.get("observacoes") or ""
+        selected.append(selected_line)
+
+    faltas = []
+    for material_key, required_quantity in required_by_material.items():
+        missing = round(max(required_quantity - picked_by_material.get(material_key, 0.0), 0.0), 6)
+        if missing > 0:
+            faltas.append({"material_key": material_key, "shortage_quantity": missing})
+    return {"linhas": selected, "faltas": faltas}
+
+
 def _formula_items_total_pct(items: List[Dict[str, Any]]) -> float:
     return round(sum(float(item.get("percentage") or item.get("percentual_mm") or 0) for item in items), 4)
 
@@ -1722,6 +2507,238 @@ async def create_op_from_order(order_id: str, request: Request):
     return op
 
 
+@orders_router.get("/{order_id}/pcp-allocations")
+async def list_order_pcp_allocations(order_id: str, request: Request):
+    user = await get_current_user(request)
+    tenant_id = user["tenant_id"]
+    await _require_feature_flag(tenant_id, PCP_QUANTITY_PLANNING_FLAG)
+
+    order = await db.orders.find_one({"id": order_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+
+    await _ensure_order_item_ids(order, tenant_id)
+    allocations = await db.pcp_allocations.find(
+        {"tenant_id": tenant_id, "sales_order_id": order_id},
+        {"_id": 0},
+    ).sort("created_at", 1).to_list(1000)
+    return allocations
+
+
+@orders_router.post("/{order_id}/items/{item_id}/pcp-allocations")
+async def create_order_item_pcp_allocation(
+    order_id: str,
+    item_id: str,
+    data: PCPAllocationCreate,
+    request: Request,
+):
+    user = await get_current_user(request)
+    tenant_id = user["tenant_id"]
+    await _require_feature_flag(tenant_id, PCP_QUANTITY_PLANNING_FLAG)
+    require_roles(user, PCP_PLANNING_ROLES)
+
+    order = await db.orders.find_one({"id": order_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+    if order.get("status") not in {"confirmado", "em_producao"}:
+        raise HTTPException(status_code=422, detail="Alocacao PCP exige pedido Confirmado ou Em Producao.")
+
+    planned_quantity = _as_float(data.planned_quantity)
+    if planned_quantity <= 0:
+        raise HTTPException(status_code=400, detail="planned_quantity deve ser maior que zero.")
+
+    items = await _ensure_order_item_ids(order, tenant_id)
+    item = _find_order_item(items, item_id)
+    item_quantity = _as_float(item.get("qtd"))
+    if item_quantity <= 0:
+        raise HTTPException(status_code=422, detail="Item do pedido sem quantidade planejavel.")
+
+    if data.line_id and hasattr(db, "pcp_linhas"):
+        linha = await db.pcp_linhas.find_one({"id": data.line_id, "tenant_id": tenant_id}, {"_id": 0})
+        if not linha:
+            raise HTTPException(status_code=404, detail="Linha PCP nao encontrada.")
+
+    active_allocations = await _active_allocations_for_item(tenant_id, order_id, item_id)
+    allocated_quantity = round(sum(_as_float(a.get("planned_quantity")) for a in active_allocations), 6)
+    remaining_order_quantity = round(item_quantity - allocated_quantity, 6)
+    if planned_quantity > remaining_order_quantity:
+        if not data.override_excess:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "Quantidade alocada excede saldo do item do pedido.",
+                    "item_quantity": item_quantity,
+                    "already_allocated": allocated_quantity,
+                    "remaining": max(remaining_order_quantity, 0.0),
+                },
+            )
+        require_roles(user, {"admin"})
+        if not (data.override_reason or "").strip():
+            raise HTTPException(status_code=422, detail="override_reason e obrigatorio para exceder saldo.")
+
+    now = now_iso()
+    allocation = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "sales_order_id": order_id,
+        "sales_order_numero": order.get("numero_pedido", ""),
+        "sales_order_item_id": item_id,
+        "sku_id": item.get("sku_id"),
+        "codigo_kuryos": item.get("codigo_kuryos", ""),
+        "item_nome": item.get("item", ""),
+        "planned_quantity": planned_quantity,
+        "consumed_quantity": 0.0,
+        "remaining_quantity": planned_quantity,
+        "production_order_ids": [],
+        "line_id": data.line_id,
+        "planned_start": data.planned_start,
+        "planned_end": data.planned_end,
+        "priority": data.priority,
+        "status": "planejado",
+        "notes": data.notes,
+        "override_excess": data.override_excess,
+        "override_reason": (data.override_reason or "").strip(),
+        "created_at": now,
+        "updated_at": now,
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+    }
+    await db.pcp_allocations.insert_one(allocation)
+    allocation.pop("_id", None)
+    return allocation
+
+
+@orders_router.post("/{order_id}/pcp-allocations/{allocation_id}/create-op")
+async def create_op_from_pcp_allocation(
+    order_id: str,
+    allocation_id: str,
+    data: PCPAllocationOPCreate,
+    request: Request,
+):
+    user = await get_current_user(request)
+    tenant_id = user["tenant_id"]
+    await _require_feature_flag(tenant_id, PCP_QUANTITY_PLANNING_FLAG)
+    require_roles(user, PCP_PLANNING_ROLES)
+
+    order = await db.orders.find_one({"id": order_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+    if order.get("status") not in {"confirmado", "em_producao"}:
+        raise HTTPException(status_code=422, detail="OP v2 so pode ser gerada a partir de pedido Confirmado ou Em Producao.")
+
+    allocation = await db.pcp_allocations.find_one(
+        {"id": allocation_id, "tenant_id": tenant_id, "sales_order_id": order_id},
+        {"_id": 0},
+    )
+    if not allocation:
+        raise HTTPException(status_code=404, detail="Alocacao PCP nao encontrada")
+    if allocation.get("status") in {"cancelado", "cancelled"}:
+        raise HTTPException(status_code=422, detail="Alocacao PCP cancelada nao pode gerar OP.")
+
+    quantity = _as_float(data.quantity)
+    if quantity <= 0:
+        raise HTTPException(status_code=400, detail="quantity deve ser maior que zero.")
+
+    remaining = _allocation_remaining(allocation)
+    if quantity > remaining:
+        if not data.override_excess:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "Quantidade da OP excede saldo da alocacao.",
+                    "planned_quantity": _as_float(allocation.get("planned_quantity")),
+                    "consumed_quantity": _as_float(allocation.get("consumed_quantity")),
+                    "remaining": remaining,
+                },
+            )
+        require_roles(user, {"admin"})
+        if not (data.override_reason or "").strip():
+            raise HTTPException(status_code=422, detail="override_reason e obrigatorio para exceder saldo.")
+
+    items = await _ensure_order_item_ids(order, tenant_id)
+    item = _find_order_item(items, allocation["sales_order_item_id"])
+    order_for_snapshot = dict(order)
+    order_for_snapshot["items"] = [item]
+    tecnico = await _build_op_technical_snapshot(order_for_snapshot, tenant_id)
+    if tecnico["revisao_obrigatoria"] and tecnico["bloqueios"]:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "message": "OP bloqueada: revise P&D/ficha tecnica antes de emitir.",
+                "bloqueios": tecnico["bloqueios"],
+                "alertas": tecnico["alertas"],
+            },
+        )
+
+    now = now_iso()
+    numero_op = await _generate_op_number(tenant_id)
+    op = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "numero_op": numero_op,
+        "pedido_id": order_id,
+        "numero_pedido": order.get("numero_pedido", ""),
+        "sales_order_item_id": allocation["sales_order_item_id"],
+        "allocation_id": allocation_id,
+        "sku_id": allocation.get("sku_id"),
+        "cliente_nome": order.get("cliente", {}).get("nome") or order.get("cliente", {}).get("razao_social", ""),
+        "project_name": order.get("project_name", ""),
+        "status": "aberta",
+        "pcp_origem": "pedido_comercial_item",
+        "pcp_status": "aguardando_planejamento",
+        "linha_id": allocation.get("line_id"),
+        "linha_nome": "",
+        "linha_tipo": "geral",
+        "items": [_op_item_from_order_item(item, quantity)],
+        "tecnico": tecnico,
+        "observacoes": data.observacoes,
+        "override_excess": data.override_excess,
+        "override_reason": (data.override_reason or "").strip(),
+        "created_at": now,
+        "updated_at": now,
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+    }
+    await db.ops.insert_one(op)
+    op.pop("_id", None)
+
+    production_order_ids = list(allocation.get("production_order_ids") or [])
+    if op["id"] not in production_order_ids:
+        production_order_ids.append(op["id"])
+    new_consumed = round(_as_float(allocation.get("consumed_quantity")) + quantity, 6)
+    new_remaining = round(max(_as_float(allocation.get("planned_quantity")) - new_consumed, 0.0), 6)
+    allocation_status = "coberto" if new_remaining <= 0 else "parcial"
+    await db.pcp_allocations.update_one(
+        {"id": allocation_id, "tenant_id": tenant_id},
+        {"$set": {
+            "consumed_quantity": new_consumed,
+            "remaining_quantity": new_remaining,
+            "production_order_ids": production_order_ids,
+            "status": allocation_status,
+            "updated_at": now,
+        }},
+    )
+    await _insert_production_order_event(
+        tenant_id=tenant_id,
+        op_id=op["id"],
+        order_id=order_id,
+        allocation_id=allocation_id,
+        action="create_op_from_allocation",
+        user=user,
+        payload={"quantity": quantity},
+    )
+
+    order_update = {"status": "em_producao", "updated_at": now}
+    if not order.get("op_id"):
+        order_update["op_id"] = op["id"]
+    allocation_ids = list(order.get("pcp_allocation_ids") or [])
+    if allocation_id not in allocation_ids:
+        allocation_ids.append(allocation_id)
+    order_update["pcp_allocation_ids"] = allocation_ids
+    await db.orders.update_one({"id": order_id, "tenant_id": tenant_id}, {"$set": order_update})
+    return op
+
+
 # ============ R15: REPRODUZIR PEDIDO ============
 @orders_router.post("/{order_id}/reproduzir")
 async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Request):
@@ -1749,6 +2766,8 @@ async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Reque
                 it["prazo_entrega"] = ov.prazo_entrega
             if ov.qtd is not None:
                 it["qtd"] = ov.qtd
+        if not it.get("id"):
+            it["id"] = new_id()
 
     totals = _calculate_totals(items)
     ap_comercial = _eval_aprovacao_comercial(totals)
@@ -1882,6 +2901,31 @@ async def list_order_attachments(order_id: str, request: Request):
     return order.get("attachments") or []
 
 
+@orders_router.get("/{order_id}/attachments/metadata")
+async def list_order_attachment_metadata(order_id: str, request: Request):
+    user = await get_current_user(request)
+    await _require_feature_flag(user["tenant_id"], UNIFIED_ATTACHMENTS_FLAG)
+    order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "attachments": 1})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+
+    if hasattr(db, "attachments"):
+        docs = await db.attachments.find(
+            {
+                "tenant_id": user["tenant_id"],
+                "entity_type": "order",
+                "entity_id": order_id,
+                "is_deleted": False,
+            },
+            {"_id": 0},
+        ).sort("uploaded_at", -1).to_list(500)
+        if docs:
+            return {"attachments": docs, "count": len(docs), "source": "attachments"}
+
+    legacy = [_legacy_attachment_metadata(order_id, item) for item in (order.get("attachments") or [])]
+    return {"attachments": legacy, "count": len(legacy), "source": "orders.attachments"}
+
+
 @orders_router.post("/{order_id}/attachments")
 async def upload_order_attachment(order_id: str, request: Request, file: UploadFile = File(...)):
     user = await get_current_user(request)
@@ -1900,28 +2944,55 @@ async def upload_order_attachment(order_id: str, request: Request, file: UploadF
         raise HTTPException(status_code=400, detail=f"Tipo de arquivo nao permitido. Permitidos: {allowed}")
 
     attachment_id = new_id()
-    stored_name = f"{attachment_id}.{ext}"
-    relative_path = Path(user["tenant_id"]) / order_id / stored_name
-    target_path = _orders_upload_root() / relative_path
-    target_path.parent.mkdir(parents=True, exist_ok=True)
-    target_path.write_bytes(data)
-
     content_type = file.content_type or mimetypes.guess_type(original_filename)[0] or "application/octet-stream"
+    unified_enabled = await _order_feature_enabled(user["tenant_id"], UNIFIED_ATTACHMENTS_FLAG)
+    storage = await _write_order_attachment_storage(
+        tenant_id=user["tenant_id"],
+        order_id=order_id,
+        attachment_id=attachment_id,
+        ext=ext,
+        content_type=content_type,
+        data=data,
+        use_object_storage=unified_enabled,
+    )
+    file_id = None
+    if unified_enabled and storage["storage_backend"] == "object":
+        file_id = await _insert_object_file_record(
+            tenant_id=user["tenant_id"],
+            attachment_id=attachment_id,
+            original_filename=original_filename,
+            content_type=content_type,
+            size=storage["size"],
+            storage_path=storage["storage_path"],
+            user=user,
+        )
+
     attachment = {
         "id": attachment_id,
         "original_filename": original_filename,
         "content_type": content_type,
-        "size": len(data),
-        "storage_path": str(relative_path).replace("\\", "/"),
+        "size": storage["size"],
+        "storage_backend": storage["storage_backend"],
+        "storage_path": storage["storage_path"],
+        "file_id": file_id,
         "download_url": f"/api/orders/{order_id}/attachments/{attachment_id}/download",
         "uploaded_by": user["id"],
         "uploaded_by_name": user.get("name", ""),
         "uploaded_at": now_iso(),
     }
+    if unified_enabled:
+        attachment["unified_attachment_v2"] = True
     await db.orders.update_one(
         {"id": order_id, "tenant_id": user["tenant_id"]},
         {"$push": {"attachments": attachment}, "$set": {"updated_at": now_iso()}},
     )
+    if unified_enabled:
+        await _insert_order_attachment_metadata(
+            tenant_id=user["tenant_id"],
+            order_id=order_id,
+            attachment=attachment,
+            file_id=file_id,
+        )
     return attachment
 
 
@@ -1935,6 +3006,22 @@ async def download_order_attachment(order_id: str, attachment_id: str, request: 
     attachment = next((item for item in (order.get("attachments") or []) if item.get("id") == attachment_id), None)
     if not attachment:
         raise HTTPException(status_code=404, detail="Anexo nao encontrado")
+
+    if attachment.get("storage_backend") == "object":
+        if not get_object_func:
+            raise HTTPException(status_code=503, detail="Object storage nao disponivel para download")
+        try:
+            data, content_type = get_object_func(attachment.get("storage_path", ""))
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Falha ao baixar anexo do object storage: {exc}")
+        filename = _safe_attachment_filename(attachment.get("original_filename") or "anexo")
+        return StreamingResponse(
+            io.BytesIO(data),
+            media_type=attachment.get("content_type") or content_type or "application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
 
     path = _orders_upload_root() / attachment.get("storage_path", "")
     try:
@@ -2262,6 +3349,109 @@ async def get_op(op_id: str, request: Request):
     if not op:
         raise HTTPException(status_code=404, detail="OP não encontrada")
     return op
+
+
+@ops_router.get("/{op_id}/material-picking/suggestion")
+@ops_router.get("/{op_id}/wms-separacao/sugestao")
+async def suggest_wms_picking_for_op(op_id: str, request: Request):
+    user = await get_current_user(request)
+    tenant_id = user["tenant_id"]
+    await _require_feature_flag(tenant_id, PCP_MATERIAL_PICKING_FLAG)
+    require_roles(user, PCP_PLANNING_ROLES)
+
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nao encontrada")
+    return await _build_wms_picking_suggestion(op, tenant_id)
+
+
+@ops_router.post("/{op_id}/material-picking/confirm")
+@ops_router.post("/{op_id}/wms-separacao/confirmar")
+async def confirm_wms_picking_for_op(op_id: str, data: WMSPickingConfirm, request: Request):
+    user = await get_current_user(request)
+    tenant_id = user["tenant_id"]
+    await _require_feature_flag(tenant_id, PCP_MATERIAL_PICKING_FLAG)
+    require_roles(user, PCP_PLANNING_ROLES)
+
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nao encontrada")
+
+    idempotency_key = (data.idempotency_key or "").strip()
+    if not idempotency_key:
+        raise HTTPException(status_code=422, detail="idempotency_key e obrigatorio.")
+    if idempotency_key:
+        existing = await db.wms_separacoes.find_one(
+            {"tenant_id": tenant_id, "op_id": op_id, "idempotency_key": idempotency_key},
+            {"_id": 0},
+        )
+        if existing:
+            return existing
+
+    existing_confirmed = await db.wms_separacoes.find_one(
+        {"tenant_id": tenant_id, "op_id": op_id, "status": {"$in": ["confirmada", "confirmada_com_falta"]}},
+        {"_id": 0},
+    )
+    if existing_confirmed:
+        return existing_confirmed
+
+    suggestion = await _build_wms_picking_suggestion(op, tenant_id)
+    payload_lines = [line.model_dump() for line in data.linhas]
+    if not payload_lines:
+        payload_lines = _flatten_suggested_picking_lines(suggestion)
+    validated = _validate_picking_confirm_lines(payload_lines, suggestion)
+    await _assert_confirm_lines_pickable(tenant_id, validated["linhas"])
+
+    now = now_iso()
+    status = "confirmada_com_falta" if validated["faltas"] else "confirmada"
+    doc = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "op_id": op["id"],
+        "numero_op": op.get("numero_op"),
+        "pedido_id": op.get("pedido_id"),
+        "allocation_id": op.get("allocation_id"),
+        "sales_order_item_id": op.get("sales_order_item_id"),
+        "status": status,
+        "linhas": validated["linhas"],
+        "faltas": validated["faltas"],
+        "alertas": suggestion.get("alertas") or [],
+        "estoque_baixado": False,
+        "destructive_stock_movement": False,
+        "idempotency_key": idempotency_key or None,
+        "observacoes": data.observacoes or "",
+        "created_at": now,
+        "updated_at": now,
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+    }
+    await db.wms_separacoes.insert_one(doc)
+    doc.pop("_id", None)
+
+    await _insert_production_order_event(
+        tenant_id=tenant_id,
+        op_id=op["id"],
+        order_id=op.get("pedido_id") or "",
+        allocation_id=op.get("allocation_id"),
+        action="confirm_wms_picking",
+        user=user,
+        payload={
+            "wms_separacao_id": doc["id"],
+            "status": status,
+            "linhas": len(doc["linhas"]),
+            "faltas": len(doc["faltas"]),
+            "estoque_baixado": False,
+        },
+    )
+    await db.ops.update_one(
+        {"id": op_id, "tenant_id": tenant_id},
+        {"$set": {
+            "wms_separacao_id": doc["id"],
+            "wms_separacao_status": status,
+            "updated_at": now,
+        }},
+    )
+    return doc
 
 
 @ops_router.put("/{op_id}")

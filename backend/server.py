@@ -27,6 +27,7 @@ import io
 import json
 import asyncio
 import requests as http_requests
+import re
 try:
     from emergentintegrations.llm.chat import LlmChat, UserMessage
 except ImportError:
@@ -1259,10 +1260,65 @@ MIME_TYPES = {
     "csv": "text/csv", "txt": "text/plain", "xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 }
+UNIFIED_ATTACHMENTS_FLAG = "unified_attachments_v2"
+
+
+def _feature_value_enabled(value) -> bool:
+    if value is True:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    return False
+
+
+async def _feature_enabled(tenant_id: str, flag: str) -> bool:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return _feature_value_enabled(((settings or {}).get("features") or {}).get(flag))
+
+
+async def _require_unified_attachments_feature(tenant_id: str) -> None:
+    if await _feature_enabled(tenant_id, UNIFIED_ATTACHMENTS_FLAG):
+        return
+    raise HTTPException(
+        status_code=403,
+        detail={
+            "message": "Anexos unificados em rollout controlado.",
+            "feature": UNIFIED_ATTACHMENTS_FLAG,
+        },
+    )
+
+
+def _safe_attachment_owner(value: str) -> str:
+    normalized = str(value or "").strip()
+    if not re.match(r"^[A-Za-z0-9_.:-]{1,80}$", normalized):
+        raise HTTPException(status_code=422, detail="owner/entity invalido para anexo")
+    return normalized
+
+
+def _attachment_download_filename(filename: str) -> str:
+    name = Path(filename or "anexo").name.strip() or "anexo"
+    return re.sub(r"[^A-Za-z0-9._ -]+", "_", name)[:180]
 
 @router.post("/upload")
-async def upload_file(request: Request, file: UploadFile = File(...)):
+async def upload_file(
+    request: Request,
+    file: UploadFile = File(...),
+    owner_type: Optional[str] = Query(None),
+    owner_id: Optional[str] = Query(None),
+    relation: str = Query("generic_attachment"),
+):
     user = await get_current_user(request)
+    safe_owner_type = None
+    safe_owner_id = None
+    safe_relation = None
+    if owner_type or owner_id:
+        if not owner_type or not owner_id:
+            raise HTTPException(status_code=422, detail="owner_type e owner_id devem ser enviados juntos")
+        await _require_unified_attachments_feature(user["tenant_id"])
+        safe_owner_type = _safe_attachment_owner(owner_type)
+        safe_owner_id = _safe_attachment_owner(owner_id)
+        safe_relation = _safe_attachment_owner(relation or "generic_attachment")
+
     data = await file.read()
     if len(data) > 10 * 1024 * 1024:  # 10MB limit
         raise HTTPException(status_code=400, detail="Arquivo muito grande (max 10MB)")
@@ -1280,6 +1336,37 @@ async def upload_file(request: Request, file: UploadFile = File(...)):
         "uploaded_by": user["id"], "is_deleted": False, "created_at": now_iso()
     }
     await db.files.insert_one(file_doc)
+    if safe_owner_type and safe_owner_id:
+        attachment_id = new_id()
+        attachment_doc = {
+            "id": attachment_id,
+            "tenant_id": user["tenant_id"],
+            "owner_type": safe_owner_type,
+            "owner_id": safe_owner_id,
+            "entity_type": safe_owner_type,
+            "entity_id": safe_owner_id,
+            "relation": safe_relation,
+            "file_id": file_doc["id"],
+            "legacy_attachment_id": None,
+            "original_filename": file.filename,
+            "content_type": ct,
+            "size": file_doc["size"],
+            "storage_backend": "object",
+            "storage_path": file_doc["storage_path"],
+            "download_url": f"/api/attachments/{attachment_id}/download",
+            "uploaded_by": user["id"],
+            "uploaded_by_name": user.get("name", ""),
+            "uploaded_at": file_doc["created_at"],
+            "created_at": file_doc["created_at"],
+            "updated_at": file_doc["created_at"],
+            "is_deleted": False,
+            "source": "api.upload",
+            "feature": UNIFIED_ATTACHMENTS_FLAG,
+        }
+        await db.attachments.insert_one(attachment_doc)
+        attachment_doc.pop("_id", None)
+        file_doc["attachment_id"] = attachment_id
+        file_doc["attachment"] = attachment_doc
     file_doc.pop("_id", None)
     return file_doc
 
@@ -1293,6 +1380,63 @@ async def download_file(file_id: str, request: Request):
     data, ct = get_object(record["storage_path"])
     return Response(content=data, media_type=record.get("content_type", ct),
         headers={"Content-Disposition": f'inline; filename="{record["original_filename"]}"'})
+
+
+@router.get("/attachments")
+async def list_attachments(
+    request: Request,
+    owner_type: Optional[str] = None,
+    owner_id: Optional[str] = None,
+    entity_type: Optional[str] = None,
+    entity_id: Optional[str] = None,
+    relation: Optional[str] = None,
+):
+    user = await get_current_user(request)
+    await _require_unified_attachments_feature(user["tenant_id"])
+    resolved_type = owner_type or entity_type
+    resolved_id = owner_id or entity_id
+    if not resolved_type or not resolved_id:
+        raise HTTPException(status_code=422, detail="Informe owner_type/owner_id ou entity_type/entity_id")
+    query = {
+        "tenant_id": user["tenant_id"],
+        "owner_type": _safe_attachment_owner(resolved_type),
+        "owner_id": _safe_attachment_owner(resolved_id),
+        "is_deleted": False,
+    }
+    if relation:
+        query["relation"] = _safe_attachment_owner(relation)
+    docs = await db.attachments.find(query, {"_id": 0}).sort("uploaded_at", -1).to_list(500)
+    return {"attachments": docs, "count": len(docs)}
+
+
+@router.get("/attachments/{attachment_id}/download")
+async def download_attachment(attachment_id: str, request: Request):
+    user = await get_current_user(request)
+    await _require_unified_attachments_feature(user["tenant_id"])
+    attachment = await db.attachments.find_one(
+        {"id": attachment_id, "tenant_id": user["tenant_id"], "is_deleted": False},
+        {"_id": 0},
+    )
+    if not attachment:
+        raise HTTPException(status_code=404, detail="Anexo nao encontrado")
+
+    record = None
+    if attachment.get("file_id"):
+        record = await db.files.find_one(
+            {"id": attachment["file_id"], "tenant_id": user["tenant_id"], "is_deleted": False},
+            {"_id": 0},
+        )
+    storage_path = (record or attachment).get("storage_path")
+    if not storage_path:
+        raise HTTPException(status_code=404, detail="Arquivo do anexo indisponivel")
+
+    data, ct = get_object(storage_path)
+    filename = _attachment_download_filename(attachment.get("original_filename") or (record or {}).get("original_filename"))
+    return Response(
+        content=data,
+        media_type=attachment.get("content_type") or (record or {}).get("content_type") or ct,
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 # ============ NOTIFICATIONS ============
 
@@ -1976,6 +2120,9 @@ async def startup():
     await db.messages.create_index("card_id")
     await db.notifications.create_index([("tenant_id", 1), ("user_id", 1)])
     await db.files.create_index("tenant_id")
+    await db.attachments.create_index([("tenant_id", 1), ("entity_type", 1), ("entity_id", 1), ("uploaded_at", -1)])
+    await db.attachments.create_index([("tenant_id", 1), ("owner_type", 1), ("owner_id", 1), ("uploaded_at", -1)])
+    await db.attachments.create_index([("tenant_id", 1), ("file_id", 1)], sparse=True)
     await db.email_logs.create_index("tenant_id")
     try:
         init_storage()
@@ -1984,6 +2131,7 @@ async def startup():
     # P&D module indexes
     await db.pd_requests.create_index("tenant_id")
     await db.pd_requests.create_index([("tenant_id", 1), ("status", 1)])
+    await db.pd_requests.create_index([("tenant_id", 1), ("is_deleted", 1), ("updated_at", -1)])
     await db.pd_request_status_history.create_index("pd_request_id")
     await db.pd_developments.create_index("pd_request_id")
     await db.pd_developments.create_index("tenant_id")
@@ -2027,7 +2175,7 @@ async def startup():
     init_pcp(db, get_current_user, new_id, now_iso)
 
     # Initialize Orders module
-    init_orders(db, get_current_user, new_id, now_iso)
+    init_orders(db, get_current_user, new_id, now_iso, put_object, get_object)
     init_kickoff(db, get_current_user, new_id, now_iso)
     init_compras(db, get_current_user, new_id, now_iso)
     await create_compras_indexes()
@@ -2110,9 +2258,17 @@ async def startup():
     await db.crm_clients.create_index([("tenant_id", 1), ("cnpj_normalized", 1)])
     await db.crm_projects.create_index([("tenant_id", 1), ("cliente_id", 1)])
     await db.crm_projects.create_index([("tenant_id", 1), ("stage", 1)])
+    await db.crm_projects.create_index([("tenant_id", 1), ("is_deleted", 1), ("updated_at", -1)])
     await db.crm_samples.create_index([("tenant_id", 1), ("projeto_id", 1)])
     await db.crm_samples.create_index([("tenant_id", 1), ("cliente_id", 1)])
     await db.crm_samples.create_index([("tenant_id", 1), ("stage", 1)])
+    await db.crm_samples.create_index([("tenant_id", 1), ("is_deleted", 1), ("updated_at", -1)])
+    await db.commercial_packages.create_index([("tenant_id", 1), ("sample_id", 1), ("variacao_id", 1), ("package_version", -1)])
+    await db.commercial_packages.create_index(
+        [("tenant_id", 1), ("sample_id", 1), ("variacao_id", 1), ("idempotency_key", 1)],
+        unique=True,
+        partialFilterExpression={"idempotency_key": {"$type": "string"}},
+    )
     await db.skus.create_index([("tenant_id", 1), ("status", 1)])
     await db.skus.create_index([("tenant_id", 1), ("cliente_id", 1)])
     await db.skus.create_index([("tenant_id", 1), ("codigo_interno", 1)], unique=True)

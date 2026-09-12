@@ -9,7 +9,7 @@ Fluxo:
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 import logging
 import re
 from workflow_engine import next_lote_per_day, format_lote_numero
@@ -54,6 +54,8 @@ TIPOS_SLOT = ["producao", "setup", "almoco"]
 TIPOS_SETUP = ["assepsia", "troca_volume", "troca_maquina", "geral"]
 LOTE_STATUSES = ["planejado", "em_preparo", "em_envase", "concluido", "cancelado"]
 DIAS_SEMANA = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
+PCP_ALERTS_FLAG = "pcp_alerts_enabled"
+PCP_ALERT_OPEN_STATUSES = ["aberto", "pendente"]
 
 DEFAULT_LINHAS = [
     {"nome": "Linha 1", "codigo": "L1", "tipo": "envase", "capacidade_diaria": 6000},
@@ -197,6 +199,65 @@ def _op_technical_blocks(op: Dict[str, Any]) -> List[str]:
     return list(tecnico.get("bloqueios") or [])
 
 
+async def _pcp_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return bool(((settings or {}).get("features") or {}).get(flag))
+
+
+async def _require_pcp_feature(tenant_id: str, flag: str) -> None:
+    if await _pcp_feature_enabled(tenant_id, flag):
+        return
+    raise HTTPException(
+        status_code=403,
+        detail={
+            "message": "Funcionalidade PCP em rollout controlado.",
+            "feature": flag,
+        },
+    )
+
+
+def _parse_datetime_or_none(value: Any, default_tz: Optional[timezone] = None) -> Optional[datetime]:
+    tz = default_tz or timezone.utc
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        text = str(value or "").strip()
+        if not text:
+            return None
+        try:
+            parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=tz)
+    return parsed
+
+
+def _slot_datetime(
+    slot: Dict[str, Any],
+    date_field: str,
+    time_field: str,
+    default_tz: Optional[timezone] = None,
+) -> Optional[datetime]:
+    date_value = slot.get(date_field) or slot.get("data")
+    parsed = _parse_datetime_or_none(date_value, default_tz)
+    if parsed and "T" in str(date_value):
+        return parsed
+
+    ymd = str(date_value or "").strip()[:10]
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", ymd):
+        return parsed
+
+    hhmm = _as_hhmm(slot.get(time_field), "00:00")
+    return _parse_datetime_or_none(f"{ymd}T{hhmm}:00", default_tz)
+
+
+def _minutes_between(start: datetime, end: datetime) -> int:
+    return max(int((end - start).total_seconds() // 60), 0)
+
+
 # ===== MODELS =====
 class LinhaCreate(BaseModel):
     nome: str
@@ -317,6 +378,13 @@ class CalendarioPeriodoApply(BaseModel):
     horas_extras: int = 0
     turnos: List[TurnoDiaConfig] = Field(default_factory=list)
     observacoes: str = ""
+
+
+class PCPAlertsCheck(BaseModel):
+    now: Optional[str] = None
+    tolerance_minutes: int = Field(default=5, ge=0, le=1440)
+    cooldown_minutes: int = Field(default=10, ge=1, le=1440)
+    dry_run: bool = False
 
 
 # ===== SEQUENCES =====
@@ -1130,6 +1198,216 @@ async def pcp_dashboard(request: Request):
         "lotes_ativos": lotes_ativos,
         "calendarios_semana_atual": calendarios_semana,
     }
+
+
+# ========== ALERTAS PCP ==========
+def _build_pcp_alert(
+    user: Dict[str, Any],
+    slot: Dict[str, Any],
+    tipo: str,
+    planned_at: datetime,
+    detected_at: datetime,
+    tolerance_minutes: int,
+    cooldown_minutes: int,
+) -> Dict[str, Any]:
+    deadline_at = planned_at + timedelta(minutes=tolerance_minutes)
+    atraso_minutos = _minutes_between(planned_at, detected_at)
+    late_after_tolerance = _minutes_between(deadline_at, detected_at)
+    alert_key = f"{user['tenant_id']}:{tipo}:{slot.get('id')}:{planned_at.isoformat()}"
+    numero = slot.get("op_numero") or slot.get("numero_prog") or slot.get("id")
+    linha = slot.get("linha_nome") or slot.get("linha_id") or "linha nao informada"
+    label = "inicio atrasado" if tipo == "op_inicio_atrasado" else "OP em andamento atrasada"
+
+    return {
+        "id": _new_id(),
+        "tenant_id": user["tenant_id"],
+        "alert_key": alert_key,
+        "tipo": tipo,
+        "severidade": "alta" if late_after_tolerance >= 60 else "media",
+        "status": "aberto",
+        "slot_id": slot.get("id"),
+        "numero_prog": slot.get("numero_prog", ""),
+        "op_id": slot.get("op_id", ""),
+        "op_numero": slot.get("op_numero", ""),
+        "pedido_id": slot.get("pedido_id", ""),
+        "pedido_numero": slot.get("pedido_numero", ""),
+        "linha_id": slot.get("linha_id", ""),
+        "linha_nome": slot.get("linha_nome", ""),
+        "produto_nome": slot.get("produto_nome", ""),
+        "sku": slot.get("sku", ""),
+        "planned_at": planned_at.isoformat(),
+        "deadline_at": deadline_at.isoformat(),
+        "detected_at": detected_at.isoformat(),
+        "last_sent_at": detected_at.isoformat(),
+        "tolerance_minutes": tolerance_minutes,
+        "cooldown_minutes": cooldown_minutes,
+        "atraso_minutos": atraso_minutos,
+        "atraso_pos_tolerancia_minutos": late_after_tolerance,
+        "repiques": 0,
+        "notificacao_externa_enviada": False,
+        "message": f"{label}: {numero} na {linha} ultrapassou a tolerancia de {tolerance_minutes} min.",
+        "created_by": "system",
+        "created_by_name": user.get("name", "system"),
+        "created_at": detected_at.isoformat(),
+        "updated_at": detected_at.isoformat(),
+    }
+
+
+async def _register_pcp_alert(
+    user: Dict[str, Any],
+    slot: Dict[str, Any],
+    tipo: str,
+    planned_at: datetime,
+    detected_at: datetime,
+    tolerance_minutes: int,
+    cooldown_minutes: int,
+    dry_run: bool,
+) -> Dict[str, Any]:
+    alert = _build_pcp_alert(user, slot, tipo, planned_at, detected_at, tolerance_minutes, cooldown_minutes)
+    alert["created"] = False
+    alert["repiqued"] = False
+    alert["skipped_by_cooldown"] = False
+
+    if dry_run:
+        alert["dry_run"] = True
+        return alert
+
+    existing = await db.pcp_alerts.find_one(
+        {
+            "tenant_id": user["tenant_id"],
+            "alert_key": alert["alert_key"],
+            "status": {"$in": PCP_ALERT_OPEN_STATUSES},
+        },
+        {"_id": 0},
+    )
+    if existing:
+        last_sent = _parse_datetime_or_none(existing.get("last_sent_at") or existing.get("detected_at"))
+        if last_sent and detected_at < last_sent + timedelta(minutes=cooldown_minutes):
+            existing["created"] = False
+            existing["repiqued"] = False
+            existing["skipped_by_cooldown"] = True
+            return existing
+
+        repiques = int(existing.get("repiques") or 0) + 1
+        updates = {
+            "detected_at": detected_at.isoformat(),
+            "last_sent_at": detected_at.isoformat(),
+            "deadline_at": alert["deadline_at"],
+            "tolerance_minutes": tolerance_minutes,
+            "cooldown_minutes": cooldown_minutes,
+            "atraso_minutos": alert["atraso_minutos"],
+            "atraso_pos_tolerancia_minutos": alert["atraso_pos_tolerancia_minutos"],
+            "severidade": alert["severidade"],
+            "message": alert["message"],
+            "repiques": repiques,
+            "updated_at": detected_at.isoformat(),
+        }
+        await db.pcp_alerts.update_one(
+            {"id": existing["id"], "tenant_id": user["tenant_id"]},
+            {"$set": updates},
+        )
+        refreshed = await db.pcp_alerts.find_one({"id": existing["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+        refreshed = refreshed or {**existing, **updates}
+        refreshed["created"] = False
+        refreshed["repiqued"] = True
+        refreshed["skipped_by_cooldown"] = False
+        return refreshed
+
+    await db.pcp_alerts.insert_one({k: v for k, v in alert.items() if k not in {"created", "repiqued", "skipped_by_cooldown"}})
+    alert["created"] = True
+    return alert
+
+
+@pcp_router.get("/alerts")
+async def list_pcp_alerts(
+    request: Request,
+    status: Optional[str] = None,
+    tipo: Optional[str] = None,
+    limit: int = 200,
+):
+    user = await get_current_user(request)
+    await _require_pcp_feature(user["tenant_id"], PCP_ALERTS_FLAG)
+
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if status:
+        query["status"] = status
+    if tipo:
+        query["tipo"] = tipo
+    safe_limit = max(1, min(int(limit or 200), 500))
+    return await db.pcp_alerts.find(query, {"_id": 0}).sort("detected_at", -1).to_list(safe_limit)
+
+
+@pcp_router.post("/alerts/check")
+async def check_pcp_alerts(data: PCPAlertsCheck, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_ALERTS_FLAG)
+
+    detected_at = _parse_datetime_or_none(data.now) or _parse_datetime_or_none(_now()) or datetime.now(timezone.utc)
+    slots = await db.pcp_programacao.find(
+        {"tenant_id": tid, "status": {"$in": ["planejado", "em_execucao"]}},
+        {"_id": 0},
+    ).to_list(5000)
+
+    alerts: List[Dict[str, Any]] = []
+    for slot in slots:
+        if slot.get("status") == "planejado":
+            planned_at = _slot_datetime(slot, "data_inicio", "hora_inicio", detected_at.tzinfo)
+            if planned_at and detected_at > planned_at + timedelta(minutes=data.tolerance_minutes):
+                alerts.append(await _register_pcp_alert(
+                    user,
+                    slot,
+                    "op_inicio_atrasado",
+                    planned_at,
+                    detected_at,
+                    data.tolerance_minutes,
+                    data.cooldown_minutes,
+                    data.dry_run,
+                ))
+        elif slot.get("status") == "em_execucao":
+            due_at = _slot_datetime(slot, "data_fim", "hora_fim", detected_at.tzinfo)
+            if due_at and detected_at > due_at + timedelta(minutes=data.tolerance_minutes):
+                alerts.append(await _register_pcp_alert(
+                    user,
+                    slot,
+                    "op_em_andamento_atrasada",
+                    due_at,
+                    detected_at,
+                    data.tolerance_minutes,
+                    data.cooldown_minutes,
+                    data.dry_run,
+                ))
+
+    return {
+        "checked": len(slots),
+        "alerts_created": sum(1 for alert in alerts if alert.get("created")),
+        "alerts_repiqued": sum(1 for alert in alerts if alert.get("repiqued")),
+        "skipped_by_cooldown": sum(1 for alert in alerts if alert.get("skipped_by_cooldown")),
+        "dry_run": data.dry_run,
+        "alerts": alerts,
+    }
+
+
+@pcp_router.put("/alerts/{alert_id}/resolve")
+async def resolve_pcp_alert(alert_id: str, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_ALERTS_FLAG)
+
+    now = _now()
+    result = await db.pcp_alerts.update_one(
+        {"id": alert_id, "tenant_id": tid},
+        {"$set": {
+            "status": "resolvido",
+            "resolved_by": user["id"],
+            "resolved_by_name": user.get("name", ""),
+            "resolved_at": now,
+            "updated_at": now,
+        }},
+    )
+    if not getattr(result, "matched_count", 0):
+        raise HTTPException(status_code=404, detail="Alerta PCP nao encontrado")
+    return await db.pcp_alerts.find_one({"id": alert_id, "tenant_id": tid}, {"_id": 0})
 
 
 # ========== LOTES ==========

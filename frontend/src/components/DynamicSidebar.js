@@ -17,6 +17,7 @@ import {
   FileText,
   FlaskConical,
   History,
+  Layers3,
   LogOut,
   Menu,
   Moon,
@@ -109,7 +110,8 @@ const NAV_GROUPS = [
     children: [
       { label: "Dashboard Diario", path: "/pcp/dashboard", icon: BarChart3 },
       { label: "Historico/Pedidos de Vendas", path: "/pcp/historico", icon: History },
-      { label: "PCP / Planejamento", path: "/pcp/planejamento", icon: Calendar },
+      { label: "PCP / Planejamento", path: "/pcp/planejamento", icon: Calendar, exact: true },
+      { label: "Quantidades", path: "/pcp/planejamento/quantidades", icon: Layers3 },
       { label: "Horizonte de Producao", path: "/pcp/horizonte", icon: BarChart3 },
       { label: "Controle de OPs", path: "/pcp/controle-ops", icon: Factory },
       { label: "Emitir OP", path: "/pcp/emitir-op", icon: FileText },
@@ -372,7 +374,7 @@ function SidebarGroup({ group, pathname, go, expanded }) {
 
 function SidebarLink({ item, pathname, go, expanded, child = false }) {
   const Icon = item.icon;
-  const active = isItemActive(pathname, item.path);
+  const active = item.exact ? pathname === item.path : isItemActive(pathname, item.path);
   return (
     <button
       type="button"

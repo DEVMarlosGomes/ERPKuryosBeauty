@@ -79,6 +79,11 @@ MOVIMENTOS_SAIDA = {"SAIDA_CONSUMO_OP", "SAIDA_EXPEDICAO", "AJUSTE_SAIDA", "AMOS
 MOVIMENTOS_COM_MOTIVO_OBRIGATORIO = {"AJUSTE_ENTRADA", "AJUSTE_SAIDA"}
 
 TIPO_ITEM_VALORES = ["mp", "produto_acabado"]
+WMS_CYCLE_COUNT_FLAG = "wms_cycle_count_v2"
+WMS_INVENTARIO_STATUSES = ["aberto", "em_contagem", "fechado", "cancelado"]
+PCP_DISPOSAL_FLAG = "pcp_disposal_v2"
+WMS_DESTINACAO_TIPOS = ["descarte", "devolucao_fornecedor", "logistica_reversa", "reprocesso"]
+WMS_DESTINACAO_ACTIVE_STATUSES = ["solicitado", "coleta_programada"]
 
 
 # ============ PYDANTIC MODELS ============
@@ -190,6 +195,60 @@ class TransferenciaLoteCreate(BaseModel):
     documento: str = ""
 
 
+class InventarioCiclicoCreate(BaseModel):
+    titulo: str = "Inventario ciclico WMS"
+    setor: Optional[str] = None
+    item_ids: List[str] = Field(default_factory=list)
+    endereco_ids: List[str] = Field(default_factory=list)
+    somente_com_saldo: bool = True
+    observacoes: str = ""
+
+
+class InventarioCiclicoContagemLinha(BaseModel):
+    saldo_lote_id: str
+    quantidade_contada: float = Field(ge=0)
+    observacoes: str = ""
+
+
+class InventarioCiclicoContagem(BaseModel):
+    linhas: List[InventarioCiclicoContagemLinha] = Field(default_factory=list)
+    observacoes: str = ""
+
+
+class InventarioCiclicoFechamento(BaseModel):
+    aplicar_ajustes: bool = False
+    motivo: str = ""
+    observacoes: str = ""
+
+
+class WMSDestinacaoCreate(BaseModel):
+    saldo_lote_id: str
+    quantidade: float = Field(gt=0)
+    tipo: str = "descarte"
+    motivo: str
+    destino: str = ""
+    origem_tipo: str = ""
+    origem_id: str = ""
+    observacoes: str = ""
+
+
+class WMSDestinacaoColeta(BaseModel):
+    data_coleta: Optional[str] = None
+    responsavel: str = ""
+    documento: str = ""
+    observacoes: str = ""
+
+
+class WMSDestinacaoConfirm(BaseModel):
+    documento_destino: str = ""
+    comprovante: str = ""
+    observacoes: str = ""
+
+
+class WMSDestinacaoCancel(BaseModel):
+    motivo: str
+
+
 # ============ HELPERS ============
 
 def _serialize(doc: dict) -> dict:
@@ -264,6 +323,65 @@ def _saldo_quantidade(saldo: Optional[dict]) -> float:
     if saldo.get("quantidade") is not None:
         return float(saldo.get("quantidade") or 0)
     return float(saldo.get("quantidade_atual") or 0)
+
+
+async def _estoque_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return bool(((settings or {}).get("features") or {}).get(flag))
+
+
+async def _require_estoque_feature(tenant_id: str, flag: str) -> None:
+    if await _estoque_feature_enabled(tenant_id, flag):
+        return
+    raise HTTPException(
+        status_code=403,
+        detail={
+            "message": "Funcionalidade WMS em rollout controlado.",
+            "feature": flag,
+        },
+    )
+
+
+def _serialize_inventario(doc: Optional[dict], reveal_system: bool = False) -> Optional[dict]:
+    if not doc:
+        return None
+    out = _serialize(dict(doc))
+    linhas = []
+    for linha in out.get("linhas") or []:
+        linha_out = dict(linha)
+        if not reveal_system and out.get("status") in {"aberto", "em_contagem"}:
+            linha_out.pop("quantidade_sistema", None)
+            linha_out.pop("divergencia", None)
+            linha_out.pop("divergencia_abs", None)
+        linhas.append(linha_out)
+    out["linhas"] = linhas
+    return out
+
+
+async def _get_saldo_lote_by_id_or_404(saldo_lote_id: str, tenant_id: str) -> dict:
+    saldo = await db.estoque_saldos_lote.find_one(
+        {"id": saldo_lote_id, "tenant_id": tenant_id, "status": {"$ne": "zerado"}},
+        {"_id": 0},
+    )
+    if not saldo:
+        raise HTTPException(status_code=404, detail="Saldo WMS por lote/endereco nao encontrado")
+    return saldo
+
+
+async def _destinacao_pendente_quantidade(saldo_lote_id: str, tenant_id: str, exclude_id: str = "") -> float:
+    if not hasattr(db, "wms_destinacoes"):
+        return 0.0
+    docs = await db.wms_destinacoes.find(
+        {
+            "tenant_id": tenant_id,
+            "saldo_lote_id": saldo_lote_id,
+            "status": {"$in": WMS_DESTINACAO_ACTIVE_STATUSES},
+        },
+        {"_id": 0},
+    ).to_list(1000)
+    return sum(float(doc.get("quantidade") or 0) for doc in docs if doc.get("id") != exclude_id)
 
 
 async def _get_wms_endereco_or_404(endereco_id: str, tenant_id: str) -> dict:
@@ -917,6 +1035,448 @@ async def listar_saldos_lote(
     if somente_com_saldo:
         saldos = [s for s in saldos if _saldo_quantidade(s) > 0]
     return {"saldos": saldos, "total": len(saldos)}
+
+
+@estoque_router.get("/wms/inventarios-ciclicos")
+async def listar_inventarios_ciclicos(
+    request: Request,
+    status: Optional[str] = None,
+    limit: int = 100,
+):
+    user = await _get_current_user(request)
+    await _require_estoque_feature(user["tenant_id"], WMS_CYCLE_COUNT_FLAG)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if status:
+        if status not in WMS_INVENTARIO_STATUSES:
+            raise HTTPException(status_code=422, detail=f"Status invalido. Valores: {WMS_INVENTARIO_STATUSES}")
+        query["status"] = status
+    safe_limit = max(1, min(int(limit or 100), 500))
+    docs = await db.wms_inventarios_ciclicos.find(query, {"_id": 0}).sort("created_at", -1).to_list(safe_limit)
+    return {"inventarios": [_serialize_inventario(doc, reveal_system=False) for doc in docs], "total": len(docs)}
+
+
+@estoque_router.post("/wms/inventarios-ciclicos", status_code=201)
+async def criar_inventario_ciclico(data: InventarioCiclicoCreate, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, WMS_CYCLE_COUNT_FLAG)
+    if data.setor and data.setor not in SETORES:
+        raise HTTPException(status_code=422, detail=f"Setor invalido. Valores: {SETORES}")
+
+    saldos = await db.estoque_saldos_lote.find(
+        {"tenant_id": tid, "status": {"$ne": "zerado"}},
+        {"_id": 0},
+    ).to_list(50000)
+    item_filter = set(data.item_ids or [])
+    endereco_filter = set(data.endereco_ids or [])
+    linhas = []
+    for saldo in saldos:
+        quantidade = _saldo_quantidade(saldo)
+        if data.somente_com_saldo and quantidade <= 0:
+            continue
+        if data.setor and saldo.get("setor") != data.setor:
+            continue
+        if item_filter and saldo.get("item_id") not in item_filter:
+            continue
+        if endereco_filter and saldo.get("endereco_id") not in endereco_filter:
+            continue
+        linhas.append({
+            "saldo_lote_id": saldo.get("id"),
+            "item_id": saldo.get("item_id"),
+            "item_nome": saldo.get("item_nome", ""),
+            "codigo_item": saldo.get("codigo_item", ""),
+            "lote": saldo.get("lote", ""),
+            "validade": saldo.get("validade"),
+            "endereco_id": saldo.get("endereco_id"),
+            "endereco_codigo": saldo.get("endereco_codigo", ""),
+            "setor": saldo.get("setor", ""),
+            "unidade": saldo.get("unidade", "un"),
+            "quantidade_sistema": quantidade,
+            "quantidade_contada": None,
+            "divergencia": None,
+            "divergencia_abs": None,
+            "status": "pendente",
+            "observacoes": "",
+        })
+
+    if not linhas:
+        raise HTTPException(status_code=422, detail="Nenhum saldo elegivel para inventario ciclico")
+
+    now = _now_iso()
+    inventario = {
+        "id": _new_id(),
+        "tenant_id": tid,
+        "titulo": data.titulo.strip() or "Inventario ciclico WMS",
+        "status": "aberto",
+        "setor": data.setor,
+        "item_ids": data.item_ids,
+        "endereco_ids": data.endereco_ids,
+        "somente_com_saldo": data.somente_com_saldo,
+        "blind_count": True,
+        "linhas": linhas,
+        "total_linhas": len(linhas),
+        "linhas_contadas": 0,
+        "linhas_com_divergencia": 0,
+        "ajustes_aplicados": False,
+        "ajuste_movimento_ids": [],
+        "observacoes": data.observacoes,
+        "created_by": user["id"],
+        "created_by_name": user["name"],
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.wms_inventarios_ciclicos.insert_one(inventario)
+    return _serialize_inventario(inventario, reveal_system=False)
+
+
+@estoque_router.get("/wms/inventarios-ciclicos/{inventario_id}")
+async def obter_inventario_ciclico(
+    inventario_id: str,
+    request: Request,
+    reveal_system: bool = False,
+):
+    user = await _get_current_user(request)
+    await _require_estoque_feature(user["tenant_id"], WMS_CYCLE_COUNT_FLAG)
+    inventario = await db.wms_inventarios_ciclicos.find_one(
+        {"id": inventario_id, "tenant_id": user["tenant_id"]},
+        {"_id": 0},
+    )
+    if not inventario:
+        raise HTTPException(status_code=404, detail="Inventario ciclico nao encontrado")
+    return _serialize_inventario(inventario, reveal_system=reveal_system)
+
+
+@estoque_router.post("/wms/inventarios-ciclicos/{inventario_id}/contagens")
+async def registrar_contagem_inventario_ciclico(
+    inventario_id: str,
+    data: InventarioCiclicoContagem,
+    request: Request,
+):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, WMS_CYCLE_COUNT_FLAG)
+    if not data.linhas:
+        raise HTTPException(status_code=422, detail="Informe ao menos uma linha de contagem")
+
+    inventario = await db.wms_inventarios_ciclicos.find_one({"id": inventario_id, "tenant_id": tid}, {"_id": 0})
+    if not inventario:
+        raise HTTPException(status_code=404, detail="Inventario ciclico nao encontrado")
+    if inventario.get("status") not in {"aberto", "em_contagem"}:
+        raise HTTPException(status_code=422, detail="Inventario ciclico nao aceita novas contagens")
+
+    counts = {linha.saldo_lote_id: linha for linha in data.linhas}
+    now = _now_iso()
+    linhas = []
+    found = set()
+    for linha in inventario.get("linhas") or []:
+        updated = dict(linha)
+        payload = counts.get(linha.get("saldo_lote_id"))
+        if payload:
+            found.add(payload.saldo_lote_id)
+            contado = float(payload.quantidade_contada)
+            sistema = float(linha.get("quantidade_sistema") or 0)
+            divergencia = contado - sistema
+            updated.update({
+                "quantidade_contada": contado,
+                "divergencia": divergencia,
+                "divergencia_abs": abs(divergencia),
+                "status": "contado",
+                "observacoes": payload.observacoes,
+                "contado_por": user["id"],
+                "contado_por_name": user["name"],
+                "contado_em": now,
+            })
+        linhas.append(updated)
+
+    missing = set(counts.keys()) - found
+    if missing:
+        raise HTTPException(status_code=404, detail=f"Linha(s) de saldo nao encontrada(s): {sorted(missing)}")
+
+    linhas_contadas = sum(1 for linha in linhas if linha.get("status") == "contado")
+    linhas_com_divergencia = sum(1 for linha in linhas if float(linha.get("divergencia_abs") or 0) > 0.0001)
+    await db.wms_inventarios_ciclicos.update_one(
+        {"id": inventario_id, "tenant_id": tid},
+        {"$set": {
+            "linhas": linhas,
+            "linhas_contadas": linhas_contadas,
+            "linhas_com_divergencia": linhas_com_divergencia,
+            "status": "em_contagem",
+            "ultima_contagem_observacoes": data.observacoes,
+            "updated_at": now,
+        }},
+    )
+    refreshed = await db.wms_inventarios_ciclicos.find_one({"id": inventario_id, "tenant_id": tid}, {"_id": 0})
+    return _serialize_inventario(refreshed, reveal_system=False)
+
+
+@estoque_router.post("/wms/inventarios-ciclicos/{inventario_id}/fechar")
+async def fechar_inventario_ciclico(
+    inventario_id: str,
+    data: InventarioCiclicoFechamento,
+    request: Request,
+):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, WMS_CYCLE_COUNT_FLAG)
+    if data.aplicar_ajustes and not data.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio para aplicar ajustes do inventario")
+
+    inventario = await db.wms_inventarios_ciclicos.find_one({"id": inventario_id, "tenant_id": tid}, {"_id": 0})
+    if not inventario:
+        raise HTTPException(status_code=404, detail="Inventario ciclico nao encontrado")
+    if inventario.get("status") not in {"aberto", "em_contagem"}:
+        raise HTTPException(status_code=422, detail="Inventario ciclico ja fechado ou cancelado")
+
+    linhas = inventario.get("linhas") or []
+    pendentes = [linha.get("saldo_lote_id") for linha in linhas if linha.get("status") != "contado"]
+    if pendentes:
+        raise HTTPException(status_code=422, detail={"message": "Existem linhas pendentes de contagem", "pendentes": pendentes})
+
+    movimento_ids = []
+    if data.aplicar_ajustes:
+        for linha in linhas:
+            divergencia_abs = float(linha.get("divergencia_abs") or 0)
+            if divergencia_abs <= 0.0001:
+                continue
+            current = await db.estoque_saldos_lote.find_one({"id": linha.get("saldo_lote_id"), "tenant_id": tid}, {"_id": 0})
+            if not current:
+                raise HTTPException(status_code=409, detail=f"Saldo nao encontrado para ajuste: {linha.get('saldo_lote_id')}")
+            current_qty = _saldo_quantidade(current)
+            snap_qty = float(linha.get("quantidade_sistema") or 0)
+            if abs(current_qty - snap_qty) > 0.0001:
+                raise HTTPException(
+                    status_code=409,
+                    detail={
+                        "message": "Saldo mudou apos abertura do inventario. Reabra a contagem antes de ajustar.",
+                        "saldo_lote_id": linha.get("saldo_lote_id"),
+                        "quantidade_snapshot": snap_qty,
+                        "quantidade_atual": current_qty,
+                    },
+                )
+            ajuste = await ajustar_saldo_lote(
+                AjusteSaldoLoteCreate(
+                    item_id=linha.get("item_id"),
+                    lote=linha.get("lote") or "",
+                    endereco_id=linha.get("endereco_id"),
+                    quantidade=float(linha.get("quantidade_contada") or 0),
+                    modo="absoluto",
+                    motivo=f"Inventario ciclico {inventario.get('id')}: {data.motivo.strip()}",
+                    documento=inventario.get("id"),
+                    validade=linha.get("validade"),
+                ),
+                request,
+            )
+            movimento = ajuste.get("movimento") or {}
+            if movimento.get("id"):
+                movimento_ids.append(movimento["id"])
+
+    now = _now_iso()
+    await db.wms_inventarios_ciclicos.update_one(
+        {"id": inventario_id, "tenant_id": tid},
+        {"$set": {
+            "status": "fechado",
+            "ajustes_aplicados": bool(data.aplicar_ajustes),
+            "ajuste_movimento_ids": movimento_ids,
+            "fechado_por": user["id"],
+            "fechado_por_name": user["name"],
+            "fechado_em": now,
+            "fechamento_observacoes": data.observacoes,
+            "updated_at": now,
+        }},
+    )
+    refreshed = await db.wms_inventarios_ciclicos.find_one({"id": inventario_id, "tenant_id": tid}, {"_id": 0})
+    return _serialize_inventario(refreshed, reveal_system=True)
+
+
+@estoque_router.get("/wms/destinacoes")
+async def listar_wms_destinacoes(
+    request: Request,
+    status: Optional[str] = None,
+    tipo: Optional[str] = None,
+    limit: int = 100,
+):
+    user = await _get_current_user(request)
+    await _require_estoque_feature(user["tenant_id"], PCP_DISPOSAL_FLAG)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if status:
+        query["status"] = status
+    if tipo:
+        query["tipo"] = tipo
+    safe_limit = max(1, min(int(limit or 100), 500))
+    docs = await db.wms_destinacoes.find(query, {"_id": 0}).sort("created_at", -1).to_list(safe_limit)
+    return {"destinacoes": docs, "total": len(docs)}
+
+
+@estoque_router.post("/wms/destinacoes", status_code=201)
+async def criar_wms_destinacao(data: WMSDestinacaoCreate, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, PCP_DISPOSAL_FLAG)
+    if data.tipo not in WMS_DESTINACAO_TIPOS:
+        raise HTTPException(status_code=422, detail=f"Tipo invalido. Valores: {WMS_DESTINACAO_TIPOS}")
+    if not data.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio para destinacao")
+
+    saldo = await _get_saldo_lote_by_id_or_404(data.saldo_lote_id, tid)
+    atual = _saldo_quantidade(saldo)
+    pendente = await _destinacao_pendente_quantidade(data.saldo_lote_id, tid)
+    if data.quantidade + pendente > atual + 0.0001:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Quantidade excede saldo disponivel para destinacao.",
+                "saldo_atual": atual,
+                "quantidade_pendente": pendente,
+                "quantidade_solicitada": data.quantidade,
+            },
+        )
+
+    now = _now_iso()
+    doc = {
+        "id": _new_id(),
+        "tenant_id": tid,
+        "saldo_lote_id": saldo.get("id"),
+        "item_id": saldo.get("item_id"),
+        "item_nome": saldo.get("item_nome", ""),
+        "codigo_item": saldo.get("codigo_item", ""),
+        "lote": saldo.get("lote", ""),
+        "validade": saldo.get("validade"),
+        "endereco_id": saldo.get("endereco_id"),
+        "endereco_codigo": saldo.get("endereco_codigo", ""),
+        "setor": saldo.get("setor", ""),
+        "unidade": saldo.get("unidade", "un"),
+        "quantidade": float(data.quantidade),
+        "quantidade_sistema_snapshot": atual,
+        "tipo": data.tipo,
+        "motivo": data.motivo.strip(),
+        "destino": data.destino.strip(),
+        "origem_tipo": data.origem_tipo.strip(),
+        "origem_id": data.origem_id.strip(),
+        "status": "solicitado",
+        "baixa_aplicada": False,
+        "movimento_id": None,
+        "observacoes": data.observacoes,
+        "created_by": user["id"],
+        "created_by_name": user["name"],
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.wms_destinacoes.insert_one(doc)
+    return _serialize(doc)
+
+
+@estoque_router.put("/wms/destinacoes/{destinacao_id}/coleta")
+async def programar_coleta_wms_destinacao(destinacao_id: str, data: WMSDestinacaoColeta, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, PCP_DISPOSAL_FLAG)
+    doc = await db.wms_destinacoes.find_one({"id": destinacao_id, "tenant_id": tid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Destinacao WMS nao encontrada")
+    if doc.get("status") not in WMS_DESTINACAO_ACTIVE_STATUSES:
+        raise HTTPException(status_code=422, detail="Destinacao nao aceita programacao de coleta")
+
+    now = _now_iso()
+    await db.wms_destinacoes.update_one(
+        {"id": destinacao_id, "tenant_id": tid},
+        {"$set": {
+            "status": "coleta_programada",
+            "coleta": {
+                "data_coleta": data.data_coleta,
+                "responsavel": data.responsavel,
+                "documento": data.documento,
+                "observacoes": data.observacoes,
+                "programada_por": user["id"],
+                "programada_por_name": user["name"],
+                "programada_em": now,
+            },
+            "updated_at": now,
+        }},
+    )
+    return await db.wms_destinacoes.find_one({"id": destinacao_id, "tenant_id": tid}, {"_id": 0})
+
+
+@estoque_router.post("/wms/destinacoes/{destinacao_id}/confirmar")
+async def confirmar_wms_destinacao(destinacao_id: str, data: WMSDestinacaoConfirm, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, PCP_DISPOSAL_FLAG)
+    doc = await db.wms_destinacoes.find_one({"id": destinacao_id, "tenant_id": tid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Destinacao WMS nao encontrada")
+    if doc.get("status") == "confirmado":
+        return doc
+    if doc.get("status") == "cancelado":
+        raise HTTPException(status_code=422, detail="Destinacao cancelada nao pode ser confirmada")
+
+    saldo = await _get_saldo_lote_by_id_or_404(doc.get("saldo_lote_id"), tid)
+    atual = _saldo_quantidade(saldo)
+    quantidade = float(doc.get("quantidade") or 0)
+    if quantidade > atual + 0.0001:
+        raise HTTPException(status_code=409, detail=f"Saldo insuficiente para confirmar destinacao: {atual}")
+
+    ajuste = await ajustar_saldo_lote(
+        AjusteSaldoLoteCreate(
+            item_id=doc.get("item_id"),
+            lote=doc.get("lote") or "",
+            endereco_id=doc.get("endereco_id"),
+            quantidade=quantidade,
+            modo="saida",
+            motivo=f"Destinacao WMS {doc.get('id')} - {doc.get('tipo')}: {doc.get('motivo')}",
+            documento=data.documento_destino or doc.get("id"),
+            validade=doc.get("validade"),
+        ),
+        request,
+    )
+    movimento = ajuste.get("movimento") or {}
+    now = _now_iso()
+    await db.wms_destinacoes.update_one(
+        {"id": destinacao_id, "tenant_id": tid},
+        {"$set": {
+            "status": "confirmado",
+            "baixa_aplicada": True,
+            "movimento_id": movimento.get("id"),
+            "documento_destino": data.documento_destino,
+            "comprovante": data.comprovante,
+            "confirmacao_observacoes": data.observacoes,
+            "confirmado_por": user["id"],
+            "confirmado_por_name": user["name"],
+            "confirmado_em": now,
+            "updated_at": now,
+        }},
+    )
+    return await db.wms_destinacoes.find_one({"id": destinacao_id, "tenant_id": tid}, {"_id": 0})
+
+
+@estoque_router.post("/wms/destinacoes/{destinacao_id}/cancelar")
+async def cancelar_wms_destinacao(destinacao_id: str, data: WMSDestinacaoCancel, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, PCP_DISPOSAL_FLAG)
+    if not data.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio para cancelar destinacao")
+
+    doc = await db.wms_destinacoes.find_one({"id": destinacao_id, "tenant_id": tid}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Destinacao WMS nao encontrada")
+    if doc.get("status") == "confirmado":
+        raise HTTPException(status_code=422, detail="Destinacao confirmada nao pode ser cancelada")
+    if doc.get("status") == "cancelado":
+        return doc
+
+    now = _now_iso()
+    await db.wms_destinacoes.update_one(
+        {"id": destinacao_id, "tenant_id": tid},
+        {"$set": {
+            "status": "cancelado",
+            "cancelado_por": user["id"],
+            "cancelado_por_name": user["name"],
+            "cancelado_em": now,
+            "cancelamento_motivo": data.motivo.strip(),
+            "updated_at": now,
+        }},
+    )
+    return await db.wms_destinacoes.find_one({"id": destinacao_id, "tenant_id": tid}, {"_id": 0})
 
 
 @estoque_router.post("/wms/saldos/ajustar")
