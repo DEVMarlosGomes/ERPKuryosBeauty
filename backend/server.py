@@ -2137,6 +2137,22 @@ async def startup():
     await db.pd_developments.create_index("tenant_id")
     await db.pd_formulas.create_index("development_id")
     await db.pd_formula_items.create_index("formula_id")
+    await db.formula_client_links.create_index([("tenant_id", 1), ("formula_id", 1), ("status", 1)])
+    await db.formula_client_links.create_index([("tenant_id", 1), ("cliente_id", 1), ("status", 1)])
+    await db.formula_client_links.create_index(
+        [("tenant_id", 1), ("formula_id", 1), ("idempotency_key", 1)],
+        unique=True,
+        partialFilterExpression={"idempotency_key": {"$type": "string"}},
+    )
+    try:
+        await db.formula_client_links.create_index(
+            [("tenant_id", 1), ("formula_id", 1), ("cliente_id", 1), ("uso_comercial", 1)],
+            unique=True,
+            name="uniq_active_formula_client_usage",
+            partialFilterExpression={"status": {"$in": ["ativo", "em_validacao"]}},
+        )
+    except (DuplicateKeyError, OperationFailure) as exc:
+        logger.warning("Nao foi possivel criar indice unico de vinculo formula-cliente ativo: %s", exc)
     await db.pd_tests.create_index("development_id")
     await db.pd_samples.create_index("development_id")
     await db.pd_approvals.create_index("development_id")

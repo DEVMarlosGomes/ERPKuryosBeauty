@@ -15,6 +15,8 @@ import io
 import logging
 import asyncio
 import unicodedata
+import re
+from pymongo.errors import DuplicateKeyError
 from validation_utils import clean_text, normalize_cnpj, normalize_email, normalize_phone, is_valid_cnpj, is_valid_email, is_valid_phone
 from workflow_engine import create_workflow_task, audit_log, get_blocking_tasks, next_sequence
 from rbac import (
@@ -464,6 +466,27 @@ class FormulaItemUpdate(BaseModel):
     phase: Optional[str] = None
     function: Optional[str] = None
     catalog_id: Optional[str] = None
+
+FORMULA_CLIENT_LINKS_FLAG = "formula_client_links_v2"
+FORMULA_CLIENT_LINK_ACTIVE_STATUSES = {"ativo", "em_validacao"}
+FORMULA_CLIENT_LINK_STATUSES = {"ativo", "em_validacao", "inativo"}
+
+
+class FormulaClientLinkCreate(BaseModel):
+    cliente_id: str
+    uso_comercial: str = "produto_cliente"
+    projeto_id: Optional[str] = None
+    sku_id: Optional[str] = None
+    produto_pai_id: Optional[str] = None
+    observacoes: str = ""
+    idempotency_key: Optional[str] = None
+
+
+class FormulaClientLinkUpdate(BaseModel):
+    status: Optional[str] = None
+    observacoes: Optional[str] = None
+    reason: Optional[str] = None
+
 
 class TestCreate(BaseModel):
     test_type: str
@@ -2387,6 +2410,308 @@ async def formula_bank(
         reverse=True,
     )
     return result
+
+
+async def _require_formula_client_links_feature(tenant_id: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _feature_value_enabled(features.get(FORMULA_CLIENT_LINKS_FLAG)):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Vinculo formula-cliente em rollout controlado.",
+                "feature": FORMULA_CLIENT_LINKS_FLAG,
+            },
+        )
+
+
+def _formula_client_usage(value: str) -> str:
+    usage = clean_text(value).lower() or "produto_cliente"
+    if not re.match(r"^[a-z0-9_:-]{3,60}$", usage):
+        raise HTTPException(status_code=422, detail="uso_comercial invalido para vinculo formula-cliente.")
+    return usage
+
+
+async def _formula_client_link_context(formula_id: str, tenant_id: str) -> Dict[str, Any]:
+    formula = await db.pd_formulas.find_one({"id": formula_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not formula:
+        raise HTTPException(status_code=404, detail="Formula nao encontrada")
+    dev = await db.pd_developments.find_one(
+        {"id": formula.get("development_id"), "tenant_id": tenant_id},
+        {"_id": 0},
+    ) if formula.get("development_id") else None
+    pd_req = await db.pd_requests.find_one(
+        {"id": (dev or {}).get("pd_request_id"), "tenant_id": tenant_id},
+        {"_id": 0},
+    ) if (dev or {}).get("pd_request_id") else None
+    approval = await db.pd_approvals.find_one(
+        {"development_id": formula.get("development_id"), "tenant_id": tenant_id},
+        {"_id": 0},
+    ) if formula.get("development_id") and hasattr(db, "pd_approvals") else None
+    return {"formula": formula, "development": dev, "pd_request": pd_req, "approval": approval}
+
+
+def _formula_client_link_initial_status(context: Dict[str, Any]) -> str:
+    formula = context.get("formula") or {}
+    approval = context.get("approval") or {}
+    is_registered = (
+        bool(formula.get("locked"))
+        and bool(approval.get("approved_by_client"))
+        and bool(approval.get("approved_by_internal"))
+    )
+    return "ativo" if is_registered else "em_validacao"
+
+
+async def _validate_formula_client_link_refs(data: FormulaClientLinkCreate, tenant_id: str) -> Dict[str, Any]:
+    cliente_id = clean_text(data.cliente_id)
+    if not cliente_id:
+        raise HTTPException(status_code=422, detail="cliente_id e obrigatorio.")
+    client = await db.crm_clients.find_one({"id": cliente_id, "tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "crm_clients") else None
+    if not client:
+        raise HTTPException(status_code=404, detail="Cliente nao encontrado.")
+
+    project = None
+    if data.projeto_id:
+        project = await db.crm_projects.find_one(
+            {"id": clean_text(data.projeto_id), "tenant_id": tenant_id, "cliente_id": cliente_id},
+            {"_id": 0},
+        )
+        if not project:
+            raise HTTPException(status_code=404, detail="Projeto do cliente nao encontrado.")
+
+    sku = None
+    if data.sku_id:
+        sku = await db.skus.find_one(
+            {"id": clean_text(data.sku_id), "tenant_id": tenant_id, "cliente_id": cliente_id},
+            {"_id": 0},
+        ) if hasattr(db, "skus") else None
+        if not sku:
+            raise HTTPException(status_code=404, detail="SKU do cliente nao encontrado.")
+
+    produto_pai = None
+    if data.produto_pai_id:
+        produto_pai = await db.produtos_pai.find_one(
+            {"id": clean_text(data.produto_pai_id), "tenant_id": tenant_id, "cliente_id": cliente_id},
+            {"_id": 0},
+        ) if hasattr(db, "produtos_pai") else None
+        if not produto_pai:
+            raise HTTPException(status_code=404, detail="Produto-Pai do cliente nao encontrado.")
+
+    return {"client": client, "project": project, "sku": sku, "produto_pai": produto_pai}
+
+
+@pd_router.get("/formulas/{formula_id}/client-links")
+async def list_formula_client_links(formula_id: str, request: Request, include_inactive: bool = False):
+    user = await get_current_user(request)
+    require_roles(user, PD_READ | COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_formula_client_links_feature(tenant_id)
+    await _formula_client_link_context(formula_id, tenant_id)
+
+    query = {"tenant_id": tenant_id, "formula_id": formula_id}
+    if not include_inactive:
+        query["status"] = {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)}
+    docs = await db.formula_client_links.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return {"links": docs, "count": len(docs)}
+
+
+@pd_router.post("/formulas/{formula_id}/client-links")
+async def create_formula_client_link(formula_id: str, data: FormulaClientLinkCreate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE | COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_formula_client_links_feature(tenant_id)
+    context = await _formula_client_link_context(formula_id, tenant_id)
+    refs = await _validate_formula_client_link_refs(data, tenant_id)
+    usage = _formula_client_usage(data.uso_comercial)
+    idempotency_key = clean_text(data.idempotency_key)
+    cliente_id = clean_text(data.cliente_id)
+
+    if idempotency_key:
+        existing = await db.formula_client_links.find_one(
+            {
+                "tenant_id": tenant_id,
+                "formula_id": formula_id,
+                "idempotency_key": idempotency_key,
+            },
+            {"_id": 0},
+        )
+        if existing:
+            existing["idempotent_replay"] = True
+            return existing
+
+    existing_active = await db.formula_client_links.find_one(
+        {
+            "tenant_id": tenant_id,
+            "formula_id": formula_id,
+            "cliente_id": cliente_id,
+            "uso_comercial": usage,
+            "status": {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)},
+        },
+        {"_id": 0},
+    )
+    if existing_active:
+        existing_active["already_exists"] = True
+        return existing_active
+
+    now = now_iso()
+    initial_status = _formula_client_link_initial_status(context)
+    approval = context.get("approval") or {}
+    link = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "formula_id": formula_id,
+        "development_id": context["formula"].get("development_id"),
+        "pd_request_id": (context.get("pd_request") or {}).get("id"),
+        "cliente_id": cliente_id,
+        "cliente_nome": refs["client"].get("nome_empresa") or refs["client"].get("name") or "",
+        "uso_comercial": usage,
+        "projeto_id": clean_text(data.projeto_id) or None,
+        "sku_id": clean_text(data.sku_id) or None,
+        "produto_pai_id": clean_text(data.produto_pai_id) or None,
+        "status": initial_status,
+        "observacoes": data.observacoes or "",
+        "formula_snapshot": {
+            "name": context["formula"].get("name"),
+            "version": context["formula"].get("version"),
+            "locked": context["formula"].get("locked", False),
+            "approved_by_client": bool(approval.get("approved_by_client")),
+            "approved_by_internal": bool(approval.get("approved_by_internal")),
+            "is_registered": initial_status == "ativo",
+            "created_at": context["formula"].get("created_at"),
+        },
+        "source_request_snapshot": {
+            "project_name": (context.get("pd_request") or {}).get("project_name"),
+            "client_name": (context.get("pd_request") or {}).get("client_name"),
+            "status": (context.get("pd_request") or {}).get("status"),
+        },
+        "feature": FORMULA_CLIENT_LINKS_FLAG,
+        "created_by": user["id"],
+        "created_by_name": user.get("name", ""),
+        "created_at": now,
+        "updated_at": now,
+    }
+    if idempotency_key:
+        link["idempotency_key"] = idempotency_key
+
+    try:
+        await db.formula_client_links.insert_one(link)
+    except DuplicateKeyError:
+        if idempotency_key:
+            existing = await db.formula_client_links.find_one(
+                {
+                    "tenant_id": tenant_id,
+                    "formula_id": formula_id,
+                    "idempotency_key": idempotency_key,
+                },
+                {"_id": 0},
+            )
+            if existing:
+                existing["idempotent_replay"] = True
+                return existing
+        existing_active = await db.formula_client_links.find_one(
+            {
+                "tenant_id": tenant_id,
+                "formula_id": formula_id,
+                "cliente_id": cliente_id,
+                "uso_comercial": usage,
+                "status": {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)},
+            },
+            {"_id": 0},
+        )
+        if existing_active:
+            existing_active["already_exists"] = True
+            return existing_active
+        raise
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="formula_client_link_created",
+        entity_type="formula_client_link",
+        entity_id=link["id"],
+        after={"formula_id": formula_id, "cliente_id": cliente_id, "uso_comercial": usage},
+        metadata={"feature": FORMULA_CLIENT_LINKS_FLAG},
+    )
+    link.pop("_id", None)
+    return link
+
+
+@pd_router.put("/formulas/{formula_id}/client-links/{link_id}")
+async def update_formula_client_link(formula_id: str, link_id: str, data: FormulaClientLinkUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE | COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_formula_client_links_feature(tenant_id)
+    link = await db.formula_client_links.find_one(
+        {"id": link_id, "tenant_id": tenant_id, "formula_id": formula_id},
+        {"_id": 0},
+    )
+    if not link:
+        raise HTTPException(status_code=404, detail="Vinculo formula-cliente nao encontrado.")
+
+    updates: Dict[str, Any] = {"updated_at": now_iso()}
+    if data.status is not None:
+        status = clean_text(data.status).lower()
+        if status not in FORMULA_CLIENT_LINK_STATUSES:
+            raise HTTPException(status_code=422, detail=f"status invalido. Use: {sorted(FORMULA_CLIENT_LINK_STATUSES)}")
+        if status in FORMULA_CLIENT_LINK_ACTIVE_STATUSES:
+            existing_active = await db.formula_client_links.find_one(
+                {
+                    "tenant_id": tenant_id,
+                    "formula_id": formula_id,
+                    "cliente_id": link.get("cliente_id"),
+                    "uso_comercial": link.get("uso_comercial"),
+                    "status": {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)},
+                },
+                {"_id": 0},
+            )
+            if existing_active and existing_active.get("id") != link_id:
+                raise HTTPException(status_code=409, detail="Ja existe vinculo ativo para esta formula/cliente/uso.")
+        if status == "inativo":
+            reason = clean_text(data.reason)
+            if len(reason) < 5:
+                raise HTTPException(status_code=422, detail="reason e obrigatorio para inativar o vinculo.")
+            updates["inactivated_at"] = updates["updated_at"]
+            updates["inactivated_by"] = user["id"]
+            updates["inactivated_by_name"] = user.get("name", "")
+            updates["inactivation_reason"] = reason
+        updates["status"] = status
+    if data.observacoes is not None:
+        updates["observacoes"] = data.observacoes
+
+    unset_fields = {}
+    if updates.get("status") in FORMULA_CLIENT_LINK_ACTIVE_STATUSES:
+        unset_fields = {
+            "inactivated_at": "",
+            "inactivated_by": "",
+            "inactivated_by_name": "",
+            "inactivation_reason": "",
+        }
+
+    update_doc = {"$set": updates}
+    if unset_fields:
+        update_doc["$unset"] = unset_fields
+
+    await db.formula_client_links.update_one(
+        {"id": link_id, "tenant_id": tenant_id, "formula_id": formula_id},
+        update_doc,
+    )
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="formula_client_link_updated",
+        entity_type="formula_client_link",
+        entity_id=link_id,
+        after=updates,
+        metadata={"feature": FORMULA_CLIENT_LINKS_FLAG, "formula_id": formula_id},
+    )
+    updated = await db.formula_client_links.find_one(
+        {"id": link_id, "tenant_id": tenant_id, "formula_id": formula_id},
+        {"_id": 0},
+    )
+    return updated
 
 @pd_router.post("/formulas/{formula_id}/items")
 async def add_formula_item(formula_id: str, data: FormulaItemCreate, request: Request):

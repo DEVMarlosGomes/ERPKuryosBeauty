@@ -13,7 +13,9 @@ Testes:
 - Backend focado pacote comercial: `5 passed`.
 - Backend focado anexos unificados: `16 passed`.
 - Backend focado card governance: `5 passed`.
-- Backend completo: `121 passed, 278 skipped`.
+- Backend focado vinculo formula-cliente: `13 passed`.
+- Backend focado DELTA acumulado: `63 passed`.
+- Backend completo: `134 passed, 278 skipped`.
 - Frontend build: `Compiled successfully`.
 
 Arquivos alterados:
@@ -26,6 +28,7 @@ Arquivos alterados:
 - `backend/pd_routes.py`
 - `backend/server.py`
 - `backend/tests/test_card_governance_unit.py`
+- `backend/tests/test_formula_client_links_unit.py`
 - `backend/tests/test_unified_attachments_unit.py`
 - `backend/tests/test_pcp_allocations_unit.py`
 - `backend/tests/test_pcp_alerts_unit.py`
@@ -55,3 +58,4 @@ Slices cobertos:
 - Slice 10: backend inicial de pacote comercial por aprovacao de amostra.
 - Slice 11: backend inicial de anexos unificados em object storage.
 - Slice 12: backend inicial de V21 card governance.
+- Slice 13: backend inicial de vinculo formula-cliente para banco de formulas V21.

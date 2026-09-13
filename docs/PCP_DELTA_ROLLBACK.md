@@ -254,3 +254,27 @@ Rollback de codigo:
 - remover modelos/helpers/rotas de governanca de `backend/pd_routes.py`;
 - remover indices `is_deleted` adicionados em `backend/server.py`;
 - remover `backend/tests/test_card_governance_unit.py`.
+
+## Slice 13 - `formula_client_links_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.formula_client_links_v2`.
+2. Parar de chamar as rotas `/api/pd/formulas/{formula_id}/client-links`.
+3. Manter `formula_client_links` como historico/auditoria dos vinculos ja criados.
+4. Continuar usando banco de formulas, Produto-Pai/BOM, SKU, projetos e clientes atuais.
+
+Dados opcionais que podem permanecer:
+- documentos em `formula_client_links`;
+- `formula_snapshot`;
+- `source_request_snapshot`;
+- `idempotency_key`;
+- campos de inativacao e auditoria.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia novas leituras/escritas pelas rotas adicionadas e preserva os
+fluxos comerciais e de P&D existentes.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas de vinculo formula-cliente de `backend/pd_routes.py`;
+- remover indices `formula_client_links` adicionados em `backend/server.py`;
+- remover `backend/tests/test_formula_client_links_unit.py`.

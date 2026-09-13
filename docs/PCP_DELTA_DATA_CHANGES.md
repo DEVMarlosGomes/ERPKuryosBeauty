@@ -481,3 +481,51 @@ Compatibilidade:
 - documentos sem `is_deleted` continuam validos;
 - listagens antigas nao foram alteradas para filtrar estes campos nesta fase;
 - restore preserva o status funcional original do documento.
+
+## Nova colecao `formula_client_links`
+
+Vinculos comerciais explicitos entre formulas existentes do banco de formulas e clientes, sem substituir formula, BOM,
+Produto-Pai, SKU ou projeto comercial.
+
+Campos principais:
+
+```text
+id
+tenant_id
+formula_id
+development_id
+pd_request_id
+cliente_id
+cliente_nome
+uso_comercial
+projeto_id
+sku_id
+produto_pai_id
+status
+observacoes
+formula_snapshot
+source_request_snapshot
+idempotency_key
+feature
+created_by
+created_by_name
+created_at
+updated_at
+inactivated_at
+inactivated_by
+inactivated_by_name
+inactivation_reason
+```
+
+Indices candidatos:
+- `formula_client_links(tenant_id, formula_id, status)`;
+- `formula_client_links(tenant_id, cliente_id, status)`;
+- `formula_client_links(tenant_id, formula_id, idempotency_key)` unico e parcial para chaves string;
+- `formula_client_links(tenant_id, formula_id, cliente_id, uso_comercial)` unico e parcial para `ativo`/`em_validacao`.
+
+Compatibilidade:
+- a colecao e add-only e nao altera documentos existentes de formulas, produtos, SKUs, projetos ou clientes;
+- vinculos inativos permanecem como historico;
+- formulas ainda nao registradas geram vinculos `em_validacao`, sem promover uso comercial ativo automaticamente;
+- documentos sem `idempotency_key` continuam validos e nao entram no indice parcial de replay;
+- `formula_snapshot` e `source_request_snapshot` sao snapshots auxiliares e nao passam a ser fonte transacional.

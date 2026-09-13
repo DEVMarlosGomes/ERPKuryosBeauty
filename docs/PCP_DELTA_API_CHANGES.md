@@ -609,3 +609,63 @@ Regras:
 - `APPROVED` e `COMPLETED` nao podem ser arquivados;
 - archive/restore replica os campos de governanca em `pd_cards` vinculados;
 - DELETEs existentes permanecem disponiveis e inalterados nesta fase.
+
+## Slice 13 - V21 formula bank e vinculo formula-cliente
+
+Rotas add-only ativadas por `tenant_settings.features.formula_client_links_v2`.
+
+## `GET /api/pd/formulas/{formula_id}/client-links`
+
+Lista vinculos formula-cliente da formula.
+
+Parametros:
+- `include_inactive`: inclui vinculos inativos quando `true`.
+
+## `POST /api/pd/formulas/{formula_id}/client-links`
+
+Cria um vinculo comercial entre formula existente e cliente.
+
+Payload:
+
+```json
+{
+  "cliente_id": "client-1",
+  "uso_comercial": "produto_cliente",
+  "projeto_id": "project-1",
+  "sku_id": "sku-1",
+  "produto_pai_id": "pai-1",
+  "observacoes": "Uso aprovado para linha derivada",
+  "idempotency_key": "formula-1-client-1-produto"
+}
+```
+
+Regras:
+- formula e cliente precisam existir no mesmo tenant;
+- projeto/SKU/Produto-Pai, quando informados, precisam pertencer ao cliente;
+- `uso_comercial` aceita identificador normalizado;
+- `idempotency_key` repetida retorna `idempotent_replay=true`;
+- vinculo ativo/em validacao ja existente por formula/cliente/uso retorna `already_exists=true`;
+- formulas registradas, bloqueadas e aprovadas internamente/pelo cliente geram vinculo `ativo`;
+- formulas ainda nao registradas geram vinculo `em_validacao`.
+
+## `PUT /api/pd/formulas/{formula_id}/client-links/{link_id}`
+
+Atualiza status/observacoes do vinculo.
+
+Payload:
+
+```json
+{
+  "status": "inativo",
+  "reason": "Cliente encerrou uso comercial",
+  "observacoes": "Nao usar em novos pedidos"
+}
+```
+
+Status permitidos:
+- `ativo`
+- `em_validacao`
+- `inativo`
+
+Inativar exige `reason` com pelo menos 5 caracteres. Reativar para `ativo` ou `em_validacao` bloqueia duplicidade por
+formula/cliente/uso comercial.

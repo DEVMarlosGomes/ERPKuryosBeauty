@@ -420,3 +420,44 @@ sensivel, sem remover nem alterar os DELETEs atuais.
   - Resultado: `121 passed, 278 skipped`.
 - `npm run build` em `frontend` com `DISABLE_ESLINT_PLUGIN=true` e `GENERATE_SOURCEMAP=false`
   - Resultado: `Compiled successfully`.
+
+## Slice 13 - V21 formula bank e vinculo formula-cliente
+
+Classificacao do checkpoint: `PARTIAL_SAFE_EXTEND`.
+
+Objetivo: adicionar entidade explicita para vincular uma formula existente a multiplos clientes/usos comerciais, sem
+duplicar Produto-Pai/BOM e sem alterar o banco de formulas atual.
+
+## O que foi adicionado
+
+- Feature flag `formula_client_links_v2`, lida de `tenant_settings.features`.
+- Nova colecao `formula_client_links`.
+- Rota add-only `GET /api/pd/formulas/{formula_id}/client-links`.
+- Rota add-only `POST /api/pd/formulas/{formula_id}/client-links`.
+- Rota add-only `PUT /api/pd/formulas/{formula_id}/client-links/{link_id}`.
+- Validacao de formula, cliente, projeto, SKU e Produto-Pai por tenant.
+- Reuso idempotente por `idempotency_key`.
+- Reuso de vinculo ativo existente por formula/cliente/uso comercial.
+- Snapshot leve de formula e solicitacao P&D de origem.
+- Vinculo novo nasce `ativo` apenas para formula registrada, bloqueada e aprovada internamente/pelo cliente.
+- Formula ainda nao registrada gera vinculo `em_validacao`.
+- Inativacao governada com motivo obrigatorio.
+- Reativacao bloqueia duplicidade de formula/cliente/uso e limpa campos antigos de inativacao.
+- Auditoria `formula_client_link_created` e `formula_client_link_updated`.
+- Indices candidatos por formula, cliente e idempotencia.
+- Indice unico parcial para evitar corrida concorrente de vinculos `ativo`/`em_validacao`.
+
+## Preservado
+
+- `GET /api/pd/formulas/bank` continua inalterado.
+- Formula, itens de formula, Produto-Pai, BOM e SKU nao passam a depender do novo vinculo.
+- Importacao, duplicacao e versionamento de formula continuam iguais.
+
+## Testes atualizados
+
+- `pytest backend/tests/test_formula_client_links_unit.py`
+  - Resultado: `13 passed`.
+- `pytest backend/tests`
+  - Resultado: `134 passed, 278 skipped`.
+- `npm run build` em `frontend` com `DISABLE_ESLINT_PLUGIN=true` e `GENERATE_SOURCEMAP=false`
+  - Resultado: `Compiled successfully`.
