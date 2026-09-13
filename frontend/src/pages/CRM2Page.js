@@ -64,6 +64,8 @@ const STAGES = [
     { id: "amostra_solicitada", label: "Amostra Solicitada", color: "bg-emerald-500" },
     { id: "amostra_em_desenvolvimento", label: "Amostra em Desenvolvimento", color: "bg-blue-500" },
     { id: "amostra_enviada", label: "Amostra Enviada", color: "bg-cyan-500" },
+    { id: "cotacao", label: "Cotação", color: "bg-orange-500" },
+    { id: "orcamento_completo", label: "Orçamento Completo", color: "bg-rose-500" },
     { id: "em_negociacao", label: "Em Negociação", color: "bg-amber-500" },
     { id: "pedido_aprovado", label: "Pedido Aprovado", color: "bg-lime-500" },
     { id: "projeto_arquivado", label: "Projeto Arquivado", color: "bg-slate-500" },
@@ -635,7 +637,7 @@ export default function CRM2Page() {
                                                                     </button>
                                                                 </div>
                                                             )}
-                                                            {project.stage === "em_negociacao" && (
+                                                            {["cotacao", "orcamento_completo", "em_negociacao"].includes(project.stage) && (
                                                                 <div className="mt-2 pt-2 border-t border-border">
                                                                     <Button
                                                                         size="sm"
@@ -643,7 +645,8 @@ export default function CRM2Page() {
                                                                         className="w-full gap-1.5 text-xs text-amber-700 border-amber-300 hover:bg-amber-50"
                                                                         onClick={(e) => { e.stopPropagation(); setPropostaProjeto(project); setShowPropostaPedido(true); }}
                                                                     >
-                                                                        <ShoppingCart className="h-3.5 w-3.5" /> Proposta & Pedido
+                                                                        <ShoppingCart className="h-3.5 w-3.5" />
+                                                                        {project.stage === "cotacao" ? "Montar Cotação" : "Proposta & Pedido"}
                                                                     </Button>
                                                                 </div>
                                                             )}

@@ -101,6 +101,8 @@ PROJECT_STAGES = [
     "amostra_solicitada",
     "amostra_em_desenvolvimento",
     "amostra_enviada",
+    "cotacao",
+    "orcamento_completo",
     "em_negociacao",
     "pedido_aprovado",
     "projeto_arquivado",
@@ -110,8 +112,10 @@ PROJECT_TRANSITIONS = {
     "projeto_em_discussao": ["amostra_solicitada", "projeto_arquivado"],
     "amostra_solicitada": ["amostra_em_desenvolvimento", "projeto_arquivado"],
     "amostra_em_desenvolvimento": ["amostra_enviada", "projeto_arquivado"],
-    "amostra_enviada": ["em_negociacao", "amostra_em_desenvolvimento", "projeto_arquivado"],
-    "em_negociacao": ["pedido_aprovado", "amostra_em_desenvolvimento", "projeto_arquivado"],
+    "amostra_enviada": ["cotacao", "orcamento_completo", "em_negociacao", "amostra_em_desenvolvimento", "projeto_arquivado"],
+    "cotacao": ["orcamento_completo", "em_negociacao", "amostra_enviada", "amostra_em_desenvolvimento", "projeto_arquivado"],
+    "orcamento_completo": ["em_negociacao", "pedido_aprovado", "cotacao", "amostra_enviada", "amostra_em_desenvolvimento", "projeto_arquivado"],
+    "em_negociacao": ["pedido_aprovado", "orcamento_completo", "cotacao", "amostra_em_desenvolvimento", "projeto_arquivado"],
     "pedido_aprovado": [],
     "projeto_arquivado": [],
     # legado
@@ -351,6 +355,8 @@ STAGE_LABELS = {
     "amostra_solicitada": "Amostra Solicitada",
     "amostra_em_desenvolvimento": "Amostra em Desenvolvimento",
     "amostra_enviada": "Amostra Enviada ao Cliente",
+    "cotacao": "Cotação",
+    "orcamento_completo": "Orçamento Completo",
     "em_negociacao": "Em Negociação",
     "pedido_aprovado": "Pedido Aprovado",
     "projeto_arquivado": "Projeto Arquivado",
@@ -782,6 +788,8 @@ def _project_stage_rank(stage: Optional[str]) -> int:
         "amostra_solicitada",
         "amostra_em_desenvolvimento",
         "amostra_enviada",
+        "cotacao",
+        "orcamento_completo",
         "em_negociacao",
         "pedido_aprovado",
         "projeto_arquivado",
@@ -1175,7 +1183,7 @@ async def _advance_project_stage_if_needed(
             "tasks_generated": [task["id"] for task in new_tasks],
         },
     )
-    if new_stage == "em_negociacao" and updated:
+    if new_stage in {"cotacao", "orcamento_completo", "em_negociacao"} and updated:
         await _mirror_client_stage_to_negociacao(updated, user)
 
     return updated
@@ -1210,7 +1218,7 @@ def _pd_status_to_project_stage_sync(pd_status: str, now: str) -> Optional[tuple
 
 
 async def _mirror_client_stage_to_negociacao(project: dict, user: dict):
-    """Quando CRM2 vai para em_negociacao, espelha o cliente no CRM1 para 'negociacao'."""
+    """Quando CRM2 entra em etapa comercial, espelha o cliente no CRM1 para 'negociacao'."""
     cliente_id = project.get("cliente_id")
     if not cliente_id:
         return
@@ -2316,7 +2324,7 @@ async def move_project(project_id: str, data: ProjectMove, request: Request):
         metadata={"tasks_generated": [t["id"] for t in new_tasks]},
     )
 
-    if new_stage == "em_negociacao" and updated:
+    if new_stage in {"cotacao", "orcamento_completo", "em_negociacao"} and updated:
         await _mirror_client_stage_to_negociacao(updated, user)
 
     trigger_batch_samples = (new_stage == "amostra_solicitada")
