@@ -669,3 +669,59 @@ Status permitidos:
 
 Inativar exige `reason` com pelo menos 5 caracteres. Reativar para `ativo` ou `em_validacao` bloqueia duplicidade por
 formula/cliente/uso comercial.
+
+## Slice 14 - V21 D48 por politica
+
+Rotas add-only para configurar a exigencia D48 sem remover o gate padrao atual.
+
+## `GET /api/pd/settings/d48-policy`
+
+Retorna a politica D48 resolvida para o tenant atual.
+
+## `PUT /api/pd/settings/d48-policy`
+
+Atualiza a politica D48 do tenant.
+
+Payload:
+
+```json
+{
+  "require_d48": true,
+  "reason": "Politica padrao de seguranca tecnica"
+}
+```
+
+Regras:
+- exige perfil `admin`, `lider_pd` ou `qa`;
+- `reason` e obrigatorio;
+- incrementa `pd.d48_policy_version`;
+- grava `pd.d48_policy` em `tenant_settings`.
+
+## `PUT /api/pd/requests/{req_id}/d48-policy`
+
+Define ou limpa override por requisicao/card P&D.
+
+Payload:
+
+```json
+{
+  "require_d48": false,
+  "reason": "Excecao aprovada para amostra sem estabilidade obrigatoria"
+}
+```
+
+Para remover override:
+
+```json
+{
+  "clear_override": true,
+  "reason": "Retornar para politica do tenant"
+}
+```
+
+Quando a entrega ao Comercial e avaliada, os caminhos existentes gravam snapshot opcional:
+- `d48_required_snapshot`;
+- `d48_policy_version`;
+- `d48_policy_source`;
+- `d48_gate_checked_at`;
+- `d48_gate_satisfied_at` ou `d48_gate_skipped_at`.

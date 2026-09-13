@@ -278,3 +278,27 @@ Rollback de codigo:
 - remover modelos/helpers/rotas de vinculo formula-cliente de `backend/pd_routes.py`;
 - remover indices `formula_client_links` adicionados em `backend/server.py`;
 - remover `backend/tests/test_formula_client_links_unit.py`.
+
+## Slice 14 - D48 policy/snapshot
+
+Rollback operacional:
+
+1. Manter ou reativar `tenant_settings.pd.require_d48=true`.
+2. Parar de chamar `/api/pd/settings/d48-policy`.
+3. Parar de chamar `/api/pd/requests/{req_id}/d48-policy`.
+4. Ignorar overrides `d48_required_override` ja gravados.
+
+Dados opcionais que podem permanecer:
+- `tenant_settings.pd.d48_policy`;
+- `tenant_settings.pd.d48_policy_version`;
+- `pd_requests.d48_required_snapshot`;
+- `pd_samples.d48_required_snapshot`;
+- `pd_cards.d48_required_snapshot`;
+- campos `d48_gate_*` e `d48_override_*`.
+
+Nao ha migration destrutiva. Sem configuracao explicita, o comportamento padrao continua exigindo D48 como antes.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas D48 policy de `backend/pd_routes.py`;
+- voltar `assert_d48h_stability_ok` para exigencia fixa;
+- remover testes D48 policy adicionados em `backend/tests/test_pd_pipeline_auto_sync.py`.

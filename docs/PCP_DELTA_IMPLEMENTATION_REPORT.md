@@ -461,3 +461,38 @@ duplicar Produto-Pai/BOM e sem alterar o banco de formulas atual.
   - Resultado: `134 passed, 278 skipped`.
 - `npm run build` em `frontend` com `DISABLE_ESLINT_PLUGIN=true` e `GENERATE_SOURCEMAP=false`
   - Resultado: `Compiled successfully`.
+
+## Slice 14 - V21 D48 por politica
+
+Classificacao do checkpoint: `PARTIAL_SAFE_EXTEND`.
+
+Objetivo: tornar o gate D48 configuravel por tenant ou por card/requisicao, preservando a exigencia padrao atual e
+gravando snapshot auditavel da regra aplicada.
+
+## O que foi adicionado
+
+- Politica tenant-level em `tenant_settings.pd.require_d48`.
+- Versionamento em `tenant_settings.pd.d48_policy_version` e `tenant_settings.pd.d48_policy`.
+- Rota add-only `GET /api/pd/settings/d48-policy`.
+- Rota add-only `PUT /api/pd/settings/d48-policy`.
+- Rota add-only `PUT /api/pd/requests/{req_id}/d48-policy`.
+- Override opcional por requisicao/card via `d48_required_override`.
+- Snapshot `d48_required_snapshot` no gate aplicado.
+- Campos `d48_policy_version`, `d48_policy_source`, `d48_gate_checked_at`, `d48_gate_satisfied_at` e
+  `d48_gate_skipped_at`.
+- Auditoria `d48_policy_updated` e `d48_request_policy_updated`.
+
+## Preservado
+
+- Sem configuracao explicita, D48 continua obrigatorio.
+- As leituras continuam vindo de `pd_stability_studies`.
+- Os tres caminhos existentes continuam usando o mesmo ponto de verdade:
+  `transition_status`, envio de amostra e Kanban/card.
+- Nenhum status ou fluxo comercial existente foi removido.
+
+## Testes atualizados
+
+- `pytest backend/tests/test_pd_pipeline_auto_sync.py`
+  - Resultado: `17 passed`.
+- `pytest backend/tests`
+  - Resultado: `140 passed, 278 skipped`.

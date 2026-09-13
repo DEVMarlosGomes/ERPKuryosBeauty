@@ -128,6 +128,7 @@ STATUS_LABELS = {
 }
 
 CARD_GOVERNANCE_FLAG = "v21_card_governance"
+DEFAULT_D48_POLICY_VERSION = 1
 PD_GOVERNANCE_BLOCKED_STATUSES = {"APPROVED", "COMPLETED"}
 
 
@@ -137,6 +138,17 @@ class GovernanceArchiveRequest(BaseModel):
 
 class GovernanceRestoreRequest(BaseModel):
     reason: str
+
+
+class D48TenantPolicyUpdate(BaseModel):
+    require_d48: bool = True
+    reason: Optional[str] = None
+
+
+class D48RequestPolicyUpdate(BaseModel):
+    require_d48: Optional[bool] = None
+    clear_override: bool = False
+    reason: Optional[str] = None
 
 
 def _feature_value_enabled(value: Any) -> bool:
@@ -1701,7 +1713,76 @@ async def delete_pd_request(req_id: str, request: Request):
 
 # ============ STATUS TRANSITIONS ============
 
-async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
+
+def _coerce_d48_required(value: Any, default: bool = True) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "on", "enabled", "required", "obrigatorio"}:
+            return True
+        if normalized in {"0", "false", "no", "off", "disabled", "optional", "opcional"}:
+            return False
+    return default
+
+
+def _next_d48_policy_version(settings: Optional[Dict[str, Any]]) -> int:
+    pd_settings = (settings or {}).get("pd") or {}
+    current = pd_settings.get("d48_policy_version") or (pd_settings.get("d48_policy") or {}).get("version")
+    try:
+        return int(current or DEFAULT_D48_POLICY_VERSION) + 1
+    except (TypeError, ValueError):
+        return DEFAULT_D48_POLICY_VERSION + 1
+
+
+async def _resolve_d48_policy(pd_request_id: str, tenant_id: str, pd_req: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    if pd_req is None and hasattr(db, "pd_requests"):
+        pd_req = await db.pd_requests.find_one({"id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0})
+    pd_req = pd_req or {}
+
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    pd_settings = (settings or {}).get("pd") or {}
+    policy_doc = pd_settings.get("d48_policy") or {}
+    policy_version = policy_doc.get("version") or pd_settings.get("d48_policy_version") or DEFAULT_D48_POLICY_VERSION
+    tenant_required = _coerce_d48_required(
+        policy_doc.get("required", pd_settings.get("require_d48")),
+        default=True,
+    )
+
+    override = pd_req.get("d48_required_override")
+    has_override = isinstance(override, bool)
+    required = override if has_override else tenant_required
+    try:
+        version = int(policy_version)
+    except (TypeError, ValueError):
+        version = DEFAULT_D48_POLICY_VERSION
+
+    return {
+        "required": bool(required),
+        "tenant_required": bool(tenant_required),
+        "card_override": override if has_override else None,
+        "source": "card_override" if has_override else "tenant_policy",
+        "policy_version": version,
+        "evaluated_at": now_iso(),
+        "pd_request_id": pd_request_id,
+    }
+
+
+def _d48_snapshot_update_fields(snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    fields = {
+        "d48_required_snapshot": snapshot,
+        "d48_policy_version": snapshot.get("policy_version"),
+        "d48_policy_source": snapshot.get("source"),
+        "d48_gate_checked_at": snapshot.get("evaluated_at"),
+    }
+    if snapshot.get("required"):
+        fields["d48_gate_satisfied_at"] = snapshot.get("evaluated_at") if snapshot.get("satisfied") else None
+    else:
+        fields["d48_gate_skipped_at"] = snapshot.get("evaluated_at")
+    return fields
+
+
+async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str, pd_req: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """RN-PD-STAB: exige ao menos uma leitura D48h antes de entregar ao Comercial.
 
     Ponto unico de verdade para o gate — usado pelos 3 caminhos que podem levar
@@ -1722,6 +1803,11 @@ async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
     registrado. A chave certa (e a que o antigo check de update_sample usava,
     corretamente) e o proprio pd_request_id.
     """
+    policy = await _resolve_d48_policy(pd_request_id, tenant_id, pd_req=pd_req)
+    if not policy["required"]:
+        policy.update({"satisfied": True, "skipped": True, "reason": "d48_not_required_by_policy"})
+        return policy
+
     study = await db.pd_stability_studies.find_one(
         {"pd_card_id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0, "conditions": 1}
     )
@@ -1739,6 +1825,113 @@ async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
             status_code=400,
             detail="Nenhuma leitura D48h (48 horas) registrada. Conclua o checkpoint D48h em ao menos uma condição de estabilidade antes de entregar ao Comercial.",
         )
+    policy.update({"satisfied": True, "skipped": False, "checkpoint": "D48h"})
+    return policy
+
+
+@pd_router.get("/settings/d48-policy")
+async def get_d48_policy(request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_READ | QA_APPROVERS)
+    settings = await db.tenant_settings.find_one({"tenant_id": user["tenant_id"]}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    policy = await _resolve_d48_policy("", user["tenant_id"], pd_req={})
+    return {
+        "require_d48": policy["required"],
+        "policy_version": policy["policy_version"],
+        "source": policy["source"],
+        "tenant_settings": ((settings or {}).get("pd") or {}),
+    }
+
+
+@pd_router.put("/settings/d48-policy")
+async def update_d48_policy(data: D48TenantPolicyUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, ADMIN_ONLY | {"lider_pd", "qa"})
+    reason = clean_text(data.reason or "")
+    if len(reason) < 5:
+        raise HTTPException(status_code=422, detail="reason e obrigatorio para alterar a politica D48.")
+    existing = await db.tenant_settings.find_one({"tenant_id": user["tenant_id"]}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    now = now_iso()
+    version = _next_d48_policy_version(existing)
+    policy = {
+        "required": bool(data.require_d48),
+        "version": version,
+        "updated_at": now,
+        "updated_by": user["id"],
+        "updated_by_name": user.get("name", ""),
+        "reason": reason,
+    }
+    await db.tenant_settings.update_one(
+        {"tenant_id": user["tenant_id"]},
+        {"$set": {
+            "tenant_id": user["tenant_id"],
+            "pd.require_d48": bool(data.require_d48),
+            "pd.d48_policy_version": version,
+            "pd.d48_policy": policy,
+            "updated_at": now,
+        }},
+        upsert=True,
+    )
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="d48_policy_updated",
+        entity_type="tenant_settings",
+        entity_id=user["tenant_id"],
+        after=policy,
+    )
+    return {"require_d48": bool(data.require_d48), "policy_version": version, "policy": policy}
+
+
+@pd_router.put("/requests/{req_id}/d48-policy")
+async def update_request_d48_policy(req_id: str, data: D48RequestPolicyUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, ADMIN_ONLY | {"lider_pd", "qa"})
+    pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao P&D nao encontrada")
+    reason = clean_text(data.reason or "")
+    if len(reason) < 5:
+        raise HTTPException(status_code=422, detail="reason e obrigatorio para alterar a politica D48 do card.")
+
+    settings = await db.tenant_settings.find_one({"tenant_id": user["tenant_id"]}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    now = now_iso()
+    pd_settings = (settings or {}).get("pd") or {}
+    policy_version = (pd_settings.get("d48_policy") or {}).get("version") or pd_settings.get("d48_policy_version") or DEFAULT_D48_POLICY_VERSION
+    if data.clear_override:
+        override = None
+    elif isinstance(data.require_d48, bool):
+        override = data.require_d48
+    else:
+        raise HTTPException(status_code=422, detail="Informe require_d48 ou clear_override=true.")
+
+    update_fields = {
+        "d48_required_override": override,
+        "d48_override_reason": reason,
+        "d48_override_policy_version": policy_version,
+        "d48_override_updated_at": now,
+        "d48_override_updated_by": user["id"],
+        "d48_override_updated_by_name": user.get("name", ""),
+        "updated_at": now,
+    }
+    await db.pd_requests.update_one(
+        {"id": req_id, "tenant_id": user["tenant_id"]},
+        {"$set": update_fields},
+    )
+    updated = await db.pd_requests.find_one({"id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    resolved = await _resolve_d48_policy(req_id, user["tenant_id"], pd_req=updated)
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="d48_request_policy_updated",
+        entity_type="pd_request",
+        entity_id=req_id,
+        before={"d48_required_override": pd_req.get("d48_required_override")},
+        after={"d48_required_override": override, "resolved": resolved},
+    )
+    return {"request": updated, "policy": resolved}
 
 
 async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_status: str, comment: str = ""):
@@ -1909,9 +2102,11 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
             {"$set": {"locked": True, "locked_at": now_iso(), "locked_by": user["id"], "locked_by_name": user.get("name", "")}}
         )
 
+    d48_policy_snapshot = None
+
     # RN-PD-STAB: D48h checkpoint required before delivering to Comercial
     if new_status == "WAITING_APPROVAL":
-        await assert_d48h_stability_ok(req_id, user["tenant_id"])
+        d48_policy_snapshot = await assert_d48h_stability_ok(req_id, user["tenant_id"], pd_req=pd_req)
 
     # Check blocking workflow tasks
     if new_status not in ("IN_PROGRESS", "REJECTED"):
@@ -1993,9 +2188,13 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
     
     sku_created = None
 
+    request_update_fields = {"status": new_status, "updated_at": now_iso()}
+    if d48_policy_snapshot:
+        request_update_fields.update(_d48_snapshot_update_fields(d48_policy_snapshot))
+
     await db.pd_requests.update_one(
         {"id": req_id},
-        {"$set": {"status": new_status, "updated_at": now_iso()}}
+        {"$set": request_update_fields}
     )
 
     try:
@@ -2030,6 +2229,7 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
         "changed_by_name": user["name"],
         "comment": data.comment or f"Status alterado de {STATUS_LABELS.get(current, current)} para {STATUS_LABELS.get(new_status, new_status)}",
         "created_at": now_iso(),
+        "d48_policy_snapshot": d48_policy_snapshot,
     })
     
     # Auto-create development when moving to IN_PROGRESS
@@ -3339,7 +3539,8 @@ async def update_sample(sample_id: str, data: SampleUpdate, request: Request):
         # D48h gate: mesmo ponto de verdade usado por transition_status e pelo drag-and-drop do board
         dev = await db.pd_developments.find_one({"id": existing.get("development_id")}, {"_id": 0, "pd_request_id": 1})
         if dev and dev.get("pd_request_id"):
-            await assert_d48h_stability_ok(dev["pd_request_id"], user["tenant_id"])
+            d48_policy_snapshot = await assert_d48h_stability_ok(dev["pd_request_id"], user["tenant_id"])
+            update_fields.update(_d48_snapshot_update_fields(d48_policy_snapshot))
         update_fields["sent_at"] = now_iso()
         update_fields.setdefault("internal_approved", True)
 
@@ -6456,7 +6657,16 @@ async def assert_pd_card_ready_for_approval(card_id: str, tenant_id: str):
         return
     # RN-PD-STAB: mesmo gate de D48h usado por transition_status e update_sample —
     # antes, mover o card pelo Kanban (drag-and-drop) pulava essa checagem inteira (B7).
-    await assert_d48h_stability_ok(pd_request["id"], tenant_id)
+    d48_policy_snapshot = await assert_d48h_stability_ok(pd_request["id"], tenant_id, pd_req=pd_request)
+    d48_fields = _d48_snapshot_update_fields(d48_policy_snapshot)
+    await db.pd_requests.update_one(
+        {"id": pd_request["id"], "tenant_id": tenant_id},
+        {"$set": d48_fields},
+    )
+    await db.pd_cards.update_one(
+        {"id": card_id, "tenant_id": tenant_id},
+        {"$set": d48_fields},
+    )
     dev = await db.pd_developments.find_one(
         {"tenant_id": tenant_id, "pd_request_id": pd_request["id"]},
         {"_id": 0, "id": 1},

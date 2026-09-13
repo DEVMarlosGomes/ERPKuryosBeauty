@@ -529,3 +529,41 @@ Compatibilidade:
 - formulas ainda nao registradas geram vinculos `em_validacao`, sem promover uso comercial ativo automaticamente;
 - documentos sem `idempotency_key` continuam validos e nao entram no indice parcial de replay;
 - `formula_snapshot` e `source_request_snapshot` sao snapshots auxiliares e nao passam a ser fonte transacional.
+
+## Campos opcionais D48 policy/snapshot
+
+Campos adicionados de forma opcional em `tenant_settings.pd`:
+
+```text
+require_d48
+d48_policy_version
+d48_policy.required
+d48_policy.version
+d48_policy.updated_at
+d48_policy.updated_by
+d48_policy.updated_by_name
+d48_policy.reason
+```
+
+Campos adicionados de forma opcional em `pd_requests`, `pd_samples` e `pd_cards` quando o gate D48 e avaliado:
+
+```text
+d48_required_override
+d48_override_reason
+d48_override_policy_version
+d48_override_updated_at
+d48_override_updated_by
+d48_override_updated_by_name
+d48_required_snapshot
+d48_policy_version
+d48_policy_source
+d48_gate_checked_at
+d48_gate_satisfied_at
+d48_gate_skipped_at
+```
+
+Compatibilidade:
+- documentos antigos sem estes campos continuam exigindo D48 por padrao;
+- override por card/requisicao e opcional e nao remove o gate global;
+- snapshot e auditoria historica da decisao aplicada, nao substitui leituras em `pd_stability_studies`;
+- quando `require_d48=false`, a entrega e liberada com `d48_gate_skipped_at` para rastreabilidade.
