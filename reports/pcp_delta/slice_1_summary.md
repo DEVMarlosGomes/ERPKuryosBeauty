@@ -20,8 +20,10 @@ Testes:
 - Backend focado compras/CQ qualidade fornecedor: `15 passed`.
 - Backend focado quarentena fisica WMS: `19 passed`.
 - Backend focado WMS/recebimento atualizado: `13 passed`.
+- Backend focado expedicao parcial comercial: `4 passed`.
+- Backend focado expedicao parcial/PCP/faturamento: `28 passed`.
 - Backend focado PCP/regressao DELTA: `86 passed`.
-- Backend completo: `158 passed, 278 skipped`.
+- Backend completo: `162 passed, 278 skipped`.
 - Frontend build: `Compiled successfully`.
 
 Arquivos alterados:
@@ -42,12 +44,14 @@ Arquivos alterados:
 - `backend/tests/test_pcp_timeline_eta_unit.py`
 - `backend/tests/test_supplier_quality_quote_unit.py`
 - `backend/tests/test_wms_physical_quarantine_unit.py`
+- `backend/tests/test_commercial_partial_fulfillment_unit.py`
 - `backend/tests/test_commercial_packages_unit.py`
 - `backend/tests/test_materiais_fiscal_defaults_unit.py`
 - `backend/tests/test_wms_recebimento_unit.py`
 - `frontend/src/App.js`
 - `frontend/src/components/DynamicSidebar.js`
 - `frontend/src/pages/OPDetail.js`
+- `frontend/src/pages/ExpedicaoPage.js`
 - `frontend/src/pages/PCPQuantityPlanningPage.js`
 - `docs/PCP_DELTA_REFRESH_2026_09.md`
 - `docs/PCP_DELTA_IMPLEMENTATION_REPORT.md`
@@ -73,3 +77,4 @@ Slices cobertos:
 - Slice 15: backend inicial de PCP timeline, setup real, ETA e fechamento diario.
 - Slice 16: qualidade de fornecedor no comparador de cotacao.
 - Slice 17: quarentena fisica WMS configuravel, movimentos auditaveis e separacao entre localizacao fisica e CQ logico.
+- Slice 18: expedicao parcial comercial por item, saldo produzido expedivel e snapshot NF/frete/aditivo/cancelamento.

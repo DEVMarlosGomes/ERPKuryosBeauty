@@ -372,3 +372,32 @@ Rollback de codigo:
 - remover testes de quarentena fisica adicionados em `backend/tests/test_wms_recebimento_unit.py`;
 - remover `backend/tests/test_wms_physical_quarantine_unit.py`;
 - remover as secoes Slice 17 dos documentos `PCP_DELTA_*`.
+
+## Slice 18 - `commercial_partial_fulfillment_v2`
+
+Rollback operacional:
+
+1. Manter `tenant_settings.features.commercial_partial_fulfillment_v2=false` ou ausente.
+2. Parar de chamar `/api/orders/{order_id}/fulfillment-summary`.
+3. Parar de chamar `/api/expedicao/ordens/from-order-items`.
+4. Continuar usando a criacao manual de EXP e o fluxo atual de conferencia/despacho/entrega.
+
+Dados opcionais que podem permanecer:
+- `expedicao_ordens.delivery_mode`;
+- `expedicao_ordens.partial_delivery_v2`;
+- `expedicao_ordens.items[].order_item_id`;
+- snapshots `delivery_snapshot` e `operational_snapshot`;
+- `orders.partial_fulfillment_v2`;
+- `orders.last_exp_id`;
+- `orders.last_exp_numero`;
+- `orders.expedicao_ids`.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia as novas rotas e preserva pedido, OP, expedição e faturamento
+atuais.
+
+Rollback de codigo:
+- remover helpers/rota de fulfillment parcial em `backend/orders_routes.py`;
+- remover helpers/rota parcial em `backend/expedicao_routes.py`;
+- remover UI parcial em `frontend/src/pages/ExpedicaoPage.js`;
+- remover `backend/tests/test_commercial_partial_fulfillment_unit.py`;
+- remover as secoes Slice 18 dos documentos `PCP_DELTA_*`.

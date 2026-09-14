@@ -617,3 +617,35 @@ mantendo movimentos auditaveis de entrada/saida.
   - Resultado: `6 passed`.
 - `pytest -q backend/tests/test_wms_recebimento_unit.py`
   - Resultado: `13 passed`.
+
+## Slice 18 - Comercial/expedicao parcial e saldo produzido
+
+Classificacao do checkpoint: `MISSING`.
+
+Objetivo: permitir entrega parcial por item, expor saldo produzido por item de pedido e gravar snapshot operacional de
+NF/frete/aditivo/cancelamento, sem alterar o fluxo antigo de pedido, OP, expedição ou faturamento.
+
+## O que foi coberto
+
+- Feature flag `commercial_partial_fulfillment_v2`.
+- Rota add-only `GET /api/orders/{order_id}/fulfillment-summary`.
+- Rota add-only `POST /api/expedicao/ordens/from-order-items`.
+- Calculo de produzido por item a partir de OPs vinculadas a `sales_order_item_id`/`order_item_id`.
+- Calculo de expedido e reservado em EXPs existentes nao canceladas.
+- Bloqueio de EXP parcial acima do saldo produzido disponivel.
+- Snapshot operacional com percentual NF, CIF/FOB, aditivos e cancelamentos.
+- UI de Expedição com pedidos `em_producao` e `concluido`, mapeamento correto de `item/qtd/codigo_kuryos/id` e resumo de saldos.
+
+## Preservado
+
+- `POST /api/expedicao/ordens` continua funcionando para criacao manual.
+- Status da EXP continuam `pendente`, `preparando`, `conferido`, `expedido`, `entregue`, `cancelado`.
+- Despacho, conferencia, romaneio e baixa de estoque continuam no fluxo atual.
+- NF nao e gerada automaticamente pela EXP parcial.
+
+## Testes atualizados
+
+- `pytest -q backend/tests/test_commercial_partial_fulfillment_unit.py`
+  - Resultado: `4 passed`.
+- `pytest -q backend/tests/test_commercial_partial_fulfillment_unit.py backend/tests/test_supply_quality_gates_unit.py backend/tests/test_pcp_allocations_unit.py backend/tests/test_order_generator_unit.py`
+  - Resultado: `28 passed`.

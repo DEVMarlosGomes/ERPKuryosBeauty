@@ -908,3 +908,59 @@ Regras de contrato:
 - consumo, expedicao e transferencia WMS comum continuam respeitando os hard stops atuais de CQ;
 - cada movimentacao grava dois movimentos em `estoque_movimentos_lote` e um snapshot auditavel em `wms_quarantine_movements`;
 - `idempotency_key`, quando informada, reutiliza a movimentacao ja registrada.
+
+## Slice 18 - Comercial/expedicao parcial e saldo produzido
+
+Implementacao add-only protegida por `tenant_settings.features.commercial_partial_fulfillment_v2`.
+
+Rotas adicionadas:
+
+- `GET /api/orders/{order_id}/fulfillment-summary`;
+- `POST /api/expedicao/ordens/from-order-items`.
+
+`GET /api/orders/{order_id}/fulfillment-summary` retorna o saldo operacional por item do pedido:
+
+```json
+{
+  "items": [{
+    "order_item_id": "item-1",
+    "qtd_pedido": 100,
+    "qtd_produzida": 60,
+    "qtd_expedicao_planejada": 30,
+    "qtd_expedida": 10,
+    "saldo_produzido_disponivel": 30,
+    "saldo_pedido_a_expedir": 90,
+    "percentual_produzido": 60,
+    "percentual_expedido": 10
+  }],
+  "operational_snapshot": {
+    "percentual_nf": 50,
+    "frete_cif_fob": "FOB",
+    "aditivos_count": 1,
+    "cancelamentos_count": 0
+  }
+}
+```
+
+`POST /api/expedicao/ordens/from-order-items` cria EXP parcial vinculada aos itens reais do pedido:
+
+```json
+{
+  "order_id": "order-1",
+  "items": [{
+    "order_item_id": "item-1",
+    "quantidade": 30,
+    "lote": "L-001"
+  }],
+  "observacoes": "Entrega parcial"
+}
+```
+
+Regras de contrato:
+
+- flag desligada preserva a criacao manual atual de EXP;
+- a rota parcial exige item do pedido e quantidade positiva;
+- a quantidade parcial nao pode exceder o menor saldo entre produzido disponivel e saldo do pedido a expedir;
+- EXP parcial nasce no status atual `pendente` e segue o fluxo existente de conferencia/despacho/entrega;
+- snapshot operacional grava percentual NF, CIF/FOB, aditivos e cancelamentos sem emitir NF automaticamente;
+- a UI de Expedicao passa a selecionar pedidos `em_producao`/`concluido` e usa a rota parcial quando o resumo estiver disponivel.

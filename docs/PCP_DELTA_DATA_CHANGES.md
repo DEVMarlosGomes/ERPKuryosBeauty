@@ -760,3 +760,61 @@ Compatibilidade:
 - documentos antigos sem `wms_quarantine_physical` devem ser tratados como fora da area fisica configurada, exceto saldos
   no endereco configurado pela politica atual;
 - a rota de quarentena fisica registra transferencia WMS controlada, mas nao altera quantidade agregada do item.
+
+## Contrato opcional expedicao parcial comercial
+
+Feature flag em `tenant_settings.features`:
+
+```text
+commercial_partial_fulfillment_v2
+```
+
+Campos opcionais em `expedicao_ordens`:
+
+```text
+delivery_mode
+partial_delivery_v2
+items[].order_item_id
+items[].partial_delivery_v2
+items[].qtd_pedido_snapshot
+items[].qtd_produzida_snapshot
+items[].qtd_expedida_snapshot
+items[].saldo_produzido_disponivel_antes
+items[].saldo_pedido_a_expedir_antes
+delivery_snapshot
+operational_snapshot
+```
+
+Campos opcionais em `orders`:
+
+```text
+partial_fulfillment_v2
+last_exp_id
+last_exp_numero
+expedicao_ids[]
+```
+
+Snapshot operacional:
+
+```text
+operational_snapshot.percentual_nf
+operational_snapshot.valor_nf_produtos
+operational_snapshot.valor_pedido
+operational_snapshot.nf_count
+operational_snapshot.nf_ids[]
+operational_snapshot.frete_tipo
+operational_snapshot.frete_cif_fob
+operational_snapshot.frete_snapshot
+operational_snapshot.aditivos_count
+operational_snapshot.aditivos[]
+operational_snapshot.cancelamentos_count
+operational_snapshot.pedido_cancelado
+operational_snapshot.status_pedido
+```
+
+Compatibilidade:
+- OPs continuam sendo a fonte do produzido por item via `sales_order_item_id`/`order_item_id`;
+- EXP manual antiga continua valida e nao exige `order_item_id`;
+- NF nao e emitida automaticamente pela criacao parcial;
+- faturamento existente por pedido inteiro permanece intacto, mas integrações parciais devem enviar valores explicitos;
+- aditivo/cancelamento ficam como snapshot de campos existentes, sem criar fluxo juridico/comercial paralelo.

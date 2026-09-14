@@ -330,6 +330,7 @@ PCP_CONFIRM_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_op
 PCP_PLANNING_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
 PCP_QUANTITY_PLANNING_FLAG = "pcp_quantity_planning_v2"
 PCP_MATERIAL_PICKING_FLAG = "pcp_material_picking_v2"
+COMMERCIAL_PARTIAL_FULFILLMENT_FLAG = "commercial_partial_fulfillment_v2"
 
 
 class OPReworkCreate(BaseModel):
@@ -1022,6 +1023,17 @@ async def generated_orders_status(request: Request):
     }
 
 
+@orders_router.get("/{order_id}/fulfillment-summary")
+async def get_order_fulfillment_summary(order_id: str, request: Request):
+    user = await get_current_user(request)
+    tenant_id = user["tenant_id"]
+    await _require_feature_flag(tenant_id, COMMERCIAL_PARTIAL_FULFILLMENT_FLAG)
+    order = await db.orders.find_one({"id": order_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+    return await _build_order_fulfillment_summary(order, tenant_id)
+
+
 @orders_router.get("/{order_id}")
 async def get_order(order_id: str, request: Request):
     user = await get_current_user(request)
@@ -1703,6 +1715,141 @@ async def _ensure_order_item_ids(order: Dict[str, Any], tenant_id: str) -> List[
         )
         order["items"] = items
     return items
+
+
+def _order_item_identity(item: Dict[str, Any]) -> str:
+    return str(item.get("id") or item.get("order_item_id") or item.get("sales_order_item_id") or "").strip()
+
+
+async def _produced_by_order_item(tenant_id: str, order_id: str) -> Dict[str, Dict[str, Any]]:
+    result: Dict[str, Dict[str, Any]] = {}
+    if not hasattr(db, "ops"):
+        return result
+    ops = await db.ops.find(
+        {"tenant_id": tenant_id, "pedido_id": order_id, "status": {"$nin": ["cancelada", "cancelado"]}},
+        {"_id": 0},
+    ).to_list(5000)
+    for op in ops:
+        op_item_id = str(op.get("sales_order_item_id") or "").strip()
+        for idx, item in enumerate(op.get("items") or []):
+            item_id = str(item.get("order_item_id") or op_item_id or "").strip() or f"item-{idx + 1}"
+            bucket = result.setdefault(item_id, {"qtd": 0.0, "ops": []})
+            qty = _as_float(item.get("qtd_produzida"))
+            bucket["qtd"] = round(bucket["qtd"] + qty, 6)
+            bucket["ops"].append({
+                "op_id": op.get("id"),
+                "op_numero": op.get("numero_op"),
+                "status": op.get("status"),
+                "qtd_planejada": _as_float(item.get("qtd_planejada") or item.get("qtd")),
+                "qtd_produzida": qty,
+            })
+    return result
+
+
+async def _expeditions_by_order_item(tenant_id: str, order_id: str) -> Dict[str, Dict[str, Any]]:
+    result: Dict[str, Dict[str, Any]] = {}
+    if not hasattr(db, "expedicao_ordens"):
+        return result
+    expeditions = await db.expedicao_ordens.find(
+        {"tenant_id": tenant_id, "order_id": order_id, "status": {"$ne": "cancelado"}},
+        {"_id": 0},
+    ).to_list(5000)
+    for exp in expeditions:
+        confirmed = exp.get("status") in {"expedido", "entregue"}
+        for item in exp.get("items") or []:
+            item_id = _order_item_identity(item)
+            if not item_id:
+                continue
+            qty = _as_float(item.get("quantidade"))
+            bucket = result.setdefault(item_id, {"planejada": 0.0, "expedida": 0.0, "expedicoes": []})
+            bucket["planejada"] = round(bucket["planejada"] + qty, 6)
+            if confirmed:
+                bucket["expedida"] = round(bucket["expedida"] + qty, 6)
+            bucket["expedicoes"].append({
+                "exp_id": exp.get("id"),
+                "exp_numero": exp.get("numero_exp"),
+                "status": exp.get("status"),
+                "quantidade": qty,
+                "numero_nf_saida": exp.get("numero_nf_saida", ""),
+            })
+    return result
+
+
+async def _order_operational_snapshot(tenant_id: str, order: Dict[str, Any]) -> Dict[str, Any]:
+    notas = []
+    if hasattr(db, "faturamento_notas"):
+        notas = await db.faturamento_notas.find(
+            {"tenant_id": tenant_id, "order_id": order.get("id"), "status": {"$ne": "cancelada"}},
+            {"_id": 0},
+        ).to_list(1000)
+    valor_nf = round(sum(_as_float(nf.get("valor_produtos") or nf.get("valor_total")) for nf in notas), 2)
+    total_pedido = _as_float(order.get("total_pedido"))
+    frete = order.get("frete") or {}
+    aditivos = order.get("aditivos") or order.get("addenda") or []
+    cancelamentos = order.get("cancelamentos") or []
+    historico = order.get("historico") or []
+    cancel_hist = [h for h in historico if h.get("para") == "cancelado" or h.get("status") == "cancelado"]
+    return {
+        "percentual_nf": round(min((valor_nf / total_pedido) * 100, 100), 3) if total_pedido > 0 else 0.0,
+        "valor_nf_produtos": valor_nf,
+        "valor_pedido": round(total_pedido, 2),
+        "nf_count": len(notas),
+        "nf_ids": [nf.get("id") for nf in notas if nf.get("id")],
+        "frete_tipo": str(frete.get("tipo") or "").upper(),
+        "frete_cif_fob": str(frete.get("tipo") or "").upper() if str(frete.get("tipo") or "").upper() in {"CIF", "FOB"} else "",
+        "frete_snapshot": frete,
+        "aditivos_count": len(aditivos),
+        "aditivos": aditivos,
+        "cancelamentos_count": len(cancelamentos) + len(cancel_hist),
+        "pedido_cancelado": order.get("status") == "cancelado",
+        "status_pedido": order.get("status"),
+    }
+
+
+async def _build_order_fulfillment_summary(order: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    items = await _ensure_order_item_ids(order, tenant_id)
+    produced = await _produced_by_order_item(tenant_id, order["id"])
+    expeditions = await _expeditions_by_order_item(tenant_id, order["id"])
+    rows = []
+    for item in items:
+        item_id = _order_item_identity(item)
+        qtd_pedido = _as_float(item.get("qtd") or item.get("quantidade"))
+        qtd_produzida = _as_float((produced.get(item_id) or {}).get("qtd") or item.get("qtd_produzida"))
+        planned = _as_float((expeditions.get(item_id) or {}).get("planejada"))
+        shipped = _as_float((expeditions.get(item_id) or {}).get("expedida"))
+        rows.append({
+            "order_item_id": item_id,
+            "sku_id": item.get("sku_id"),
+            "codigo_kuryos": item.get("codigo_kuryos") or item.get("sku") or "",
+            "item": item.get("item") or item.get("produto_nome") or "",
+            "qtd_pedido": qtd_pedido,
+            "qtd_produzida": round(qtd_produzida, 6),
+            "qtd_expedicao_planejada": round(planned, 6),
+            "qtd_expedida": round(shipped, 6),
+            "saldo_produzido_disponivel": round(max(qtd_produzida - planned, 0.0), 6),
+            "saldo_pedido_a_expedir": round(max(qtd_pedido - shipped, 0.0), 6),
+            "percentual_produzido": round(min((qtd_produzida / qtd_pedido) * 100, 100), 3) if qtd_pedido > 0 else 0.0,
+            "percentual_expedido": round(min((shipped / qtd_pedido) * 100, 100), 3) if qtd_pedido > 0 else 0.0,
+            "ops": (produced.get(item_id) or {}).get("ops", []),
+            "expedicoes": (expeditions.get(item_id) or {}).get("expedicoes", []),
+        })
+    total_pedido = sum(row["qtd_pedido"] for row in rows)
+    total_produzido = sum(row["qtd_produzida"] for row in rows)
+    total_expedido = sum(row["qtd_expedida"] for row in rows)
+    return {
+        "order_id": order["id"],
+        "order_numero": order.get("numero_pedido"),
+        "items": rows,
+        "summary": {
+            "total_pedido": round(total_pedido, 6),
+            "total_produzido": round(total_produzido, 6),
+            "total_expedido": round(total_expedido, 6),
+            "percentual_produzido": round(min((total_produzido / total_pedido) * 100, 100), 3) if total_pedido > 0 else 0.0,
+            "percentual_expedido": round(min((total_expedido / total_pedido) * 100, 100), 3) if total_pedido > 0 else 0.0,
+        },
+        "operational_snapshot": await _order_operational_snapshot(tenant_id, order),
+        "snapshot_at": now_iso(),
+    }
 
 
 def _find_order_item(items: List[Dict[str, Any]], item_id: str) -> Dict[str, Any]:
