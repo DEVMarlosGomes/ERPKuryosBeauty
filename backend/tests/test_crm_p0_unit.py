@@ -178,6 +178,88 @@ def test_validate_client_payload_allows_minimal_lead_on_initial_create():
     assert validated["contatos_adicionais"] == []
 
 
+def test_move_project_supports_crm2_quote_and_complete_budget_stages(monkeypatch):
+    fake_db = FakeDB()
+    fake_db.crm_clients.docs = [{
+        "id": "client-1",
+        "tenant_id": "tenant-1",
+        "stage": "projeto_em_discussao",
+        "historico_movimentacoes": [],
+    }]
+    fake_db.crm_projects.docs = [{
+        "id": "project-1",
+        "tenant_id": "tenant-1",
+        "cliente_id": "client-1",
+        "nome_projeto": "Projeto Teste",
+        "categoria": "skin_care",
+        "responsavel_comercial": "user-1",
+        "ideia_conceito": "Briefing completo",
+        "posicionamento": "premium",
+        "volume_estimado_pedido": 1000,
+        "tipo_servico": "full_service",
+        "prazo_desejado_amostra": "2026-10-01",
+        "stage": "amostra_enviada",
+        "historico_movimentacoes": [],
+    }]
+    crm_routes.db = fake_db
+
+    async def fake_get_current_user(_request):
+        return {
+            "id": "user-1",
+            "name": "Tester",
+            "tenant_id": "tenant-1",
+            "role": "admin",
+        }
+
+    generated_tasks = []
+
+    async def fake_trigger_tasks_for_transition(**kwargs):
+        generated_tasks.append((kwargs["old_stage"], kwargs["new_stage"]))
+        return [{"id": f"task-{len(generated_tasks)}"}]
+
+    audit_entries = []
+
+    async def fake_audit_log(**kwargs):
+        audit_entries.append(kwargs)
+
+    async def fake_assert_no_blocking_tasks(**_kwargs):
+        return None
+
+    monkeypatch.setattr(crm_routes, "_get_current_user", fake_get_current_user)
+    monkeypatch.setattr(crm_routes, "require_roles", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(crm_routes, "assert_no_blocking_tasks", fake_assert_no_blocking_tasks)
+    monkeypatch.setattr(crm_routes, "trigger_tasks_for_transition", fake_trigger_tasks_for_transition)
+    monkeypatch.setattr(crm_routes, "audit_log", fake_audit_log)
+    monkeypatch.setattr(crm_routes, "_now_iso", lambda: "2026-09-14T12:00:00+00:00")
+
+    quote_result = asyncio.run(
+        crm_routes.move_project(
+            "project-1",
+            crm_routes.ProjectMove(stage="cotacao"),
+            SimpleNamespace(),
+        )
+    )
+    budget_result = asyncio.run(
+        crm_routes.move_project(
+            "project-1",
+            crm_routes.ProjectMove(stage="orcamento_completo"),
+            SimpleNamespace(),
+        )
+    )
+
+    assert quote_result["project"]["stage"] == "cotacao"
+    assert quote_result["to_stage"] == crm_routes.STAGE_LABELS["cotacao"]
+    assert budget_result["project"]["stage"] == "orcamento_completo"
+    assert budget_result["to_stage"] == crm_routes.STAGE_LABELS["orcamento_completo"]
+    assert generated_tasks == [
+        ("amostra_enviada", "cotacao"),
+        ("cotacao", "orcamento_completo"),
+    ]
+    assert [entry["after"]["stage"] for entry in audit_entries] == ["cotacao", "orcamento_completo"]
+    assert fake_db.crm_clients.docs[0]["stage"] == "negociacao"
+    assert fake_db.crm_clients.docs[0]["historico_movimentacoes"][0]["origem"] == "espelho_crm2_em_negociacao"
+
+
 def test_validate_client_payload_rejects_invalid_canal_origem():
     fake_db = FakeDB()
     crm_routes.db = fake_db

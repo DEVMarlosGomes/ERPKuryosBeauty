@@ -17,6 +17,7 @@ const STATUS_OPTIONS = [
   { value: "aprovado", label: "Aprovado" },
   { value: "em_revisao", label: "Em revisao" },
   { value: "substituida", label: "Substituida" },
+  { value: "arquivado", label: "Arquivado" },
 ];
 
 const STATUS_TONE = {
@@ -25,6 +26,7 @@ const STATUS_TONE = {
   aprovado: "outline",
   em_revisao: "secondary",
   substituida: "destructive",
+  arquivado: "destructive",
 };
 
 function formatDate(value) {

@@ -15,6 +15,8 @@ import io
 import logging
 import asyncio
 import unicodedata
+import re
+from pymongo.errors import DuplicateKeyError
 from validation_utils import clean_text, normalize_cnpj, normalize_email, normalize_phone, is_valid_cnpj, is_valid_email, is_valid_phone
 from workflow_engine import create_workflow_task, audit_log, get_blocking_tasks, next_sequence
 from rbac import (
@@ -124,6 +126,101 @@ STATUS_LABELS = {
     "COMPLETED": "Concluído",
     "REJECTED": "Rejeitado",
 }
+
+CARD_GOVERNANCE_FLAG = "v21_card_governance"
+DEFAULT_D48_POLICY_VERSION = 1
+PD_GOVERNANCE_BLOCKED_STATUSES = {"APPROVED", "COMPLETED"}
+
+
+class GovernanceArchiveRequest(BaseModel):
+    reason: str
+
+
+class GovernanceRestoreRequest(BaseModel):
+    reason: str
+
+
+class D48TenantPolicyUpdate(BaseModel):
+    require_d48: bool = True
+    reason: Optional[str] = None
+
+
+class D48RequestPolicyUpdate(BaseModel):
+    require_d48: Optional[bool] = None
+    clear_override: bool = False
+    reason: Optional[str] = None
+
+
+def _feature_value_enabled(value: Any) -> bool:
+    if value is True:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    return False
+
+
+async def _require_card_governance_feature(tenant_id: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _feature_value_enabled(features.get(CARD_GOVERNANCE_FLAG)):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Governanca de cards em rollout controlado.",
+                "feature": CARD_GOVERNANCE_FLAG,
+            },
+        )
+
+
+def _require_governance_reason(reason: str) -> str:
+    value = clean_text(reason)
+    if len(value) < 5:
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio com pelo menos 5 caracteres.")
+    return value
+
+
+def _governance_archive_fields(user: Dict[str, Any], reason: str, now: str) -> Dict[str, Any]:
+    return {
+        "is_deleted": True,
+        "deleted_at": now,
+        "deleted_by": user.get("id"),
+        "deleted_by_name": user.get("name", ""),
+        "delete_reason": reason,
+        "updated_at": now,
+    }
+
+
+def _governance_restore_fields(user: Dict[str, Any], reason: str, now: str) -> Dict[str, Any]:
+    return {
+        "is_deleted": False,
+        "restored_at": now,
+        "restored_by": user.get("id"),
+        "restored_by_name": user.get("name", ""),
+        "restore_reason": reason,
+        "updated_at": now,
+    }
+
+
+async def _audit_card_governance(
+    *,
+    tenant_id: str,
+    user: Dict[str, Any],
+    action: str,
+    entity_type: str,
+    entity_id: str,
+    reason: str,
+) -> None:
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action=action,
+        entity_type=entity_type,
+        entity_id=entity_id,
+        after={"reason": reason},
+        metadata={"feature": CARD_GOVERNANCE_FLAG},
+    )
+
 
 PD_STATUS_TO_KANBAN = {
     "OPEN": "solicitado",
@@ -381,6 +478,27 @@ class FormulaItemUpdate(BaseModel):
     phase: Optional[str] = None
     function: Optional[str] = None
     catalog_id: Optional[str] = None
+
+FORMULA_CLIENT_LINKS_FLAG = "formula_client_links_v2"
+FORMULA_CLIENT_LINK_ACTIVE_STATUSES = {"ativo", "em_validacao"}
+FORMULA_CLIENT_LINK_STATUSES = {"ativo", "em_validacao", "inativo"}
+
+
+class FormulaClientLinkCreate(BaseModel):
+    cliente_id: str
+    uso_comercial: str = "produto_cliente"
+    projeto_id: Optional[str] = None
+    sku_id: Optional[str] = None
+    produto_pai_id: Optional[str] = None
+    observacoes: str = ""
+    idempotency_key: Optional[str] = None
+
+
+class FormulaClientLinkUpdate(BaseModel):
+    status: Optional[str] = None
+    observacoes: Optional[str] = None
+    reason: Optional[str] = None
+
 
 class TestCreate(BaseModel):
     test_type: str
@@ -1502,6 +1620,73 @@ async def update_pd_request(req_id: str, data: PDRequestUpdate, request: Request
         )
     return pd_req
 
+
+@pd_router.post("/requests/{req_id}/archive")
+async def archive_pd_request(req_id: str, data: GovernanceArchiveRequest, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao nao encontrada")
+    if pd_req.get("is_deleted"):
+        return pd_req
+    if pd_req.get("status") in PD_GOVERNANCE_BLOCKED_STATUSES:
+        raise HTTPException(status_code=409, detail="Solicitacao P&D aprovada/concluida nao pode ser arquivada.")
+
+    now = now_iso()
+    fields = _governance_archive_fields(user, reason, now)
+    await db.pd_requests.update_one({"id": req_id, "tenant_id": tenant_id}, {"$set": fields})
+    if hasattr(db, "pd_cards"):
+        await db.pd_cards.update_many(
+            {"pd_request_id": req_id, "tenant_id": tenant_id},
+            {"$set": fields},
+        )
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="pd_request_archived",
+        entity_type="pd_request",
+        entity_id=req_id,
+        reason=reason,
+    )
+    return {**pd_req, **fields}
+
+
+@pd_router.post("/requests/{req_id}/restore")
+async def restore_pd_request(req_id: str, data: GovernanceRestoreRequest, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE | ADMIN_ONLY)
+    tenant_id = user["tenant_id"]
+    await _require_card_governance_feature(tenant_id)
+    reason = _require_governance_reason(data.reason)
+    pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao nao encontrada")
+    if not pd_req.get("is_deleted"):
+        return pd_req
+
+    now = now_iso()
+    fields = _governance_restore_fields(user, reason, now)
+    await db.pd_requests.update_one({"id": req_id, "tenant_id": tenant_id}, {"$set": fields})
+    if hasattr(db, "pd_cards"):
+        await db.pd_cards.update_many(
+            {"pd_request_id": req_id, "tenant_id": tenant_id},
+            {"$set": fields},
+        )
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="pd_request_restored",
+        entity_type="pd_request",
+        entity_id=req_id,
+        reason=reason,
+    )
+    return {**pd_req, **fields}
+
+
 @pd_router.delete("/requests/{req_id}")
 async def delete_pd_request(req_id: str, request: Request):
     user = await get_current_user(request)
@@ -1528,7 +1713,76 @@ async def delete_pd_request(req_id: str, request: Request):
 
 # ============ STATUS TRANSITIONS ============
 
-async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
+
+def _coerce_d48_required(value: Any, default: bool = True) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "on", "enabled", "required", "obrigatorio"}:
+            return True
+        if normalized in {"0", "false", "no", "off", "disabled", "optional", "opcional"}:
+            return False
+    return default
+
+
+def _next_d48_policy_version(settings: Optional[Dict[str, Any]]) -> int:
+    pd_settings = (settings or {}).get("pd") or {}
+    current = pd_settings.get("d48_policy_version") or (pd_settings.get("d48_policy") or {}).get("version")
+    try:
+        return int(current or DEFAULT_D48_POLICY_VERSION) + 1
+    except (TypeError, ValueError):
+        return DEFAULT_D48_POLICY_VERSION + 1
+
+
+async def _resolve_d48_policy(pd_request_id: str, tenant_id: str, pd_req: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    if pd_req is None and hasattr(db, "pd_requests"):
+        pd_req = await db.pd_requests.find_one({"id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0})
+    pd_req = pd_req or {}
+
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    pd_settings = (settings or {}).get("pd") or {}
+    policy_doc = pd_settings.get("d48_policy") or {}
+    policy_version = policy_doc.get("version") or pd_settings.get("d48_policy_version") or DEFAULT_D48_POLICY_VERSION
+    tenant_required = _coerce_d48_required(
+        policy_doc.get("required", pd_settings.get("require_d48")),
+        default=True,
+    )
+
+    override = pd_req.get("d48_required_override")
+    has_override = isinstance(override, bool)
+    required = override if has_override else tenant_required
+    try:
+        version = int(policy_version)
+    except (TypeError, ValueError):
+        version = DEFAULT_D48_POLICY_VERSION
+
+    return {
+        "required": bool(required),
+        "tenant_required": bool(tenant_required),
+        "card_override": override if has_override else None,
+        "source": "card_override" if has_override else "tenant_policy",
+        "policy_version": version,
+        "evaluated_at": now_iso(),
+        "pd_request_id": pd_request_id,
+    }
+
+
+def _d48_snapshot_update_fields(snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    fields = {
+        "d48_required_snapshot": snapshot,
+        "d48_policy_version": snapshot.get("policy_version"),
+        "d48_policy_source": snapshot.get("source"),
+        "d48_gate_checked_at": snapshot.get("evaluated_at"),
+    }
+    if snapshot.get("required"):
+        fields["d48_gate_satisfied_at"] = snapshot.get("evaluated_at") if snapshot.get("satisfied") else None
+    else:
+        fields["d48_gate_skipped_at"] = snapshot.get("evaluated_at")
+    return fields
+
+
+async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str, pd_req: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """RN-PD-STAB: exige ao menos uma leitura D48h antes de entregar ao Comercial.
 
     Ponto unico de verdade para o gate — usado pelos 3 caminhos que podem levar
@@ -1549,6 +1803,11 @@ async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
     registrado. A chave certa (e a que o antigo check de update_sample usava,
     corretamente) e o proprio pd_request_id.
     """
+    policy = await _resolve_d48_policy(pd_request_id, tenant_id, pd_req=pd_req)
+    if not policy["required"]:
+        policy.update({"satisfied": True, "skipped": True, "reason": "d48_not_required_by_policy"})
+        return policy
+
     study = await db.pd_stability_studies.find_one(
         {"pd_card_id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0, "conditions": 1}
     )
@@ -1566,6 +1825,113 @@ async def assert_d48h_stability_ok(pd_request_id: str, tenant_id: str):
             status_code=400,
             detail="Nenhuma leitura D48h (48 horas) registrada. Conclua o checkpoint D48h em ao menos uma condição de estabilidade antes de entregar ao Comercial.",
         )
+    policy.update({"satisfied": True, "skipped": False, "checkpoint": "D48h"})
+    return policy
+
+
+@pd_router.get("/settings/d48-policy")
+async def get_d48_policy(request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_READ | QA_APPROVERS)
+    settings = await db.tenant_settings.find_one({"tenant_id": user["tenant_id"]}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    policy = await _resolve_d48_policy("", user["tenant_id"], pd_req={})
+    return {
+        "require_d48": policy["required"],
+        "policy_version": policy["policy_version"],
+        "source": policy["source"],
+        "tenant_settings": ((settings or {}).get("pd") or {}),
+    }
+
+
+@pd_router.put("/settings/d48-policy")
+async def update_d48_policy(data: D48TenantPolicyUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, ADMIN_ONLY | {"lider_pd", "qa"})
+    reason = clean_text(data.reason or "")
+    if len(reason) < 5:
+        raise HTTPException(status_code=422, detail="reason e obrigatorio para alterar a politica D48.")
+    existing = await db.tenant_settings.find_one({"tenant_id": user["tenant_id"]}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    now = now_iso()
+    version = _next_d48_policy_version(existing)
+    policy = {
+        "required": bool(data.require_d48),
+        "version": version,
+        "updated_at": now,
+        "updated_by": user["id"],
+        "updated_by_name": user.get("name", ""),
+        "reason": reason,
+    }
+    await db.tenant_settings.update_one(
+        {"tenant_id": user["tenant_id"]},
+        {"$set": {
+            "tenant_id": user["tenant_id"],
+            "pd.require_d48": bool(data.require_d48),
+            "pd.d48_policy_version": version,
+            "pd.d48_policy": policy,
+            "updated_at": now,
+        }},
+        upsert=True,
+    )
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="d48_policy_updated",
+        entity_type="tenant_settings",
+        entity_id=user["tenant_id"],
+        after=policy,
+    )
+    return {"require_d48": bool(data.require_d48), "policy_version": version, "policy": policy}
+
+
+@pd_router.put("/requests/{req_id}/d48-policy")
+async def update_request_d48_policy(req_id: str, data: D48RequestPolicyUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, ADMIN_ONLY | {"lider_pd", "qa"})
+    pd_req = await db.pd_requests.find_one({"id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if not pd_req:
+        raise HTTPException(status_code=404, detail="Solicitacao P&D nao encontrada")
+    reason = clean_text(data.reason or "")
+    if len(reason) < 5:
+        raise HTTPException(status_code=422, detail="reason e obrigatorio para alterar a politica D48 do card.")
+
+    settings = await db.tenant_settings.find_one({"tenant_id": user["tenant_id"]}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    now = now_iso()
+    pd_settings = (settings or {}).get("pd") or {}
+    policy_version = (pd_settings.get("d48_policy") or {}).get("version") or pd_settings.get("d48_policy_version") or DEFAULT_D48_POLICY_VERSION
+    if data.clear_override:
+        override = None
+    elif isinstance(data.require_d48, bool):
+        override = data.require_d48
+    else:
+        raise HTTPException(status_code=422, detail="Informe require_d48 ou clear_override=true.")
+
+    update_fields = {
+        "d48_required_override": override,
+        "d48_override_reason": reason,
+        "d48_override_policy_version": policy_version,
+        "d48_override_updated_at": now,
+        "d48_override_updated_by": user["id"],
+        "d48_override_updated_by_name": user.get("name", ""),
+        "updated_at": now,
+    }
+    await db.pd_requests.update_one(
+        {"id": req_id, "tenant_id": user["tenant_id"]},
+        {"$set": update_fields},
+    )
+    updated = await db.pd_requests.find_one({"id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    resolved = await _resolve_d48_policy(req_id, user["tenant_id"], pd_req=updated)
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="d48_request_policy_updated",
+        entity_type="pd_request",
+        entity_id=req_id,
+        before={"d48_required_override": pd_req.get("d48_required_override")},
+        after={"d48_required_override": override, "resolved": resolved},
+    )
+    return {"request": updated, "policy": resolved}
 
 
 async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_status: str, comment: str = ""):
@@ -1736,9 +2102,11 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
             {"$set": {"locked": True, "locked_at": now_iso(), "locked_by": user["id"], "locked_by_name": user.get("name", "")}}
         )
 
+    d48_policy_snapshot = None
+
     # RN-PD-STAB: D48h checkpoint required before delivering to Comercial
     if new_status == "WAITING_APPROVAL":
-        await assert_d48h_stability_ok(req_id, user["tenant_id"])
+        d48_policy_snapshot = await assert_d48h_stability_ok(req_id, user["tenant_id"], pd_req=pd_req)
 
     # Check blocking workflow tasks
     if new_status not in ("IN_PROGRESS", "REJECTED"):
@@ -1820,9 +2188,13 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
     
     sku_created = None
 
+    request_update_fields = {"status": new_status, "updated_at": now_iso()}
+    if d48_policy_snapshot:
+        request_update_fields.update(_d48_snapshot_update_fields(d48_policy_snapshot))
+
     await db.pd_requests.update_one(
         {"id": req_id},
-        {"$set": {"status": new_status, "updated_at": now_iso()}}
+        {"$set": request_update_fields}
     )
 
     try:
@@ -1857,6 +2229,7 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
         "changed_by_name": user["name"],
         "comment": data.comment or f"Status alterado de {STATUS_LABELS.get(current, current)} para {STATUS_LABELS.get(new_status, new_status)}",
         "created_at": now_iso(),
+        "d48_policy_snapshot": d48_policy_snapshot,
     })
     
     # Auto-create development when moving to IN_PROGRESS
@@ -2237,6 +2610,308 @@ async def formula_bank(
         reverse=True,
     )
     return result
+
+
+async def _require_formula_client_links_feature(tenant_id: str) -> None:
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "tenant_settings") else None
+    features = (settings or {}).get("features") or {}
+    if not _feature_value_enabled(features.get(FORMULA_CLIENT_LINKS_FLAG)):
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Vinculo formula-cliente em rollout controlado.",
+                "feature": FORMULA_CLIENT_LINKS_FLAG,
+            },
+        )
+
+
+def _formula_client_usage(value: str) -> str:
+    usage = clean_text(value).lower() or "produto_cliente"
+    if not re.match(r"^[a-z0-9_:-]{3,60}$", usage):
+        raise HTTPException(status_code=422, detail="uso_comercial invalido para vinculo formula-cliente.")
+    return usage
+
+
+async def _formula_client_link_context(formula_id: str, tenant_id: str) -> Dict[str, Any]:
+    formula = await db.pd_formulas.find_one({"id": formula_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not formula:
+        raise HTTPException(status_code=404, detail="Formula nao encontrada")
+    dev = await db.pd_developments.find_one(
+        {"id": formula.get("development_id"), "tenant_id": tenant_id},
+        {"_id": 0},
+    ) if formula.get("development_id") else None
+    pd_req = await db.pd_requests.find_one(
+        {"id": (dev or {}).get("pd_request_id"), "tenant_id": tenant_id},
+        {"_id": 0},
+    ) if (dev or {}).get("pd_request_id") else None
+    approval = await db.pd_approvals.find_one(
+        {"development_id": formula.get("development_id"), "tenant_id": tenant_id},
+        {"_id": 0},
+    ) if formula.get("development_id") and hasattr(db, "pd_approvals") else None
+    return {"formula": formula, "development": dev, "pd_request": pd_req, "approval": approval}
+
+
+def _formula_client_link_initial_status(context: Dict[str, Any]) -> str:
+    formula = context.get("formula") or {}
+    approval = context.get("approval") or {}
+    is_registered = (
+        bool(formula.get("locked"))
+        and bool(approval.get("approved_by_client"))
+        and bool(approval.get("approved_by_internal"))
+    )
+    return "ativo" if is_registered else "em_validacao"
+
+
+async def _validate_formula_client_link_refs(data: FormulaClientLinkCreate, tenant_id: str) -> Dict[str, Any]:
+    cliente_id = clean_text(data.cliente_id)
+    if not cliente_id:
+        raise HTTPException(status_code=422, detail="cliente_id e obrigatorio.")
+    client = await db.crm_clients.find_one({"id": cliente_id, "tenant_id": tenant_id}, {"_id": 0}) if hasattr(db, "crm_clients") else None
+    if not client:
+        raise HTTPException(status_code=404, detail="Cliente nao encontrado.")
+
+    project = None
+    if data.projeto_id:
+        project = await db.crm_projects.find_one(
+            {"id": clean_text(data.projeto_id), "tenant_id": tenant_id, "cliente_id": cliente_id},
+            {"_id": 0},
+        )
+        if not project:
+            raise HTTPException(status_code=404, detail="Projeto do cliente nao encontrado.")
+
+    sku = None
+    if data.sku_id:
+        sku = await db.skus.find_one(
+            {"id": clean_text(data.sku_id), "tenant_id": tenant_id, "cliente_id": cliente_id},
+            {"_id": 0},
+        ) if hasattr(db, "skus") else None
+        if not sku:
+            raise HTTPException(status_code=404, detail="SKU do cliente nao encontrado.")
+
+    produto_pai = None
+    if data.produto_pai_id:
+        produto_pai = await db.produtos_pai.find_one(
+            {"id": clean_text(data.produto_pai_id), "tenant_id": tenant_id, "cliente_id": cliente_id},
+            {"_id": 0},
+        ) if hasattr(db, "produtos_pai") else None
+        if not produto_pai:
+            raise HTTPException(status_code=404, detail="Produto-Pai do cliente nao encontrado.")
+
+    return {"client": client, "project": project, "sku": sku, "produto_pai": produto_pai}
+
+
+@pd_router.get("/formulas/{formula_id}/client-links")
+async def list_formula_client_links(formula_id: str, request: Request, include_inactive: bool = False):
+    user = await get_current_user(request)
+    require_roles(user, PD_READ | COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_formula_client_links_feature(tenant_id)
+    await _formula_client_link_context(formula_id, tenant_id)
+
+    query = {"tenant_id": tenant_id, "formula_id": formula_id}
+    if not include_inactive:
+        query["status"] = {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)}
+    docs = await db.formula_client_links.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    return {"links": docs, "count": len(docs)}
+
+
+@pd_router.post("/formulas/{formula_id}/client-links")
+async def create_formula_client_link(formula_id: str, data: FormulaClientLinkCreate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE | COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_formula_client_links_feature(tenant_id)
+    context = await _formula_client_link_context(formula_id, tenant_id)
+    refs = await _validate_formula_client_link_refs(data, tenant_id)
+    usage = _formula_client_usage(data.uso_comercial)
+    idempotency_key = clean_text(data.idempotency_key)
+    cliente_id = clean_text(data.cliente_id)
+
+    if idempotency_key:
+        existing = await db.formula_client_links.find_one(
+            {
+                "tenant_id": tenant_id,
+                "formula_id": formula_id,
+                "idempotency_key": idempotency_key,
+            },
+            {"_id": 0},
+        )
+        if existing:
+            existing["idempotent_replay"] = True
+            return existing
+
+    existing_active = await db.formula_client_links.find_one(
+        {
+            "tenant_id": tenant_id,
+            "formula_id": formula_id,
+            "cliente_id": cliente_id,
+            "uso_comercial": usage,
+            "status": {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)},
+        },
+        {"_id": 0},
+    )
+    if existing_active:
+        existing_active["already_exists"] = True
+        return existing_active
+
+    now = now_iso()
+    initial_status = _formula_client_link_initial_status(context)
+    approval = context.get("approval") or {}
+    link = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "formula_id": formula_id,
+        "development_id": context["formula"].get("development_id"),
+        "pd_request_id": (context.get("pd_request") or {}).get("id"),
+        "cliente_id": cliente_id,
+        "cliente_nome": refs["client"].get("nome_empresa") or refs["client"].get("name") or "",
+        "uso_comercial": usage,
+        "projeto_id": clean_text(data.projeto_id) or None,
+        "sku_id": clean_text(data.sku_id) or None,
+        "produto_pai_id": clean_text(data.produto_pai_id) or None,
+        "status": initial_status,
+        "observacoes": data.observacoes or "",
+        "formula_snapshot": {
+            "name": context["formula"].get("name"),
+            "version": context["formula"].get("version"),
+            "locked": context["formula"].get("locked", False),
+            "approved_by_client": bool(approval.get("approved_by_client")),
+            "approved_by_internal": bool(approval.get("approved_by_internal")),
+            "is_registered": initial_status == "ativo",
+            "created_at": context["formula"].get("created_at"),
+        },
+        "source_request_snapshot": {
+            "project_name": (context.get("pd_request") or {}).get("project_name"),
+            "client_name": (context.get("pd_request") or {}).get("client_name"),
+            "status": (context.get("pd_request") or {}).get("status"),
+        },
+        "feature": FORMULA_CLIENT_LINKS_FLAG,
+        "created_by": user["id"],
+        "created_by_name": user.get("name", ""),
+        "created_at": now,
+        "updated_at": now,
+    }
+    if idempotency_key:
+        link["idempotency_key"] = idempotency_key
+
+    try:
+        await db.formula_client_links.insert_one(link)
+    except DuplicateKeyError:
+        if idempotency_key:
+            existing = await db.formula_client_links.find_one(
+                {
+                    "tenant_id": tenant_id,
+                    "formula_id": formula_id,
+                    "idempotency_key": idempotency_key,
+                },
+                {"_id": 0},
+            )
+            if existing:
+                existing["idempotent_replay"] = True
+                return existing
+        existing_active = await db.formula_client_links.find_one(
+            {
+                "tenant_id": tenant_id,
+                "formula_id": formula_id,
+                "cliente_id": cliente_id,
+                "uso_comercial": usage,
+                "status": {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)},
+            },
+            {"_id": 0},
+        )
+        if existing_active:
+            existing_active["already_exists"] = True
+            return existing_active
+        raise
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="formula_client_link_created",
+        entity_type="formula_client_link",
+        entity_id=link["id"],
+        after={"formula_id": formula_id, "cliente_id": cliente_id, "uso_comercial": usage},
+        metadata={"feature": FORMULA_CLIENT_LINKS_FLAG},
+    )
+    link.pop("_id", None)
+    return link
+
+
+@pd_router.put("/formulas/{formula_id}/client-links/{link_id}")
+async def update_formula_client_link(formula_id: str, link_id: str, data: FormulaClientLinkUpdate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, PD_WRITE | COMERCIAL_FULL)
+    tenant_id = user["tenant_id"]
+    await _require_formula_client_links_feature(tenant_id)
+    link = await db.formula_client_links.find_one(
+        {"id": link_id, "tenant_id": tenant_id, "formula_id": formula_id},
+        {"_id": 0},
+    )
+    if not link:
+        raise HTTPException(status_code=404, detail="Vinculo formula-cliente nao encontrado.")
+
+    updates: Dict[str, Any] = {"updated_at": now_iso()}
+    if data.status is not None:
+        status = clean_text(data.status).lower()
+        if status not in FORMULA_CLIENT_LINK_STATUSES:
+            raise HTTPException(status_code=422, detail=f"status invalido. Use: {sorted(FORMULA_CLIENT_LINK_STATUSES)}")
+        if status in FORMULA_CLIENT_LINK_ACTIVE_STATUSES:
+            existing_active = await db.formula_client_links.find_one(
+                {
+                    "tenant_id": tenant_id,
+                    "formula_id": formula_id,
+                    "cliente_id": link.get("cliente_id"),
+                    "uso_comercial": link.get("uso_comercial"),
+                    "status": {"$in": list(FORMULA_CLIENT_LINK_ACTIVE_STATUSES)},
+                },
+                {"_id": 0},
+            )
+            if existing_active and existing_active.get("id") != link_id:
+                raise HTTPException(status_code=409, detail="Ja existe vinculo ativo para esta formula/cliente/uso.")
+        if status == "inativo":
+            reason = clean_text(data.reason)
+            if len(reason) < 5:
+                raise HTTPException(status_code=422, detail="reason e obrigatorio para inativar o vinculo.")
+            updates["inactivated_at"] = updates["updated_at"]
+            updates["inactivated_by"] = user["id"]
+            updates["inactivated_by_name"] = user.get("name", "")
+            updates["inactivation_reason"] = reason
+        updates["status"] = status
+    if data.observacoes is not None:
+        updates["observacoes"] = data.observacoes
+
+    unset_fields = {}
+    if updates.get("status") in FORMULA_CLIENT_LINK_ACTIVE_STATUSES:
+        unset_fields = {
+            "inactivated_at": "",
+            "inactivated_by": "",
+            "inactivated_by_name": "",
+            "inactivation_reason": "",
+        }
+
+    update_doc = {"$set": updates}
+    if unset_fields:
+        update_doc["$unset"] = unset_fields
+
+    await db.formula_client_links.update_one(
+        {"id": link_id, "tenant_id": tenant_id, "formula_id": formula_id},
+        update_doc,
+    )
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="formula_client_link_updated",
+        entity_type="formula_client_link",
+        entity_id=link_id,
+        after=updates,
+        metadata={"feature": FORMULA_CLIENT_LINKS_FLAG, "formula_id": formula_id},
+    )
+    updated = await db.formula_client_links.find_one(
+        {"id": link_id, "tenant_id": tenant_id, "formula_id": formula_id},
+        {"_id": 0},
+    )
+    return updated
 
 @pd_router.post("/formulas/{formula_id}/items")
 async def add_formula_item(formula_id: str, data: FormulaItemCreate, request: Request):
@@ -2864,7 +3539,8 @@ async def update_sample(sample_id: str, data: SampleUpdate, request: Request):
         # D48h gate: mesmo ponto de verdade usado por transition_status e pelo drag-and-drop do board
         dev = await db.pd_developments.find_one({"id": existing.get("development_id")}, {"_id": 0, "pd_request_id": 1})
         if dev and dev.get("pd_request_id"):
-            await assert_d48h_stability_ok(dev["pd_request_id"], user["tenant_id"])
+            d48_policy_snapshot = await assert_d48h_stability_ok(dev["pd_request_id"], user["tenant_id"])
+            update_fields.update(_d48_snapshot_update_fields(d48_policy_snapshot))
         update_fields["sent_at"] = now_iso()
         update_fields.setdefault("internal_approved", True)
 
@@ -5981,7 +6657,16 @@ async def assert_pd_card_ready_for_approval(card_id: str, tenant_id: str):
         return
     # RN-PD-STAB: mesmo gate de D48h usado por transition_status e update_sample —
     # antes, mover o card pelo Kanban (drag-and-drop) pulava essa checagem inteira (B7).
-    await assert_d48h_stability_ok(pd_request["id"], tenant_id)
+    d48_policy_snapshot = await assert_d48h_stability_ok(pd_request["id"], tenant_id, pd_req=pd_request)
+    d48_fields = _d48_snapshot_update_fields(d48_policy_snapshot)
+    await db.pd_requests.update_one(
+        {"id": pd_request["id"], "tenant_id": tenant_id},
+        {"$set": d48_fields},
+    )
+    await db.pd_cards.update_one(
+        {"id": card_id, "tenant_id": tenant_id},
+        {"$set": d48_fields},
+    )
     dev = await db.pd_developments.find_one(
         {"tenant_id": tenant_id, "pd_request_id": pd_request["id"]},
         {"_id": 0, "id": 1},

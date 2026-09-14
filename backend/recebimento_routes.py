@@ -41,6 +41,8 @@ def init_recebimento(database, auth_func, id_func, iso_func):
 async def create_recebimento_indexes():
     await db.recebimentos.create_index([("tenant_id", 1), ("created_at", -1)])
     await db.recebimentos.create_index([("tenant_id", 1), ("po_id", 1)])
+    await db.recebimentos.create_index([("tenant_id", 1), ("recebimento_key", 1)], unique=True, sparse=True)
+    await db.recebimentos.create_index([("tenant_id", 1), ("idempotency_key", 1)], unique=True, sparse=True)
     await db.recebimento_agendamentos.create_index([("tenant_id", 1), ("data", 1), ("status", 1)])
     await db.wms_paletes.create_index([("tenant_id", 1), ("recebimento_id", 1)])
     await db.wms_paletes.create_index([("tenant_id", 1), ("etiqueta_codigo", 1)], unique=True)
@@ -69,6 +71,7 @@ _TIPO_MP_TO_RA_TIPO = {
 
 # Default SLA in business days per tipo_mp
 _DEFAULT_SLA = {"FORMULACAO": 3, "ROTULO": 2, "EMBALAGEM": 2}
+RECEIVING_INTERNAL_LOT_FLAG = "receiving_internal_lot_v2"
 
 
 # ===== MODELS =====
@@ -95,6 +98,7 @@ class RecebimentoItem(BaseModel):
     quantidade: float
     unidade: str = "kg"
     lote: str = ""
+    lote_interno: Optional[str] = None
     validade: Optional[str] = None
     mp_id: Optional[str] = None
     origem_cliente: bool = False     # RN-REC-04: insumo cedido pelo cliente
@@ -113,6 +117,7 @@ class RecebimentoCreate(BaseModel):
     fornecedor_nome: Optional[str] = None
     numero_nf: str
     data_nf: str                     # YYYY-MM-DD
+    idempotency_key: Optional[str] = None
     items: List[RecebimentoItem]
     checklist_geral: List[RecebimentoChecklistItem] = Field(default_factory=list)
     agendamento_id: Optional[str] = None
@@ -223,6 +228,51 @@ def _checklist_status(checklist: List[dict]) -> str:
     return "pendente" if pendentes else "ok"
 
 
+async def _receiving_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return bool(((settings or {}).get("features") or {}).get(flag))
+
+
+def _recebimento_item_key(item: RecebimentoItem) -> str:
+    parts = [
+        item.po_item_id or "",
+        item.mp_id or "",
+        item.codigo or "",
+        item.nome or "",
+        str(float(item.quantidade or 0)),
+        item.unidade or "",
+        item.lote or "",
+        item.validade or "",
+        item.endereco_id or "",
+    ]
+    return "|".join(str(part).strip().lower() for part in parts)
+
+
+def _recebimento_key(data: RecebimentoCreate) -> str:
+    explicit = (data.idempotency_key or "").strip()
+    if explicit:
+        return explicit
+    items_key = "#".join(sorted(_recebimento_item_key(item) for item in data.items))
+    parts = [
+        data.po_id or "",
+        data.po_numero or "",
+        data.fornecedor_id or "",
+        data.fornecedor_nome or "",
+        data.numero_nf or "",
+        data.data_nf or "",
+        items_key,
+    ]
+    return "|".join(str(part).strip().lower() for part in parts)
+
+
+async def _next_lote_interno(tenant_id: str, offset: int = 0) -> str:
+    year = (now_iso() or "")[:4] or str(datetime.now(timezone.utc).year)
+    count = await db.recebimentos.count_documents({"tenant_id": tenant_id})
+    return f"AK-{year}-{count + offset + 1:06d}"
+
+
 async def _get_po_if_any(po_id: Optional[str], tenant_id: str) -> Optional[dict]:
     if not po_id:
         return None
@@ -297,9 +347,11 @@ async def _atualizar_po_recebimento_item_a_item(po: dict, recebimento: dict, use
                 "item_id": i.get("mp_id"),
                 "quantidade_recebida": i.get("quantidade"),
                 "lote": i.get("lote"),
+                "lote_interno": i.get("lote_interno"),
             }
             for i in recebimento.get("items", [])
         ],
+        "recebimento_key": recebimento.get("recebimento_key"),
     }
     log_entry = {
         "acao": "recebimento_granular_registrado",
@@ -325,7 +377,7 @@ async def _registrar_saldo_wms_lote(item_doc: dict, endereco_id: Optional[str], 
     endereco = await db.wms_enderecos.find_one({"id": endereco_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not endereco:
         raise HTTPException(status_code=404, detail=f"Endereco WMS nao encontrado: {endereco_id}")
-    lote = item_doc.get("lote") or item_doc.get("numero_lote_fornecedor") or "SEM-LOTE"
+    lote = item_doc.get("lote_interno") or item_doc.get("lote") or item_doc.get("numero_lote_fornecedor") or "SEM-LOTE"
     query = {
         "tenant_id": user["tenant_id"],
         "item_id": item_doc["estoque_item_id"],
@@ -345,6 +397,8 @@ async def _registrar_saldo_wms_lote(item_doc: dict, endereco_id: Optional[str], 
             "codigo_item": item_doc.get("codigo", ""),
             "tipo_item": "mp",
             "lote": lote,
+            "lote_interno": item_doc.get("lote_interno"),
+            "lote_fornecedor": item_doc.get("lote") or item_doc.get("numero_lote_fornecedor"),
             "validade": item_doc.get("validade"),
             "endereco_id": endereco_id,
             "endereco_codigo": endereco_codigo or endereco.get("codigo", ""),
@@ -385,6 +439,8 @@ async def _criar_paletes(item_doc: dict, palete_data: Optional[RecebimentoPalete
             "item_nome": item_doc.get("nome", ""),
             "codigo_item": item_doc.get("codigo", ""),
             "lote": item_doc.get("lote", ""),
+            "lote_interno": item_doc.get("lote_interno"),
+            "lote_fornecedor": item_doc.get("lote", ""),
             "endereco_id": item_doc.get("endereco_id"),
             "endereco_codigo": item_doc.get("endereco_codigo", ""),
             "etiqueta_codigo": etiqueta,
@@ -620,13 +676,25 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
     if not data.items:
         raise HTTPException(status_code=400, detail="Informe ao menos um item")
 
+    receiving_v2 = await _receiving_feature_enabled(tid, RECEIVING_INTERNAL_LOT_FLAG)
+    recebimento_key = _recebimento_key(data) if receiving_v2 else None
+    idempotency_key = (data.idempotency_key or "").strip() if receiving_v2 else None
+    if recebimento_key:
+        existing = await db.recebimentos.find_one(
+            {"tenant_id": tid, "recebimento_key": recebimento_key},
+            {"_id": 0},
+        )
+        if existing:
+            existing["idempotent_replay"] = True
+            return existing
+
     now = now_iso()
     entrada_id = new_id()
     sla = await _get_sla(tid)
     po = await _get_po_if_any(data.po_id, tid)
     items_processados = []
 
-    for item in data.items:
+    for item_index, item in enumerate(data.items):
         po_item = _match_po_item(po, item)
         if po and not po_item:
             raise HTTPException(status_code=422, detail=f"Item '{item.nome}' nao encontrado na PO informada")
@@ -645,6 +713,9 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
         data_limite_cq = (datetime.now(timezone.utc) + timedelta(days=sla_days)).isoformat()[:10]
         lote_id = new_id()
         ra_id = new_id()
+        lote_interno = (item.lote_interno or "").strip() if receiving_v2 else None
+        if receiving_v2 and not lote_interno:
+            lote_interno = await _next_lote_interno(tid, item_index)
 
         # 1) Find or create estoque item
         query_estoque: Dict[str, Any] = {"tenant_id": tid, "setor": setor, "cq_lote_id": lote_id}
@@ -672,6 +743,8 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
                             "cq_ra_id": ra_id,
                             "prazo_analise_qualidade": data_limite_cq,
                             "lote": item.lote or estoque_item.get("lote", ""),
+                            "lote_interno": lote_interno,
+                            "lote_fornecedor": item.lote,
                             "updated_at": now,
                         }
                     }
@@ -692,6 +765,8 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
                 "estoque_minimo": 0,
                 "localizacao": "",
                 "lote": item.lote,
+                "lote_interno": lote_interno,
+                "lote_fornecedor": item.lote,
                 "validade": item.validade,
                 "observacoes": "",
                 "posicao_cq": "quarentena",
@@ -724,6 +799,8 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
                 "nome_item": item.nome,
                 "codigo_item": item_codigo,
                 "lote": item.lote,
+                "lote_interno": lote_interno,
+                "lote_fornecedor": item.lote,
                 "tipo": "ENTRADA_RECEBIMENTO",
                 "direcao": "entrada",
                 "quantidade": item.quantidade,
@@ -740,7 +817,7 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
             await db.estoque_movimentos.insert_one(mov)
 
         # 3) Create RA in CQ with SLA deadline
-        lote_numero = item.lote or f"L{now[:10].replace('-', '')}"
+        lote_numero = lote_interno or item.lote or f"L{now[:10].replace('-', '')}"
         ra = {
             "id": ra_id,
             "tenant_id": tid,
@@ -757,6 +834,7 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
             "nf_data": data.data_nf,
             "quantidade_recebida": item.quantidade,
             "unidade": item.unidade,
+            "lote_interno": lote_interno,
             "numero_lote_fornecedor": item.lote,
             "data_validade_fornecedor": item.validade,
             "data_limite_cq": data_limite_cq,
@@ -777,6 +855,8 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
             "codigo": item_codigo,
             "mp_id": item_mp_id,
             "po_item_id": po_item_id,
+            "lote_interno": lote_interno,
+            "lote_fornecedor": item.lote,
             "po_item_descricao": (po_item or {}).get("item_descricao", ""),
             "numero_nf": data.numero_nf,
             "fornecedor_nome": data.fornecedor_nome or "",
@@ -805,6 +885,9 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
     entrada = {
         "id": entrada_id,
         "tenant_id": tid,
+        "recebimento_key": recebimento_key,
+        "idempotency_key": idempotency_key,
+        "receiving_internal_lot_v2": bool(receiving_v2),
         "po_id": data.po_id,
         "po_numero": data.po_numero,
         "agendamento_id": data.agendamento_id,

@@ -38,7 +38,7 @@ const NEXT_STATUS = {
 };
 
 function emptyItem() {
-    return { produto_nome: "", sku: "", quantidade: "", unidade: "un", lote: "", volumes: 1, peso_unitario: 0 };
+    return { order_item_id: "", produto_nome: "", sku: "", quantidade: "", unidade: "un", lote: "", volumes: 1, peso_unitario: 0 };
 }
 
 function emptyForm() {
@@ -76,6 +76,7 @@ export default function ExpedicaoPage() {
     const [selectedExp, setSelectedExp] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [orders, setOrders] = useState([]);
+    const [fulfillment, setFulfillment] = useState(null);
 
     // Dispatch dialog (conferido → expedido)
     const [showDispatch, setShowDispatch] = useState(false);
@@ -108,8 +109,12 @@ export default function ExpedicaoPage() {
 
     const loadOrders = useCallback(async () => {
         try {
-            const { data } = await api.get("/orders", { params: { status: "concluido" } });
-            setOrders(Array.isArray(data) ? data : []);
+            const [concluidos, emProducao] = await Promise.all([
+                api.get("/orders", { params: { status: "concluido" } }).catch(() => ({ data: [] })),
+                api.get("/orders", { params: { status: "em_producao" } }).catch(() => ({ data: [] })),
+            ]);
+            const merged = [...(concluidos.data || []), ...(emProducao.data || [])];
+            setOrders(Array.from(new Map(merged.map(o => [o.id, o])).values()));
         } catch { /* optional */ }
     }, []);
 
@@ -127,23 +132,43 @@ export default function ExpedicaoPage() {
         ...f, items: f.items.length > 1 ? f.items.filter((_, i) => i !== idx) : f.items,
     }));
 
-    const onSelectOrder = (orderId) => {
+    const onSelectOrder = async (orderId) => {
         const o = orders.find(x => x.id === orderId);
-        if (!o) { setField("order_id", ""); return; }
+        if (!o) { setField("order_id", ""); setFulfillment(null); return; }
+        let summary = null;
+        try {
+            const { data } = await api.get(`/orders/${orderId}/fulfillment-summary`);
+            summary = data;
+            setFulfillment(data);
+        } catch {
+            setFulfillment(null);
+        }
+        const balanceByItem = new Map((summary?.items || []).map(row => [row.order_item_id, row]));
         setForm(f => ({
             ...f,
             order_id: o.id,
             order_numero: o.numero_pedido || "",
             cliente_nome: o.cliente?.razao_social || o.cliente?.nome || f.cliente_nome,
-            items: (o.items || []).map(i => ({
-                produto_nome: i.descricao || i.produto || "",
-                sku: i.sku || "",
-                quantidade: String(i.quantidade || ""),
+            endereco_entrega: o.frete?.endereco || f.endereco_entrega,
+            items: (o.items || []).map((i, idx) => {
+                const orderItemId = i.id || `item-${idx + 1}`;
+                const balance = balanceByItem.get(orderItemId);
+                return ({
+                order_item_id: orderItemId,
+                produto_nome: i.item || i.descricao || i.produto || "",
+                sku: i.codigo_kuryos || i.sku || "",
+                quantidade: String(balance?.saldo_produzido_disponivel ?? i.qtd ?? i.quantidade ?? ""),
                 unidade: i.unidade || "un",
                 lote: "",
                 volumes: 1,
                 peso_unitario: 0,
-            })).filter(i => i.produto_nome) || [emptyItem()],
+                qtd_pedido: balance?.qtd_pedido,
+                qtd_produzida: balance?.qtd_produzida,
+                qtd_expedida: balance?.qtd_expedida,
+                saldo_produzido_disponivel: balance?.saldo_produzido_disponivel,
+                saldo_pedido_a_expedir: balance?.saldo_pedido_a_expedir,
+            });
+            }).filter(i => i.produto_nome) || [emptyItem()],
         }));
     };
 
@@ -153,6 +178,30 @@ export default function ExpedicaoPage() {
         if (!itemsValidos.length) { toast.error("Adicione ao menos 1 item válido"); return; }
         setSaving(true);
         try {
+            const partialItems = itemsValidos.filter(i => i.order_item_id);
+            if (form.order_id && fulfillment?.items?.length && partialItems.length === itemsValidos.length) {
+                await api.post("/expedicao/ordens/from-order-items", {
+                    order_id: form.order_id,
+                    endereco_entrega: form.endereco_entrega,
+                    transportadora: form.transportadora,
+                    previsao_entrega: form.previsao_entrega || null,
+                    numero_nf_saida: form.numero_nf_saida,
+                    observacoes: form.observacoes,
+                    items: partialItems.map(i => ({
+                        order_item_id: i.order_item_id,
+                        quantidade: Number(i.quantidade),
+                        lote: i.lote,
+                        volumes: Number(i.volumes) || 1,
+                        peso_unitario: Number(i.peso_unitario) || 0,
+                    })),
+                });
+                toast.success("Ordem de expediÃ§Ã£o criada");
+                setShowForm(false);
+                setForm(emptyForm());
+                setFulfillment(null);
+                loadOrdens();
+                return;
+            }
             await api.post("/expedicao/ordens", {
                 order_id: form.order_id || null,
                 order_numero: form.order_numero || null,
@@ -299,6 +348,16 @@ export default function ExpedicaoPage() {
         }
     };
 
+    const handleSelectExp = async (exp) => {
+        setSelectedExp(exp);
+        try {
+            const { data } = await api.get(`/expedicao/ordens/${exp.id}`);
+            setSelectedExp(data);
+        } catch {
+            setSelectedExp(exp);
+        }
+    };
+
     const counts = {
         total: ordens.length,
         pendente: ordens.filter(o => o.status === "pendente").length,
@@ -375,7 +434,7 @@ export default function ExpedicaoPage() {
                         {ordens.map(exp => (
                             <Card key={exp.id}
                                 className="hover:border-primary/40 hover:shadow-sm transition-all cursor-pointer group"
-                                onClick={() => setSelectedExp(exp)}
+                                onClick={() => handleSelectExp(exp)}
                             >
                                 <CardContent className="p-4">
                                     <div className="flex items-start justify-between gap-4">
@@ -444,6 +503,14 @@ export default function ExpedicaoPage() {
                                     <Badge className="bg-amber-100 text-amber-700 border-amber-200">Com Divergência</Badge>
                                 )}
                             </div>
+                            {selectedExp.delivery_snapshot?.summary && (
+                                <div className="grid grid-cols-4 gap-2 rounded-md border bg-muted/30 p-2 text-xs">
+                                    <div><span className="text-muted-foreground">Produzido</span><p className="font-semibold">{selectedExp.delivery_snapshot.summary.total_produzido}</p></div>
+                                    <div><span className="text-muted-foreground">Expedido</span><p className="font-semibold">{selectedExp.delivery_snapshot.summary.total_expedido}</p></div>
+                                    <div><span className="text-muted-foreground">NF</span><p className="font-semibold">{selectedExp.delivery_snapshot.operational_snapshot?.percentual_nf || 0}%</p></div>
+                                    <div><span className="text-muted-foreground">Frete</span><p className="font-semibold">{selectedExp.delivery_snapshot.operational_snapshot?.frete_cif_fob || "—"}</p></div>
+                                </div>
+                            )}
                             <div className="grid grid-cols-2 gap-3">
                                 <div><span className="text-muted-foreground">Transportadora:</span> {selectedExp.transportadora || "—"}</div>
                                 <div><span className="text-muted-foreground">Prev. Entrega:</span> {formatDate(selectedExp.previsao_entrega)}</div>
@@ -787,6 +854,22 @@ export default function ExpedicaoPage() {
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                {fulfillment?.summary && (
+                                    <div className="mt-2 grid grid-cols-3 gap-2 rounded-md border bg-muted/30 p-2 text-xs">
+                                        <div>
+                                            <span className="text-muted-foreground">Produzido</span>
+                                            <p className="font-semibold">{fulfillment.summary.total_produzido}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">Expedido</span>
+                                            <p className="font-semibold">{fulfillment.summary.total_expedido}</p>
+                                        </div>
+                                        <div>
+                                            <span className="text-muted-foreground">NF</span>
+                                            <p className="font-semibold">{fulfillment.operational_snapshot?.percentual_nf || 0}%</p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
                         <div className="grid grid-cols-2 gap-3">
@@ -864,6 +947,14 @@ export default function ExpedicaoPage() {
                                                 )}
                                             </div>
                                         </div>
+                                        {item.order_item_id && (
+                                            <div className="grid grid-cols-4 gap-2 rounded-md bg-muted/30 px-2 py-1.5 text-[11px]">
+                                                <span>Pedido: <strong>{item.qtd_pedido ?? "—"}</strong></span>
+                                                <span>Produzido: <strong>{item.qtd_produzida ?? "—"}</strong></span>
+                                                <span>Expedido: <strong>{item.qtd_expedida ?? "—"}</strong></span>
+                                                <span>Disponivel: <strong>{item.saldo_produzido_disponivel ?? "—"}</strong></span>
+                                            </div>
+                                        )}
                                         <div className="grid grid-cols-3 gap-2">
                                             <div>
                                                 <Label className="text-xs">Lote</Label>

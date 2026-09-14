@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,18 @@ import {
 
 const CORES = ["#6366f1", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#06b6d4"];
 const FRETES = ["cif", "fob", "valor_fixo", "percentual"];
+
+function supplierQualityBadge(quality) {
+    if (!quality) return null;
+    const risco = quality.risco || "medio";
+    const cls = {
+        baixo: "border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300",
+        medio: "border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300",
+        alto: "border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300",
+        bloqueado: "border-red-500 bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200",
+    }[risco] || "border-slate-300 bg-slate-50 text-slate-700 dark:bg-slate-900 dark:text-slate-200";
+    return <Badge variant="outline" className={`${cls} whitespace-nowrap`}>{quality.selo || "Qualidade"} {quality.score != null ? quality.score : ""}</Badge>;
+}
 
 function NovaCotacaoDialog({ open, itemId, onClose, onCreated }) {
     const [form, setForm] = useState({ fornecedor_id: "", preco_unitario: "", preco_unitario_currency: "BRL", prazo_pagamento_texto: "30 DDL", prazo_pagamento_dias: 30, prazo_entrega_dias_uteis: 7, moq: 1, frete_tipo: "cif", frete_valor: 0, valido_ate: "" });
@@ -204,6 +217,7 @@ export default function ComprasItemDetalhe() {
                             <thead className="border-b">
                                 <tr>
                                     <th className="text-left py-1.5 font-medium text-muted-foreground">Fornecedor</th>
+                                    <th className="text-left py-1.5 font-medium text-muted-foreground">Qualidade</th>
                                     <th className="text-right py-1.5 font-medium text-muted-foreground">Último Preço</th>
                                     <th className="text-right py-1.5 font-medium text-muted-foreground">Prazo Entrega</th>
                                     <th className="text-right py-1.5 font-medium text-muted-foreground">MOQ</th>
@@ -217,6 +231,14 @@ export default function ComprasItemDetalhe() {
                                         <td className="py-2">
                                             {i === 0 && <span className="text-green-600 mr-1">★</span>}
                                             {f.fornecedor_nome || f.fornecedor_codigo}
+                                        </td>
+                                        <td className="py-2">
+                                            <div className="flex flex-wrap gap-1">
+                                                {supplierQualityBadge(f.supplier_quality || f.qualidade_fornecedor)}
+                                                {Number((f.supplier_quality || f.qualidade_fornecedor)?.rnc_criticas_12m || 0) > 0 && (
+                                                    <Badge variant="outline" className="border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300">RNC crit.</Badge>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="py-2 text-right font-mono font-medium">
                                             {f.ultimo_preco != null ? `R$ ${Number(f.ultimo_preco).toFixed(4)}` : "—"}

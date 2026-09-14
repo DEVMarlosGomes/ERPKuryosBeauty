@@ -1,0 +1,454 @@
+# PCP DELTA ROLLBACK
+
+Data: 2026-09-11
+
+## Slice 1 - `pcp_quantity_planning_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_quantity_planning_v2`.
+2. Parar de chamar as rotas novas de alocacao.
+3. Manter `pcp_allocations` e `production_order_events` como historico/auditoria.
+4. Continuar usando `POST /api/orders/{order_id}/create-op` para o fluxo antigo.
+
+## Dados
+
+Nao apagar automaticamente:
+- `pcp_allocations`;
+- `production_order_events`;
+- `orders.items[].id`;
+- `orders.pcp_allocation_ids`;
+- `ops.allocation_id`;
+- `ops.sales_order_item_id`.
+
+Esses campos sao opcionais e nao quebram os fluxos antigos.
+
+## Reversao de codigo
+
+O slice e isolado principalmente em:
+- `backend/orders_routes.py`;
+- `backend/tests/test_pcp_allocations_unit.py`.
+
+Nao houve alteracao funcional de frontend.
+
+## Slice 2 - UI Quantidades
+
+Rollback operacional:
+
+1. Remover/ocultar acesso de menu para `/pcp/planejamento/quantidades`.
+2. Manter `/pcp/planejamento` no fluxo anterior.
+3. Desligar `tenant_settings.features.pcp_quantity_planning_v2`.
+
+## Slice 3 - `pcp_material_picking_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_material_picking_v2`.
+2. Parar de chamar as rotas novas de separacao.
+3. Manter `wms_separacoes` e `production_order_events` como historico/auditoria.
+4. Continuar usando WMS/Estoque manual atual.
+
+Dados opcionais que podem permanecer:
+- `wms_separacoes`;
+- `ops.wms_separacao_id`;
+- `ops.wms_separacao_status`;
+- eventos `confirm_wms_picking`.
+
+Nao ha baixa automatica de estoque neste slice, entao rollback nao exige estorno de saldo.
+
+## Slice 4 - UI FEFO no Detalhe da OP
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_material_picking_v2`.
+2. O painel passa a exibir a feature como inativa.
+3. O fluxo antigo de OP/apontamento segue intacto.
+
+Rollback de codigo:
+- remover o painel `Separacao FEFO / WMS` de `frontend/src/pages/OPDetail.js`.
+
+## Slice 5 - `pcp_alerts_enabled`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_alerts_enabled`.
+2. Parar de chamar `POST /api/pcp/alerts/check`.
+3. Manter `pcp_alerts` como historico/auditoria.
+
+Dados opcionais que podem permanecer:
+- `pcp_alerts`;
+- campos de resolucao nos alertas;
+- contadores de `repiques`.
+
+Nao ha envio externo automatico neste slice e nenhum status de slot/OP e alterado pelos alertas.
+
+Rollback de codigo:
+- remover a secao `ALERTAS PCP` de `backend/pcp_routes.py`;
+- remover `backend/tests/test_pcp_alerts_unit.py`.
+
+## Slice 6 - `wms_cycle_count_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.wms_cycle_count_v2`.
+2. Parar de chamar as rotas de `/api/estoque/wms/inventarios-ciclicos`.
+3. Manter `wms_inventarios_ciclicos` como historico/auditoria.
+4. Continuar usando o ajuste WMS atual em `/api/estoque/wms/saldos/ajustar`.
+
+Dados opcionais que podem permanecer:
+- `wms_inventarios_ciclicos`;
+- snapshots de `linhas[]`;
+- `ajuste_movimento_ids[]` referenciando kardex.
+
+Abertura e contagem nao alteram saldo. Se um inventario ja foi fechado com ajuste, o estorno deve usar o fluxo
+operacional existente de ajuste WMS, preservando o kardex.
+
+Rollback de codigo:
+- remover as rotas `inventarios-ciclicos` de `backend/estoque_routes.py`;
+- remover os testes adicionados em `backend/tests/test_wms_recebimento_unit.py`.
+
+## Slice 7 - `pcp_disposal_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_disposal_v2`.
+2. Parar de chamar as rotas de `/api/estoque/wms/destinacoes`.
+3. Manter `wms_destinacoes` como historico/auditoria.
+4. Continuar usando o ajuste WMS atual em `/api/estoque/wms/saldos/ajustar` para qualquer correcao operacional.
+
+Dados opcionais que podem permanecer:
+- `wms_destinacoes`;
+- `coleta`;
+- `movimento_id` apontando para o kardex.
+
+Criacao e coleta nao alteram saldo. Se uma destinacao foi confirmada, a baixa ja esta registrada no kardex; qualquer
+estorno deve usar o fluxo operacional existente de ajuste WMS.
+
+Rollback de codigo:
+- remover as rotas `destinacoes` de `backend/estoque_routes.py`;
+- remover os testes de destinacao adicionados em `backend/tests/test_wms_recebimento_unit.py`.
+
+## Slice 8 - `receiving_internal_lot_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.receiving_internal_lot_v2`.
+2. Continuar usando `POST /api/recebimento/entradas` sem `idempotency_key` e sem `lote_interno`.
+3. Manter os campos opcionais ja gravados como historico/rastreabilidade.
+
+Dados opcionais que podem permanecer:
+- `recebimentos.recebimento_key`;
+- `recebimentos.idempotency_key`;
+- `recebimentos.items[].lote_interno`;
+- campos `lote_interno`/`lote_fornecedor` propagados para CQ, estoque, WMS e PO.
+
+Nao ha migration destrutiva. Recebimentos ja criados pelo fluxo estendido continuam legiveis pelo fluxo antigo porque
+os novos campos sao opcionais.
+
+Rollback de codigo:
+- remover helpers/model fields de lote interno em `backend/recebimento_routes.py`;
+- remover o teste de idempotencia/lote interno de `backend/tests/test_wms_recebimento_unit.py`.
+
+## Slice 9 - `material_tax_defaults_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.material_tax_defaults_v2`.
+2. Parar de enviar `fiscal_defaults` nas rotas de materiais.
+3. Parar de chamar `/api/cadastros/materiais/{codigo_interno}/fiscal-defaults`.
+4. Manter os campos fiscais ja gravados como historico/cadastro complementar.
+
+Dados opcionais que podem permanecer:
+- `materiais.ncm`;
+- `materiais.cest`;
+- `materiais.ipi_default`;
+- `materiais.icms_st_default`;
+- `materiais.origem_fiscal`;
+- `materiais.observacoes_fiscais`;
+- campos de auditoria fiscal.
+
+Nao ha calculo fiscal automatico neste slice, entao desligar a flag impede novas gravacoes fiscais sem afetar compras,
+PO, recebimento ou faturamento.
+
+Rollback de codigo:
+- remover `MaterialFiscalDefaults` e helpers fiscais de `backend/materiais_routes.py`;
+- remover a rota `fiscal-defaults`;
+- remover `backend/tests/test_materiais_fiscal_defaults_unit.py`.
+
+## Slice 10 - `v21_commercial_package`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.v21_commercial_package`.
+2. Parar de chamar as rotas `/api/crm/samples/{sample_id}/variacoes/{variacao_id}/commercial-packages`.
+3. Manter `commercial_packages` como historico/auditoria.
+4. Continuar usando os fluxos atuais de aprovacao de amostra, SKU, pedido, Kickoff e CGI/contratos.
+
+Dados opcionais que podem permanecer:
+- documentos em `commercial_packages`;
+- `snapshot`;
+- `frete`;
+- `condicoes`;
+- `anexos`;
+- `idempotency_key`.
+
+Nao ha migration destrutiva e nenhum fluxo transacional passa a depender do pacote. Desligar a flag bloqueia novas
+leituras/escritas pelas rotas adicionadas.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas de pacote comercial de `backend/crm_routes.py`;
+- remover indices `commercial_packages` adicionados em `backend/server.py`;
+- remover `backend/tests/test_commercial_packages_unit.py`.
+
+## Slice 11 - `unified_attachments_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.unified_attachments_v2`.
+2. Continuar usando `/api/upload` sem `owner_type/owner_id` para arquivos genericos.
+3. Continuar usando `/api/orders/{order_id}/attachments` e o download legado de pedidos.
+4. Manter `attachments` como historico/metadado auxiliar.
+
+Dados opcionais que podem permanecer:
+- documentos em `attachments`;
+- `orders.attachments[].storage_backend`;
+- `orders.attachments[].file_id`;
+- `orders.attachments[].unified_attachment_v2`;
+- registros em `files` criados por upload de pedido via object storage.
+
+Nao ha migration destrutiva. Pedidos antigos continuam baixando arquivos pela pasta local; novos anexos de pedido com
+object storage continuam referenciados tambem em `orders.attachments`.
+
+Rollback de codigo:
+- remover helpers/rotas de attachments unificados em `backend/server.py`;
+- remover extensoes de storage/metadata de `backend/orders_routes.py`;
+- remover indices `attachments` de `backend/server.py`;
+- remover `backend/tests/test_unified_attachments_unit.py`;
+- remover os testes de anexos unificados adicionados em `backend/tests/test_order_generator_unit.py`.
+
+## Slice 12 - `v21_card_governance`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.v21_card_governance`.
+2. Parar de chamar as rotas `/archive` e `/restore` adicionadas em CRM/P&D.
+3. Manter os campos de governanca ja gravados como historico/auditoria.
+4. Continuar usando os fluxos e DELETEs atuais.
+
+Dados opcionais que podem permanecer:
+- `is_deleted`;
+- `deleted_at`;
+- `deleted_by`;
+- `deleted_by_name`;
+- `delete_reason`;
+- `restored_at`;
+- `restored_by`;
+- `restored_by_name`;
+- `restore_reason`.
+
+Nao ha migration destrutiva. Como as listagens atuais nao foram alteradas, desligar a flag apenas bloqueia novas
+operacoes governadas.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas de governanca de `backend/crm_routes.py`;
+- remover modelos/helpers/rotas de governanca de `backend/pd_routes.py`;
+- remover indices `is_deleted` adicionados em `backend/server.py`;
+- remover `backend/tests/test_card_governance_unit.py`.
+
+## Slice 13 - `formula_client_links_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.formula_client_links_v2`.
+2. Parar de chamar as rotas `/api/pd/formulas/{formula_id}/client-links`.
+3. Manter `formula_client_links` como historico/auditoria dos vinculos ja criados.
+4. Continuar usando banco de formulas, Produto-Pai/BOM, SKU, projetos e clientes atuais.
+
+Dados opcionais que podem permanecer:
+- documentos em `formula_client_links`;
+- `formula_snapshot`;
+- `source_request_snapshot`;
+- `idempotency_key`;
+- campos de inativacao e auditoria.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia novas leituras/escritas pelas rotas adicionadas e preserva os
+fluxos comerciais e de P&D existentes.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas de vinculo formula-cliente de `backend/pd_routes.py`;
+- remover indices `formula_client_links` adicionados em `backend/server.py`;
+- remover `backend/tests/test_formula_client_links_unit.py`.
+
+## Slice 14 - D48 policy/snapshot
+
+Rollback operacional:
+
+1. Manter ou reativar `tenant_settings.pd.require_d48=true`.
+2. Parar de chamar `/api/pd/settings/d48-policy`.
+3. Parar de chamar `/api/pd/requests/{req_id}/d48-policy`.
+4. Ignorar overrides `d48_required_override` ja gravados.
+
+Dados opcionais que podem permanecer:
+- `tenant_settings.pd.d48_policy`;
+- `tenant_settings.pd.d48_policy_version`;
+- `pd_requests.d48_required_snapshot`;
+- `pd_samples.d48_required_snapshot`;
+- `pd_cards.d48_required_snapshot`;
+- campos `d48_gate_*` e `d48_override_*`.
+
+Nao ha migration destrutiva. Sem configuracao explicita, o comportamento padrao continua exigindo D48 como antes.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas D48 policy de `backend/pd_routes.py`;
+- voltar `assert_d48h_stability_ok` para exigencia fixa;
+- remover testes D48 policy adicionados em `backend/tests/test_pd_pipeline_auto_sync.py`.
+
+## Slice 15 - `pcp_timeline_eta_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_timeline_eta_v2`.
+2. Parar de chamar `/api/pcp/ops/{op_id}/timeline-events`.
+3. Parar de chamar `/api/pcp/ops/{op_id}/timeline`.
+4. Parar de chamar `/api/pcp/ops/{op_id}/eta`.
+5. Parar de chamar `/api/pcp/day-closings`.
+6. Continuar usando programacao PCP, historico, apontamentos, pausas, perdas, WMS e confirmacao PCP atuais.
+
+Dados opcionais que podem permanecer:
+- eventos em `production_order_events` com `event_type` de timeline;
+- `idempotency_key` dos eventos;
+- documentos em `pcp_day_closings`;
+- snapshots `kpis`, `reconciliacao`, `op_ids`, `slot_ids` e `event_ids`.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia novas leituras/escritas da fatia e preserva os fluxos PCP
+existentes. Fechamentos diarios sao snapshots e nao removem nem substituem os documentos operacionais de origem.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas timeline/ETA/fechamento de `backend/pcp_routes.py`;
+- remover indices `production_order_events`/`pcp_day_closings` adicionados em `backend/server.py`;
+- remover `backend/tests/test_pcp_timeline_eta_unit.py`.
+
+## Slice 16 - `pcp_supplier_quality_quote_v2`
+
+Rollback operacional:
+
+1. Manter `tenant_settings.features.pcp_supplier_quality_quote_v2=false` ou ausente.
+2. Continuar usando o comparador de cotacoes atual com `status_homologacao`.
+3. Ignorar o campo opcional `supplier_quality`/`qualidade_fornecedor` onde ja tenha sido consumido por integracoes.
+
+Dados opcionais que podem permanecer:
+- nenhum dado novo foi gravado neste passe;
+- campos existentes em `compras_fornecedores.homologacao` continuam como fonte de homologacao/RNC/reavaliacao.
+
+Nao ha migration destrutiva. Desligar a flag remove o enriquecimento da API sem alterar cotacoes, demandas ou POs.
+
+Rollback de codigo:
+- remover helpers de qualidade de fornecedor de `backend/compras_routes.py`;
+- remover enriquecimento `supplier_quality` das respostas de Compras;
+- remover badges de qualidade nas telas de Compras;
+- remover `backend/tests/test_supplier_quality_quote_unit.py`;
+- remover as secoes Slice 16 dos documentos `PCP_DELTA_*`.
+
+## Slice 17 - `wms_physical_quarantine_v2`
+
+Rollback operacional:
+
+1. Manter `tenant_settings.features.wms_physical_quarantine_v2=false` ou ausente.
+2. Continuar usando WMS por endereco/lote atual.
+3. Continuar usando `posicao_cq`/`cq_status` como bloqueio logico de qualidade.
+
+Dados opcionais que podem permanecer:
+- `tenant_settings.wms.quarantine`;
+- `wms_quarantine_movements`;
+- campos opcionais `wms_quarantine_*` em `estoque_saldos_lote`;
+- `wms_enderecos.wms_role`;
+- `wms_enderecos.wms_quarantine_policy_version`.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia as novas rotas e preserva o WMS/endereco/lote atual.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas de quarentena fisica de `backend/estoque_routes.py`;
+- remover indices de `wms_quarantine_movements`/`wms_quarantine_physical` em `backend/estoque_routes.py`;
+- remover testes de quarentena fisica adicionados em `backend/tests/test_wms_recebimento_unit.py`;
+- remover `backend/tests/test_wms_physical_quarantine_unit.py`;
+- remover as secoes Slice 17 dos documentos `PCP_DELTA_*`.
+
+## Slice 18 - `commercial_partial_fulfillment_v2`
+
+Rollback operacional:
+
+1. Manter `tenant_settings.features.commercial_partial_fulfillment_v2=false` ou ausente.
+2. Parar de chamar `/api/orders/{order_id}/fulfillment-summary`.
+3. Parar de chamar `/api/expedicao/ordens/from-order-items`.
+4. Continuar usando a criacao manual de EXP e o fluxo atual de conferencia/despacho/entrega.
+
+Dados opcionais que podem permanecer:
+- `expedicao_ordens.delivery_mode`;
+- `expedicao_ordens.partial_delivery_v2`;
+- `expedicao_ordens.items[].order_item_id`;
+- snapshots `delivery_snapshot` e `operational_snapshot`;
+- `orders.partial_fulfillment_v2`;
+- `orders.last_exp_id`;
+- `orders.last_exp_numero`;
+- `orders.expedicao_ids`.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia as novas rotas e preserva pedido, OP, expedição e faturamento
+atuais.
+
+Rollback de codigo:
+- remover helpers/rota de fulfillment parcial em `backend/orders_routes.py`;
+- remover helpers/rota parcial em `backend/expedicao_routes.py`;
+- remover UI parcial em `frontend/src/pages/ExpedicaoPage.js`;
+- remover `backend/tests/test_commercial_partial_fulfillment_unit.py`;
+- remover as secoes Slice 18 dos documentos `PCP_DELTA_*`.
+
+## Slice 19 - CRM2 cotacao e orcamento completo
+
+Rollback operacional:
+
+1. Manter o uso dos stages anteriores de Projetos/CRM2.
+2. Nao movimentar novos projetos para `cotacao` ou `orcamento_completo`.
+3. Continuar usando `amostra_enviada`, `em_negociacao` e `pedido_aprovado` conforme fluxo atual.
+
+Dados opcionais que podem permanecer:
+- `crm_projects.stage` com valores `cotacao` ou `orcamento_completo` em projetos ja movimentados;
+- historicos em `crm_projects.historico_movimentacoes`;
+- tarefas em `workflow_tasks` geradas por essas transicoes;
+- auditorias em `audit_logs`.
+
+Nao ha migration destrutiva nem collection nova neste slice.
+
+Rollback de codigo:
+- remover o modo de abertura por etapa em `frontend/src/components/PropostaPedidoModal.js`;
+- remover os CTAs especificos de cotacao/orcamento em `frontend/src/pages/CRM2Page.js`;
+- remover filtros/KPIs especificos de cotacao/orcamento em `frontend/src/pages/CommercialBudgetPage.js`;
+- se a decisao for remover as etapas do backend, retirar `cotacao` e `orcamento_completo` de `PROJECT_STAGES`,
+  `PROJECT_TRANSITIONS` e `STAGE_LABELS` em `backend/crm_routes.py`;
+- remover as tarefas correspondentes de `workflow_engine.tasks_for_project_transition`;
+- remover os asserts de cobertura em `backend/tests/test_crm_pd_stage_sync_unit.py`;
+- remover a cobertura de movimento real adicionada em `backend/tests/test_crm_p0_unit.py`;
+- remover as secoes Slice 19 dos documentos `PCP_DELTA_*`.
+
+## Slice 20 - Kickoff questionario de composicao de projeto
+
+Rollback operacional:
+
+1. Continuar usando os blocos antigos do Kickoff (`bloco2`, `bloco3`, `bloco4`) e aprovacao sequencial.
+2. Ignorar `questionario_composicao` em kickoffs ja salvos.
+3. Para kickoffs arquivados por engano, usar `POST /api/kickoff/{kickoff_id}/restore`.
+
+Dados opcionais que podem permanecer:
+- `kickoffs.questionario_composicao`;
+- `kickoffs.questionario_composicao_version`;
+- campos de arquivamento/restauracao (`archived_at`, `archive_reason`, `restored_at`);
+- entradas de `log_auditoria` e `audit_logs`.
+
+Rollback de codigo:
+- remover helpers/modelos de questionario em `backend/kickoff_routes.py`;
+- remover `PUT /api/kickoff/{kickoff_id}/questionario-composicao`;
+- remover `DELETE /api/kickoff/{kickoff_id}` e `POST /api/kickoff/{kickoff_id}/restore` se a exclusao logica nao for mantida;
+- restaurar a tela anterior de `frontend/src/pages/KickoffPage.js`;
+- remover `frontend/src/components/KickoffCompositionQuestionnaire.js`;
+- remover o status `arquivado` da listagem se a UI nao for manter restauracao;
+- remover `backend/tests/test_kickoff_questionario_composicao_unit.py`;
+- remover as secoes Slice 20 dos documentos `PCP_DELTA_*`.

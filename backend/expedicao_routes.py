@@ -39,6 +39,7 @@ def _now():
 
 
 EXP_STATUSES = ["pendente", "preparando", "conferido", "expedido", "entregue", "cancelado"]
+COMMERCIAL_PARTIAL_FULFILLMENT_FLAG = "commercial_partial_fulfillment_v2"
 
 STATUS_TRANSITIONS = {
     "pendente":    ["preparando", "cancelado"],
@@ -67,8 +68,271 @@ async def _assert_liberado_para_expedicao(est: dict, item: dict, tenant_id: str)
         await cq_verificar_liberacao_palete(db, tenant_id, lote_id)
 
 
+def _as_float(value: Any) -> float:
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def _feature_enabled(value: Any) -> bool:
+    if value is True:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on", "enabled"}
+    return False
+
+
+async def _commercial_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return _feature_enabled(((settings or {}).get("features") or {}).get(flag))
+
+
+async def _require_commercial_feature(tenant_id: str, flag: str) -> None:
+    if await _commercial_feature_enabled(tenant_id, flag):
+        return
+    raise HTTPException(
+        status_code=403,
+        detail={
+            "message": "Funcionalidade comercial em rollout controlado.",
+            "feature": flag,
+        },
+    )
+
+
+def _ensure_order_item_ids(items: List[Dict[str, Any]]) -> bool:
+    changed = False
+    used = {str(item.get("id")) for item in items if item.get("id")}
+    for idx, item in enumerate(items):
+        if item.get("id"):
+            continue
+        candidate = f"item-{idx + 1}"
+        suffix = 1
+        while candidate in used:
+            suffix += 1
+            candidate = f"item-{idx + 1}-{suffix}"
+        item["id"] = candidate
+        used.add(candidate)
+        changed = True
+    return changed
+
+
+async def _order_with_item_ids(order: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    items = [dict(item) for item in (order.get("items") or [])]
+    if _ensure_order_item_ids(items):
+        await db.orders.update_one(
+            {"id": order["id"], "tenant_id": tenant_id},
+            {"$set": {"items": items, "updated_at": _now()}},
+        )
+        order = dict(order)
+        order["items"] = items
+    return order
+
+
+def _order_item_identity(item: Dict[str, Any]) -> str:
+    return str(item.get("id") or item.get("order_item_id") or item.get("sales_order_item_id") or "").strip()
+
+
+def _match_order_item_id(exp_item: Dict[str, Any], order_items: List[Dict[str, Any]]) -> Optional[str]:
+    explicit = _order_item_identity(exp_item)
+    if explicit:
+        return explicit
+    exp_sku = str(exp_item.get("sku") or exp_item.get("codigo_kuryos") or "").strip().lower()
+    exp_name = str(exp_item.get("produto_nome") or exp_item.get("item") or "").strip().lower()
+    for item in order_items:
+        sku = str(item.get("codigo_kuryos") or item.get("sku") or "").strip().lower()
+        name = str(item.get("item") or item.get("produto_nome") or item.get("descricao") or "").strip().lower()
+        if exp_sku and sku and exp_sku == sku:
+            return _order_item_identity(item)
+        if exp_name and name and exp_name == name:
+            return _order_item_identity(item)
+    return None
+
+
+async def _produced_by_order_item(tenant_id: str, order_id: str) -> Dict[str, float]:
+    produced: Dict[str, float] = {}
+    if not hasattr(db, "ops"):
+        return produced
+    ops = await db.ops.find(
+        {"tenant_id": tenant_id, "pedido_id": order_id, "status": {"$nin": ["cancelada", "cancelado"]}},
+        {"_id": 0},
+    ).to_list(5000)
+    for op in ops:
+        op_order_item_id = str(op.get("sales_order_item_id") or "").strip()
+        for idx, item in enumerate(op.get("items") or []):
+            item_id = str(item.get("order_item_id") or op_order_item_id or "").strip()
+            if not item_id:
+                item_id = f"item-{idx + 1}"
+            produced[item_id] = round(produced.get(item_id, 0.0) + _as_float(item.get("qtd_produzida")), 6)
+    return produced
+
+
+async def _expedition_quantities_by_order_item(
+    tenant_id: str,
+    order_id: str,
+    exclude_exp_id: str = "",
+) -> Dict[str, Dict[str, float]]:
+    totals: Dict[str, Dict[str, float]] = {}
+    if not hasattr(db, "expedicao_ordens"):
+        return totals
+    exps = await db.expedicao_ordens.find(
+        {"tenant_id": tenant_id, "order_id": order_id, "status": {"$ne": "cancelado"}},
+        {"_id": 0},
+    ).to_list(5000)
+    for exp in exps:
+        if exclude_exp_id and exp.get("id") == exclude_exp_id:
+            continue
+        confirmed = exp.get("status") in {"expedido", "entregue"}
+        for item in exp.get("items") or []:
+            item_id = _order_item_identity(item)
+            if not item_id:
+                continue
+            bucket = totals.setdefault(item_id, {"planejada": 0.0, "expedida": 0.0})
+            qty = _as_float(item.get("quantidade"))
+            bucket["planejada"] = round(bucket["planejada"] + qty, 6)
+            if confirmed:
+                bucket["expedida"] = round(bucket["expedida"] + qty, 6)
+    return totals
+
+
+async def _order_fiscal_snapshot(tenant_id: str, order: Dict[str, Any]) -> Dict[str, Any]:
+    notas = []
+    if hasattr(db, "faturamento_notas"):
+        notas = await db.faturamento_notas.find(
+            {"tenant_id": tenant_id, "order_id": order.get("id"), "status": {"$ne": "cancelada"}},
+            {"_id": 0},
+        ).to_list(1000)
+    valor_nf = round(sum(_as_float(nf.get("valor_produtos") or nf.get("valor_total")) for nf in notas), 2)
+    total_pedido = _as_float(order.get("total_pedido"))
+    frete = order.get("frete") or {}
+    aditivos = order.get("aditivos") or order.get("addenda") or []
+    cancelamentos = order.get("cancelamentos") or []
+    historico = order.get("historico") or []
+    cancel_hist = [h for h in historico if h.get("para") == "cancelado" or h.get("status") == "cancelado"]
+    return {
+        "percentual_nf": round(min((valor_nf / total_pedido) * 100, 100), 3) if total_pedido > 0 else 0.0,
+        "valor_nf_produtos": valor_nf,
+        "valor_pedido": round(total_pedido, 2),
+        "nf_count": len(notas),
+        "nf_ids": [nf.get("id") for nf in notas if nf.get("id")],
+        "frete_tipo": str(frete.get("tipo") or "").upper(),
+        "frete_cif_fob": str(frete.get("tipo") or "").upper() if str(frete.get("tipo") or "").upper() in {"CIF", "FOB"} else "",
+        "frete_snapshot": frete,
+        "aditivos_count": len(aditivos),
+        "aditivos": aditivos,
+        "cancelamentos_count": len(cancelamentos) + len(cancel_hist),
+        "pedido_cancelado": order.get("status") == "cancelado",
+        "status_pedido": order.get("status"),
+    }
+
+
+async def _build_delivery_balance(order: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    order = await _order_with_item_ids(order, tenant_id)
+    produced = await _produced_by_order_item(tenant_id, order["id"])
+    shipped = await _expedition_quantities_by_order_item(tenant_id, order["id"])
+    rows = []
+    for item in order.get("items") or []:
+        item_id = _order_item_identity(item)
+        qtd_pedido = _as_float(item.get("qtd") or item.get("quantidade"))
+        qtd_produzida = produced.get(item_id, _as_float(item.get("qtd_produzida")))
+        planned = (shipped.get(item_id) or {}).get("planejada", 0.0)
+        confirmed = (shipped.get(item_id) or {}).get("expedida", 0.0)
+        rows.append({
+            "order_item_id": item_id,
+            "sku_id": item.get("sku_id"),
+            "codigo_kuryos": item.get("codigo_kuryos") or item.get("sku") or "",
+            "item": item.get("item") or item.get("produto_nome") or "",
+            "qtd_pedido": qtd_pedido,
+            "qtd_produzida": round(qtd_produzida, 6),
+            "qtd_expedicao_planejada": round(planned, 6),
+            "qtd_expedida": round(confirmed, 6),
+            "saldo_produzido_disponivel": round(max(qtd_produzida - planned, 0.0), 6),
+            "saldo_pedido_a_expedir": round(max(qtd_pedido - confirmed, 0.0), 6),
+            "percentual_produzido": round(min((qtd_produzida / qtd_pedido) * 100, 100), 3) if qtd_pedido > 0 else 0.0,
+            "percentual_expedido": round(min((confirmed / qtd_pedido) * 100, 100), 3) if qtd_pedido > 0 else 0.0,
+        })
+    total_pedido = sum(row["qtd_pedido"] for row in rows)
+    total_produzido = sum(row["qtd_produzida"] for row in rows)
+    total_expedido = sum(row["qtd_expedida"] for row in rows)
+    return {
+        "order_id": order["id"],
+        "order_numero": order.get("numero_pedido"),
+        "items": rows,
+        "summary": {
+            "total_pedido": round(total_pedido, 6),
+            "total_produzido": round(total_produzido, 6),
+            "total_expedido": round(total_expedido, 6),
+            "percentual_produzido": round(min((total_produzido / total_pedido) * 100, 100), 3) if total_pedido > 0 else 0.0,
+            "percentual_expedido": round(min((total_expedido / total_pedido) * 100, 100), 3) if total_pedido > 0 else 0.0,
+        },
+        "operational_snapshot": await _order_fiscal_snapshot(tenant_id, order),
+        "snapshot_at": _now(),
+    }
+
+
+async def _enrich_exp_with_delivery_snapshot(exp: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    if not exp.get("order_id") or not await _commercial_feature_enabled(tenant_id, COMMERCIAL_PARTIAL_FULFILLMENT_FLAG):
+        return exp
+    order = await db.orders.find_one({"id": exp["order_id"], "tenant_id": tenant_id}, {"_id": 0})
+    if not order:
+        return exp
+    exp = dict(exp)
+    exp["delivery_snapshot"] = await _build_delivery_balance(order, tenant_id)
+    return exp
+
+
+async def _apply_partial_delivery_controls(exp: Dict[str, Any], order: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    balance = await _build_delivery_balance(order, tenant_id)
+    balance_by_item = {row["order_item_id"]: row for row in balance["items"]}
+    order_items = (await _order_with_item_ids(order, tenant_id)).get("items") or []
+    enriched_items = []
+    requested_by_item: Dict[str, float] = {}
+    for item in exp.get("items") or []:
+        item_doc = dict(item)
+        order_item_id = _match_order_item_id(item_doc, order_items)
+        if not order_item_id:
+            raise HTTPException(status_code=422, detail=f"Item de expedicao sem vinculo com item do pedido: {item_doc.get('produto_nome') or item_doc.get('sku')}")
+        row = balance_by_item.get(order_item_id)
+        if not row:
+            raise HTTPException(status_code=404, detail=f"Item do pedido nao encontrado no saldo: {order_item_id}")
+        requested = _as_float(item_doc.get("quantidade"))
+        requested_by_item[order_item_id] = round(requested_by_item.get(order_item_id, 0.0) + requested, 6)
+        available = min(row["saldo_produzido_disponivel"], row["saldo_pedido_a_expedir"])
+        if requested_by_item[order_item_id] > available:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "message": "Entrega parcial excede saldo produzido disponivel do item.",
+                    "order_item_id": order_item_id,
+                    "requested": requested_by_item[order_item_id],
+                    "available": available,
+                    "qtd_produzida": row["qtd_produzida"],
+                    "qtd_expedicao_planejada": row["qtd_expedicao_planejada"],
+                    "saldo_pedido_a_expedir": row["saldo_pedido_a_expedir"],
+                },
+            )
+        item_doc.update({
+            "order_item_id": order_item_id,
+            "partial_delivery_v2": True,
+            "qtd_pedido_snapshot": row["qtd_pedido"],
+            "qtd_produzida_snapshot": row["qtd_produzida"],
+            "qtd_expedida_snapshot": row["qtd_expedida"],
+            "saldo_produzido_disponivel_antes": row["saldo_produzido_disponivel"],
+            "saldo_pedido_a_expedir_antes": row["saldo_pedido_a_expedir"],
+        })
+        enriched_items.append(item_doc)
+    exp["items"] = enriched_items
+    exp["delivery_snapshot"] = balance
+    exp["operational_snapshot"] = balance["operational_snapshot"]
+    exp["partial_delivery_v2"] = True
+    return exp
+
+
 # ===== MODELS =====
 class ExpItem(BaseModel):
+    order_item_id: Optional[str] = None
     produto_nome: str
     sku: str = ""
     quantidade: float
@@ -90,6 +354,26 @@ class ExpCreate(BaseModel):
     previsao_entrega: Optional[str] = None
     numero_nf_saida: str = ""   # NF fiscal de saída
     items: List[ExpItem]
+    observacoes: str = ""
+
+
+class ExpOrderItemPartial(BaseModel):
+    order_item_id: str
+    quantidade: float
+    lote: str = ""
+    estoque_item_id: Optional[str] = None
+    volumes: int = 1
+    peso_unitario: float = 0
+    observacoes: str = ""
+
+
+class ExpFromOrderItemsCreate(BaseModel):
+    order_id: str
+    endereco_entrega: str = ""
+    transportadora: str = ""
+    previsao_entrega: Optional[str] = None
+    numero_nf_saida: str = ""
+    items: List[ExpOrderItemPartial]
     observacoes: str = ""
 
 
@@ -152,7 +436,7 @@ async def get_ordem(exp_id: str, request: Request):
     exp = await db.expedicao_ordens.find_one({"id": exp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not exp:
         raise HTTPException(status_code=404, detail="Ordem de Expedição não encontrada")
-    return exp
+    return await _enrich_exp_with_delivery_snapshot(exp, user["tenant_id"])
 
 
 @expedicao_router.post("/ordens")
@@ -216,6 +500,94 @@ async def create_ordem(data: ExpCreate, request: Request):
         )
 
     logger.info(f"EXP {numero_exp} criada por {user['name']}")
+    return exp
+
+
+@expedicao_router.post("/ordens/from-order-items")
+async def create_ordem_from_order_items(data: ExpFromOrderItemsCreate, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_commercial_feature(tid, COMMERCIAL_PARTIAL_FULFILLMENT_FLAG)
+
+    if not data.items:
+        raise HTTPException(status_code=400, detail="Informe ao menos um item do pedido para expedir")
+    order = await db.orders.find_one({"id": data.order_id, "tenant_id": tid}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Pedido nao encontrado")
+    if order.get("status") == "cancelado":
+        raise HTTPException(status_code=422, detail="Pedido cancelado nao pode gerar expedicao parcial")
+
+    order = await _order_with_item_ids(order, tid)
+    order_items_by_id = {_order_item_identity(item): item for item in order.get("items") or []}
+    exp_items = []
+    for raw in data.items:
+        qty = _as_float(raw.quantidade)
+        if qty <= 0:
+            raise HTTPException(status_code=400, detail="Quantidade a expedir deve ser maior que zero")
+        order_item = order_items_by_id.get(raw.order_item_id)
+        if not order_item:
+            raise HTTPException(status_code=404, detail=f"Item do pedido nao encontrado: {raw.order_item_id}")
+        exp_items.append({
+            "order_item_id": raw.order_item_id,
+            "produto_nome": order_item.get("item") or order_item.get("produto_nome") or "",
+            "sku": order_item.get("codigo_kuryos") or order_item.get("sku") or "",
+            "quantidade": qty,
+            "unidade": order_item.get("unidade") or "un",
+            "lote": raw.lote,
+            "numero_serie": "",
+            "estoque_item_id": raw.estoque_item_id,
+            "volumes": int(raw.volumes or 1),
+            "peso_unitario": _as_float(raw.peso_unitario),
+            "observacoes": raw.observacoes,
+        })
+
+    numero_exp = await _next_exp_numero(tid)
+    now = _now()
+    exp = {
+        "id": _new_id(),
+        "tenant_id": tid,
+        "numero_exp": numero_exp,
+        "order_id": order["id"],
+        "order_numero": order.get("numero_pedido", ""),
+        "project_name": order.get("project_name", ""),
+        "cliente_nome": (order.get("cliente") or {}).get("razao_social") or (order.get("cliente") or {}).get("nome") or "",
+        "cliente_id": order.get("cliente_id"),
+        "endereco_entrega": data.endereco_entrega or (order.get("frete") or {}).get("endereco", ""),
+        "transportadora": data.transportadora,
+        "previsao_entrega": data.previsao_entrega,
+        "data_expedicao": None,
+        "data_entrega": None,
+        "codigo_rastreio": None,
+        "numero_nf_saida": data.numero_nf_saida,
+        "status": "pendente",
+        "conferencia": None,
+        "items": exp_items,
+        "observacoes": data.observacoes,
+        "delivery_mode": "partial_order_items",
+        "historico": [{"de": None, "para": "pendente", "por": user["name"], "em": now, "nota": "EXP parcial por item de pedido"}],
+        "created_by": user["id"],
+        "created_by_name": user["name"],
+        "created_at": now,
+        "updated_at": now,
+    }
+    exp = await _apply_partial_delivery_controls(exp, order, tid)
+    await db.expedicao_ordens.insert_one(exp)
+    exp.pop("_id", None)
+
+    expedicao_ids = list(order.get("expedicao_ids") or [])
+    if exp["id"] not in expedicao_ids:
+        expedicao_ids.append(exp["id"])
+    order_update = {
+        "partial_fulfillment_v2": True,
+        "last_exp_id": exp["id"],
+        "last_exp_numero": numero_exp,
+        "expedicao_ids": expedicao_ids,
+        "updated_at": now,
+    }
+    if not order.get("exp_id"):
+        order_update["exp_id"] = exp["id"]
+        order_update["exp_numero"] = numero_exp
+    await db.orders.update_one({"id": order["id"], "tenant_id": tid}, {"$set": order_update})
     return exp
 
 

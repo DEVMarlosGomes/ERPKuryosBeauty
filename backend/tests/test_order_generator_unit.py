@@ -96,6 +96,20 @@ class FakeCollection:
         current[parts[-1]] = value
 
 
+class FakeUploadFile:
+    def __init__(self, filename, data=b"conteudo", content_type="application/pdf"):
+        self.filename = filename
+        self._data = data
+        self.content_type = content_type
+
+    async def read(self):
+        return self._data
+
+
+async def _current_user(_request):
+    return {"id": "user-1", "tenant_id": "tenant-1", "role": "admin", "name": "Admin"}
+
+
 def test_order_duplicate_fingerprint_is_stable_for_same_items_in_any_order():
     cliente = {"cnpj": "12.345.678/0001-90", "nome": "Cliente Teste"}
     items_a = [
@@ -211,6 +225,79 @@ def test_safe_attachment_filename_blocks_path_traversal():
     filename = orders_routes._safe_attachment_filename("../Pedido Cliente 01.pdf")
 
     assert filename == "Pedido Cliente 01.pdf"
+
+
+def test_upload_order_attachment_writes_unified_metadata_with_object_storage():
+    stored = {}
+
+    def fake_put(path, data, content_type):
+        stored["path"] = path
+        stored["data"] = data
+        stored["content_type"] = content_type
+        return {"path": path, "size": len(data)}
+
+    seq = count(1)
+    orders_routes.db = SimpleNamespace(
+        tenant_settings=FakeCollection([{
+            "tenant_id": "tenant-1",
+            "features": {orders_routes.UNIFIED_ATTACHMENTS_FLAG: True},
+        }]),
+        orders=FakeCollection([{"id": "order-1", "tenant_id": "tenant-1", "attachments": []}]),
+        attachments=FakeCollection([]),
+        files=FakeCollection([]),
+    )
+    orders_routes.get_current_user = _current_user
+    orders_routes.new_id_func = lambda: f"id-{next(seq)}"
+    orders_routes.now_iso_func = lambda: "2026-09-12T10:00:00-03:00"
+    orders_routes.put_object_func = fake_put
+
+    attachment = asyncio.run(orders_routes.upload_order_attachment(
+        "order-1",
+        SimpleNamespace(),
+        FakeUploadFile("pedido.pdf", b"pdf-data", "application/pdf"),
+    ))
+
+    assert attachment["id"] == "id-1"
+    assert attachment["storage_backend"] == "object"
+    assert attachment["file_id"] == "id-2"
+    assert attachment["unified_attachment_v2"] is True
+    assert stored["path"].endswith("/tenant-1/order-1/id-1.pdf")
+    assert orders_routes.db.orders.docs[0]["attachments"][0]["id"] == "id-1"
+    assert orders_routes.db.files.docs[0]["id"] == "id-2"
+    assert orders_routes.db.attachments.docs[0]["entity_type"] == "order"
+    assert orders_routes.db.attachments.docs[0]["owner_type"] == "order"
+    assert orders_routes.db.attachments.docs[0]["owner_id"] == "order-1"
+    assert orders_routes.db.attachments.docs[0]["file_id"] == "id-2"
+
+
+def test_list_order_attachment_metadata_falls_back_to_legacy_order_attachments():
+    orders_routes.db = SimpleNamespace(
+        tenant_settings=FakeCollection([{
+            "tenant_id": "tenant-1",
+            "features": {orders_routes.UNIFIED_ATTACHMENTS_FLAG: True},
+        }]),
+        orders=FakeCollection([{
+            "id": "order-1",
+            "tenant_id": "tenant-1",
+            "attachments": [{
+                "id": "att-1",
+                "original_filename": "pedido-antigo.pdf",
+                "storage_path": "tenant-1/order-1/att-1.pdf",
+                "download_url": "/api/orders/order-1/attachments/att-1/download",
+            }],
+        }]),
+        attachments=FakeCollection([]),
+    )
+    orders_routes.get_current_user = _current_user
+
+    result = asyncio.run(orders_routes.list_order_attachment_metadata("order-1", SimpleNamespace()))
+
+    assert result["source"] == "orders.attachments"
+    assert result["count"] == 1
+    assert result["attachments"][0]["storage_backend"] == "local"
+    assert result["attachments"][0]["owner_type"] == "order"
+    assert result["attachments"][0]["owner_id"] == "order-1"
+    assert result["attachments"][0]["legacy_attachment_id"] == "att-1"
 
 
 def test_queue_email_without_smtp_records_pending(monkeypatch):

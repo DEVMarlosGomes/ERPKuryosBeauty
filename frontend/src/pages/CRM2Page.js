@@ -64,6 +64,8 @@ const STAGES = [
     { id: "amostra_solicitada", label: "Amostra Solicitada", color: "bg-emerald-500" },
     { id: "amostra_em_desenvolvimento", label: "Amostra em Desenvolvimento", color: "bg-blue-500" },
     { id: "amostra_enviada", label: "Amostra Enviada", color: "bg-cyan-500" },
+    { id: "cotacao", label: "Cotação", color: "bg-orange-500" },
+    { id: "orcamento_completo", label: "Orçamento Completo", color: "bg-rose-500" },
     { id: "em_negociacao", label: "Em Negociação", color: "bg-amber-500" },
     { id: "pedido_aprovado", label: "Pedido Aprovado", color: "bg-lime-500" },
     { id: "projeto_arquivado", label: "Projeto Arquivado", color: "bg-slate-500" },
@@ -120,6 +122,16 @@ function KickoffBadge({ project }) {
     );
 }
 
+function commercialActionForStage(stage) {
+    if (stage === "cotacao") {
+        return { label: "Abrir Cotacao", initialTab: "proposta" };
+    }
+    if (stage === "orcamento_completo") {
+        return { label: "Abrir Orcamento", initialTab: "pedido" };
+    }
+    return { label: "Proposta & Pedido", initialTab: "pedido" };
+}
+
 export default function CRM2Page() {
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
@@ -137,6 +149,7 @@ export default function CRM2Page() {
     const [showPropostaPedido, setShowPropostaPedido] = useState(false);
     const [showDirectOrder, setShowDirectOrder] = useState(false);
     const [propostaProjeto, setPropostaProjeto] = useState(null);
+    const [propostaInitialTab, setPropostaInitialTab] = useState("proposta");
     const [showArchiveDialog, setShowArchiveDialog] = useState(false);
     const [pendingArchiveProject, setPendingArchiveProject] = useState(null);
     const [archiveReason, setArchiveReason] = useState("");
@@ -505,6 +518,13 @@ export default function CRM2Page() {
         }
     };
 
+    const openCommercialStage = (project) => {
+        const action = commercialActionForStage(project.stage);
+        setPropostaProjeto(project);
+        setPropostaInitialTab(action.initialTab);
+        setShowPropostaPedido(true);
+    };
+
     const selectedProject = selectedProjectData?.project || projects.find((project) => project.id === selectedProjectId) || null;
 
     // A6/A7: máscara pt-BR (moeda / milhar) nos campos de edição do projeto — sincroniza
@@ -635,15 +655,16 @@ export default function CRM2Page() {
                                                                     </button>
                                                                 </div>
                                                             )}
-                                                            {project.stage === "em_negociacao" && (
+                                                            {["cotacao", "orcamento_completo", "em_negociacao"].includes(project.stage) && (
                                                                 <div className="mt-2 pt-2 border-t border-border">
                                                                     <Button
                                                                         size="sm"
                                                                         variant="outline"
                                                                         className="w-full gap-1.5 text-xs text-amber-700 border-amber-300 hover:bg-amber-50"
-                                                                        onClick={(e) => { e.stopPropagation(); setPropostaProjeto(project); setShowPropostaPedido(true); }}
+                                                                        onClick={(e) => { e.stopPropagation(); openCommercialStage(project); }}
                                                                     >
-                                                                        <ShoppingCart className="h-3.5 w-3.5" /> Proposta & Pedido
+                                                                        <ShoppingCart className="h-3.5 w-3.5" />
+                                                                        {commercialActionForStage(project.stage).label}
                                                                     </Button>
                                                                 </div>
                                                             )}
@@ -1084,9 +1105,13 @@ export default function CRM2Page() {
                 open={showPropostaPedido}
                 onOpenChange={(open) => {
                     setShowPropostaPedido(open);
-                    if (!open) setPropostaProjeto(null);
+                    if (!open) {
+                        setPropostaProjeto(null);
+                        setPropostaInitialTab("proposta");
+                    }
                 }}
                 projeto={propostaProjeto}
+                initialTab={propostaInitialTab}
                 onSaved={() => {
                     toast.success("Proposta salva.");
                     loadProjects();

@@ -32,7 +32,39 @@ function calcTotal(item) {
     return q * v;
 }
 
-export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSaved }) {
+function defaultTabForProjectStage(stage) {
+    if (stage === "orcamento_completo" || stage === "em_negociacao" || stage === "pedido_aprovado") {
+        return "pedido";
+    }
+    return "proposta";
+}
+
+function modalCopyForProjectStage(stage) {
+    if (stage === "cotacao") {
+        return {
+            title: "Cotacao",
+            propostaTab: "Cotacao Comercial",
+            pedidoTab: "Orcamento Completo",
+            saveLabel: "Salvar cotacao",
+        };
+    }
+    if (stage === "orcamento_completo") {
+        return {
+            title: "Orcamento Completo",
+            propostaTab: "Cotacao Comercial",
+            pedidoTab: "Orcamento Completo",
+            saveLabel: "Salvar orcamento",
+        };
+    }
+    return {
+        title: "Proposta & Pedido",
+        propostaTab: "Bloco A - Proposta Comercial",
+        pedidoTab: "Bloco B - Pedido de Fabricacao",
+        saveLabel: "Salvar rascunho",
+    };
+}
+
+export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSaved, initialTab }) {
     const [tab, setTab] = useState("proposta");
 
     // Bloco A
@@ -61,6 +93,13 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
     const [saving, setSaving] = useState(false);
 
     const projetoId = projeto?.id;
+    const copy = modalCopyForProjectStage(projeto?.stage);
+
+    useEffect(() => {
+        if (open) {
+            setTab(initialTab || defaultTabForProjectStage(projeto?.stage));
+        }
+    }, [open, initialTab, projeto?.stage]);
 
     useEffect(() => {
         if (!open || !projetoId) return;
@@ -226,7 +265,7 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-5xl max-h-[92vh] flex flex-col p-0 overflow-hidden">
                 <DialogHeader className="p-6 pb-3 border-b bg-gradient-to-r from-amber-50 to-amber-100/60">
-                    <DialogTitle className="font-heading text-2xl">Proposta & Pedido</DialogTitle>
+                    <DialogTitle className="font-heading text-2xl">{copy.title}</DialogTitle>
                     <p className="text-sm text-muted-foreground">
                         {projeto?.nome_projeto && <span className="font-medium">{projeto.nome_projeto}</span>}
                         {projeto?.cliente_nome && <span> — {projeto.cliente_nome}</span>}
@@ -324,8 +363,8 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
                 {/* Tabs */}
                 <div className="flex gap-1 px-6 pt-4 pb-0 border-b">
                     {[
-                        { id: "proposta", label: "Bloco A — Proposta Comercial" },
-                        { id: "pedido",   label: "Bloco B — Pedido de Fabricação" },
+                        { id: "proposta", label: copy.propostaTab },
+                        { id: "pedido",   label: copy.pedidoTab },
                     ].map((t) => (
                         <button
                             key={t.id}
@@ -551,7 +590,7 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
                         <>
                             <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
                             <Button variant="secondary" disabled={saving} onClick={() => handleSave("rascunho")}>
-                                Salvar rascunho
+                                {copy.saveLabel}
                             </Button>
                             <Button
                                 disabled={saving || !podeConfirmar}

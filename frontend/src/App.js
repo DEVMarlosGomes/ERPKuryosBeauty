@@ -1,9 +1,9 @@
-import { createContext, lazy, Suspense, useContext, useEffect, useRef, useState } from "react";
+import { createContext, lazy, Suspense, useContext, useEffect, useState } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import LoginPage from "@/pages/LoginPage";
-import TopNav from "@/components/TopNav";
+import DynamicSidebar from "@/components/DynamicSidebar";
 import RoleGuard, { ROLE_GROUPS } from "@/components/RoleGuard";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -63,6 +63,7 @@ const LogisticaAgendamentosPage = lazy(() => import("@/pages/LogisticaAgendament
 const PCPDailyDashboard = lazy(() => import("@/pages/PCPDailyDashboard"));
 const PCPClonePage = lazy(() => import("@/pages/PCPClonePage"));
 const PCPProductionPage = lazy(() => import("@/pages/PCPProductionPage"));
+const PCPQuantityPlanningPage = lazy(() => import("@/pages/PCPQuantityPlanningPage"));
 const ContratosPage = lazy(() => import("@/pages/ContratosPage"));
 const CadastrosPage = lazy(() => import("@/pages/CadastrosPage"));
 
@@ -104,7 +105,7 @@ function ProtectedRoute({ children }) {
 }
 
 function AppLayout() {
-    const mainRef = useRef(null);
+    const [sidebarWide, setSidebarWide] = useState(false);
     const COMERCIAL = ROLE_GROUPS.COMERCIAL_FULL;
     const PD_READ = ROLE_GROUPS.PD_READ;
     const PD_FULL = ROLE_GROUPS.PD_FULL;
@@ -118,8 +119,11 @@ function AppLayout() {
 
     return (
         <div className="app-shell min-h-screen overflow-hidden bg-background">
-            <TopNav scrollContainerRef={mainRef} />
-            <main ref={mainRef} className="h-screen overflow-auto pt-14 md:pt-16" data-app-main="true">
+            <DynamicSidebar onReservedWidthChange={setSidebarWide} />
+            <main
+                className={`h-screen overflow-auto pt-14 transition-[padding-left] duration-300 lg:pt-0 ${sidebarWide ? "lg:pl-[280px]" : "lg:pl-[76px]"}`}
+                data-app-main="true"
+            >
                 <Suspense fallback={<PageLoader />}>
                     <Routes>
                         <Route path="/" element={<Navigate to="/tasks" replace />} />
@@ -149,6 +153,7 @@ function AppLayout() {
                         <Route path="/ops/:id" element={<OPDetail />} />
                         <Route path="/pcp/dashboard" element={<PCPDailyDashboard />} />
                         <Route path="/pcp/historico" element={<PCPClonePage mode="historico" />} />
+                        <Route path="/pcp/planejamento/quantidades" element={<PCPQuantityPlanningPage />} />
                         <Route path="/pcp/planejamento" element={<PCPClonePage mode="planejamento" />} />
                         <Route path="/pcp/horizonte" element={<PCPClonePage mode="horizonte" />} />
                         <Route path="/pcp/controle-ops" element={<PCPClonePage mode="controle" />} />

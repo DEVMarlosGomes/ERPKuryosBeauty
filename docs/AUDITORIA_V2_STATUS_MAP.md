@@ -15,6 +15,8 @@ Projetos (`crm_projects.stage`):
 - `amostra_solicitada`
 - `amostra_em_desenvolvimento`
 - `amostra_enviada`
+- `cotacao`
+- `orcamento_completo`
 - `em_negociacao`
 - `pedido_aprovado`
 - `projeto_arquivado`

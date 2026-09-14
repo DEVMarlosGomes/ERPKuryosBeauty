@@ -918,6 +918,20 @@ def tasks_for_project_transition(old: str, new: str) -> List[dict]:
                 "due_in_days": 14,
             },
         ]
+    if new == "cotacao":
+        return [{
+            "title": "Levantar cotacao comercial do projeto",
+            "category": "comercial",
+            "blocking": False,
+            "due_in_days": 2,
+        }]
+    if new == "orcamento_completo":
+        return [{
+            "title": "Montar orcamento completo do projeto",
+            "category": "fechamento",
+            "blocking": False,
+            "due_in_days": 2,
+        }]
     if new == "em_negociacao":
         return [{
             "title": "Montar proposta comercial do projeto",

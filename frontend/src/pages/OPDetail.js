@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import {
   ArrowLeft, Save, Loader2, Pencil, X, Factory, ClipboardList,
   Play, Pause, RotateCcw, Plus, AlertTriangle, CheckCircle2,
+  PackageSearch, Warehouse,
 } from "lucide-react";
 
 const OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"];
@@ -36,6 +37,10 @@ function formatDT(iso) {
 }
 
 function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+
+function numberBR(value) {
+  return Number(value || 0).toLocaleString("pt-BR", { maximumFractionDigits: 3 });
+}
 
 function apiErrorMessage(e, fallback = "Erro") {
   const detail = e.response?.data?.detail;
@@ -68,6 +73,10 @@ export default function OPDetail() {
   // Retrabalho para P&D
   const [showRework, setShowRework] = useState(false);
   const [reworkForm, setReworkForm] = useState({ motivo: "", anotacoes: "", prioridade: "normal" });
+  const [picking, setPicking] = useState(null);
+  const [pickingLoading, setPickingLoading] = useState(false);
+  const [pickingSaving, setPickingSaving] = useState(false);
+  const [pickingBlocked, setPickingBlocked] = useState("");
 
   const fetchOp = useCallback(async () => {
     try {
@@ -83,6 +92,26 @@ export default function OPDetail() {
   }, [id, navigate]);
 
   useEffect(() => { fetchOp(); }, [fetchOp]);
+
+  const loadPicking = useCallback(async () => {
+    setPickingLoading(true);
+    setPickingBlocked("");
+    try {
+      const res = await api.get(`/ops/${id}/material-picking/suggestion`);
+      setPicking(res.data);
+    } catch (e) {
+      if (e.response?.status === 403) {
+        setPickingBlocked(apiErrorMessage(e, "pcp_material_picking_v2 inativa"));
+        setPicking(null);
+      } else {
+        toast.error(apiErrorMessage(e, "Erro ao carregar separacao WMS"));
+      }
+    } finally {
+      setPickingLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => { loadPicking(); }, [loadPicking]);
 
   const startEdit = () => { setForm(deepClone(op)); setEditing(true); };
   const cancelEdit = () => { setForm(deepClone(op)); setEditing(false); };
@@ -195,6 +224,26 @@ export default function OPDetail() {
       toast.error(apiErrorMessage(e, "Erro ao enviar retrabalho"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleConfirmPicking = async () => {
+    if (!picking) return;
+    setPickingSaving(true);
+    try {
+      const key = `${id}-wms-separacao-${new Date().toISOString().slice(0, 10)}`;
+      const res = await api.post(`/ops/${id}/material-picking/confirm`, {
+        idempotency_key: key,
+        linhas: [],
+        observacoes: "Confirmado pelo Detalhe da OP",
+      });
+      toast.success(res.data?.status === "confirmada_com_falta" ? "Separacao confirmada com falta" : "Separacao confirmada");
+      await fetchOp();
+      await loadPicking();
+    } catch (e) {
+      toast.error(apiErrorMessage(e, "Erro ao confirmar separacao"));
+    } finally {
+      setPickingSaving(false);
     }
   };
 
@@ -406,6 +455,130 @@ export default function OPDetail() {
             </CardContent>
           </Card>
         )}
+
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <CardTitle className="text-base flex items-center gap-2">
+                <PackageSearch className="h-4 w-4 text-primary" />
+                Separacao FEFO / WMS
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={loadPicking} disabled={pickingLoading}>
+                  {pickingLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <RotateCcw className="h-3.5 w-3.5 mr-1" />}
+                  Atualizar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleConfirmPicking}
+                  disabled={pickingSaving || pickingLoading || !!pickingBlocked || !picking || (picking.suggestions || []).length === 0}
+                >
+                  {pickingSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                  Confirmar
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {pickingBlocked ? (
+              <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-200">
+                <p className="font-semibold">pcp_material_picking_v2 inativa</p>
+                <p className="mt-1 text-xs">{pickingBlocked}</p>
+              </div>
+            ) : pickingLoading && !picking ? (
+              <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Carregando sugestao FEFO
+              </div>
+            ) : !picking ? (
+              <div className="rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                Nenhuma sugestao carregada.
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                  <div className="rounded-md border bg-muted/30 px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Materiais</p>
+                    <p className="mt-1 font-mono text-sm font-bold">{picking.summary?.materials || 0}</p>
+                  </div>
+                  <div className="rounded-md border bg-muted/30 px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Com falta</p>
+                    <p className="mt-1 font-mono text-sm font-bold">{picking.summary?.materials_with_shortage || 0}</p>
+                  </div>
+                  <div className="rounded-md border bg-muted/30 px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Movimento</p>
+                    <p className="mt-1 text-sm font-bold">{picking.destructive_stock_movement ? "Baixa" : "Sem baixa"}</p>
+                  </div>
+                  <div className="rounded-md border bg-muted/30 px-3 py-2">
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Status OP</p>
+                    <p className="mt-1 truncate text-sm font-bold">{form.wms_separacao_status || "pendente"}</p>
+                  </div>
+                </div>
+
+                {(picking.alertas || []).length > 0 && (
+                  <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-200">
+                    {(picking.alertas || []).map((alerta, idx) => <p key={idx}>{alerta}</p>)}
+                  </div>
+                )}
+
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[820px] text-sm">
+                    <thead>
+                      <tr className="border-b bg-muted/30 text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+                        <th className="p-2.5">Material</th>
+                        <th className="p-2.5 text-right">Necessario</th>
+                        <th className="p-2.5 text-right">Disponivel</th>
+                        <th className="p-2.5 text-right">Falta</th>
+                        <th className="p-2.5">Sugestao FEFO</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(picking.suggestions || []).map((material) => (
+                        <tr key={material.material_key} className="border-t align-top">
+                          <td className="p-2.5">
+                            <p className="font-medium">{material.nome_material || material.codigo_material || material.material_key}</p>
+                            <p className="font-mono text-xs text-muted-foreground">{material.codigo_material || material.material_key}</p>
+                          </td>
+                          <td className="p-2.5 text-right font-mono">{numberBR(material.required_quantity)}</td>
+                          <td className="p-2.5 text-right font-mono">{numberBR(material.available_quantity)}</td>
+                          <td className={`p-2.5 text-right font-mono ${Number(material.shortage_quantity || 0) > 0 ? "text-red-600 font-bold" : "text-green-600"}`}>
+                            {numberBR(material.shortage_quantity)}
+                          </td>
+                          <td className="p-2.5">
+                            <div className="space-y-1">
+                              {(material.separacoes || []).map((line) => (
+                                <div key={`${line.saldo_lote_id}-${line.quantidade_sugerida}`} className="flex items-center justify-between gap-2 rounded-md border bg-background px-2 py-1 text-xs">
+                                  <div className="min-w-0">
+                                    <p className="truncate font-mono font-semibold">{line.lote || "SEM-LOTE"} · {line.endereco_codigo || "-"}</p>
+                                    <p className="truncate text-muted-foreground">Val. {line.validade || "-"} · {line.posicao_cq || "livre"}</p>
+                                  </div>
+                                  <span className="shrink-0 font-mono font-bold">{numberBR(line.quantidade_sugerida)}</span>
+                                </div>
+                              ))}
+                              {(material.separacoes || []).length === 0 && (
+                                <span className="text-xs text-muted-foreground">Sem lote elegivel</span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {(picking.suggestions || []).length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="p-6 text-center text-sm text-muted-foreground">
+                            Nenhum material de BOM encontrado para esta OP.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                  <Warehouse className="h-4 w-4 shrink-0" />
+                  A confirmacao registra a separacao e nao baixa estoque automaticamente neste slice.
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Items */}
         <Card>

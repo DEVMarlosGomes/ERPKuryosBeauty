@@ -46,7 +46,7 @@ class TrackingCollection:
         self.docs.append(snapshot)
         return FakeResult()
 
-    async def update_one(self, query, update):
+    async def update_one(self, query, update, **_kwargs):
         self.update_calls.append((dict(query), update))
         for doc in self.docs:
             if not self._matches(doc, query):
@@ -284,6 +284,7 @@ def test_save_lab_results_auto_moves_request_to_tests(monkeypatch):
 
 
 def test_transition_to_waiting_approval_is_blocked_without_d48(monkeypatch):
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
     fake_db = SimpleNamespace(
         pd_requests=TrackingCollection([
             {"id": "req-1", "tenant_id": "tenant-1", "status": "IN_TESTS"}
@@ -312,6 +313,7 @@ def test_transition_to_waiting_approval_is_blocked_without_d48(monkeypatch):
 
 
 def test_update_sample_sent_to_client_is_blocked_without_d48(monkeypatch):
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
     fake_db = SimpleNamespace(
         pd_samples=TrackingCollection([
             {"id": "sample-pd-1", "development_id": "dev-1", "sent_to_client": False}
@@ -343,6 +345,7 @@ def test_update_sample_sent_to_client_is_blocked_without_d48(monkeypatch):
 
 
 def test_pd_card_kanban_approval_gate_uses_same_d48_rule():
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
     fake_db = SimpleNamespace(
         pd_cards=TrackingCollection([
             {"id": "card-1", "tenant_id": "tenant-1", "amostra_id": "sample-1", "amostra_variacao_id": "var-1"}
@@ -362,6 +365,7 @@ def test_pd_card_kanban_approval_gate_uses_same_d48_rule():
 
 
 def test_d48_gate_accepts_any_condition_with_completed_48h():
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
     fake_db = SimpleNamespace(
         pd_stability_studies=TrackingCollection([
             {
@@ -377,6 +381,126 @@ def test_d48_gate_accepts_any_condition_with_completed_48h():
     pd_routes.db = fake_db
 
     asyncio.run(pd_routes.assert_d48h_stability_ok("req-1", "tenant-1"))
+
+
+def test_d48_gate_skips_when_tenant_policy_disables_requirement():
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
+    fake_db = SimpleNamespace(
+        tenant_settings=TrackingCollection([{
+            "tenant_id": "tenant-1",
+            "pd": {"require_d48": False, "d48_policy_version": 3},
+        }]),
+        pd_requests=TrackingCollection([
+            {"id": "req-1", "tenant_id": "tenant-1"},
+        ]),
+        pd_stability_studies=TrackingCollection([]),
+    )
+    pd_routes.db = fake_db
+
+    snapshot = asyncio.run(pd_routes.assert_d48h_stability_ok("req-1", "tenant-1"))
+
+    assert snapshot["required"] is False
+    assert snapshot["skipped"] is True
+    assert snapshot["policy_version"] == 3
+    assert snapshot["source"] == "tenant_policy"
+
+
+def test_d48_gate_skips_when_request_override_disables_requirement():
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
+    fake_db = SimpleNamespace(
+        tenant_settings=TrackingCollection([{
+            "tenant_id": "tenant-1",
+            "pd": {"require_d48": True, "d48_policy_version": 4},
+        }]),
+        pd_requests=TrackingCollection([
+            {"id": "req-1", "tenant_id": "tenant-1", "d48_required_override": False},
+        ]),
+        pd_stability_studies=TrackingCollection([]),
+    )
+    pd_routes.db = fake_db
+
+    snapshot = asyncio.run(pd_routes.assert_d48h_stability_ok("req-1", "tenant-1"))
+
+    assert snapshot["required"] is False
+    assert snapshot["tenant_required"] is True
+    assert snapshot["card_override"] is False
+    assert snapshot["source"] == "card_override"
+
+
+def test_transition_to_waiting_approval_records_d48_policy_snapshot_when_skipped(monkeypatch):
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
+    pd_routes.new_id_func = lambda: "hist-d48-1"
+    fake_db = SimpleNamespace(
+        tenant_settings=TrackingCollection([{
+            "tenant_id": "tenant-1",
+            "pd": {"require_d48": False, "d48_policy_version": 7},
+        }]),
+        pd_requests=TrackingCollection([
+            {"id": "req-1", "tenant_id": "tenant-1", "status": "IN_TESTS"}
+        ]),
+        pd_stability_studies=TrackingCollection([]),
+        pd_request_status_history=TrackingCollection([]),
+    )
+    pd_routes.db = fake_db
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "name": "Tester", "tenant_id": "tenant-1", "role": "lider_pd"}
+
+    async def fake_get_blocking_tasks(**_kwargs):
+        return []
+
+    monkeypatch.setattr(pd_routes, "get_current_user", fake_get_current_user)
+    monkeypatch.setattr(pd_routes, "get_blocking_tasks", fake_get_blocking_tasks)
+
+    result = asyncio.run(
+        pd_routes.transition_status(
+            "req-1",
+            pd_routes.StatusTransition(new_status="WAITING_APPROVAL"),
+            SimpleNamespace(),
+        )
+    )
+
+    update_fields = fake_db.pd_requests.update_calls[-1][1]["$set"]
+    assert result["status"] == "WAITING_APPROVAL"
+    assert update_fields["d48_policy_version"] == 7
+    assert update_fields["d48_required_snapshot"]["required"] is False
+    assert update_fields["d48_gate_skipped_at"] == "2026-07-17T20:00:00+00:00"
+    assert fake_db.pd_request_status_history.insert_calls[-1]["d48_policy_snapshot"]["skipped"] is True
+
+
+def test_update_request_d48_policy_sets_override_and_audits(monkeypatch):
+    pd_routes.now_iso_func = lambda: "2026-07-17T20:00:00+00:00"
+    fake_db = SimpleNamespace(
+        tenant_settings=TrackingCollection([{
+            "tenant_id": "tenant-1",
+            "pd": {"require_d48": True, "d48_policy_version": 5},
+        }]),
+        pd_requests=TrackingCollection([
+            {"id": "req-1", "tenant_id": "tenant-1", "status": "IN_TESTS"}
+        ]),
+    )
+    pd_routes.db = fake_db
+    audit_calls = []
+
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "name": "Tester", "tenant_id": "tenant-1", "role": "lider_pd"}
+
+    async def fake_audit_log(**kwargs):
+        audit_calls.append(kwargs)
+
+    monkeypatch.setattr(pd_routes, "get_current_user", fake_get_current_user)
+    monkeypatch.setattr(pd_routes, "audit_log", fake_audit_log)
+
+    result = asyncio.run(pd_routes.update_request_d48_policy(
+        "req-1",
+        pd_routes.D48RequestPolicyUpdate(require_d48=False, reason="Cliente aprovou excecao tecnica"),
+        SimpleNamespace(),
+    ))
+
+    assert result["policy"]["required"] is False
+    assert result["policy"]["source"] == "card_override"
+    assert result["request"]["d48_required_override"] is False
+    assert audit_calls[0]["action"] == "d48_request_policy_updated"
 
 
 def test_sync_request_status_to_pipeline_advances_linked_project(monkeypatch):
