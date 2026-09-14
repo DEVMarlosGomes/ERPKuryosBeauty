@@ -964,3 +964,45 @@ Regras de contrato:
 - EXP parcial nasce no status atual `pendente` e segue o fluxo existente de conferencia/despacho/entrega;
 - snapshot operacional grava percentual NF, CIF/FOB, aditivos e cancelamentos sem emitir NF automaticamente;
 - a UI de Expedicao passa a selecionar pedidos `em_producao`/`concluido` e usa a rota parcial quando o resumo estiver disponivel.
+
+## Slice 19 - CRM2 cotacao e orcamento completo
+
+Nao houve criacao de endpoint novo. As duas etapas comerciais de Projetos/CRM2 usam o contrato existente:
+
+- `GET /api/crm/projects`;
+- `GET /api/crm/projects/{project_id}`;
+- `GET /api/crm/projects/{project_id}/full`;
+- `PUT /api/crm/projects/{project_id}/move`;
+- `GET /api/crm/constants`;
+- `GET /api/crm/projects/{project_id}/proposta`;
+- `POST /api/crm/projects/{project_id}/proposta`.
+
+Stages confirmados em `crm_projects.stage`:
+
+```text
+cotacao
+orcamento_completo
+```
+
+Transicoes confirmadas:
+
+```text
+amostra_enviada -> cotacao
+cotacao -> orcamento_completo
+orcamento_completo -> em_negociacao
+orcamento_completo -> pedido_aprovado
+orcamento_completo -> cotacao
+cotacao -> amostra_em_desenvolvimento
+orcamento_completo -> amostra_em_desenvolvimento
+```
+
+Regras de contrato:
+
+- a movimentacao continua centralizada em `PUT /api/crm/projects/{project_id}/move`;
+- as labels continuam vindo de `STAGE_LABELS` na camada de configuracao do CRM;
+- tarefas automaticas sao geradas por `workflow_engine.tasks_for_project_transition`;
+- ao entrar em `cotacao`, `orcamento_completo` ou `em_negociacao`, o cliente vinculado continua sendo espelhado para
+  `crm_clients.stage=negociacao` quando aplicavel;
+- `pedido_aprovado` preserva os gates ja existentes de formula registrada, SKU e kickoff.
+- a UI de CRM2/Projetos abre `cotacao` na aba comercial e `orcamento_completo` na aba de pedido/fabricacao do
+  modal existente de proposta.

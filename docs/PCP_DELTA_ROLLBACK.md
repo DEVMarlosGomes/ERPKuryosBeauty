@@ -401,3 +401,30 @@ Rollback de codigo:
 - remover UI parcial em `frontend/src/pages/ExpedicaoPage.js`;
 - remover `backend/tests/test_commercial_partial_fulfillment_unit.py`;
 - remover as secoes Slice 18 dos documentos `PCP_DELTA_*`.
+
+## Slice 19 - CRM2 cotacao e orcamento completo
+
+Rollback operacional:
+
+1. Manter o uso dos stages anteriores de Projetos/CRM2.
+2. Nao movimentar novos projetos para `cotacao` ou `orcamento_completo`.
+3. Continuar usando `amostra_enviada`, `em_negociacao` e `pedido_aprovado` conforme fluxo atual.
+
+Dados opcionais que podem permanecer:
+- `crm_projects.stage` com valores `cotacao` ou `orcamento_completo` em projetos ja movimentados;
+- historicos em `crm_projects.historico_movimentacoes`;
+- tarefas em `workflow_tasks` geradas por essas transicoes;
+- auditorias em `audit_logs`.
+
+Nao ha migration destrutiva nem collection nova neste slice.
+
+Rollback de codigo:
+- remover o modo de abertura por etapa em `frontend/src/components/PropostaPedidoModal.js`;
+- remover os CTAs especificos de cotacao/orcamento em `frontend/src/pages/CRM2Page.js`;
+- remover filtros/KPIs especificos de cotacao/orcamento em `frontend/src/pages/CommercialBudgetPage.js`;
+- se a decisao for remover as etapas do backend, retirar `cotacao` e `orcamento_completo` de `PROJECT_STAGES`,
+  `PROJECT_TRANSITIONS` e `STAGE_LABELS` em `backend/crm_routes.py`;
+- remover as tarefas correspondentes de `workflow_engine.tasks_for_project_transition`;
+- remover os asserts de cobertura em `backend/tests/test_crm_pd_stage_sync_unit.py`;
+- remover a cobertura de movimento real adicionada em `backend/tests/test_crm_p0_unit.py`;
+- remover as secoes Slice 19 dos documentos `PCP_DELTA_*`.

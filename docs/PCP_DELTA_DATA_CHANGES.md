@@ -818,3 +818,40 @@ Compatibilidade:
 - NF nao e emitida automaticamente pela criacao parcial;
 - faturamento existente por pedido inteiro permanece intacto, mas integrações parciais devem enviar valores explicitos;
 - aditivo/cancelamento ficam como snapshot de campos existentes, sem criar fluxo juridico/comercial paralelo.
+
+## Contrato CRM2 cotacao e orcamento completo
+
+Nao ha nova collection, migration ou campo obrigatorio neste slice. As duas etapas usam o campo existente:
+
+```text
+crm_projects.stage
+```
+
+Valores confirmados:
+
+```text
+cotacao
+orcamento_completo
+```
+
+Dados derivados/preservados:
+
+```text
+crm_projects.historico_movimentacoes[]
+crm_clients.stage
+crm_clients.historico_movimentacoes[]
+propostas_comerciais.projeto_id
+propostas_comerciais.items_pedido[]
+propostas_comerciais.insumos_fabricacao[]
+workflow_tasks.metadata.from
+workflow_tasks.metadata.to
+audit_logs.before.stage
+audit_logs.after.stage
+```
+
+Compatibilidade:
+- projetos antigos continuam validos com os stages anteriores;
+- as etapas novas nao exigem backfill em documentos existentes;
+- cotacao e orcamento completo continuam usando `propostas_comerciais`, sem collection paralela;
+- a movimentacao para etapa comercial pode espelhar o cliente para `negociacao`, preservando o comportamento atual de CRM1;
+- `pedido_aprovado` permanece como etapa posterior com gates operacionais ja existentes.

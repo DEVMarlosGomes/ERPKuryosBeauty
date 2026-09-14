@@ -15,6 +15,8 @@ const STAGE_LABELS = {
   amostra_solicitada: "Amostra solicitada",
   amostra_em_desenvolvimento: "Amostra em desenvolvimento",
   amostra_enviada: "Amostra enviada",
+  cotacao: "Cotacao",
+  orcamento_completo: "Orcamento completo",
   em_negociacao: "Em negociacao",
   pedido_aprovado: "Pedido aprovado",
   projeto_arquivado: "Arquivado",
@@ -22,9 +24,17 @@ const STAGE_LABELS = {
 
 function statusConfig(project) {
   if (project.stage === "pedido_aprovado") return { label: "Pedido aprovado", cls: "bg-green-100 text-green-700", icon: CheckCircle2 };
+  if (project.stage === "orcamento_completo") return { label: "Orcamento completo", cls: "bg-rose-100 text-rose-700", icon: FileText };
+  if (project.stage === "cotacao") return { label: "Cotacao", cls: "bg-orange-100 text-orange-700", icon: FileText };
   if (project.stage === "em_negociacao") return { label: "Pronto para proposta", cls: "bg-amber-100 text-amber-700", icon: FileText };
   if (project.stage === "amostra_enviada") return { label: "Aguardando negociacao", cls: "bg-blue-100 text-blue-700", icon: Clock };
   return { label: STAGE_LABELS[project.stage] || "Em andamento", cls: "bg-slate-100 text-slate-700", icon: AlertTriangle };
+}
+
+function actionForProject(project) {
+  if (project.stage === "cotacao") return { label: "Abrir cotacao", initialTab: "proposta" };
+  if (project.stage === "orcamento_completo") return { label: "Abrir orcamento", initialTab: "pedido" };
+  return { label: "Gerar orcamento", initialTab: project.stage === "amostra_enviada" ? "proposta" : "pedido" };
 }
 
 export default function CommercialBudgetPage() {
@@ -33,6 +43,7 @@ export default function CommercialBudgetPage() {
   const [search, setSearch] = useState("");
   const [stage, setStage] = useState("all");
   const [selected, setSelected] = useState(null);
+  const [selectedInitialTab, setSelectedInitialTab] = useState("proposta");
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,10 +72,18 @@ export default function CommercialBudgetPage() {
 
   const kpis = useMemo(() => ({
     total: projects.length,
+    cotacoes: projects.filter((p) => p.stage === "cotacao").length,
+    completos: projects.filter((p) => p.stage === "orcamento_completo").length,
     negociacao: projects.filter((p) => p.stage === "em_negociacao").length,
     enviados: projects.filter((p) => p.stage === "amostra_enviada").length,
     aprovados: projects.filter((p) => p.stage === "pedido_aprovado").length,
   }), [projects]);
+
+  const openProject = (project) => {
+    const action = actionForProject(project);
+    setSelectedInitialTab(action.initialTab);
+    setSelected(project);
+  };
 
   return (
     <div className="min-h-screen space-y-5 p-4 md:p-6" data-testid="commercial-budget-page">
@@ -80,8 +99,10 @@ export default function CommercialBudgetPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         <Kpi label="Projetos" value={kpis.total} />
+        <Kpi label="Cotacao" value={kpis.cotacoes} />
+        <Kpi label="Orc. completo" value={kpis.completos} />
         <Kpi label="Em negociacao" value={kpis.negociacao} />
         <Kpi label="Amostras enviadas" value={kpis.enviados} />
         <Kpi label="Pedidos aprovados" value={kpis.aprovados} />
@@ -99,6 +120,8 @@ export default function CommercialBudgetPage() {
               <SelectContent>
                 <SelectItem value="all">Todos os estagios</SelectItem>
                 <SelectItem value="amostra_enviada">Amostra enviada</SelectItem>
+                <SelectItem value="cotacao">Cotacao</SelectItem>
+                <SelectItem value="orcamento_completo">Orcamento completo</SelectItem>
                 <SelectItem value="em_negociacao">Em negociacao</SelectItem>
                 <SelectItem value="pedido_aprovado">Pedido aprovado</SelectItem>
               </SelectContent>
@@ -115,6 +138,7 @@ export default function CommercialBudgetPage() {
         ) : filtered.map((project) => {
           const cfg = statusConfig(project);
           const Icon = cfg.icon;
+          const action = actionForProject(project);
           return (
             <Card key={project.id} className="overflow-hidden">
               <CardContent className="grid gap-4 p-4 md:grid-cols-[1fr_auto] md:items-center">
@@ -126,9 +150,9 @@ export default function CommercialBudgetPage() {
                   <h2 className="truncate text-base font-semibold">{project.nome_projeto || "Projeto sem nome"}</h2>
                   <p className="truncate text-sm text-muted-foreground">{project.cliente_nome || "Cliente nao informado"}</p>
                 </div>
-                <Button onClick={() => setSelected(project)} className="w-full gap-2 md:w-auto">
+                <Button onClick={() => openProject(project)} className="w-full gap-2 md:w-auto">
                   <FileText className="h-4 w-4" />
-                  Gerar orcamento
+                  {action.label}
                 </Button>
               </CardContent>
             </Card>
@@ -138,8 +162,14 @@ export default function CommercialBudgetPage() {
 
       <PropostaPedidoModal
         open={!!selected}
-        onOpenChange={(open) => !open && setSelected(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelected(null);
+            setSelectedInitialTab("proposta");
+          }
+        }}
         projeto={selected}
+        initialTab={selectedInitialTab}
         onSaved={load}
       />
     </div>

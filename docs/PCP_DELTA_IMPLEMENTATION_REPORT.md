@@ -649,3 +649,40 @@ NF/frete/aditivo/cancelamento, sem alterar o fluxo antigo de pedido, OP, expediÃ
   - Resultado: `4 passed`.
 - `pytest -q backend/tests/test_commercial_partial_fulfillment_unit.py backend/tests/test_supply_quality_gates_unit.py backend/tests/test_pcp_allocations_unit.py backend/tests/test_order_generator_unit.py`
   - Resultado: `28 passed`.
+
+## Slice 19 - CRM2 cotacao e orcamento completo
+
+Classificacao do checkpoint: `PARTIAL_SAFE_EXTEND`.
+
+Objetivo: confirmar, proteger e expor operacionalmente as duas etapas comerciais de Projetos/CRM2, sem alterar
+endpoints, status legados, collections ou fluxos existentes.
+
+## O que foi coberto
+
+- Confirmacao de `cotacao` e `orcamento_completo` em `PROJECT_STAGES`.
+- Confirmacao das transicoes `amostra_enviada -> cotacao -> orcamento_completo -> em_negociacao`.
+- Confirmacao de retorno controlado para `cotacao`, `amostra_enviada` e `amostra_em_desenvolvimento`.
+- Confirmacao de avanco direto seguro de `orcamento_completo` para `pedido_aprovado`.
+- Tarefas automaticas ja existentes para levantamento de cotacao e montagem de orcamento completo.
+- Teste add-only do movimento real do projeto para as duas etapas via backend.
+- Espelhamento preservado do cliente CRM1 para `negociacao` quando projeto entra em etapa comercial.
+- CRM2/Projetos passa a abrir `cotacao` diretamente na aba comercial do modal existente.
+- CRM2/Projetos passa a abrir `orcamento_completo` diretamente na aba de pedido/fabricacao do mesmo modal.
+- Pagina `/crm/orcamentos` passa a contar, filtrar e abrir projetos em `cotacao` e `orcamento_completo`.
+
+## Preservado
+
+- Nenhuma rota existente foi removida ou substituida.
+- Nenhuma collection nova foi criada.
+- `PUT /api/crm/projects/{project_id}/move` continua sendo o endpoint unico de movimentacao de projeto.
+- `propostas_comerciais` continua sendo a fonte unica de cotacao/orcamento, sem duplicar proposta.
+- `pedido_aprovado` continua mantendo os gates existentes de formula registrada, SKU e kickoff.
+
+## Testes atualizados
+
+- `pytest -q backend/tests/test_crm_pd_stage_sync_unit.py backend/tests/test_crm_p0_unit.py`
+  - Resultado: `13 passed`.
+- `pytest -q backend/tests/test_crm_pd_stage_sync_unit.py backend/tests/test_crm_p0_unit.py backend/tests/test_workflow_engine_unit.py`
+  - Resultado: `15 passed`.
+- `DISABLE_ESLINT_PLUGIN=true GENERATE_SOURCEMAP=false yarn build`
+  - Resultado: `Compiled successfully`.
