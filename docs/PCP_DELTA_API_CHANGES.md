@@ -823,3 +823,40 @@ Regras:
 - reutiliza fechamento existente por `idempotency_key`;
 - reutiliza fechamento existente por data/turno quando `force_recalculate=false`;
 - com `force_recalculate=true`, recalcula snapshot preservando o mesmo registro.
+
+## Slice 16 - Qualidade de fornecedor na cotacao
+
+Enriquecimento add-only ativado por `tenant_settings.features.pcp_supplier_quality_quote_v2`.
+
+As rotas existentes preservam o formato legado quando a flag esta desligada. Quando ligada, adicionam o snapshot
+opcional `supplier_quality` nos comparadores de cotacao de Compras.
+
+Superficies enriquecidas:
+- `GET /api/compras/itens/{item_id}/historico-precos`;
+- `GET /api/compras/itens/{item_id}`;
+- `GET /api/compras/historico-precos`.
+
+Campo opcional por fornecedor/cotacao quando a flag esta ligada:
+
+```json
+{
+  "supplier_quality": {
+    "score": 85,
+    "selo": "Qualificado",
+    "risco": "baixo",
+    "status_homologacao": "homologado",
+    "proxima_reavaliacao": "2027-01-20",
+    "rnc_total": 1,
+    "rnc_criticas_12m": 0,
+    "alertas": [],
+    "fontes": ["compras_fornecedores.homologacao"]
+  }
+}
+```
+
+Regras de contrato:
+- flag desligada preserva `comparativo_fornecedores` atual, incluindo `status_homologacao`;
+- flag ligada apenas adiciona `supplier_quality`;
+- fornecedor suspenso/reprovado ou com RNC critica recente deve aparecer como risco alto/bloqueado, mesmo quando tiver menor preco;
+- dados devem vir das fontes ja existentes de homologacao, RNC e reavaliacao de fornecedor;
+- nao criar novo cadastro paralelo de qualidade de fornecedor se `compras_fornecedores.homologacao` ja cobre o dado.

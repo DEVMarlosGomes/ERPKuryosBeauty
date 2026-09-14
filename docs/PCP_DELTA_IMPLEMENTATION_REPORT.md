@@ -532,3 +532,39 @@ ETA operacional e fechamento diario com KPIs/reconciliacao, sem alterar status, 
   - Resultado: `86 passed`.
 - `pytest backend/tests`
   - Resultado: `145 passed, 278 skipped`.
+
+## Slice 16 - Qualidade de fornecedor na cotacao
+
+Classificacao do checkpoint: `MISSING`.
+
+Objetivo: exibir nota/selo/risco de qualidade no comparador de compras, reutilizando homologacao, RNC e reavaliacao ja
+existentes, sem criar cadastro paralelo e sem alterar o fluxo de cotacao/PO.
+
+## O que foi coberto
+
+- Feature flag `pcp_supplier_quality_quote_v2`.
+- Enriquecimento opcional `supplier_quality`/`qualidade_fornecedor` no comparador de cotacoes.
+- Preservacao da resposta atual quando a flag estiver desligada.
+- Fonte preferencial em `compras_fornecedores.homologacao`.
+- Uso complementar de `cq_rncs`, quando a colecao existir.
+- Score, selo e risco calculados por status de homologacao, reavaliacao, RNC total/critica e cadastro.
+- Cenario de fornecedor suspenso/RNC critica como risco alto/bloqueado mesmo com menor preco.
+- UI add-only nas telas de Cotacao, Dashboard de Compras e Detalhe do Item de Compra.
+- Documentacao de API, dados e rollback.
+
+## Preservado
+
+- Nenhuma colecao nova foi criada.
+- `status_homologacao` segue como campo legado do comparador.
+- Registro de cotacao e imutabilidade de `compras_condicoes_comerciais` permanecem iguais.
+- Com a flag desligada, `supplier_quality` nao e retornado.
+- Criar PO continua respeitando os hard stops existentes de fornecedor.
+
+## Testes atualizados
+
+- `pytest -q backend/tests/test_supplier_quality_quote_unit.py`
+  - Resultado: `4 passed`.
+- `pytest backend/tests/test_supplier_quality_quote_unit.py backend/tests/test_compras_supply_chain_unit.py backend/tests/test_supply_quality_gates_unit.py backend/tests/test_pd_homologacao_sync_unit.py`
+  - Resultado: `15 passed`.
+- `pytest backend/tests`
+  - Resultado: `149 passed, 278 skipped`.

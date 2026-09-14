@@ -81,6 +81,22 @@ function poBadge(status) {
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${cfg.cls}`}>{cfg.label}</span>;
 }
 
+function supplierQualityBadge(quality) {
+  if (!quality) return null;
+  const risco = quality.risco || "medio";
+  const cls = {
+    baixo: "border-emerald-300 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300",
+    medio: "border-amber-300 bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300",
+    alto: "border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300",
+    bloqueado: "border-red-500 bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-200",
+  }[risco] || "border-slate-300 bg-slate-50 text-slate-700 dark:bg-slate-900 dark:text-slate-200";
+  return (
+    <Badge variant="outline" className={`${cls} whitespace-nowrap`}>
+      {quality.selo || "Qualidade"} {quality.score != null ? quality.score : ""}
+    </Badge>
+  );
+}
+
 export default function ComprasDashboard() {
   const nav = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -523,6 +539,14 @@ function QuoteWorkbench({ demanda, fornecedores, historico, onDone }) {
                   <div className="text-xs text-muted-foreground">{quote.fornecedor_codigo || quote.status_homologacao || "Fornecedor"}</div>
                 </div>
                 {index === 0 && <Badge className="bg-green-100 text-green-700 dark:bg-green-950/30 dark:text-green-300">Melhor</Badge>}
+              </div>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {supplierQualityBadge(quote.supplier_quality || quote.qualidade_fornecedor)}
+                {Number((quote.supplier_quality || quote.qualidade_fornecedor)?.rnc_criticas_12m || 0) > 0 && (
+                  <Badge variant="outline" className="border-red-300 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300">
+                    RNC crit.
+                  </Badge>
+                )}
               </div>
               <div className="mt-3 text-xl font-bold">{fmtBRL(quote.preco_unitario)}</div>
               <div className="mt-1 text-xs text-muted-foreground">{quote.prazo_entrega_dias_uteis || "-"} dias - MOQ {quote.moq || "-"}</div>

@@ -644,3 +644,45 @@ Compatibilidade:
 - timeline e ETA sao leituras agregadas e nao alteram status de OP, slot, lote ou pedido;
 - fechamentos diarios sao snapshots auditaveis e podem ser recalculados sem apagar historico operacional de origem;
 - documentos antigos sem eventos continuam validos e retornam ETA por ritmo geral quando houver apontamento.
+
+## Contrato opcional qualidade de fornecedor na cotacao
+
+Feature flag em `tenant_settings.features`:
+
+```text
+pcp_supplier_quality_quote_v2
+```
+
+Este passe nao adiciona colecao nem migration. O enriquecimento reutiliza campos ja existentes em
+`compras_fornecedores.homologacao`:
+
+```text
+homologacao.status
+homologacao.proxima_reavaliacao
+homologacao.historico_rncs_count
+homologacao.historico_rncs_criticas_12m
+homologacao.historico[]
+```
+
+Campo derivado opcional em respostas de cotacao/comparador:
+
+```text
+supplier_quality.score
+supplier_quality.selo
+supplier_quality.risco
+supplier_quality.status_homologacao
+supplier_quality.status_cadastro
+supplier_quality.proxima_reavaliacao
+supplier_quality.dias_reavaliacao
+supplier_quality.rnc_total
+supplier_quality.rnc_criticas_12m
+supplier_quality.rnc_abertas
+supplier_quality.alertas[]
+supplier_quality.fontes[]
+```
+
+Compatibilidade:
+- documentos antigos sem historico de RNC continuam validos;
+- ausencia de flag deve manter as respostas atuais sem `supplier_quality`;
+- `supplier_quality` e dado calculado/snapshot de apresentacao, nao fonte transacional;
+- reavaliacao vencida ou fornecedor suspenso/reprovado deve elevar risco sem alterar automaticamente PO, demanda ou cotacao.

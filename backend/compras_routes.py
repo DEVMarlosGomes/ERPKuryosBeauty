@@ -404,6 +404,7 @@ STATUS_CADASTRO    = {"ativo", "inativo", "bloqueado"}
 STATUS_PO          = {"rascunho", "emitida", "confirmada", "parcialmente_recebida", "recebida", "encerrada", "cancelada"}
 STATUS_MRP         = {"gerada", "em_revisao", "aprovada", "parcialmente_aprovada", "descartada"}
 STATUS_DEMANDA     = {"pendente", "em_cotacao", "po_emitida", "cancelada"}
+PCP_SUPPLIER_QUALITY_QUOTE_FLAG = "pcp_supplier_quality_quote_v2"
 
 # Roles
 _CMP_FULL   = {"admin", "compras"}
@@ -502,6 +503,139 @@ def _today_iso() -> str:
 
 def _date_plus_days(days: int) -> str:
     return (datetime.now(timezone.utc) + timedelta(days=days)).date().isoformat()
+
+
+async def _compras_feature_enabled(tenant_id: str, flag: str) -> bool:
+    if not hasattr(db, "tenant_settings"):
+        return False
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return bool(((settings or {}).get("features") or {}).get(flag))
+
+
+def _days_until_ymd(value: Optional[str]) -> Optional[int]:
+    if not value:
+        return None
+    try:
+        target = datetime.fromisoformat(str(value)[:10]).date()
+        today = datetime.fromisoformat(_today_iso()).date()
+        return (target - today).days
+    except ValueError:
+        return None
+
+
+def _int_or_zero(value: Any) -> int:
+    try:
+        return int(value or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+async def _supplier_cq_rnc_snapshot(tenant_id: str, fornecedor_id: str) -> Dict[str, Any]:
+    if not fornecedor_id or not hasattr(db, "cq_rncs"):
+        return {}
+    try:
+        rncs = await db.cq_rncs.find(
+            {"tenant_id": tenant_id, "fornecedor_id": fornecedor_id},
+            {"_id": 0, "id": 1, "numero_rnc": 1, "status": 1, "classificacao": 1, "created_at": 1},
+        ).sort("created_at", -1).to_list(200)
+    except Exception:
+        return {}
+    abertas = [r for r in rncs if r.get("status") not in {"encerrada", "encerrada_concessao", "cancelada"}]
+    criticas = [r for r in rncs if r.get("classificacao") == "critica"]
+    return {
+        "rnc_total_cq": len(rncs),
+        "rnc_abertas": len(abertas),
+        "rnc_criticas_cq": len(criticas),
+        "ultima_rnc": rncs[0] if rncs else None,
+    }
+
+
+async def _build_supplier_quality_snapshot(tenant_id: str, fornecedor: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    fornecedor = fornecedor or {}
+    hom = fornecedor.get("homologacao") or {}
+    fornecedor_id = fornecedor.get("id", "")
+    status_hom = hom.get("status") or "nao_iniciada"
+    status_cadastro = fornecedor.get("status_cadastro") or "ativo"
+    rnc_total = _int_or_zero(hom.get("historico_rncs_count"))
+    rnc_criticas_12m = _int_or_zero(hom.get("historico_rncs_criticas_12m"))
+    cq_snapshot = await _supplier_cq_rnc_snapshot(tenant_id, fornecedor_id)
+    if cq_snapshot:
+        rnc_total = max(rnc_total, _int_or_zero(cq_snapshot.get("rnc_total_cq")))
+        rnc_criticas_12m = max(rnc_criticas_12m, _int_or_zero(cq_snapshot.get("rnc_criticas_cq")))
+
+    dias_reavaliacao = _days_until_ymd(hom.get("proxima_reavaliacao"))
+    reavaliacao_vencida = dias_reavaliacao is not None and dias_reavaliacao < 0
+    alertas: List[str] = []
+    score = 100
+
+    if status_hom == "homologado":
+        pass
+    elif status_hom == "em_processo":
+        score -= 20
+        alertas.append("homologacao_em_processo")
+    elif status_hom == "suspenso":
+        score -= 60
+        alertas.append("fornecedor_suspenso")
+    elif status_hom == "reprovado":
+        score -= 90
+        alertas.append("fornecedor_reprovado")
+    else:
+        score -= 35
+        alertas.append("homologacao_nao_iniciada")
+
+    if status_cadastro != "ativo":
+        score -= 25
+        alertas.append(f"cadastro_{status_cadastro}")
+    if rnc_criticas_12m:
+        score -= min(rnc_criticas_12m * 15, 45)
+        alertas.append("rnc_critica_12m")
+    if rnc_total:
+        score -= min(rnc_total * 3, 15)
+    if _int_or_zero(cq_snapshot.get("rnc_abertas")):
+        score -= min(_int_or_zero(cq_snapshot.get("rnc_abertas")) * 10, 30)
+        alertas.append("rnc_aberta")
+    if reavaliacao_vencida:
+        score -= 25
+        alertas.append("reavaliacao_vencida")
+    elif dias_reavaliacao is not None and dias_reavaliacao <= 30:
+        score -= 10
+        alertas.append("reavaliacao_proxima")
+
+    score = max(0, min(100, score))
+    if status_hom in {"suspenso", "reprovado"} or status_cadastro == "bloqueado":
+        risco = "bloqueado"
+        selo = "Bloqueado"
+    elif score >= 85:
+        risco = "baixo"
+        selo = "Qualificado"
+    elif score >= 60:
+        risco = "medio"
+        selo = "Monitorar"
+    else:
+        risco = "alto"
+        selo = "Risco alto"
+
+    return {
+        "score": score,
+        "selo": selo,
+        "risco": risco,
+        "status_homologacao": status_hom,
+        "status_cadastro": status_cadastro,
+        "data_homologacao": hom.get("data_homologacao"),
+        "proxima_reavaliacao": hom.get("proxima_reavaliacao"),
+        "dias_reavaliacao": dias_reavaliacao,
+        "reavaliacao_vencida": reavaliacao_vencida,
+        "rnc_total": rnc_total,
+        "rnc_criticas_12m": rnc_criticas_12m,
+        "rnc_abertas": _int_or_zero(cq_snapshot.get("rnc_abertas")),
+        "ultima_rnc": cq_snapshot.get("ultima_rnc"),
+        "alertas": alertas,
+        "fontes": [
+            "compras_fornecedores.homologacao",
+            *(["cq_rncs"] if cq_snapshot else []),
+        ],
+        "snapshot_at": now_iso(),
+    }
 
 
 async def _next_demanda_numero(tenant_id: str) -> str:
@@ -1301,18 +1435,22 @@ async def detalhar_item(item_id: str, request: Request):
 
     # Fornecedores com dados
     fornecedores_info = []
+    quality_enabled = await _compras_feature_enabled(tenant_id, PCP_SUPPLIER_QUALITY_QUOTE_FLAG)
     for fid, cond in ultimas_condicoes.items():
         forn = await db.compras_fornecedores.find_one(
             {"id": fid, "tenant_id": tenant_id}, {"_id": 0,
              "razao_social": 1, "codigo_interno": 1, "homologacao": 1}
         )
-        fornecedores_info.append({
+        fornecedor_row = {
             "fornecedor_id": fid,
             "razao_social": forn.get("razao_social", "") if forn else "",
             "codigo_interno": forn.get("codigo_interno", "") if forn else "",
             "status_homologacao": (forn or {}).get("homologacao", {}).get("status", ""),
             "ultima_cotacao": cond,
-        })
+        }
+        if quality_enabled:
+            fornecedor_row["supplier_quality"] = await _build_supplier_quality_snapshot(tenant_id, forn)
+        fornecedores_info.append(fornecedor_row)
 
     # Último preço pago (PO recebida/encerrada mais recente com este item)
     ultimo_preco_pago = None
@@ -1482,13 +1620,14 @@ async def historico_precos(item_id: str, request: Request):
 
     # Comparativo por fornecedor — última cotação de cada um, ordenado por menor preço
     comparativo_fornecedores: List[dict] = []
+    quality_enabled = await _compras_feature_enabled(tenant_id, PCP_SUPPLIER_QUALITY_QUOTE_FLAG)
     for fid, conds in por_forn.items():
         ultima = conds[0]   # mais recente
         forn = await db.compras_fornecedores.find_one(
             {"id": fid, "tenant_id": tenant_id},
-            {"_id": 0, "razao_social": 1, "codigo_interno": 1, "homologacao.status": 1},
+            {"_id": 0, "id": 1, "razao_social": 1, "codigo_interno": 1, "status_cadastro": 1, "homologacao": 1},
         )
-        comparativo_fornecedores.append({
+        fornecedor_row = {
             "fornecedor_id": fid,
             "fornecedor_nome": ultima.get("fornecedor_nome", ""),
             "fornecedor_codigo": (forn or {}).get("codigo_interno", ""),
@@ -1499,7 +1638,12 @@ async def historico_precos(item_id: str, request: Request):
             "moq": ultima.get("moq"),
             "valido_ate": ultima.get("valido_ate"),
             "vencida": bool(ultima.get("valido_ate") and ultima["valido_ate"] < _today_iso()),
-        })
+        }
+        if quality_enabled:
+            supplier_quality = await _build_supplier_quality_snapshot(tenant_id, forn)
+            fornecedor_row["supplier_quality"] = supplier_quality
+            fornecedor_row["qualidade_fornecedor"] = supplier_quality
+        comparativo_fornecedores.append(fornecedor_row)
 
     comparativo_fornecedores.sort(key=lambda x: x.get("ultimo_preco") or float("inf"))
 
@@ -1561,6 +1705,7 @@ async def historico_precos_consolidado(
             menor_por_item[iid] = min(float(preco), menor_por_item.get(iid, float("inf")))
 
     rows = []
+    quality_enabled = await _compras_feature_enabled(tenant_id, PCP_SUPPLIER_QUALITY_QUOTE_FLAG)
     for c in condicoes:
         item = itens.get(c.get("item_id"), {})
         fornecedor = fornecedores.get(c.get("fornecedor_id"), {})
@@ -1573,6 +1718,10 @@ async def historico_precos_consolidado(
             "status_homologacao": (fornecedor.get("homologacao") or {}).get("status", ""),
             "menor_preco_item": menor_por_item.get(c.get("item_id")),
         }
+        if quality_enabled:
+            supplier_quality = await _build_supplier_quality_snapshot(tenant_id, fornecedor)
+            row["supplier_quality"] = supplier_quality
+            row["qualidade_fornecedor"] = supplier_quality
         rows.append(row)
 
     if q:

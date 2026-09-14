@@ -327,3 +327,24 @@ Rollback de codigo:
 - remover modelos/helpers/rotas timeline/ETA/fechamento de `backend/pcp_routes.py`;
 - remover indices `production_order_events`/`pcp_day_closings` adicionados em `backend/server.py`;
 - remover `backend/tests/test_pcp_timeline_eta_unit.py`.
+
+## Slice 16 - `pcp_supplier_quality_quote_v2`
+
+Rollback operacional:
+
+1. Manter `tenant_settings.features.pcp_supplier_quality_quote_v2=false` ou ausente.
+2. Continuar usando o comparador de cotacoes atual com `status_homologacao`.
+3. Ignorar o campo opcional `supplier_quality`/`qualidade_fornecedor` onde ja tenha sido consumido por integracoes.
+
+Dados opcionais que podem permanecer:
+- nenhum dado novo foi gravado neste passe;
+- campos existentes em `compras_fornecedores.homologacao` continuam como fonte de homologacao/RNC/reavaliacao.
+
+Nao ha migration destrutiva. Desligar a flag remove o enriquecimento da API sem alterar cotacoes, demandas ou POs.
+
+Rollback de codigo:
+- remover helpers de qualidade de fornecedor de `backend/compras_routes.py`;
+- remover enriquecimento `supplier_quality` das respostas de Compras;
+- remover badges de qualidade nas telas de Compras;
+- remover `backend/tests/test_supplier_quality_quote_unit.py`;
+- remover as secoes Slice 16 dos documentos `PCP_DELTA_*`.
