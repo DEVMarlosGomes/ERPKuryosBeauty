@@ -323,6 +323,151 @@ def test_wms_inventario_ciclico_counts_blind_and_applies_adjustment():
     assert estoque_routes.db.estoque_movimentos_lote.docs[0]["tipo"] == "AJUSTE_SAIDA"
 
 
+def _install_wms_physical_quarantine_db(feature_enabled=True):
+    _install_estoque()
+    estoque_routes.db = SimpleNamespace(
+        tenant_settings=FakeCollection([{
+            "tenant_id": "t1",
+            "features": {estoque_routes.WMS_PHYSICAL_QUARANTINE_FLAG: feature_enabled},
+        }]),
+        wms_enderecos=FakeCollection([
+            {"id": "end-1", "tenant_id": "t1", "codigo": "P01-A-01-01", "setor": "LOGISTICA", "status": "ocupado"},
+            {"id": "end-q", "tenant_id": "t1", "codigo": "P01-Q-01-01", "setor": "LOGISTICA", "status": "livre"},
+            {"id": "end-2", "tenant_id": "t1", "codigo": "P01-B-01-01", "setor": "LOGISTICA", "status": "livre"},
+        ]),
+        estoque_items=FakeCollection([
+            {
+                "id": "est-1",
+                "tenant_id": "t1",
+                "tipo_item": "mp",
+                "setor": "LOGISTICA",
+                "nome": "Frasco 200ml",
+                "codigo": "FR200",
+                "quantidade_atual": 80,
+                "unidade": "un",
+                "posicao_cq": "quarentena",
+                "cq_status": "quarentena",
+            }
+        ]),
+        estoque_saldos_lote=FakeCollection([
+            {
+                "id": "saldo-1",
+                "tenant_id": "t1",
+                "item_id": "est-1",
+                "item_nome": "Frasco 200ml",
+                "codigo_item": "FR200",
+                "tipo_item": "mp",
+                "lote": "L-CQ",
+                "endereco_id": "end-1",
+                "endereco_codigo": "P01-A-01-01",
+                "setor": "LOGISTICA",
+                "quantidade": 80,
+                "quantidade_atual": 80,
+                "unidade": "un",
+                "posicao_cq": "quarentena",
+                "cq_status": "quarentena",
+                "status": "disponivel",
+            }
+        ]),
+        estoque_movimentos_lote=FakeCollection([]),
+        wms_quarantine_movements=FakeCollection([]),
+    )
+
+
+def test_wms_physical_quarantine_flag_starts_off():
+    _install_wms_physical_quarantine_db(feature_enabled=False)
+
+    try:
+        asyncio.run(estoque_routes.obter_wms_quarentena_policy(request=SimpleNamespace()))
+        raised = None
+    except HTTPException as exc:
+        raised = exc
+
+    assert raised is not None
+    assert raised.status_code == 403
+    assert estoque_routes.WMS_PHYSICAL_QUARANTINE_FLAG in str(raised.detail)
+
+
+def test_wms_physical_quarantine_moves_without_changing_logical_cq():
+    _install_wms_physical_quarantine_db()
+
+    policy = asyncio.run(estoque_routes.atualizar_wms_quarentena_policy(
+        estoque_routes.WMSQuarantinePolicyUpdate(endereco_id="end-q", motivo="area segregada CQ"),
+        request=SimpleNamespace(),
+    ))
+    assert policy["policy"]["policy_version"] == 1
+    assert policy["endereco"]["wms_role"] == "quarentena_fisica"
+
+    entrada = asyncio.run(estoque_routes.movimentar_wms_quarentena(
+        estoque_routes.WMSQuarantineMoveCreate(
+            saldo_lote_id="saldo-1",
+            quantidade=30,
+            direcao="entrada",
+            motivo="recebimento em analise",
+            idempotency_key="move-cq-1",
+        ),
+        request=SimpleNamespace(),
+    ))
+    assert entrada["origem"]["quantidade"] == 50
+    assert entrada["destino"]["quantidade"] == 30
+    assert entrada["destino"]["wms_quarantine_physical"] is True
+    assert entrada["destino"]["posicao_cq"] == "quarentena"
+    assert estoque_routes.db.estoque_items.docs[0]["posicao_cq"] == "quarentena"
+    assert entrada["movement"]["cq_logico"] == "quarentena"
+
+    replay = asyncio.run(estoque_routes.movimentar_wms_quarentena(
+        estoque_routes.WMSQuarantineMoveCreate(
+            saldo_lote_id="saldo-1",
+            quantidade=30,
+            direcao="entrada",
+            motivo="recebimento em analise",
+            idempotency_key="move-cq-1",
+        ),
+        request=SimpleNamespace(),
+    ))
+    assert replay["idempotent"] is True
+    assert estoque_routes.db.estoque_saldos_lote.docs[0]["quantidade"] == 50
+
+    saldos = asyncio.run(estoque_routes.listar_wms_quarentena_saldos(request=SimpleNamespace()))
+    assert saldos["total"] == 1
+    assert saldos["saldos"][0]["quarentena_fisica"] is True
+    assert saldos["saldos"][0]["cq_logico"] == "quarentena"
+
+
+def test_wms_physical_quarantine_exit_keeps_remaining_balance_physical():
+    _install_wms_physical_quarantine_db()
+    asyncio.run(estoque_routes.atualizar_wms_quarentena_policy(
+        estoque_routes.WMSQuarantinePolicyUpdate(endereco_codigo="P01-Q-01-01", motivo="area segregada CQ"),
+        request=SimpleNamespace(),
+    ))
+    entrada = asyncio.run(estoque_routes.movimentar_wms_quarentena(
+        estoque_routes.WMSQuarantineMoveCreate(
+            saldo_lote_id="saldo-1",
+            quantidade=30,
+            direcao="entrada",
+            motivo="segregar fisicamente",
+        ),
+        request=SimpleNamespace(),
+    ))
+
+    saida = asyncio.run(estoque_routes.movimentar_wms_quarentena(
+        estoque_routes.WMSQuarantineMoveCreate(
+            saldo_lote_id=entrada["destino"]["id"],
+            quantidade=10,
+            direcao="saida",
+            endereco_destino_id="end-2",
+            motivo="liberacao fisica parcial",
+        ),
+        request=SimpleNamespace(),
+    ))
+    assert saida["origem"]["quantidade"] == 20
+    assert saida["origem"]["wms_quarantine_physical"] is True
+    assert saida["destino"]["quantidade"] == 10
+    assert saida["destino"]["wms_quarantine_physical"] is False
+    assert saida["destino"]["posicao_cq"] == "quarentena"
+    assert len(estoque_routes.db.estoque_movimentos_lote.docs) == 4
+
+
 def test_wms_inventario_ciclico_blocks_stale_snapshot_adjustment():
     _install_wms_cycle_count_db()
     created = asyncio.run(estoque_routes.criar_inventario_ciclico(

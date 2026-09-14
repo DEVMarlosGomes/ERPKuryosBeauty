@@ -568,3 +568,52 @@ existentes, sem criar cadastro paralelo e sem alterar o fluxo de cotacao/PO.
   - Resultado: `15 passed`.
 - `pytest backend/tests`
   - Resultado: `149 passed, 278 skipped`.
+
+## Slice 17 - Quarentena fisica WMS
+
+Classificacao do checkpoint: `MISSING`.
+
+Objetivo: implementar area/endereco fisico configuravel de quarentena, separando localizacao WMS de status logico CQ e
+mantendo movimentos auditaveis de entrada/saida.
+
+## O que foi coberto
+
+- Investigacao de `estoque_routes.py`, `recebimento_routes.py` e `cq_routes.py`.
+- Confirmacao de que o recebimento grava `estoque_saldos_lote.status="quarentena"` e `posicao_cq="quarentena"` no
+  endereco informado.
+- Confirmacao de que CQ atualiza `estoque_items.posicao_cq` na decisao, mas nao move fisicamente o saldo WMS.
+- Confirmacao de que `transferir_lote_endereco` bloqueia qualquer transferencia quando o item esta logicamente em
+  quarentena/reprovado.
+- Feature flag `wms_physical_quarantine_v2`.
+- Politica tenant-level em `tenant_settings.wms.quarantine`.
+- Rota add-only `GET /api/estoque/wms/quarentena/policy`.
+- Rota add-only `PUT /api/estoque/wms/quarentena/policy`.
+- Rota add-only `GET /api/estoque/wms/quarentena/saldos`.
+- Rota add-only `GET /api/estoque/wms/quarentena/movimentos`.
+- Rota add-only `POST /api/estoque/wms/quarentena/movimentos`.
+- Entrada fisica para o endereco configurado, sem liberar CQ.
+- Saida fisica para outro endereco WMS, preservando `posicao_cq`/`cq_status`.
+- Snapshot auditavel em `wms_quarantine_movements`.
+- Movimentos WMS imutaveis em `estoque_movimentos_lote`.
+- Idempotencia opcional por `idempotency_key`.
+
+## Preservado
+
+- Nenhuma rota existente foi removida ou substituida.
+- Nenhuma tela/frontend foi alterado.
+- Nenhuma collection existente foi migrada.
+- O comportamento atual de bloqueio CQ em transferencia WMS comum permanece documentado por teste passante.
+- Localizacao fisica de quarentena nao altera status logico de qualidade.
+
+## Observacoes
+
+- A rota nova abre uma excecao controlada ao hard stop apenas para deslocamento fisico de quarentena.
+- A aprovacao/reprovacao CQ continua separada da localizacao fisica, evitando liberar lote apenas por sair da area.
+- `auto_route_recebimento` fica salvo na politica para uma proxima integracao explicita com recebimento.
+
+## Testes atualizados
+
+- `pytest -q backend/tests/test_wms_physical_quarantine_unit.py`
+  - Resultado: `6 passed`.
+- `pytest -q backend/tests/test_wms_recebimento_unit.py`
+  - Resultado: `13 passed`.

@@ -36,7 +36,10 @@ async def create_estoque_indexes():
     await db.wms_enderecos.create_index([("tenant_id", 1), ("setor", 1), ("status", 1)])
     await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("item_id", 1), ("lote", 1), ("endereco_id", 1)])
     await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("endereco_id", 1), ("quantidade", 1)])
+    await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("wms_quarantine_physical", 1), ("status", 1)])
     await db.estoque_movimentos_lote.create_index([("tenant_id", 1), ("created_at", -1)])
+    await db.wms_quarantine_movements.create_index([("tenant_id", 1), ("created_at", -1)])
+    await db.wms_quarantine_movements.create_index([("tenant_id", 1), ("idempotency_key", 1)], sparse=True)
 
 
 # ============ CONSTANTS ============
@@ -80,6 +83,7 @@ MOVIMENTOS_COM_MOTIVO_OBRIGATORIO = {"AJUSTE_ENTRADA", "AJUSTE_SAIDA"}
 
 TIPO_ITEM_VALORES = ["mp", "produto_acabado"]
 WMS_CYCLE_COUNT_FLAG = "wms_cycle_count_v2"
+WMS_PHYSICAL_QUARANTINE_FLAG = "wms_physical_quarantine_v2"
 WMS_INVENTARIO_STATUSES = ["aberto", "em_contagem", "fechado", "cancelado"]
 PCP_DISPOSAL_FLAG = "pcp_disposal_v2"
 WMS_DESTINACAO_TIPOS = ["descarte", "devolucao_fornecedor", "logistica_reversa", "reprocesso"]
@@ -193,6 +197,25 @@ class TransferenciaLoteCreate(BaseModel):
     quantidade: float
     motivo: str = ""
     documento: str = ""
+
+
+class WMSQuarantinePolicyUpdate(BaseModel):
+    endereco_id: Optional[str] = None
+    endereco_codigo: Optional[str] = None
+    auto_route_recebimento: bool = False
+    motivo: str
+    observacoes: str = ""
+
+
+class WMSQuarantineMoveCreate(BaseModel):
+    saldo_lote_id: str
+    quantidade: float = Field(gt=0)
+    direcao: str = "entrada"  # entrada | saida
+    endereco_destino_id: Optional[str] = None
+    motivo: str
+    documento: str = ""
+    idempotency_key: Optional[str] = None
+    observacoes: str = ""
 
 
 class InventarioCiclicoCreate(BaseModel):
@@ -393,6 +416,76 @@ async def _get_wms_endereco_or_404(endereco_id: str, tenant_id: str) -> dict:
     if endereco.get("status") == "inativo":
         raise HTTPException(status_code=422, detail="Endereco WMS inativo")
     return endereco
+
+
+async def _get_wms_endereco_by_codigo_or_404(codigo: str, tenant_id: str) -> dict:
+    endereco = await db.wms_enderecos.find_one(
+        {"tenant_id": tenant_id, "codigo": str(codigo or "").strip().upper()}, {"_id": 0}
+    )
+    if not endereco:
+        raise HTTPException(status_code=404, detail="Endereco WMS de quarentena nao encontrado")
+    if endereco.get("status") == "inativo":
+        raise HTTPException(status_code=422, detail="Endereco WMS de quarentena inativo")
+    return endereco
+
+
+async def _get_wms_quarantine_policy(tenant_id: str) -> dict:
+    if not hasattr(db, "tenant_settings"):
+        return {}
+    settings = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    return dict((((settings or {}).get("wms") or {}).get("quarantine") or {}))
+
+
+async def _get_configured_quarantine_address(tenant_id: str) -> tuple[dict, dict]:
+    policy = await _get_wms_quarantine_policy(tenant_id)
+    endereco_id = policy.get("endereco_id")
+    if not endereco_id:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "wms_quarantine_address_missing",
+                "message": "Configure um endereco fisico de quarentena antes de movimentar saldos.",
+            },
+        )
+    endereco = await _get_wms_endereco_or_404(endereco_id, tenant_id)
+    return policy, endereco
+
+
+def _quarantine_saldo_patch(
+    is_physical: bool,
+    policy: dict,
+    endereco: dict,
+    now: str,
+    movement_id: str,
+    existing: Optional[dict] = None,
+) -> dict:
+    patch = {
+        "wms_quarantine_physical": bool(is_physical),
+        "wms_quarantine_status": "em_quarentena" if is_physical else "fora_quarentena",
+        "wms_quarantine_policy_version": int(policy.get("policy_version") or 0),
+        "wms_quarantine_last_movement_id": movement_id,
+        "wms_quarantine_updated_at": now,
+    }
+    if is_physical:
+        patch.update({
+            "wms_quarantine_address_id": endereco.get("id"),
+            "wms_quarantine_address_codigo": endereco.get("codigo", ""),
+        })
+        if not (existing or {}).get("wms_quarantine_entered_at"):
+            patch["wms_quarantine_entered_at"] = now
+    else:
+        patch.update({
+            "wms_quarantine_address_id": "",
+            "wms_quarantine_address_codigo": "",
+            "wms_quarantine_exited_at": now,
+        })
+    return patch
+
+
+async def _insert_wms_quarantine_audit(doc: dict) -> dict:
+    if hasattr(db, "wms_quarantine_movements"):
+        await db.wms_quarantine_movements.insert_one(doc)
+    return _serialize(doc)
 
 
 async def _get_saldo_lote(item_id: str, lote: str, endereco_id: str, tenant_id: str) -> Optional[dict]:
@@ -1035,6 +1128,323 @@ async def listar_saldos_lote(
     if somente_com_saldo:
         saldos = [s for s in saldos if _saldo_quantidade(s) > 0]
     return {"saldos": saldos, "total": len(saldos)}
+
+
+@estoque_router.get("/wms/quarentena/policy")
+async def obter_wms_quarentena_policy(request: Request):
+    user = await _get_current_user(request)
+    await _require_estoque_feature(user["tenant_id"], WMS_PHYSICAL_QUARANTINE_FLAG)
+    policy = await _get_wms_quarantine_policy(user["tenant_id"])
+    endereco = None
+    if policy.get("endereco_id"):
+        endereco = await db.wms_enderecos.find_one(
+            {"id": policy.get("endereco_id"), "tenant_id": user["tenant_id"]}, {"_id": 0}
+        )
+    return {
+        "feature": WMS_PHYSICAL_QUARANTINE_FLAG,
+        "configured": bool(policy.get("endereco_id")),
+        "policy": policy,
+        "endereco": endereco,
+    }
+
+
+@estoque_router.put("/wms/quarentena/policy")
+async def atualizar_wms_quarentena_policy(data: WMSQuarantinePolicyUpdate, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, WMS_PHYSICAL_QUARANTINE_FLAG)
+    if not data.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio para alterar politica de quarentena")
+    if data.endereco_id:
+        endereco = await _get_wms_endereco_or_404(data.endereco_id, tid)
+    elif data.endereco_codigo:
+        endereco = await _get_wms_endereco_by_codigo_or_404(data.endereco_codigo, tid)
+    else:
+        raise HTTPException(status_code=422, detail="Informe endereco_id ou endereco_codigo")
+
+    current = await _get_wms_quarantine_policy(tid)
+    version = int(current.get("policy_version") or 0) + 1
+    now = _now_iso()
+    policy = {
+        "endereco_id": endereco["id"],
+        "endereco_codigo": endereco.get("codigo", ""),
+        "auto_route_recebimento": bool(data.auto_route_recebimento),
+        "policy_version": version,
+        "motivo": data.motivo.strip(),
+        "observacoes": data.observacoes,
+        "updated_at": now,
+        "updated_by": user["id"],
+        "updated_by_name": user["name"],
+    }
+    await db.tenant_settings.update_one(
+        {"tenant_id": tid},
+        {"$set": {"tenant_id": tid, "wms.quarantine": policy, "updated_at": now}},
+        upsert=True,
+    )
+    await db.wms_enderecos.update_one(
+        {"id": endereco["id"], "tenant_id": tid},
+        {"$set": {
+            "wms_role": "quarentena_fisica",
+            "wms_quarantine_policy_version": version,
+            "updated_at": now,
+        }},
+    )
+    audit = await _insert_wms_quarantine_audit({
+        "id": _new_id(),
+        "tenant_id": tid,
+        "action": "policy_update",
+        "direcao": "policy",
+        "quantidade": 0.0,
+        "endereco_quarentena": {
+            "id": endereco["id"],
+            "codigo": endereco.get("codigo", ""),
+            "setor": endereco.get("setor", ""),
+        },
+        "policy_snapshot": policy,
+        "motivo": data.motivo.strip(),
+        "observacoes": data.observacoes,
+        "usuario": user["name"],
+        "usuario_id": user["id"],
+        "created_at": now,
+    })
+    return {"policy": policy, "endereco": await db.wms_enderecos.find_one({"id": endereco["id"], "tenant_id": tid}, {"_id": 0}), "audit": audit}
+
+
+@estoque_router.get("/wms/quarentena/saldos")
+async def listar_wms_quarentena_saldos(
+    request: Request,
+    item_id: Optional[str] = None,
+    lote: Optional[str] = None,
+    somente_com_saldo: bool = True,
+):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, WMS_PHYSICAL_QUARANTINE_FLAG)
+    policy = await _get_wms_quarantine_policy(tid)
+    query: Dict[str, Any] = {"tenant_id": tid, "status": {"$ne": "zerado"}}
+    if item_id:
+        query["item_id"] = item_id
+    if lote:
+        query["lote"] = lote
+    if policy.get("endereco_id"):
+        query["$or"] = [
+            {"wms_quarantine_physical": True},
+            {"endereco_id": policy["endereco_id"]},
+        ]
+    else:
+        query["wms_quarantine_physical"] = True
+
+    saldos = await db.estoque_saldos_lote.find(query, {"_id": 0}).sort("updated_at", -1).to_list(20000)
+    if somente_com_saldo:
+        saldos = [s for s in saldos if _saldo_quantidade(s) > 0]
+    for saldo in saldos:
+        saldo["cq_logico"] = saldo.get("posicao_cq") or saldo.get("cq_status") or "livre"
+        saldo["quarentena_fisica"] = bool(
+            saldo.get("wms_quarantine_physical") or (
+                policy.get("endereco_id") and saldo.get("endereco_id") == policy.get("endereco_id")
+            )
+        )
+    return {"saldos": saldos, "total": len(saldos), "policy": policy}
+
+
+@estoque_router.get("/wms/quarentena/movimentos")
+async def listar_wms_quarentena_movimentos(
+    request: Request,
+    saldo_lote_id: Optional[str] = None,
+    item_id: Optional[str] = None,
+    lote: Optional[str] = None,
+    direcao: Optional[str] = None,
+    limit: int = 200,
+):
+    user = await _get_current_user(request)
+    await _require_estoque_feature(user["tenant_id"], WMS_PHYSICAL_QUARANTINE_FLAG)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if saldo_lote_id:
+        query["$or"] = [{"saldo_lote_origem_id": saldo_lote_id}, {"saldo_lote_destino_id": saldo_lote_id}]
+    if item_id:
+        query["item_id"] = item_id
+    if lote:
+        query["lote"] = lote
+    if direcao:
+        query["direcao"] = direcao
+    safe_limit = max(1, min(int(limit or 200), 1000))
+    movimentos = await db.wms_quarantine_movements.find(query, {"_id": 0}).sort("created_at", -1).to_list(safe_limit)
+    return {"movimentos": movimentos, "total": len(movimentos)}
+
+
+@estoque_router.post("/wms/quarentena/movimentos", status_code=201)
+async def movimentar_wms_quarentena(data: WMSQuarantineMoveCreate, request: Request):
+    user = await _get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_estoque_feature(tid, WMS_PHYSICAL_QUARANTINE_FLAG)
+    direcao = str(data.direcao or "").strip().lower()
+    if direcao not in {"entrada", "saida"}:
+        raise HTTPException(status_code=422, detail="Direcao invalida. Use entrada ou saida")
+    if not data.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatorio para movimentacao de quarentena")
+    if data.idempotency_key and hasattr(db, "wms_quarantine_movements"):
+        existing = await db.wms_quarantine_movements.find_one(
+            {"tenant_id": tid, "idempotency_key": data.idempotency_key}, {"_id": 0}
+        )
+        if existing:
+            return {"movement": existing, "idempotent": True}
+
+    policy, quarentena_end = await _get_configured_quarantine_address(tid)
+    origem = await _get_saldo_lote_by_id_or_404(data.saldo_lote_id, tid)
+    origem_qtd = _saldo_quantidade(origem)
+    if data.quantidade > origem_qtd:
+        raise HTTPException(status_code=409, detail=f"Saldo insuficiente no endereco origem: {origem_qtd}")
+
+    item = await _get_item_or_404(origem["item_id"], tid)
+    origem_end = await _get_wms_endereco_or_404(origem["endereco_id"], tid)
+    if direcao == "entrada":
+        if origem_end["id"] == quarentena_end["id"]:
+            raise HTTPException(status_code=422, detail="Saldo ja esta no endereco fisico de quarentena")
+        destino_end = quarentena_end
+    else:
+        if origem_end["id"] != quarentena_end["id"] and not origem.get("wms_quarantine_physical"):
+            raise HTTPException(status_code=422, detail="Saida exige saldo fisicamente em quarentena")
+        if not data.endereco_destino_id:
+            raise HTTPException(status_code=422, detail="endereco_destino_id obrigatorio para saida da quarentena")
+        destino_end = await _get_wms_endereco_or_404(data.endereco_destino_id, tid)
+        if destino_end["id"] == quarentena_end["id"]:
+            raise HTTPException(status_code=422, detail="Endereco destino nao pode ser a propria quarentena")
+
+    destino = await _get_saldo_lote(origem["item_id"], origem["lote"], destino_end["id"], tid)
+    now = _now_iso()
+    if not destino:
+        destino = {
+            "id": _new_id(),
+            "tenant_id": tid,
+            "item_id": item["id"],
+            "item_nome": item.get("nome", origem.get("item_nome", "")),
+            "codigo_item": item.get("codigo", origem.get("codigo_item", "")),
+            "tipo_item": item.get("tipo_item", origem.get("tipo_item", "")),
+            "lote": origem.get("lote", ""),
+            "validade": origem.get("validade") or item.get("validade"),
+            "endereco_id": destino_end["id"],
+            "endereco_codigo": destino_end.get("codigo", ""),
+            "setor": destino_end.get("setor", item.get("setor")),
+            "quantidade": 0.0,
+            "quantidade_atual": 0.0,
+            "unidade": origem.get("unidade", item.get("unidade", "un")),
+            "posicao_cq": origem.get("posicao_cq", item.get("posicao_cq", "livre")),
+            "cq_status": origem.get("cq_status", item.get("cq_status")),
+            "status": "disponivel",
+            "created_at": now,
+            "updated_at": now,
+        }
+        await db.estoque_saldos_lote.insert_one(destino)
+
+    movement_id = _new_id()
+    ref = f"WMS-QUAR-{movement_id[:8]}"
+    origem_novo = origem_qtd - float(data.quantidade)
+    destino_antes = _saldo_quantidade(destino)
+    destino_novo = destino_antes + float(data.quantidade)
+    origem_physical_after = direcao == "saida" and origem_novo > 0
+    destino_physical_after = direcao == "entrada"
+
+    origem_patch = {
+        "quantidade": origem_novo,
+        "quantidade_atual": origem_novo,
+        "status": "zerado" if origem_novo == 0 else "disponivel",
+        "updated_at": now,
+        **_quarantine_saldo_patch(origem_physical_after, policy, quarentena_end, now, movement_id, origem),
+    }
+    destino_patch = {
+        "quantidade": destino_novo,
+        "quantidade_atual": destino_novo,
+        "status": "disponivel",
+        "updated_at": now,
+        **_quarantine_saldo_patch(destino_physical_after, policy, quarentena_end, now, movement_id, destino),
+    }
+    await db.estoque_saldos_lote.update_one(
+        {"id": origem["id"], "tenant_id": tid},
+        {"$set": origem_patch},
+    )
+    await db.estoque_saldos_lote.update_one(
+        {"id": destino["id"], "tenant_id": tid},
+        {"$set": destino_patch},
+    )
+
+    origem_atualizada = await db.estoque_saldos_lote.find_one({"id": origem["id"], "tenant_id": tid}, {"_id": 0})
+    destino_atualizado = await db.estoque_saldos_lote.find_one({"id": destino["id"], "tenant_id": tid}, {"_id": 0})
+    mov_saida = await _log_movimento_lote(
+        origem_atualizada,
+        "TRANSFERENCIA_SAIDA",
+        data.quantidade,
+        f"Quarentena fisica: {data.motivo.strip()}",
+        data.documento,
+        user,
+        origem_qtd,
+        origem_novo,
+        ref,
+    )
+    mov_entrada = await _log_movimento_lote(
+        destino_atualizado,
+        "TRANSFERENCIA_ENTRADA",
+        data.quantidade,
+        f"Quarentena fisica: {data.motivo.strip()}",
+        data.documento,
+        user,
+        destino_antes,
+        destino_novo,
+        ref,
+    )
+    await _recalcular_ocupacao_endereco(origem_end["id"], tid)
+    await _recalcular_ocupacao_endereco(destino_end["id"], tid)
+
+    audit = await _insert_wms_quarantine_audit({
+        "id": movement_id,
+        "tenant_id": tid,
+        "action": "physical_quarantine_move",
+        "direcao": direcao,
+        "saldo_lote_origem_id": origem["id"],
+        "saldo_lote_destino_id": destino["id"],
+        "item_id": origem.get("item_id"),
+        "item_nome": origem.get("item_nome", item.get("nome", "")),
+        "codigo_item": origem.get("codigo_item", item.get("codigo", "")),
+        "lote": origem.get("lote", ""),
+        "quantidade": float(data.quantidade),
+        "unidade": origem.get("unidade", item.get("unidade", "un")),
+        "cq_logico": origem.get("posicao_cq") or origem.get("cq_status") or item.get("posicao_cq") or "livre",
+        "origem": {
+            "endereco_id": origem_end["id"],
+            "endereco_codigo": origem_end.get("codigo", ""),
+            "quantidade_antes": origem_qtd,
+            "quantidade_depois": origem_novo,
+            "quarentena_fisica_depois": origem_physical_after,
+        },
+        "destino": {
+            "endereco_id": destino_end["id"],
+            "endereco_codigo": destino_end.get("codigo", ""),
+            "quantidade_antes": destino_antes,
+            "quantidade_depois": destino_novo,
+            "quarentena_fisica_depois": destino_physical_after,
+        },
+        "policy_snapshot": {
+            "policy_version": int(policy.get("policy_version") or 0),
+            "endereco_id": quarentena_end["id"],
+            "endereco_codigo": quarentena_end.get("codigo", ""),
+            "auto_route_recebimento": bool(policy.get("auto_route_recebimento")),
+        },
+        "transfer_reference": ref,
+        "movimento_lote_ids": [mov_saida.get("id"), mov_entrada.get("id")],
+        "motivo": data.motivo.strip(),
+        "documento": data.documento,
+        "observacoes": data.observacoes,
+        "idempotency_key": data.idempotency_key,
+        "usuario": user["name"],
+        "usuario_id": user["id"],
+        "created_at": now,
+    })
+    return {
+        "movement": audit,
+        "origem": origem_atualizada,
+        "destino": destino_atualizado,
+        "mov_saida": mov_saida,
+        "mov_entrada": mov_entrada,
+    }
 
 
 @estoque_router.get("/wms/inventarios-ciclicos")

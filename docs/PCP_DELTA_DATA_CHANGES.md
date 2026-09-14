@@ -686,3 +686,77 @@ Compatibilidade:
 - ausencia de flag deve manter as respostas atuais sem `supplier_quality`;
 - `supplier_quality` e dado calculado/snapshot de apresentacao, nao fonte transacional;
 - reavaliacao vencida ou fornecedor suspenso/reprovado deve elevar risco sem alterar automaticamente PO, demanda ou cotacao.
+
+## Contrato opcional quarentena fisica WMS
+
+Feature flag em `tenant_settings.features`:
+
+```text
+wms_physical_quarantine_v2
+```
+
+Configuracao por tenant em `tenant_settings.wms.quarantine`:
+
+```text
+endereco_id
+endereco_codigo
+auto_route_recebimento
+policy_version
+motivo
+observacoes
+updated_at
+updated_by
+updated_by_name
+```
+
+Campos opcionais em `estoque_saldos_lote`:
+
+```text
+wms_quarantine_physical
+wms_quarantine_status
+wms_quarantine_policy_version
+wms_quarantine_last_movement_id
+wms_quarantine_address_id
+wms_quarantine_address_codigo
+wms_quarantine_entered_at
+wms_quarantine_exited_at
+wms_quarantine_updated_at
+```
+
+Movimentos auditaveis em `wms_quarantine_movements`:
+
+```text
+wms_quarantine_movements.id
+wms_quarantine_movements.tenant_id
+wms_quarantine_movements.action
+wms_quarantine_movements.saldo_lote_origem_id
+wms_quarantine_movements.saldo_lote_destino_id
+wms_quarantine_movements.item_id
+wms_quarantine_movements.item_nome
+wms_quarantine_movements.codigo_item
+wms_quarantine_movements.lote
+wms_quarantine_movements.direcao
+wms_quarantine_movements.quantidade
+wms_quarantine_movements.unidade
+wms_quarantine_movements.cq_logico
+wms_quarantine_movements.origem
+wms_quarantine_movements.destino
+wms_quarantine_movements.policy_snapshot
+wms_quarantine_movements.transfer_reference
+wms_quarantine_movements.movimento_lote_ids[]
+wms_quarantine_movements.idempotency_key
+wms_quarantine_movements.motivo
+wms_quarantine_movements.documento
+wms_quarantine_movements.observacoes
+wms_quarantine_movements.created_at
+wms_quarantine_movements.usuario
+wms_quarantine_movements.usuario_id
+```
+
+Compatibilidade:
+- `posicao_cq` continua sendo o bloqueio logico de qualidade;
+- localizacao fisica de quarentena nao deve transformar automaticamente CQ em aprovado/reprovado;
+- consumo, expedicao e baixa produtiva continuam bloqueados por CQ enquanto `posicao_cq` estiver em quarentena/reprovado;
+- documentos antigos sem `wms_quarantine_physical` devem ser tratados como fora da area fisica configurada, exceto saldos
+  no endereco configurado pela politica atual;
+- a rota de quarentena fisica registra transferencia WMS controlada, mas nao altera quantidade agregada do item.

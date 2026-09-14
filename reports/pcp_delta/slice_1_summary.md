@@ -18,8 +18,10 @@ Testes:
 - Backend focado PCP timeline/ETA/fechamento: `5 passed`.
 - Backend focado qualidade fornecedor/cotacao: `4 passed`.
 - Backend focado compras/CQ qualidade fornecedor: `15 passed`.
+- Backend focado quarentena fisica WMS: `19 passed`.
+- Backend focado WMS/recebimento atualizado: `13 passed`.
 - Backend focado PCP/regressao DELTA: `86 passed`.
-- Backend completo: `149 passed, 278 skipped`.
+- Backend completo: `158 passed, 278 skipped`.
 - Frontend build: `Compiled successfully`.
 
 Arquivos alterados:
@@ -39,6 +41,7 @@ Arquivos alterados:
 - `backend/tests/test_pcp_alerts_unit.py`
 - `backend/tests/test_pcp_timeline_eta_unit.py`
 - `backend/tests/test_supplier_quality_quote_unit.py`
+- `backend/tests/test_wms_physical_quarantine_unit.py`
 - `backend/tests/test_commercial_packages_unit.py`
 - `backend/tests/test_materiais_fiscal_defaults_unit.py`
 - `backend/tests/test_wms_recebimento_unit.py`
@@ -69,3 +72,4 @@ Slices cobertos:
 - Slice 14: backend inicial de D48 por politica/snapshot.
 - Slice 15: backend inicial de PCP timeline, setup real, ETA e fechamento diario.
 - Slice 16: qualidade de fornecedor no comparador de cotacao.
+- Slice 17: quarentena fisica WMS configuravel, movimentos auditaveis e separacao entre localizacao fisica e CQ logico.

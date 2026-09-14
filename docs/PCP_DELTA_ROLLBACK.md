@@ -348,3 +348,27 @@ Rollback de codigo:
 - remover badges de qualidade nas telas de Compras;
 - remover `backend/tests/test_supplier_quality_quote_unit.py`;
 - remover as secoes Slice 16 dos documentos `PCP_DELTA_*`.
+
+## Slice 17 - `wms_physical_quarantine_v2`
+
+Rollback operacional:
+
+1. Manter `tenant_settings.features.wms_physical_quarantine_v2=false` ou ausente.
+2. Continuar usando WMS por endereco/lote atual.
+3. Continuar usando `posicao_cq`/`cq_status` como bloqueio logico de qualidade.
+
+Dados opcionais que podem permanecer:
+- `tenant_settings.wms.quarantine`;
+- `wms_quarantine_movements`;
+- campos opcionais `wms_quarantine_*` em `estoque_saldos_lote`;
+- `wms_enderecos.wms_role`;
+- `wms_enderecos.wms_quarantine_policy_version`.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia as novas rotas e preserva o WMS/endereco/lote atual.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas de quarentena fisica de `backend/estoque_routes.py`;
+- remover indices de `wms_quarantine_movements`/`wms_quarantine_physical` em `backend/estoque_routes.py`;
+- remover testes de quarentena fisica adicionados em `backend/tests/test_wms_recebimento_unit.py`;
+- remover `backend/tests/test_wms_physical_quarantine_unit.py`;
+- remover as secoes Slice 17 dos documentos `PCP_DELTA_*`.

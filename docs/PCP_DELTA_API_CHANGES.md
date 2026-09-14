@@ -860,3 +860,51 @@ Regras de contrato:
 - fornecedor suspenso/reprovado ou com RNC critica recente deve aparecer como risco alto/bloqueado, mesmo quando tiver menor preco;
 - dados devem vir das fontes ja existentes de homologacao, RNC e reavaliacao de fornecedor;
 - nao criar novo cadastro paralelo de qualidade de fornecedor se `compras_fornecedores.homologacao` ja cobre o dado.
+
+## Slice 17 - Quarentena fisica WMS
+
+Implementacao add-only protegida por `tenant_settings.features.wms_physical_quarantine_v2`.
+
+Rotas adicionadas:
+
+- `GET /api/estoque/wms/quarentena/policy`;
+- `PUT /api/estoque/wms/quarentena/policy`;
+- `GET /api/estoque/wms/quarentena/saldos`;
+- `GET /api/estoque/wms/quarentena/movimentos`;
+- `POST /api/estoque/wms/quarentena/movimentos`.
+
+`PUT /api/estoque/wms/quarentena/policy` configura o endereco fisico padrao de quarentena por tenant:
+
+```json
+{
+  "endereco_id": "wms-end-q",
+  "auto_route_recebimento": false,
+  "motivo": "Area segregada CQ",
+  "observacoes": "Endereco dedicado a quarentena fisica"
+}
+```
+
+`POST /api/estoque/wms/quarentena/movimentos` registra entrada/saida fisica auditavel:
+
+```json
+{
+  "saldo_lote_id": "saldo-123",
+  "quantidade": 30,
+  "direcao": "entrada",
+  "motivo": "Recebimento em analise",
+  "documento": "NF-123",
+  "idempotency_key": "nf-123-lote-a-quarentena"
+}
+```
+
+Para `direcao="saida"`, informe `endereco_destino_id`.
+
+Regras de contrato:
+
+- flag desligada bloqueia as novas rotas e preserva WMS atual;
+- entrada fisica usa o endereco configurado em `tenant_settings.wms.quarantine`;
+- saida fisica exige saldo em quarentena e endereco destino diferente da quarentena;
+- `posicao_cq`/`cq_status` logicos sao preservados no saldo de destino;
+- consumo, expedicao e transferencia WMS comum continuam respeitando os hard stops atuais de CQ;
+- cada movimentacao grava dois movimentos em `estoque_movimentos_lote` e um snapshot auditavel em `wms_quarantine_movements`;
+- `idempotency_key`, quando informada, reutiliza a movimentacao ja registrada.
