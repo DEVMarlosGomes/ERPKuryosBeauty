@@ -55,7 +55,18 @@ TIPOS_SETUP = ["assepsia", "troca_volume", "troca_maquina", "geral"]
 LOTE_STATUSES = ["planejado", "em_preparo", "em_envase", "concluido", "cancelado"]
 DIAS_SEMANA = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
 PCP_ALERTS_FLAG = "pcp_alerts_enabled"
+PCP_TIMELINE_ETA_FLAG = "pcp_timeline_eta_v2"
 PCP_ALERT_OPEN_STATUSES = ["aberto", "pendente"]
+PCP_TIMELINE_EVENT_TYPES = {
+    "setup_start",
+    "setup_end",
+    "pause_start",
+    "pause_end",
+    "checkpoint",
+    "loss",
+    "reconciliation",
+    "manual_note",
+}
 
 DEFAULT_LINHAS = [
     {"nome": "Linha 1", "codigo": "L1", "tipo": "envase", "capacidade_diaria": 6000},
@@ -258,6 +269,413 @@ def _minutes_between(start: datetime, end: datetime) -> int:
     return max(int((end - start).total_seconds() // 60), 0)
 
 
+def _iso_or_empty(value: Optional[datetime]) -> str:
+    return value.isoformat() if value else ""
+
+
+def _event_time(value: Any) -> str:
+    parsed = _parse_datetime_or_none(value)
+    return _iso_or_empty(parsed) if parsed else str(value or "")
+
+
+def _event_date_matches(value: Any, data_ref: str) -> bool:
+    return str(value or "")[:10] == data_ref
+
+
+def _op_planned_quantity(op: Dict[str, Any]) -> float:
+    return round(sum(_as_float(item.get("qtd_planejada") or item.get("qtd")) for item in (op.get("items") or [])), 6)
+
+
+def _op_items_produced_quantity(op: Dict[str, Any]) -> float:
+    return round(sum(_as_float(item.get("qtd_produzida")) for item in (op.get("items") or [])), 6)
+
+
+def _op_apontamentos_quantity(op: Dict[str, Any], data_ref: Optional[str] = None) -> float:
+    total = 0.0
+    for apont in op.get("apontamentos") or []:
+        if data_ref and not _event_date_matches(apont.get("horario") or apont.get("em"), data_ref):
+            continue
+        total += _as_float(apont.get("qtd_produzida"))
+    return round(total, 6)
+
+
+def _op_produced_quantity(op: Dict[str, Any]) -> float:
+    return max(_op_items_produced_quantity(op), _op_apontamentos_quantity(op))
+
+
+def _op_loss_quantity(op: Dict[str, Any], data_ref: Optional[str] = None) -> float:
+    total = 0.0
+    for perda in op.get("perdas") or []:
+        if data_ref and not _event_date_matches(perda.get("em"), data_ref):
+            continue
+        total += abs(_as_float(perda.get("quantidade")))
+    return round(total, 6)
+
+
+def _duration_from_pair(start_value: Any, end_value: Any, now_dt: datetime) -> int:
+    start = _parse_datetime_or_none(start_value)
+    if not start:
+        return 0
+    end = _parse_datetime_or_none(end_value) or now_dt
+    return _minutes_between(start, end)
+
+
+def _op_pause_minutes(op: Dict[str, Any], now_dt: Optional[datetime] = None, data_ref: Optional[str] = None) -> int:
+    now_dt = now_dt or _parse_datetime_or_none(_now()) or datetime.now(timezone.utc)
+    total = 0
+    for pausa in op.get("pausas") or []:
+        start_value = pausa.get("horario_inicio") or pausa.get("em")
+        if data_ref and not _event_date_matches(start_value, data_ref):
+            continue
+        if pausa.get("duracao_min") is not None:
+            total += max(int(_as_float(pausa.get("duracao_min"))), 0)
+        else:
+            total += _duration_from_pair(start_value, pausa.get("horario_fim"), now_dt)
+    return total
+
+
+def _event_duration_minutes(event: Dict[str, Any], now_dt: Optional[datetime] = None) -> int:
+    payload = event.get("payload") or {}
+    if payload.get("duration_minutes") is not None:
+        return max(int(_as_float(payload.get("duration_minutes"))), 0)
+    if event.get("duration_minutes") is not None:
+        return max(int(_as_float(event.get("duration_minutes"))), 0)
+    now_dt = now_dt or _parse_datetime_or_none(_now()) or datetime.now(timezone.utc)
+    return _duration_from_pair(
+        event.get("started_at") or payload.get("started_at") or event.get("created_at"),
+        event.get("ended_at") or payload.get("ended_at"),
+        now_dt,
+    )
+
+
+def _setup_minutes_from_slots(slots: List[Dict[str, Any]], data_ref: Optional[str] = None) -> int:
+    total = 0
+    for slot in slots:
+        if slot.get("tipo") != "setup":
+            continue
+        if data_ref and str(slot.get("data") or slot.get("data_inicio") or "")[:10] != data_ref:
+            continue
+        if slot.get("setup_tempo_min") is not None:
+            total += max(int(_as_float(slot.get("setup_tempo_min"))), 0)
+            continue
+        start = _slot_datetime(slot, "data_inicio", "hora_inicio")
+        end = _slot_datetime(slot, "data_fim", "hora_fim")
+        if start and end:
+            total += _minutes_between(start, end)
+    return total
+
+
+def _event_type(event: Dict[str, Any]) -> str:
+    return str(event.get("event_type") or event.get("action") or event.get("tipo") or "event").strip()
+
+
+def _events_minutes(events: List[Dict[str, Any]], event_bases: set, data_ref: Optional[str] = None) -> int:
+    now_dt = _parse_datetime_or_none(_now()) or datetime.now(timezone.utc)
+    total = 0
+    open_starts: Dict[str, datetime] = {}
+    for event in sorted(events, key=lambda e: _event_time(e.get("started_at") or e.get("created_at"))):
+        tipo = _event_type(event)
+        if data_ref and not _event_date_matches(event.get("started_at") or event.get("created_at"), data_ref):
+            continue
+        base = tipo.replace("_start", "").replace("_end", "")
+        if base not in event_bases:
+            continue
+        if tipo.endswith("_start"):
+            start = _parse_datetime_or_none(event.get("started_at") or event.get("created_at"))
+            if start:
+                open_starts[base] = start
+            continue
+        if tipo.endswith("_end"):
+            start = open_starts.pop(base, None)
+            end = _parse_datetime_or_none(event.get("ended_at") or event.get("created_at"))
+            if start and end:
+                total += _minutes_between(start, end)
+            else:
+                total += _event_duration_minutes(event, now_dt)
+            continue
+        if tipo in event_bases:
+            if tipo.endswith("_start"):
+                start = _parse_datetime_or_none(event.get("started_at") or event.get("created_at"))
+                if start:
+                    open_starts[tipo.replace("_start", "")] = start
+                continue
+            total += _event_duration_minutes(event, now_dt)
+    for start in open_starts.values():
+        total += _minutes_between(start, now_dt)
+    return total
+
+
+def _timeline_row(
+    *,
+    tipo: str,
+    at: Any,
+    source: str,
+    title: str,
+    op: Dict[str, Any],
+    payload: Optional[Dict[str, Any]] = None,
+    item_idx: Optional[int] = None,
+) -> Dict[str, Any]:
+    item = {}
+    items = op.get("items") or []
+    if item_idx is not None and 0 <= item_idx < len(items):
+        item = items[item_idx]
+    elif items:
+        item = items[0]
+    return {
+        "tipo": tipo,
+        "at": _event_time(at),
+        "source": source,
+        "title": title,
+        "op_id": op.get("id"),
+        "op_numero": op.get("numero_op"),
+        "pedido_id": op.get("pedido_id"),
+        "pedido_numero": op.get("numero_pedido") or op.get("pedido_numero"),
+        "allocation_id": op.get("allocation_id"),
+        "sales_order_item_id": op.get("sales_order_item_id") or item.get("order_item_id"),
+        "item_idx": item_idx,
+        "item_nome": item.get("item") or item.get("item_nome") or "",
+        "sku": item.get("codigo_kuryos") or op.get("sku_id") or "",
+        "payload": payload or {},
+    }
+
+
+def _build_pcp_timeline_rows(
+    op: Dict[str, Any],
+    events: List[Dict[str, Any]],
+    slots: List[Dict[str, Any]],
+    allocation: Optional[Dict[str, Any]] = None,
+    order: Optional[Dict[str, Any]] = None,
+    separacoes: Optional[List[Dict[str, Any]]] = None,
+) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    rows.append(_timeline_row(
+        tipo="op_created",
+        at=op.get("created_at"),
+        source="ops",
+        title="OP criada",
+        op=op,
+        payload={"status": op.get("status"), "pcp_status": op.get("pcp_status")},
+    ))
+    if allocation:
+        rows.append(_timeline_row(
+            tipo="allocation",
+            at=allocation.get("created_at"),
+            source="pcp_allocations",
+            title="Alocacao PCP vinculada",
+            op=op,
+            payload={
+                "planned_quantity": allocation.get("planned_quantity"),
+                "consumed_quantity": allocation.get("consumed_quantity"),
+                "remaining_quantity": allocation.get("remaining_quantity"),
+                "status": allocation.get("status"),
+            },
+        ))
+    if order:
+        for idx, item in enumerate(order.get("items") or []):
+            if op.get("sales_order_item_id") and item.get("id") != op.get("sales_order_item_id"):
+                continue
+            rows.append(_timeline_row(
+                tipo="order_item",
+                at=order.get("created_at"),
+                source="orders",
+                title="Item comercial",
+                op=op,
+                payload={"item": item.get("item"), "qtd": item.get("qtd"), "prazo_entrega": item.get("prazo_entrega")},
+                item_idx=idx,
+            ))
+    for slot in slots:
+        rows.append(_timeline_row(
+            tipo=f"slot_{slot.get('tipo') or 'producao'}",
+            at=slot.get("data_inicio") or slot.get("data") or slot.get("created_at"),
+            source="pcp_programacao",
+            title="Slot PCP",
+            op=op,
+            payload={
+                "slot_id": slot.get("id"),
+                "status": slot.get("status"),
+                "linha_id": slot.get("linha_id"),
+                "linha_nome": slot.get("linha_nome"),
+                "data": slot.get("data"),
+                "hora_inicio": slot.get("hora_inicio"),
+                "hora_fim": slot.get("hora_fim"),
+                "setup_tipo": slot.get("setup_tipo"),
+                "setup_tempo_min": slot.get("setup_tempo_min"),
+                "qtd_planejada": slot.get("qtd_planejada"),
+            },
+        ))
+    for event in events:
+        rows.append(_timeline_row(
+            tipo=_event_type(event),
+            at=event.get("started_at") or event.get("created_at"),
+            source="production_order_events",
+            title=str(event.get("title") or event.get("action") or event.get("event_type") or "Evento PCP"),
+            op=op,
+            payload=event.get("payload") or {},
+        ))
+    for apont in op.get("apontamentos") or []:
+        rows.append(_timeline_row(
+            tipo="apontamento",
+            at=apont.get("horario") or apont.get("em"),
+            source="ops.apontamentos",
+            title="Apontamento de producao",
+            op=op,
+            payload=apont,
+            item_idx=int(apont.get("item_idx") or 0),
+        ))
+    for perda in op.get("perdas") or []:
+        rows.append(_timeline_row(
+            tipo="perda",
+            at=perda.get("em"),
+            source="ops.perdas",
+            title="Perda registrada",
+            op=op,
+            payload=perda,
+            item_idx=int(perda.get("item_idx") or 0),
+        ))
+    for pausa in op.get("pausas") or []:
+        rows.append(_timeline_row(
+            tipo="pausa",
+            at=pausa.get("horario_inicio") or pausa.get("em"),
+            source="ops.pausas",
+            title="Pausa de OP",
+            op=op,
+            payload=pausa,
+        ))
+    for separacao in separacoes or []:
+        rows.append(_timeline_row(
+            tipo="wms_separacao",
+            at=separacao.get("created_at"),
+            source="wms_separacoes",
+            title="Separacao WMS",
+            op=op,
+            payload={
+                "wms_separacao_id": separacao.get("id"),
+                "status": separacao.get("status"),
+                "linhas": len(separacao.get("linhas") or []),
+                "faltas": len(separacao.get("faltas") or []),
+            },
+        ))
+    rows = [row for row in rows if row.get("at")]
+    rows.sort(key=lambda row: row.get("at") or "")
+    return rows
+
+
+def _recent_rate_per_minute(op: Dict[str, Any], now_dt: datetime, downtime_minutes: int) -> float:
+    apontamentos = [
+        apont for apont in (op.get("apontamentos") or [])
+        if _parse_datetime_or_none(apont.get("horario") or apont.get("em"))
+    ]
+    apontamentos.sort(key=lambda apont: apont.get("horario") or apont.get("em") or "")
+    if len(apontamentos) >= 2:
+        recent = apontamentos[-3:]
+        start = _parse_datetime_or_none(recent[0].get("horario") or recent[0].get("em"))
+        end = _parse_datetime_or_none(recent[-1].get("horario") or recent[-1].get("em")) or now_dt
+        minutes = max(_minutes_between(start, end) if start else 0, 1)
+        qty = sum(_as_float(apont.get("qtd_produzida")) for apont in recent)
+        if qty > 0:
+            return qty / minutes
+
+    start_candidates = [
+        _parse_datetime_or_none(op.get("started_at")),
+        _parse_datetime_or_none(op.get("fechado_producao_em")),
+        _parse_datetime_or_none(op.get("created_at")),
+    ]
+    start = next((candidate for candidate in start_candidates if candidate), None)
+    produced = _op_produced_quantity(op)
+    if start and produced > 0:
+        productive_minutes = max(_minutes_between(start, now_dt) - downtime_minutes, 1)
+        return produced / productive_minutes
+    return 0.0
+
+
+def _build_eta_payload(op: Dict[str, Any], events: List[Dict[str, Any]], slots: List[Dict[str, Any]], now_value: Optional[str] = None) -> Dict[str, Any]:
+    now_dt = _parse_datetime_or_none(now_value) or _parse_datetime_or_none(_now()) or datetime.now(timezone.utc)
+    planned = _op_planned_quantity(op)
+    produced = _op_produced_quantity(op)
+    remaining = round(max(planned - produced, 0.0), 6)
+    pause_minutes = _op_pause_minutes(op, now_dt) + _events_minutes(events, {"pause"})
+    setup_minutes = _setup_minutes_from_slots(slots) + _events_minutes(events, {"setup"})
+    downtime_minutes = pause_minutes + setup_minutes
+    rate_per_minute = _recent_rate_per_minute(op, now_dt, downtime_minutes)
+    eta_at = None
+    eta_minutes = None
+    status = "sem_apontamento"
+    if remaining <= 0:
+        status = "concluida"
+        eta_minutes = 0
+        eta_at = now_dt
+    elif rate_per_minute > 0:
+        eta_minutes = int(round(remaining / rate_per_minute))
+        eta_at = now_dt + timedelta(minutes=eta_minutes)
+        status = "calculada"
+    elif op.get("status") in {"aberta", "em_processo", "pausada"}:
+        status = "aguardando_ritmo"
+
+    return {
+        "op_id": op.get("id"),
+        "op_numero": op.get("numero_op"),
+        "status": status,
+        "planned_quantity": planned,
+        "produced_quantity": produced,
+        "remaining_quantity": remaining,
+        "rate_per_minute": round(rate_per_minute, 6),
+        "rate_per_hour": round(rate_per_minute * 60, 3),
+        "pause_minutes": pause_minutes,
+        "setup_minutes": setup_minutes,
+        "downtime_minutes": downtime_minutes,
+        "eta_minutes": eta_minutes,
+        "eta_at": _iso_or_empty(eta_at),
+        "calculated_at": now_dt.isoformat(),
+        "method": "recent_apontamentos_or_overall_minus_pause_setup",
+    }
+
+
+def _day_closing_reconciliation(ops: List[Dict[str, Any]], data_ref: str) -> List[Dict[str, Any]]:
+    rows = []
+    for op in ops:
+        apontado = _op_apontamentos_quantity(op, data_ref)
+        item_total = _op_items_produced_quantity(op)
+        perdas = _op_loss_quantity(op, data_ref)
+        planned = _op_planned_quantity(op)
+        rows.append({
+            "op_id": op.get("id"),
+            "op_numero": op.get("numero_op"),
+            "status": op.get("status"),
+            "planned_quantity": planned,
+            "produced_by_items": item_total,
+            "produced_by_apontamentos_day": apontado,
+            "loss_quantity_day": perdas,
+            "remaining_quantity": round(max(planned - item_total, 0.0), 6),
+            "divergence_quantity": round(item_total - _op_apontamentos_quantity(op), 6),
+            "allocation_id": op.get("allocation_id"),
+            "sales_order_item_id": op.get("sales_order_item_id"),
+        })
+    return rows
+
+
+def _op_touches_day(op: Dict[str, Any], data_ref: str) -> bool:
+    for key in ("created_at", "updated_at", "fechado_producao_em", "pcp_confirmed_at"):
+        if _event_date_matches(op.get(key), data_ref):
+            return True
+    for apont in op.get("apontamentos") or []:
+        if _event_date_matches(apont.get("horario") or apont.get("em"), data_ref):
+            return True
+    for perda in op.get("perdas") or []:
+        if _event_date_matches(perda.get("em"), data_ref):
+            return True
+    for pausa in op.get("pausas") or []:
+        if _event_date_matches(pausa.get("horario_inicio") or pausa.get("em"), data_ref):
+            return True
+    return False
+
+
+def _slot_touches_day(slot: Dict[str, Any], data_ref: str) -> bool:
+    for key in ("data", "data_inicio", "data_fim", "created_at", "updated_at"):
+        if _event_date_matches(slot.get(key), data_ref):
+            return True
+    return False
+
+
 # ===== MODELS =====
 class LinhaCreate(BaseModel):
     nome: str
@@ -385,6 +803,28 @@ class PCPAlertsCheck(BaseModel):
     tolerance_minutes: int = Field(default=5, ge=0, le=1440)
     cooldown_minutes: int = Field(default=10, ge=1, le=1440)
     dry_run: bool = False
+
+
+class PCPTimelineEventCreate(BaseModel):
+    event_type: str
+    started_at: Optional[str] = None
+    ended_at: Optional[str] = None
+    duration_minutes: Optional[int] = Field(default=None, ge=0, le=10080)
+    quantity: Optional[float] = None
+    reason: str = ""
+    note: str = ""
+    setup_type: Optional[str] = None
+    idempotency_key: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PCPDayClosingCreate(BaseModel):
+    data: str
+    turno: Optional[str] = None
+    observacoes: str = ""
+    idempotency_key: Optional[str] = None
+    force_recalculate: bool = False
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 # ===== SEQUENCES =====
@@ -1198,6 +1638,227 @@ async def pcp_dashboard(request: Request):
         "lotes_ativos": lotes_ativos,
         "calendarios_semana_atual": calendarios_semana,
     }
+
+
+# ========== TIMELINE / ETA / FECHAMENTO PCP ==========
+@pcp_router.post("/ops/{op_id}/timeline-events")
+async def create_pcp_timeline_event(op_id: str, data: PCPTimelineEventCreate, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_TIMELINE_ETA_FLAG)
+
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tid}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nao encontrada")
+
+    event_type = str(data.event_type or "").strip()
+    if event_type not in PCP_TIMELINE_EVENT_TYPES:
+        raise HTTPException(status_code=400, detail=f"event_type invalido. Permitidos: {sorted(PCP_TIMELINE_EVENT_TYPES)}")
+
+    idempotency_key = (data.idempotency_key or "").strip()
+    if idempotency_key:
+        existing = await db.production_order_events.find_one(
+            {"tenant_id": tid, "op_id": op_id, "idempotency_key": idempotency_key},
+            {"_id": 0},
+        )
+        if existing:
+            return existing
+
+    now = _now()
+    payload = {
+        "quantity": data.quantity,
+        "reason": data.reason,
+        "note": data.note,
+        "setup_type": data.setup_type,
+        "metadata": data.metadata or {},
+    }
+    payload = {key: value for key, value in payload.items() if value not in (None, "", {})}
+    event = {
+        "id": _new_id(),
+        "tenant_id": tid,
+        "op_id": op_id,
+        "op_numero": op.get("numero_op", ""),
+        "sales_order_id": op.get("pedido_id", ""),
+        "allocation_id": op.get("allocation_id"),
+        "event_type": event_type,
+        "action": event_type,
+        "started_at": data.started_at or now,
+        "ended_at": data.ended_at,
+        "duration_minutes": data.duration_minutes,
+        "payload": payload,
+        "idempotency_key": idempotency_key or None,
+        "created_at": now,
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+    }
+    await db.production_order_events.insert_one(event)
+    event.pop("_id", None)
+    return event
+
+
+@pcp_router.get("/ops/{op_id}/timeline")
+async def get_pcp_op_timeline(op_id: str, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_TIMELINE_ETA_FLAG)
+
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tid}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nao encontrada")
+
+    events = await db.production_order_events.find({"tenant_id": tid, "op_id": op_id}, {"_id": 0}).sort("created_at", 1).to_list(1000)
+    slots = await db.pcp_programacao.find({"tenant_id": tid, "op_id": op_id}, {"_id": 0}).sort("data_inicio", 1).to_list(1000)
+    allocation = None
+    if op.get("allocation_id"):
+        allocation = await db.pcp_allocations.find_one({"id": op["allocation_id"], "tenant_id": tid}, {"_id": 0})
+    order = None
+    if op.get("pedido_id"):
+        order = await db.orders.find_one({"id": op["pedido_id"], "tenant_id": tid}, {"_id": 0})
+    separacoes = []
+    if hasattr(db, "wms_separacoes"):
+        separacoes = await db.wms_separacoes.find({"tenant_id": tid, "op_id": op_id}, {"_id": 0}).sort("created_at", 1).to_list(1000)
+
+    rows = _build_pcp_timeline_rows(op, events, slots, allocation, order, separacoes)
+    return {
+        "op_id": op_id,
+        "op_numero": op.get("numero_op"),
+        "status": op.get("status"),
+        "context": {
+            "planned_quantity": _op_planned_quantity(op),
+            "produced_quantity": _op_produced_quantity(op),
+            "remaining_quantity": round(max(_op_planned_quantity(op) - _op_produced_quantity(op), 0.0), 6),
+            "allocation": allocation,
+            "sales_order_item_id": op.get("sales_order_item_id"),
+            "pedido_id": op.get("pedido_id"),
+            "pedido_numero": op.get("numero_pedido") or op.get("pedido_numero"),
+        },
+        "rows": rows,
+    }
+
+
+@pcp_router.get("/ops/{op_id}/eta")
+async def get_pcp_op_eta(op_id: str, request: Request, now: Optional[str] = None):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_TIMELINE_ETA_FLAG)
+
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tid}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nao encontrada")
+
+    events = await db.production_order_events.find({"tenant_id": tid, "op_id": op_id}, {"_id": 0}).sort("created_at", 1).to_list(1000)
+    slots = await db.pcp_programacao.find({"tenant_id": tid, "op_id": op_id}, {"_id": 0}).sort("data_inicio", 1).to_list(1000)
+    return _build_eta_payload(op, events, slots, now)
+
+
+@pcp_router.get("/day-closings")
+async def list_pcp_day_closings(
+    request: Request,
+    data_inicio: Optional[str] = None,
+    data_fim: Optional[str] = None,
+    turno: Optional[str] = None,
+    limit: int = 100,
+):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_TIMELINE_ETA_FLAG)
+
+    query: Dict[str, Any] = {"tenant_id": tid}
+    if data_inicio or data_fim:
+        query["data"] = {}
+        if data_inicio:
+            query["data"]["$gte"] = data_inicio
+        if data_fim:
+            query["data"]["$lte"] = data_fim
+    if turno:
+        query["turno"] = turno
+    safe_limit = max(1, min(int(limit or 100), 500))
+    return await db.pcp_day_closings.find(query, {"_id": 0}).sort("data", -1).to_list(safe_limit)
+
+
+@pcp_router.post("/day-closings")
+async def create_pcp_day_closing(data: PCPDayClosingCreate, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    await _require_pcp_feature(tid, PCP_TIMELINE_ETA_FLAG)
+
+    data_ref = _parse_date_ymd(data.data, "data").isoformat()
+    turno = (data.turno or "integral").strip() or "integral"
+    if turno not in TURNOS:
+        raise HTTPException(status_code=400, detail=f"Turno invalido. Permitidos: {TURNOS}")
+
+    idempotency_key = (data.idempotency_key or "").strip()
+    if idempotency_key:
+        existing = await db.pcp_day_closings.find_one(
+            {"tenant_id": tid, "idempotency_key": idempotency_key},
+            {"_id": 0},
+        )
+        if existing:
+            return existing
+
+    existing = await db.pcp_day_closings.find_one({"tenant_id": tid, "data": data_ref, "turno": turno}, {"_id": 0})
+    if existing and not data.force_recalculate:
+        return existing
+
+    all_ops = await db.ops.find({"tenant_id": tid}, {"_id": 0}).sort("updated_at", -1).to_list(5000)
+    ops = [op for op in all_ops if _op_touches_day(op, data_ref)]
+    all_slots = await db.pcp_programacao.find({"tenant_id": tid}, {"_id": 0}).sort("data_inicio", 1).to_list(5000)
+    slots = [slot for slot in all_slots if _slot_touches_day(slot, data_ref)]
+    all_events = await db.production_order_events.find({"tenant_id": tid}, {"_id": 0}).sort("created_at", 1).to_list(5000)
+    events = [event for event in all_events if _event_date_matches(event.get("started_at") or event.get("created_at"), data_ref)]
+
+    recon = _day_closing_reconciliation(ops, data_ref)
+    produced_total = round(sum(_op_apontamentos_quantity(op, data_ref) for op in ops), 6)
+    loss_total = round(sum(_op_loss_quantity(op, data_ref) for op in ops), 6)
+    pause_minutes = sum(_op_pause_minutes(op, data_ref=data_ref) for op in ops) + _events_minutes(events, {"pause"}, data_ref)
+    setup_minutes = _setup_minutes_from_slots(slots, data_ref) + _events_minutes(events, {"setup"}, data_ref)
+    divergences = [row for row in recon if abs(_as_float(row.get("divergence_quantity"))) > 0.0001]
+    now = _now()
+    closing = {
+        "id": _new_id(),
+        "tenant_id": tid,
+        "data": data_ref,
+        "turno": turno,
+        "status": "fechado",
+        "kpis": {
+            "ops_movimentadas": len(ops),
+            "ops_concluidas": sum(1 for op in ops if op.get("status") in {"aguardando_confirmacao_pcp", "concluida"}),
+            "slots_planejados": len(slots),
+            "slots_concluidos": sum(1 for slot in slots if slot.get("status") == "concluido"),
+            "qtd_produzida": produced_total,
+            "qtd_perdas": loss_total,
+            "perda_pct": round((loss_total / produced_total) * 100, 3) if produced_total > 0 else 0,
+            "paradas_minutos": pause_minutes,
+            "setup_minutos": setup_minutes,
+            "divergencias_reconciliacao": len(divergences),
+        },
+        "reconciliacao": recon,
+        "op_ids": [op.get("id") for op in ops],
+        "slot_ids": [slot.get("id") for slot in slots],
+        "event_ids": [event.get("id") for event in events],
+        "observacoes": data.observacoes,
+        "metadata": data.metadata or {},
+        "idempotency_key": idempotency_key or None,
+        "snapshot_version": 1,
+        "created_at": now,
+        "updated_at": now,
+        "created_by": user.get("id", ""),
+        "created_by_name": user.get("name", ""),
+    }
+    if existing and data.force_recalculate:
+        closing["id"] = existing["id"]
+        closing["created_at"] = existing.get("created_at", now)
+        closing["created_by"] = existing.get("created_by", user.get("id", ""))
+        closing["created_by_name"] = existing.get("created_by_name", user.get("name", ""))
+        await db.pcp_day_closings.update_one(
+            {"id": existing["id"], "tenant_id": tid},
+            {"$set": {key: value for key, value in closing.items() if key not in {"id", "tenant_id", "created_at", "created_by", "created_by_name"}}},
+        )
+        return await db.pcp_day_closings.find_one({"id": existing["id"], "tenant_id": tid}, {"_id": 0})
+
+    await db.pcp_day_closings.insert_one(closing)
+    closing.pop("_id", None)
+    return closing
 
 
 # ========== ALERTAS PCP ==========

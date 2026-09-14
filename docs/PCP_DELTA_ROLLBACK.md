@@ -302,3 +302,28 @@ Rollback de codigo:
 - remover modelos/helpers/rotas D48 policy de `backend/pd_routes.py`;
 - voltar `assert_d48h_stability_ok` para exigencia fixa;
 - remover testes D48 policy adicionados em `backend/tests/test_pd_pipeline_auto_sync.py`.
+
+## Slice 15 - `pcp_timeline_eta_v2`
+
+Rollback operacional:
+
+1. Desligar `tenant_settings.features.pcp_timeline_eta_v2`.
+2. Parar de chamar `/api/pcp/ops/{op_id}/timeline-events`.
+3. Parar de chamar `/api/pcp/ops/{op_id}/timeline`.
+4. Parar de chamar `/api/pcp/ops/{op_id}/eta`.
+5. Parar de chamar `/api/pcp/day-closings`.
+6. Continuar usando programacao PCP, historico, apontamentos, pausas, perdas, WMS e confirmacao PCP atuais.
+
+Dados opcionais que podem permanecer:
+- eventos em `production_order_events` com `event_type` de timeline;
+- `idempotency_key` dos eventos;
+- documentos em `pcp_day_closings`;
+- snapshots `kpis`, `reconciliacao`, `op_ids`, `slot_ids` e `event_ids`.
+
+Nao ha migration destrutiva. Desligar a flag bloqueia novas leituras/escritas da fatia e preserva os fluxos PCP
+existentes. Fechamentos diarios sao snapshots e nao removem nem substituem os documentos operacionais de origem.
+
+Rollback de codigo:
+- remover modelos/helpers/rotas timeline/ETA/fechamento de `backend/pcp_routes.py`;
+- remover indices `production_order_events`/`pcp_day_closings` adicionados em `backend/server.py`;
+- remover `backend/tests/test_pcp_timeline_eta_unit.py`.

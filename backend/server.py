@@ -2249,6 +2249,18 @@ async def startup():
     await db.audit_logs.create_index([("tenant_id", 1), ("entity_type", 1), ("entity_id", 1)])
     await db.audit_logs.create_index([("tenant_id", 1), ("user_id", 1)])
     await db.audit_logs.create_index([("tenant_id", 1), ("action", 1)])
+    await db.production_order_events.create_index([("tenant_id", 1), ("op_id", 1), ("created_at", -1)])
+    await db.production_order_events.create_index(
+        [("tenant_id", 1), ("op_id", 1), ("idempotency_key", 1)],
+        unique=True,
+        partialFilterExpression={"idempotency_key": {"$type": "string"}},
+    )
+    await db.pcp_day_closings.create_index([("tenant_id", 1), ("data", -1), ("turno", 1)])
+    await db.pcp_day_closings.create_index(
+        [("tenant_id", 1), ("idempotency_key", 1)],
+        unique=True,
+        partialFilterExpression={"idempotency_key": {"$type": "string"}},
+    )
 
     # Estoque indexes
     await db.estoque_items.create_index([("tenant_id", 1), ("setor", 1)])

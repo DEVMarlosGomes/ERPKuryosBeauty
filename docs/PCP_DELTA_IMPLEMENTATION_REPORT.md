@@ -496,3 +496,39 @@ gravando snapshot auditavel da regra aplicada.
   - Resultado: `17 passed`.
 - `pytest backend/tests`
   - Resultado: `140 passed, 278 skipped`.
+
+## Slice 15 - PCP timeline, setup real, ETA e fechamento diario
+
+Classificacao do checkpoint: `MISSING`.
+
+Objetivo: validar a camada add-only para eventos operacionais de timeline, timeline consolidada por OP/item/alocacao,
+ETA operacional e fechamento diario com KPIs/reconciliacao, sem alterar status, endpoints ou telas existentes.
+
+## O que foi coberto
+
+- Feature flag `pcp_timeline_eta_v2`, lida de `tenant_settings.features`.
+- Rota add-only `POST /api/pcp/ops/{op_id}/timeline-events`.
+- Rota add-only `GET /api/pcp/ops/{op_id}/timeline`.
+- Rota add-only `GET /api/pcp/ops/{op_id}/eta`.
+- Rota add-only `GET /api/pcp/day-closings`.
+- Rota add-only `POST /api/pcp/day-closings`.
+- Registro idempotente de evento real de setup em `production_order_events`.
+- Timeline agregando OP, item comercial, alocacao PCP, slots, eventos, apontamentos, perdas, pausas e separacao WMS.
+- ETA considerando quantidade planejada/produzida, ritmo recente, pausas e setup.
+- Fechamento diario como snapshot com KPIs, perdas, paradas, setup e reconciliacao.
+
+## Preservado
+
+- Status de OP, slot, lote e pedido nao sao alterados por criar evento de timeline.
+- `ops.apontamentos`, `ops.perdas` e `ops.pausas` continuam sendo fontes operacionais existentes.
+- `pcp_programacao`, `historico`, WMS e confirmacao PCP continuam com seus contratos atuais.
+- Nenhum endpoint existente foi substituido.
+
+## Testes atualizados
+
+- `pytest -q backend/tests/test_pcp_timeline_eta_unit.py`
+  - Resultado: `5 passed`.
+- `pytest backend/tests/test_pcp_timeline_eta_unit.py backend/tests/test_pcp_alerts_unit.py backend/tests/test_pcp_allocations_unit.py backend/tests/test_pcp_routes_unit.py backend/tests/test_pd_pipeline_auto_sync.py backend/tests/test_formula_client_links_unit.py backend/tests/test_card_governance_unit.py backend/tests/test_commercial_packages_unit.py backend/tests/test_order_generator_unit.py backend/tests/test_unified_attachments_unit.py backend/tests/test_wms_recebimento_unit.py`
+  - Resultado: `86 passed`.
+- `pytest backend/tests`
+  - Resultado: `145 passed, 278 skipped`.

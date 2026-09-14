@@ -725,3 +725,101 @@ Quando a entrega ao Comercial e avaliada, os caminhos existentes gravam snapshot
 - `d48_policy_source`;
 - `d48_gate_checked_at`;
 - `d48_gate_satisfied_at` ou `d48_gate_skipped_at`.
+
+## Slice 15 - PCP timeline, setup real, ETA e fechamento diario
+
+Rotas add-only ativadas por `tenant_settings.features.pcp_timeline_eta_v2`.
+
+## `POST /api/pcp/ops/{op_id}/timeline-events`
+
+Registra eventos operacionais de timeline da OP sem alterar o status da OP, do slot ou do pedido.
+
+Payload:
+
+```json
+{
+  "event_type": "setup_start",
+  "started_at": "2026-09-11T07:00:00+00:00",
+  "ended_at": null,
+  "duration_minutes": null,
+  "quantity": null,
+  "reason": "Troca de produto",
+  "note": "Setup validado na linha",
+  "setup_type": "assepsia",
+  "idempotency_key": "setup-op-1-0700",
+  "metadata": {}
+}
+```
+
+Eventos permitidos:
+- `setup_start`
+- `setup_end`
+- `pause_start`
+- `pause_end`
+- `checkpoint`
+- `loss`
+- `reconciliation`
+- `manual_note`
+
+Regras:
+- exige OP do mesmo tenant;
+- exige feature flag ligada;
+- `idempotency_key`, quando informada, reutiliza o evento existente;
+- grava em `production_order_events`;
+- nao substitui apontamentos, pausas, perdas ou transicoes existentes.
+
+## `GET /api/pcp/ops/{op_id}/timeline`
+
+Retorna uma timeline agregada da OP com contexto de item/saldo/alocacao.
+
+Fontes agregadas:
+- `ops`;
+- `orders.items`;
+- `pcp_allocations`;
+- `pcp_programacao`;
+- `production_order_events`;
+- `ops.apontamentos`;
+- `ops.perdas`;
+- `ops.pausas`;
+- `wms_separacoes`, quando existir.
+
+## `GET /api/pcp/ops/{op_id}/eta`
+
+Calcula ETA operacional da OP considerando quantidade planejada, quantidade produzida, ritmo recente, setup e paradas.
+
+Parametro opcional:
+- `now`: timestamp ISO para calculo deterministico em testes/rotinas.
+
+## `GET /api/pcp/day-closings`
+
+Lista fechamentos diarios PCP.
+
+Filtros opcionais:
+- `data_inicio`;
+- `data_fim`;
+- `turno`;
+- `limit`.
+
+## `POST /api/pcp/day-closings`
+
+Cria snapshot de fechamento diario com KPIs, perdas, paradas, setup e reconciliacao.
+
+Payload:
+
+```json
+{
+  "data": "2026-09-11",
+  "turno": "manha",
+  "observacoes": "Fechamento do primeiro turno",
+  "idempotency_key": "closing-2026-09-11-manha",
+  "force_recalculate": false,
+  "metadata": {}
+}
+```
+
+Regras:
+- `turno` usa os turnos PCP existentes;
+- sem `turno`, assume `integral`;
+- reutiliza fechamento existente por `idempotency_key`;
+- reutiliza fechamento existente por data/turno quando `force_recalculate=false`;
+- com `force_recalculate=true`, recalcula snapshot preservando o mesmo registro.

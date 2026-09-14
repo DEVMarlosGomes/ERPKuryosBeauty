@@ -567,3 +567,80 @@ Compatibilidade:
 - override por card/requisicao e opcional e nao remove o gate global;
 - snapshot e auditoria historica da decisao aplicada, nao substitui leituras em `pd_stability_studies`;
 - quando `require_d48=false`, a entrega e liberada com `d48_gate_skipped_at` para rastreabilidade.
+
+## Campos opcionais PCP timeline/ETA
+
+Feature flag em `tenant_settings.features`:
+
+```text
+pcp_timeline_eta_v2
+```
+
+Eventos add-only em `production_order_events`:
+
+```text
+id
+tenant_id
+op_id
+op_numero
+sales_order_id
+allocation_id
+event_type
+action
+started_at
+ended_at
+duration_minutes
+payload.quantity
+payload.reason
+payload.note
+payload.setup_type
+payload.metadata
+idempotency_key
+created_at
+created_by
+created_by_name
+```
+
+Nova colecao `pcp_day_closings`:
+
+```text
+id
+tenant_id
+data
+turno
+status
+kpis.ops_movimentadas
+kpis.ops_concluidas
+kpis.slots_planejados
+kpis.slots_concluidos
+kpis.qtd_produzida
+kpis.qtd_perdas
+kpis.perda_pct
+kpis.paradas_minutos
+kpis.setup_minutos
+kpis.divergencias_reconciliacao
+reconciliacao[]
+op_ids[]
+slot_ids[]
+event_ids[]
+observacoes
+metadata
+idempotency_key
+snapshot_version
+created_at
+updated_at
+created_by
+created_by_name
+```
+
+Indices candidatos:
+- `production_order_events(tenant_id, op_id, created_at)`;
+- `production_order_events(tenant_id, op_id, idempotency_key)` parcial para chaves string;
+- `pcp_day_closings(tenant_id, data, turno)`;
+- `pcp_day_closings(tenant_id, idempotency_key)` parcial para chaves string.
+
+Compatibilidade:
+- eventos novos nao substituem `ops.apontamentos`, `ops.perdas` ou `ops.pausas`;
+- timeline e ETA sao leituras agregadas e nao alteram status de OP, slot, lote ou pedido;
+- fechamentos diarios sao snapshots auditaveis e podem ser recalculados sem apagar historico operacional de origem;
+- documentos antigos sem eventos continuam validos e retornam ETA por ritmo geral quando houver apontamento.
