@@ -75,10 +75,50 @@ EMPRESA_KURYOS = {
     "foro": "Comarca de Sao Paulo/SP",
 }
 
+QUESTIONARIO_COMPOSICAO_VERSION = "questionario_composicao_projeto_2"
+
+QUESTIONARIO_BLOCO2_COMPONENTS = [
+    ("frasco_pote_bisnaga", "Frasco / pote / bisnaga"),
+    ("airless_rollon_ampola", "Airless / roll-on / ampola"),
+    ("tampa", "Tampa (rosca / flip-top / pressao)"),
+    ("valvula_pump", "Valvula pump / bomba dosadora"),
+    ("valvula_spray", "Valvula spray / atomizador"),
+    ("valvula_aerossol_atuador", "Valvula aerossol + atuador"),
+    ("gatilho_trigger", "Gatilho / trigger"),
+    ("batoque_redutor_orificio", "Batoque / redutor / orificio"),
+    ("lacre_inducao_disco", "Lacre de inducao / disco de vedacao"),
+    ("aplicador", "Aplicador (pincel / espatula / esponja)"),
+]
+
+QUESTIONARIO_BLOCO3_COMPONENTS = [
+    ("rotulo", "Rotulo (frontal / contra)"),
+    ("cartucho", "Cartucho"),
+    ("bula_folheto", "Bula / folheto"),
+    ("selo_lacre_seguranca", "Selo / lacre de seguranca"),
+    ("celofane_shrink", "Celofane / shrink"),
+    ("berco_suporte_interno", "Berco / suporte interno"),
+]
+
+QUESTIONARIO_BLOCO4_COMPONENTS = [
+    ("display_expositor_pdv", "Display / expositor de PDV"),
+    ("caixa_master", "Caixa de embarque (master)"),
+    ("divisoria_colmeia", "Divisoria / separador / colmeia"),
+    ("cantoneira", "Cantoneira"),
+    ("paletizacao", "Especificacao de paletizacao"),
+]
+
 
 class KickoffCreateInput(BaseModel):
     projeto_id: str
     formula_id: Optional[str] = None
+
+
+class KickoffQuestionarioInput(BaseModel):
+    questionario: Dict[str, Any] = Field(default_factory=dict)
+
+
+class KickoffDeleteInput(BaseModel):
+    motivo: str = ""
 
 
 class KickoffBloco2Input(BaseModel):
@@ -217,6 +257,252 @@ def _clone_value(value: Any) -> Any:
     return value
 
 
+def _first_value(*values: Any) -> Any:
+    for value in values:
+        if value not in (None, "", [], {}):
+            return value
+    return ""
+
+
+def _as_text(value: Any) -> str:
+    if value in (None, "", [], {}):
+        return ""
+    return str(value)
+
+
+def _map_questionario_categoria(value: Any) -> str:
+    mapping = {
+        "capilares": "capilar",
+        "capilar": "capilar",
+        "skin_care": "skin_care",
+        "skincare": "skin_care",
+        "skin_care_dermocosmeticos": "skin_care",
+        "perfumaria": "perfumaria",
+        "maquiagem": "maquiagem",
+        "home_care": "home_care",
+    }
+    key = str(value or "").strip().lower()
+    return mapping.get(key, key)
+
+
+def _map_questionario_modelo_servico(value: Any) -> str:
+    mapping = {
+        "formula_do_cliente": "industrializacao_pura",
+        "co_desenvolvimento": "industrializacao_com_desenvolvimento",
+        "full_service": "full_service_marca_propria",
+        "full_service_kuryos": "full_service_marca_propria",
+        "full_service_marca_propria": "full_service_marca_propria",
+    }
+    key = str(value or "").strip().lower()
+    return mapping.get(key, key)
+
+
+def _to_float_or_none(value: Any) -> Optional[float]:
+    if value in (None, ""):
+        return None
+    try:
+        text = str(value).replace(".", "").replace(",", ".") if isinstance(value, str) else value
+        return float(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def _component_rows(rows: List[Tuple[str, str]], *, has_art: bool = False) -> List[Dict[str, Any]]:
+    result = []
+    for row_id, label in rows:
+        row = {
+            "id": row_id,
+            "componente": label,
+            "aplicavel": "",
+            "definido": "",
+            "fornecido_por": "",
+            "observacoes": "",
+        }
+        if has_art:
+            row["arte_cria_aprova"] = ""
+            row["arte_aprovada"] = ""
+        else:
+            row["especificacao_fornecedor_codigo"] = ""
+        result.append(row)
+    return result
+
+
+def _questionario_template() -> Dict[str, Any]:
+    return {
+        "schema_version": QUESTIONARIO_COMPOSICAO_VERSION,
+        "bloco0": {
+            "cliente": "",
+            "nome_produto": "",
+            "categoria": "",
+            "categoria_outro": "",
+            "forma_fisica": "",
+            "forma_fisica_outro": "",
+            "volume_gramatura": "",
+            "numero_skus_variacoes": "",
+            "varia_entre_skus": [],
+            "varia_entre_skus_outro": "",
+            "unidades_por_display": "",
+            "displays_ou_unidades_por_caixa_master": "",
+            "registro_notificacao_anvisa": "",
+            "detentor_registro": "",
+            "responsavel_tecnico": "",
+            "modelo_servico": "",
+        },
+        "bloco1": {
+            "formula": "",
+            "cliente_fornece": [],
+            "tem_cor": "",
+            "tem_brilho_mica_glitter": "",
+            "viscosidade": "",
+            "densidade": "",
+            "fragrancia_essencia": "",
+            "compra_fragrancia_por": "",
+            "observacoes_formulacao": "",
+        },
+        "bloco2": {"componentes": _component_rows(QUESTIONARIO_BLOCO2_COMPONENTS)},
+        "bloco3": {"componentes": _component_rows(QUESTIONARIO_BLOCO3_COMPONENTS, has_art=True)},
+        "bloco4": {"componentes": _component_rows(QUESTIONARIO_BLOCO4_COMPONENTS)},
+        "bloco5": {
+            "especificacoes_cq_componentes": "",
+            "especificacoes_cq_anexos": [],
+            "testes_aprovacoes_obrigatorios": "",
+            "amostra_referencia_fornecida_cliente": "",
+        },
+        "fechamento": {
+            "data_prevista_inicio_producao": "",
+            "volume_primeiro_lote": "",
+            "responsavel_kuryos": "",
+            "responsavel_cliente": "",
+            "data_preenchimento": "",
+        },
+        "autopopulated_from": [],
+    }
+
+
+def _merge_questionario(base: Dict[str, Any], incoming: Dict[str, Any]) -> Dict[str, Any]:
+    merged = _clone_value(base)
+    incoming = incoming or {}
+    for key, value in incoming.items():
+        if key in ("bloco2", "bloco3", "bloco4") and isinstance(value, dict):
+            current = merged.setdefault(key, {})
+            if "componentes" in value and isinstance(value["componentes"], list):
+                current["componentes"] = [_clone_value(item) for item in value["componentes"]]
+            for sub_key, sub_value in value.items():
+                if sub_key != "componentes":
+                    current[sub_key] = _clone_value(sub_value)
+        elif isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = {**merged[key], **_clone_value(value)}
+        else:
+            merged[key] = _clone_value(value)
+    merged["schema_version"] = QUESTIONARIO_COMPOSICAO_VERSION
+    return merged
+
+
+async def _find_project_proposta(project_id: str, tenant_id: str) -> Dict[str, Any]:
+    collection = getattr(db, "propostas_comerciais", None)
+    if not collection:
+        return {}
+    doc = await collection.find_one({"projeto_id": project_id, "tenant_id": tenant_id}, {"_id": 0})
+    return doc or {}
+
+
+async def _find_project_samples(project_id: str, tenant_id: str) -> List[Dict[str, Any]]:
+    collection = getattr(db, "crm_samples", None)
+    if not collection:
+        return []
+    cursor = collection.find({"projeto_id": project_id, "tenant_id": tenant_id}, {"_id": 0})
+    return await cursor.to_list(500)
+
+
+def _approved_variations(samples: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    approved = []
+    for sample in samples:
+        for variation in sample.get("variacoes", []) or []:
+            if variation.get("resultado") == "aprovada" or variation.get("status") == "aprovada" or variation.get("aprovacao_externa"):
+                approved.append({"sample": sample, "variation": variation})
+    return approved
+
+
+def _formula_fragrance_text(formula_items: List[Dict[str, Any]]) -> str:
+    fragrances = []
+    for item in formula_items:
+        blob = " ".join(str(item.get(key, "")) for key in ("ingredient_name", "phase", "function")).lower()
+        if "fragr" in blob or "essenc" in blob:
+            fragrances.append(item.get("ingredient_name", ""))
+    return ", ".join(item for item in fragrances if item)
+
+
+async def _build_questionario_composicao(project: dict, client: dict, formula_ctx: dict, auto_block: Dict[str, Any]) -> Dict[str, Any]:
+    questionario = _questionario_template()
+    tenant_id = project["tenant_id"]
+    proposta = await _find_project_proposta(project["id"], tenant_id)
+    samples = await _find_project_samples(project["id"], tenant_id)
+    approved = _approved_variations(samples)
+    formula = formula_ctx.get("formula") or {}
+    formula_items = []
+    if formula.get("id") and getattr(db, "pd_formula_items", None):
+        formula_items = await db.pd_formula_items.find({"formula_id": formula["id"]}, {"_id": 0}).to_list(1000)
+
+    first_item = (proposta.get("items_pedido") or [{}])[0] if proposta.get("items_pedido") else {}
+    first_sample = samples[0] if samples else {}
+    first_variation = (approved[0]["variation"] if approved else ((first_sample.get("variacoes") or [{}])[0] if first_sample.get("variacoes") else {}))
+    contato = client.get("contato_principal") or {}
+
+    formula_volume = ""
+    if formula.get("volume") not in (None, ""):
+        formula_volume = f"{formula.get('volume')} {formula.get('volume_unit', '')}".strip()
+
+    source = []
+    for label, condition in (
+        ("crm_projects", bool(project)),
+        ("crm_clients", bool(client)),
+        ("propostas_comerciais", bool(proposta)),
+        ("crm_samples", bool(samples)),
+        ("pd_formulas", bool(formula)),
+    ):
+        if condition:
+            source.append(label)
+
+    questionario["bloco0"].update({
+        "cliente": _first_value(project.get("cliente_nome"), client.get("nome_empresa")),
+        "nome_produto": _first_value(proposta.get("tipo_produto"), first_item.get("item"), first_sample.get("nome_produto"), project.get("nome_projeto")),
+        "categoria": _map_questionario_categoria(_first_value(project.get("categoria"), first_sample.get("categoria"))),
+        "forma_fisica": _first_value(first_sample.get("textura_esperada"), project.get("forma_fisica")),
+        "volume_gramatura": _first_value(first_item.get("volume_gramatura"), formula_volume, project.get("volume_gramatura")),
+        "numero_skus_variacoes": _as_text(_first_value(len(proposta.get("items_pedido") or []) or "", len(approved) or "", project.get("numero_skus_variacoes"))),
+        "varia_entre_skus": [first_sample.get("parametro_variacao")] if first_sample.get("parametro_variacao") else [],
+        "displays_ou_unidades_por_caixa_master": _as_text(first_item.get("quantidade_por_caixa", "")),
+        "registro_notificacao_anvisa": _first_value(project.get("registro_notificacao_anvisa"), client.get("tem_anvisa"), "a_providenciar"),
+        "detentor_registro": _first_value(project.get("detentor_registro"), client.get("nome_empresa")),
+        "responsavel_tecnico": _first_value(project.get("responsavel_tecnico"), client.get("responsavel_tecnico")),
+        "modelo_servico": _map_questionario_modelo_servico(_first_value(project.get("tipo_servico"), proposta.get("modelo_servico"))),
+    })
+    questionario["bloco1"].update({
+        "formula": "desenvolvida_kuryos" if formula.get("id") else _first_value(project.get("formula_origem"), ""),
+        "cliente_fornece": ["formula_documento"] if project.get("tipo_servico") == "formula_do_cliente" else [],
+        "tem_cor": "sim" if first_variation.get("cor") else "",
+        "viscosidade": _first_value(first_sample.get("viscosidade"), project.get("viscosidade")),
+        "densidade": _first_value(first_sample.get("densidade"), project.get("densidade")),
+        "fragrancia_essencia": _first_value(_formula_fragrance_text(formula_items), first_variation.get("referencia_fragrancia")),
+        "compra_fragrancia_por": _first_value(first_variation.get("compra_fragrancia_por"), "kuryos" if _formula_fragrance_text(formula_items) else ""),
+        "observacoes_formulacao": _first_value(formula.get("notes"), first_sample.get("observacao_tecnica"), proposta.get("observacoes_proposta")),
+    })
+    questionario["bloco5"].update({
+        "especificacoes_cq_componentes": _first_value(project.get("especificacoes_cq_componentes"), first_sample.get("observacao_tecnica")),
+        "testes_aprovacoes_obrigatorios": _first_value(project.get("testes_aprovacoes_obrigatorios"), ""),
+        "amostra_referencia_fornecida_cliente": "sim" if samples else "",
+    })
+    questionario["fechamento"].update({
+        "data_prevista_inicio_producao": _first_value(project.get("data_prevista_inicio_producao"), first_item.get("prazo_entrega")),
+        "volume_primeiro_lote": _as_text(_first_value(first_item.get("qtd"), proposta.get("volume_primeiro_lote"), project.get("volume_estimado_pedido"))),
+        "responsavel_kuryos": _first_value(project.get("responsavel_comercial"), auto_block.get("responsavel_comercial")),
+        "responsavel_cliente": _first_value(contato.get("nome"), client.get("responsavel_cliente")),
+        "data_preenchimento": now_iso()[:10],
+    })
+    questionario["autopopulated_from"] = source
+    return questionario
+
+
 def _version_code(number: int) -> str:
     return f"v{number}"
 
@@ -264,6 +550,125 @@ def _has_values(data: Dict[str, Any]) -> bool:
         if value not in (None, "", [], {}):
             return True
     return False
+
+
+def _row_ready(row: Dict[str, Any], *, has_art: bool = False) -> bool:
+    aplicavel = row.get("aplicavel")
+    if aplicavel in (None, ""):
+        return False
+    if str(aplicavel).lower() in {"nao", "false", "0"}:
+        return True
+    required = ["definido", "fornecido_por", "arte_cria_aprova" if has_art else "especificacao_fornecedor_codigo"]
+    if has_art:
+        required.append("arte_aprovada")
+    return all(row.get(field) not in (None, "", [], {}) for field in required)
+
+
+def _questionario_section_ready(questionario: Dict[str, Any], section: str) -> Tuple[bool, List[str]]:
+    data = questionario.get(section) or {}
+    missing: List[str] = []
+    required_by_section = {
+        "bloco0": ["cliente", "nome_produto", "categoria", "forma_fisica", "volume_gramatura", "numero_skus_variacoes", "modelo_servico"],
+        "bloco1": ["formula", "cliente_fornece", "tem_cor", "tem_brilho_mica_glitter", "viscosidade", "densidade", "compra_fragrancia_por"],
+        "bloco5": ["especificacoes_cq_componentes", "testes_aprovacoes_obrigatorios", "amostra_referencia_fornecida_cliente"],
+        "fechamento": ["data_prevista_inicio_producao", "volume_primeiro_lote", "responsavel_kuryos", "responsavel_cliente", "data_preenchimento"],
+    }
+    for field in required_by_section.get(section, []):
+        if data.get(field) in (None, "", [], {}):
+            missing.append(field)
+    if section in {"bloco2", "bloco3", "bloco4"}:
+        has_art = section == "bloco3"
+        for index, row in enumerate(data.get("componentes") or []):
+            if not _row_ready(row, has_art=has_art):
+                missing.append(f"componentes[{index}]")
+    return len(missing) == 0, missing
+
+
+def _questionario_ready(questionario: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
+    sections = ["bloco0", "bloco1", "bloco2", "bloco3", "bloco4", "bloco5", "fechamento"]
+    status = {}
+    for section in sections:
+        ok, missing = _questionario_section_ready(questionario, section)
+        status[section] = {"completo": ok, "campos_pendentes": missing}
+    return all(item["completo"] for item in status.values()), status
+
+
+def _find_component(questionario: Dict[str, Any], section: str, component_id: str) -> Dict[str, Any]:
+    for row in (questionario.get(section) or {}).get("componentes") or []:
+        if row.get("id") == component_id:
+            return row
+    return {}
+
+
+def _component_answered(row: Dict[str, Any]) -> bool:
+    return any(
+        value not in (None, "", [], {})
+        for key, value in row.items()
+        if key not in {"id", "componente"}
+    )
+
+
+def _legacy_blocks_from_questionario(questionario: Dict[str, Any], kickoff: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    bloco0 = questionario.get("bloco0") or {}
+    bloco1 = questionario.get("bloco1") or {}
+    bloco5 = questionario.get("bloco5") or {}
+    fechamento = questionario.get("fechamento") or {}
+    old2 = kickoff.get("bloco2") or {}
+    old3 = kickoff.get("bloco3") or {}
+    old4 = kickoff.get("bloco4") or {}
+
+    primary_candidate = _find_component(questionario, "bloco2", "frasco_pote_bisnaga")
+    tampa_candidate = _find_component(questionario, "bloco2", "tampa")
+    rotulo_candidate = _find_component(questionario, "bloco3", "rotulo")
+    caixa_candidate = _find_component(questionario, "bloco4", "caixa_master")
+    palete_candidate = _find_component(questionario, "bloco4", "paletizacao")
+    primary = primary_candidate if _component_answered(primary_candidate) else {}
+    tampa = tampa_candidate if _component_answered(tampa_candidate) else {}
+    rotulo = rotulo_candidate if _component_answered(rotulo_candidate) else {}
+    caixa = caixa_candidate if _component_answered(caixa_candidate) else {}
+    palete = palete_candidate if _component_answered(palete_candidate) else {}
+
+    bloco2 = {
+        **old2,
+        "volume_primeiro_pedido": _to_float_or_none(fechamento.get("volume_primeiro_lote")) or old2.get("volume_primeiro_pedido"),
+        "unidade_venda": _first_value(bloco0.get("volume_gramatura"), old2.get("unidade_venda")),
+        "quantidade_por_caixa": _to_float_or_none(bloco0.get("displays_ou_unidades_por_caixa_master")) or old2.get("quantidade_por_caixa"),
+        "data_entrega_contratada": _first_value(fechamento.get("data_prevista_inicio_producao"), old2.get("data_entrega_contratada")),
+        "condicao_pagamento": _first_value(old2.get("condicao_pagamento"), "a_definir"),
+        "preco_venda_cliente_rs_un": _first_value(old2.get("preco_venda_cliente_rs_un"), 0),
+        "observacoes_comerciais": _first_value(old2.get("observacoes_comerciais"), bloco5.get("testes_aprovacoes_obrigatorios")),
+    }
+    bloco3 = {
+        **old3,
+        "nome_tecnico_produto": _first_value(bloco0.get("nome_produto"), old3.get("nome_tecnico_produto")),
+        "nome_comercial_cliente": _first_value(bloco0.get("nome_produto"), old3.get("nome_comercial_cliente")),
+        "categoria_anvisa": _first_value(bloco0.get("categoria"), old3.get("categoria_anvisa")),
+        "tipo_produto": _first_value(bloco0.get("categoria"), old3.get("tipo_produto")),
+        "forma_apresentacao": _first_value(bloco0.get("forma_fisica"), old3.get("forma_apresentacao")),
+        "volume_peso_liquido_valor": _to_float_or_none(bloco0.get("volume_gramatura")) or old3.get("volume_peso_liquido_valor"),
+        "aspecto_visual": _first_value(old3.get("aspecto_visual"), bloco0.get("forma_fisica")),
+        "cor_descricao": _first_value(old3.get("cor_descricao"), bloco1.get("tem_cor")),
+        "odor": _first_value(old3.get("odor"), bloco1.get("fragrancia_essencia")),
+        "registro_anvisa_numero": _first_value(old3.get("registro_anvisa_numero"), bloco0.get("registro_notificacao_anvisa")),
+        "analises_obrigatorias_por_lote": old3.get("analises_obrigatorias_por_lote") or ([bloco5.get("testes_aprovacoes_obrigatorios")] if bloco5.get("testes_aprovacoes_obrigatorios") else []),
+        "plano_amostragem": _first_value(old3.get("plano_amostragem"), bloco5.get("especificacoes_cq_componentes")),
+        "responsavel_liberacao_lote": _first_value(old3.get("responsavel_liberacao_lote"), fechamento.get("responsavel_kuryos")),
+    }
+    bloco4 = {
+        **old4,
+        "embalagem_primaria_tipo": _first_value(primary.get("componente"), old4.get("embalagem_primaria_tipo")),
+        "embalagem_primaria_material": _first_value(primary.get("especificacao_fornecedor_codigo"), old4.get("embalagem_primaria_material")),
+        "embalagem_primaria_fornecedor_id": _first_value(primary.get("fornecido_por"), old4.get("embalagem_primaria_fornecedor_id")),
+        "fechamento_tipo": _first_value(tampa.get("componente"), old4.get("fechamento_tipo")),
+        "fechamento_fornecedor_id": _first_value(tampa.get("fornecido_por"), old4.get("fechamento_fornecedor_id")),
+        "caixa_master_tipo": _first_value(caixa.get("especificacao_fornecedor_codigo"), caixa.get("componente"), old4.get("caixa_master_tipo")),
+        "caixa_master_unidades": _to_float_or_none(bloco0.get("displays_ou_unidades_por_caixa_master")) or old4.get("caixa_master_unidades"),
+        "configuracao_palete": _first_value(palete.get("especificacao_fornecedor_codigo"), old4.get("configuracao_palete")),
+        "tipo_rotulagem": _first_value(rotulo.get("componente"), old4.get("tipo_rotulagem")),
+        "rotulo_fornecedor_id": _first_value(rotulo.get("fornecido_por"), old4.get("rotulo_fornecedor_id")),
+        "rotulo_arte_aprovador": _first_value(rotulo.get("arte_cria_aprova"), old4.get("rotulo_arte_aprovador")),
+    }
+    return {"bloco2": bloco2, "bloco3": bloco3, "bloco4": bloco4}
 
 
 def _block2_ready(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
@@ -900,6 +1305,22 @@ async def _ensure_mutable_version(kickoff: dict, user: dict, reason: str) -> dic
 
 async def _decorate_kickoff(kickoff: dict) -> dict:
     kickoff = await _refresh_bom(kickoff)
+    questionario = kickoff.get("questionario_composicao") or {}
+    if questionario:
+        q_ok, q_status = _questionario_ready(questionario)
+        complete_count = sum(1 for item in q_status.values() if item["completo"])
+        current_step = _current_approval_step(kickoff)
+        kickoff["progress"] = {
+            "questionario_composicao": q_ok,
+            "percentual": round((complete_count / max(len(q_status), 1)) * 100),
+        }
+        kickoff["locks"] = {
+            "questionario_composicao": None,
+            "aprovacao": None if q_ok else "Aprovacao liberada somente apos concluir o questionario de composicao.",
+        }
+        kickoff["blocos_status"] = q_status
+        kickoff["aprovacao_pendente"] = current_step
+        return kickoff
     block2_ok, block2_missing = _block2_ready(kickoff.get("bloco2") or {})
     block3_ok, block3_missing = _block3_ready(kickoff.get("bloco3") or {})
     block4_ok, block4_missing = _block4_ready(kickoff.get("bloco4") or {})
@@ -927,6 +1348,16 @@ async def _decorate_kickoff(kickoff: dict) -> dict:
 
 
 async def _validate_kickoff_ready_for_approval(kickoff: dict):
+    questionario = kickoff.get("questionario_composicao") or {}
+    if questionario:
+        q_ok, q_status = _questionario_ready(questionario)
+        if not q_ok:
+            missing = []
+            for section, info in q_status.items():
+                if not info["completo"]:
+                    missing.append(f"{section}: {', '.join(info['campos_pendentes'])}")
+            raise HTTPException(status_code=400, detail=f"Questionario incompleto: {'; '.join(missing)}")
+        return
     block2_ok, block2_missing = _block2_ready(kickoff.get("bloco2") or {})
     block3_ok, block3_missing = _block3_ready(kickoff.get("bloco3") or {})
     block4_ok, block4_missing = _block4_ready(kickoff.get("bloco4") or {})
@@ -992,6 +1423,8 @@ async def create_kickoff_for_project(project_id: str, user: dict, explicit_formu
 
     formula_ctx = await _resolve_registered_formula_for_project(project_id, user["tenant_id"], explicit_formula_id)
     auto_block = await _build_kickoff_auto_block(project, client, formula_ctx)
+    questionario = await _build_questionario_composicao(project, client, formula_ctx, auto_block)
+    legacy_blocks = _legacy_blocks_from_questionario(questionario, {"bloco2": {}, "bloco3": {}, "bloco4": {}})
     group_id = new_id()
     kickoff = {
         "id": new_id(),
@@ -1006,9 +1439,11 @@ async def create_kickoff_for_project(project_id: str, user: dict, explicit_formu
         "versao_numero": auto_block["versao_numero"],
         "status": auto_block["status"],
         "bloco1": auto_block,
-        "bloco2": {},
-        "bloco3": {},
-        "bloco4": {},
+        "bloco2": legacy_blocks["bloco2"],
+        "bloco3": legacy_blocks["bloco3"],
+        "bloco4": legacy_blocks["bloco4"],
+        "questionario_composicao": questionario,
+        "questionario_composicao_version": QUESTIONARIO_COMPOSICAO_VERSION,
         "bom": [],
         "aprovacoes": _approval_template(),
         "log_auditoria": [],
@@ -1101,6 +1536,154 @@ async def list_kickoffs(
             }
         )
     return filtered
+
+
+@kickoff_router.put("/kickoff/{kickoff_id}/questionario-composicao")
+async def update_kickoff_questionario(kickoff_id: str, data: KickoffQuestionarioInput, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, {"admin", "sales_ops", "vendedor", "lider_pd", "formulador", "engenharia_produto", "qa"})
+    kickoff = await _get_kickoff_or_404(kickoff_id, user["tenant_id"])
+    _validate_kickoff_editable(kickoff)
+    kickoff = await _ensure_mutable_version(kickoff, user, "Alteracao no questionario de composicao apos aprovacao")
+
+    existing = kickoff.get("questionario_composicao") or _questionario_template()
+    merged = _merge_questionario(existing, data.questionario or {})
+    legacy_blocks = _legacy_blocks_from_questionario(merged, kickoff)
+    complete, _ = _questionario_ready(merged)
+
+    new_status = kickoff.get("status", "em_preenchimento")
+    if complete and new_status in {"em_preenchimento", "em_revisao"}:
+        new_status = "aguardando_aprovacao"
+    elif not complete and new_status == "aguardando_aprovacao":
+        new_status = "em_preenchimento"
+
+    changes = _diff_entries("questionario_composicao", existing, merged, user)
+    await db.kickoffs.update_one(
+        {"id": kickoff["id"], "tenant_id": kickoff["tenant_id"]},
+        {
+            "$set": {
+                "questionario_composicao": merged,
+                "questionario_composicao_version": QUESTIONARIO_COMPOSICAO_VERSION,
+                "bloco2": legacy_blocks["bloco2"],
+                "bloco3": legacy_blocks["bloco3"],
+                "bloco4": legacy_blocks["bloco4"],
+                "status": new_status,
+                "updated_at": now_iso(),
+            },
+            "$push": {"log_auditoria": {"$each": changes}},
+        },
+    )
+    updated = await _get_kickoff_or_404(kickoff["id"], user["tenant_id"])
+    if complete:
+        await _enqueue_approval_task(updated, user, "lider_pd")
+    await _sync_project_kickoff_summary(updated)
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="kickoff_questionario_composicao_updated",
+        entity_type="kickoff",
+        entity_id=updated["id"],
+        before=existing,
+        after=merged,
+        metadata={"complete": complete, "schema_version": QUESTIONARIO_COMPOSICAO_VERSION},
+    )
+    return await _decorate_kickoff(updated)
+
+
+@kickoff_router.delete("/kickoff/{kickoff_id}")
+async def archive_kickoff(kickoff_id: str, data: KickoffDeleteInput, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, {"admin", "sales_ops", "vendedor"})
+    kickoff = await _get_kickoff_or_404(kickoff_id, user["tenant_id"])
+    if kickoff.get("status") == "arquivado":
+        return await _decorate_kickoff(kickoff)
+    now = now_iso()
+    await db.kickoffs.update_one(
+        {"id": kickoff_id, "tenant_id": user["tenant_id"]},
+        {
+            "$set": {
+                "status": "arquivado",
+                "archived_at": now,
+                "archived_by": user["id"],
+                "archived_by_name": user.get("name", ""),
+                "archive_reason": data.motivo or "",
+                "updated_at": now,
+            },
+            "$push": {
+                "log_auditoria": {
+                    "campo": "status",
+                    "valor_anterior": kickoff.get("status"),
+                    "valor_novo": "arquivado",
+                    "usuario_id": user["id"],
+                    "usuario_nome": user.get("name", ""),
+                    "datetime": now,
+                    "motivo": data.motivo or "",
+                }
+            },
+        },
+    )
+    updated = await _get_kickoff_or_404(kickoff_id, user["tenant_id"])
+    await _sync_project_kickoff_summary(updated)
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="kickoff_archived",
+        entity_type="kickoff",
+        entity_id=kickoff_id,
+        before={"status": kickoff.get("status")},
+        after={"status": "arquivado", "motivo": data.motivo or ""},
+    )
+    return await _decorate_kickoff(updated)
+
+
+@kickoff_router.post("/kickoff/{kickoff_id}/restore")
+async def restore_kickoff(kickoff_id: str, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, {"admin", "sales_ops", "vendedor"})
+    kickoff = await _get_kickoff_or_404(kickoff_id, user["tenant_id"])
+    if kickoff.get("status") != "arquivado":
+        return await _decorate_kickoff(kickoff)
+    now = now_iso()
+    questionario = kickoff.get("questionario_composicao") or {}
+    complete, _ = _questionario_ready(questionario) if questionario else (False, {})
+    restored_status = "aguardando_aprovacao" if complete else "em_preenchimento"
+    await db.kickoffs.update_one(
+        {"id": kickoff_id, "tenant_id": user["tenant_id"]},
+        {
+            "$set": {
+                "status": restored_status,
+                "restored_at": now,
+                "restored_by": user["id"],
+                "restored_by_name": user.get("name", ""),
+                "updated_at": now,
+            },
+            "$push": {
+                "log_auditoria": {
+                    "campo": "status",
+                    "valor_anterior": "arquivado",
+                    "valor_novo": restored_status,
+                    "usuario_id": user["id"],
+                    "usuario_nome": user.get("name", ""),
+                    "datetime": now,
+                }
+            },
+        },
+    )
+    updated = await _get_kickoff_or_404(kickoff_id, user["tenant_id"])
+    await _sync_project_kickoff_summary(updated)
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="kickoff_restored",
+        entity_type="kickoff",
+        entity_id=kickoff_id,
+        before={"status": "arquivado"},
+        after={"status": restored_status},
+    )
+    return await _decorate_kickoff(updated)
 
 
 @kickoff_router.put("/kickoff/{kickoff_id}/bloco2")

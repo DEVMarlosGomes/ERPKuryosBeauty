@@ -855,3 +855,44 @@ Compatibilidade:
 - cotacao e orcamento completo continuam usando `propostas_comerciais`, sem collection paralela;
 - a movimentacao para etapa comercial pode espelhar o cliente para `negociacao`, preservando o comportamento atual de CRM1;
 - `pedido_aprovado` permanece como etapa posterior com gates operacionais ja existentes.
+
+## Contrato Kickoff questionario de composicao de projeto
+
+Campos opcionais adicionados em `kickoffs`:
+
+```text
+questionario_composicao_version
+questionario_composicao.schema_version
+questionario_composicao.bloco0
+questionario_composicao.bloco1
+questionario_composicao.bloco2.componentes[]
+questionario_composicao.bloco3.componentes[]
+questionario_composicao.bloco4.componentes[]
+questionario_composicao.bloco5
+questionario_composicao.fechamento
+questionario_composicao.autopopulated_from[]
+archived_at
+archived_by
+archived_by_name
+archive_reason
+restored_at
+restored_by
+restored_by_name
+```
+
+Fonte de autopreenchimento:
+
+```text
+crm_projects
+crm_clients
+propostas_comerciais
+crm_samples
+pd_formulas
+pd_formula_items
+```
+
+Compatibilidade:
+- `bloco1`, `bloco2`, `bloco3`, `bloco4`, `bom`, `aprovacoes` e `log_auditoria` permanecem;
+- o questionario sincroniza campos essenciais para os blocos legados sem apagar campos ja existentes;
+- exclusao e restauracao sao logicas e auditaveis;
+- nao ha migration obrigatoria para kickoffs antigos, pois a UI deriva um questionario inicial dos blocos existentes.

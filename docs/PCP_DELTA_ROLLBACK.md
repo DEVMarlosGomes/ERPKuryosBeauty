@@ -428,3 +428,27 @@ Rollback de codigo:
 - remover os asserts de cobertura em `backend/tests/test_crm_pd_stage_sync_unit.py`;
 - remover a cobertura de movimento real adicionada em `backend/tests/test_crm_p0_unit.py`;
 - remover as secoes Slice 19 dos documentos `PCP_DELTA_*`.
+
+## Slice 20 - Kickoff questionario de composicao de projeto
+
+Rollback operacional:
+
+1. Continuar usando os blocos antigos do Kickoff (`bloco2`, `bloco3`, `bloco4`) e aprovacao sequencial.
+2. Ignorar `questionario_composicao` em kickoffs ja salvos.
+3. Para kickoffs arquivados por engano, usar `POST /api/kickoff/{kickoff_id}/restore`.
+
+Dados opcionais que podem permanecer:
+- `kickoffs.questionario_composicao`;
+- `kickoffs.questionario_composicao_version`;
+- campos de arquivamento/restauracao (`archived_at`, `archive_reason`, `restored_at`);
+- entradas de `log_auditoria` e `audit_logs`.
+
+Rollback de codigo:
+- remover helpers/modelos de questionario em `backend/kickoff_routes.py`;
+- remover `PUT /api/kickoff/{kickoff_id}/questionario-composicao`;
+- remover `DELETE /api/kickoff/{kickoff_id}` e `POST /api/kickoff/{kickoff_id}/restore` se a exclusao logica nao for mantida;
+- restaurar a tela anterior de `frontend/src/pages/KickoffPage.js`;
+- remover `frontend/src/components/KickoffCompositionQuestionnaire.js`;
+- remover o status `arquivado` da listagem se a UI nao for manter restauracao;
+- remover `backend/tests/test_kickoff_questionario_composicao_unit.py`;
+- remover as secoes Slice 20 dos documentos `PCP_DELTA_*`.

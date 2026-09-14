@@ -686,3 +686,41 @@ endpoints, status legados, collections ou fluxos existentes.
   - Resultado: `15 passed`.
 - `DISABLE_ESLINT_PLUGIN=true GENERATE_SOURCEMAP=false yarn build`
   - Resultado: `Compiled successfully`.
+
+## Slice 20 - Kickoff questionario de composicao de projeto
+
+Classificacao do checkpoint: `PARTIAL_SAFE_EXTEND`.
+
+Objetivo: alterar o modulo Kickoff para operar pelo questionario `Questionario_Composicao_Projeto_2.docx`, com
+campos auto-populados do sistema, editaveis e excluiveis, preservando o fluxo atual apos negociacao/pedido aprovado.
+
+## O que foi coberto
+
+- Modelo `questionario_composicao` com Bloco 0, Bloco 1, Bloco 2, Bloco 3, Bloco 4, Bloco 5 e Fechamento.
+- Tabelas exatamente alinhadas ao documento para embalagem primaria, secundaria/comunicacao e terciaria/logistica.
+- Autopreenchimento na criacao do Kickoff a partir de projeto, cliente, proposta comercial, amostras e formula.
+- Tela principal de Kickoff substituida pelo questionario de composicao.
+- Campos editaveis e removiveis nas tabelas de componentes, com restauracao das linhas padrao do documento.
+- Rota add-only para salvar/substituir o questionario completo.
+- Exclusao logica (`arquivado`) e restauracao de Kickoff.
+- Sincronizacao de campos essenciais para os blocos legados, preservando BOM, aprovacao e contratos.
+
+## Preservado
+
+- `POST /api/kickoff` continua criando Kickoff somente apos `pedido_aprovado`.
+- Endpoints antigos `/bloco2`, `/bloco3`, `/bloco4`, `/bom`, `/bom/export` e `/aprovacao` permanecem.
+- `kickoffs` continua sendo a collection principal.
+- Aprovacao sequencial e auditoria existente continuam ativas.
+
+## Testes atualizados
+
+- `pytest -q backend/tests/test_kickoff_questionario_composicao_unit.py`
+  - Resultado: `4 passed`.
+- `pytest -q backend/tests/test_kickoff_questionario_composicao_unit.py backend/tests/test_contratos_cgi_unit.py backend/tests/test_crm_pd_stage_sync_unit.py backend/tests/test_crm_p0_unit.py`
+  - Resultado: `18 passed`.
+- `pytest backend/tests`
+  - Resultado: `167 passed, 278 skipped`.
+- `python -m py_compile backend/kickoff_routes.py`
+  - Resultado: sem erros.
+- `DISABLE_ESLINT_PLUGIN=true GENERATE_SOURCEMAP=false yarn build`
+  - Resultado: `Compiled successfully`.

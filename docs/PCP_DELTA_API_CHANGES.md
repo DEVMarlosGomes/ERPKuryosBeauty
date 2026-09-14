@@ -1006,3 +1006,44 @@ Regras de contrato:
 - `pedido_aprovado` preserva os gates ja existentes de formula registrada, SKU e kickoff.
 - a UI de CRM2/Projetos abre `cotacao` na aba comercial e `orcamento_completo` na aba de pedido/fabricacao do
   modal existente de proposta.
+
+## Slice 20 - Kickoff questionario de composicao de projeto
+
+Implementacao add-only do questionario `Questionario_Composicao_Projeto_2.docx` como tela principal do Kickoff,
+preservando os endpoints antigos de blocos/aprovacao/BOM.
+
+Endpoints novos:
+
+```text
+PUT /api/kickoff/{kickoff_id}/questionario-composicao
+DELETE /api/kickoff/{kickoff_id}
+POST /api/kickoff/{kickoff_id}/restore
+```
+
+Contrato de `PUT /api/kickoff/{kickoff_id}/questionario-composicao`:
+
+```json
+{
+  "questionario": {
+    "schema_version": "questionario_composicao_projeto_2",
+    "bloco0": {},
+    "bloco1": {},
+    "bloco2": { "componentes": [] },
+    "bloco3": { "componentes": [] },
+    "bloco4": { "componentes": [] },
+    "bloco5": {},
+    "fechamento": {}
+  }
+}
+```
+
+Regras de contrato:
+
+- `POST /api/kickoff` passa a auto-popular `questionario_composicao` com dados de projeto, cliente, proposta,
+  amostras e formula quando existirem;
+- o questionario completo fica editavel via rota propria e sincroniza campos essenciais para `bloco2`, `bloco3` e
+  `bloco4`, mantendo BOM/aprovacao/contratos compativeis;
+- `DELETE /api/kickoff/{kickoff_id}` e exclusao logica: status `arquivado`, sem remover documento;
+- `POST /api/kickoff/{kickoff_id}/restore` restaura para `em_preenchimento` ou `aguardando_aprovacao`, conforme
+  completude do questionario;
+- rotas antigas `/bloco2`, `/bloco3`, `/bloco4`, `/bom`, `/bom/export` e `/aprovacao` continuam preservadas.

@@ -23,8 +23,10 @@ Testes:
 - Backend focado expedicao parcial comercial: `4 passed`.
 - Backend focado expedicao parcial/PCP/faturamento: `28 passed`.
 - Backend focado CRM2 cotacao/orcamento completo: `15 passed`.
+- Backend focado Kickoff questionario composicao: `4 passed`.
+- Backend focado Kickoff/CRM/contratos: `18 passed`.
 - Backend focado PCP/regressao DELTA: `86 passed`.
-- Backend completo: `162 passed, 278 skipped`.
+- Backend completo: `167 passed, 278 skipped`.
 - Frontend build: `Compiled successfully`.
 
 Arquivos alterados:
@@ -36,8 +38,10 @@ Arquivos alterados:
 - `backend/crm_routes.py`
 - `backend/pd_routes.py`
 - `backend/server.py`
+- `backend/kickoff_routes.py`
 - `backend/tests/test_card_governance_unit.py`
 - `backend/tests/test_crm_p0_unit.py`
+- `backend/tests/test_kickoff_questionario_composicao_unit.py`
 - `backend/tests/test_formula_client_links_unit.py`
 - `backend/tests/test_pd_pipeline_auto_sync.py`
 - `backend/tests/test_unified_attachments_unit.py`
@@ -52,9 +56,12 @@ Arquivos alterados:
 - `backend/tests/test_wms_recebimento_unit.py`
 - `frontend/src/App.js`
 - `frontend/src/components/DynamicSidebar.js`
+- `frontend/src/components/KickoffCompositionQuestionnaire.js`
 - `frontend/src/components/PropostaPedidoModal.js`
 - `frontend/src/pages/CommercialBudgetPage.js`
 - `frontend/src/pages/CRM2Page.js`
+- `frontend/src/pages/KickoffPage.js`
+- `frontend/src/pages/KickoffsListPage.js`
 - `frontend/src/pages/OPDetail.js`
 - `frontend/src/pages/ExpedicaoPage.js`
 - `frontend/src/pages/PCPQuantityPlanningPage.js`
@@ -84,3 +91,4 @@ Slices cobertos:
 - Slice 17: quarentena fisica WMS configuravel, movimentos auditaveis e separacao entre localizacao fisica e CQ logico.
 - Slice 18: expedicao parcial comercial por item, saldo produzido expedivel e snapshot NF/frete/aditivo/cancelamento.
 - Slice 19: CRM2 com etapas `cotacao` e `orcamento_completo` operacionais no kanban/orcamentos, usando proposta existente sem duplicar backend.
+- Slice 20: Kickoff alterado para questionario de composicao do projeto, auto-populado, editavel, removivel e com exclusao logica.
