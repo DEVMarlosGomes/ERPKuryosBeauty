@@ -60,6 +60,7 @@ from produtos_routes import produtos_router, init_produtos, create_produtos_inde
 from cadastros_master_routes import cadastros_master_router, init_cadastros_master, create_cadastros_master_indexes
 from propostas_routes import propostas_router, init_propostas
 from requirements_routes import requirements_router, init_requirements, create_requirements_indexes
+from rh_routes import rh_router, init_rh
 from workflow_engine import init_workflow, run_workflow_notification_scheduler
 from workflow_routes import workflow_router, init_workflow_routes
 from rbac import (
@@ -2239,6 +2240,7 @@ async def startup():
     init_propostas(db, get_current_user, new_id, now_iso)
     init_requirements(db, get_current_user)
     await create_requirements_indexes()
+    init_rh(db, get_current_user, new_id, now_iso)
 
     # Workflow indexes
     await db.workflow_tasks.create_index([("tenant_id", 1), ("entity_type", 1), ("entity_id", 1)])
@@ -2377,6 +2379,7 @@ app.include_router(produtos_router)
 app.include_router(cadastros_master_router)
 app.include_router(propostas_router)
 app.include_router(requirements_router)
+app.include_router(rh_router)
 
 @app.websocket("/api/ws")
 async def websocket_endpoint(websocket: WebSocket):

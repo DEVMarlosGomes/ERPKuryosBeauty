@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
 const PipelinePage = lazy(() => import("@/pages/PipelinePage"));
 const TeamPage = lazy(() => import("@/pages/TeamPage"));
+const RHPage = lazy(() => import("@/pages/RHPage"));
 const PDPage = lazy(() => import("@/pages/PDPage"));
 const PDDetail = lazy(() => import("@/pages/PDDetail"));
 const PDCatalog = lazy(() => import("@/pages/PDCatalog"));
@@ -62,6 +63,7 @@ const LogisticaPage = lazy(() => import("@/pages/LogisticaPage"));
 const LogisticaAgendamentosPage = lazy(() => import("@/pages/LogisticaAgendamentosPage"));
 const PCPDailyDashboard = lazy(() => import("@/pages/PCPDailyDashboard"));
 const PCPClonePage = lazy(() => import("@/pages/PCPClonePage"));
+const PCPLegacyClonePage = lazy(() => import("@/pages/PCPLegacyClonePage"));
 const PCPProductionPage = lazy(() => import("@/pages/PCPProductionPage"));
 const PCPQuantityPlanningPage = lazy(() => import("@/pages/PCPQuantityPlanningPage"));
 const ContratosPage = lazy(() => import("@/pages/ContratosPage"));
@@ -114,6 +116,7 @@ function AppLayout() {
     const KICKOFF_ROLES = [...new Set([...COMERCIAL, ...PD_FULL])];
     const CQ_ROLES = ["admin", "qa", "lider_pd", "formulador", "engenharia_produto", "compras", "sales_ops"];
     const COMPRAS_ROLES = ["admin", "compras", "engenharia_produto", "lider_pd", "qa", "sales_ops"];
+    const PCP_ROLES = ["admin", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor", "sales_ops"];
     const CONTRATOS_ROLES = ["admin", "sales_ops", "vendedor", "compras", "lider_pd", "qa", "engenharia_produto", "sucesso_cliente"];
     const CADASTROS_ROLES = ["admin", "vendedor", "sales_ops", "sucesso_cliente", "lider_pd", "formulador", "qa", "engenharia_produto", "compras", "gestor"];
 
@@ -152,25 +155,36 @@ function AppLayout() {
                         <Route path="/ops" element={<OPPage />} />
                         <Route path="/ops/:id" element={<OPDetail />} />
                         <Route path="/pcp/dashboard" element={<PCPDailyDashboard />} />
-                        <Route path="/pcp/historico" element={<PCPClonePage mode="historico" />} />
+                        <Route path="/pcp/historico" element={<PCPLegacyClonePage mode="historico" />} />
                         <Route path="/pcp/planejamento/quantidades" element={<PCPQuantityPlanningPage />} />
-                        <Route path="/pcp/planejamento" element={<PCPClonePage mode="planejamento" />} />
+                        <Route path="/pcp/planejamento" element={<PCPLegacyClonePage mode="planejamento" />} />
+                        <Route path="/pcp/ajustes" element={<PCPLegacyClonePage mode="ajustes" />} />
+                        <Route path="/pcp/pedidos" element={<OrdersPage />} />
                         <Route path="/pcp/horizonte" element={<PCPClonePage mode="horizonte" />} />
-                        <Route path="/pcp/controle-ops" element={<PCPClonePage mode="controle" />} />
-                        <Route path="/pcp/emitir-op" element={<PCPClonePage mode="emitir-op" />} />
-                        <Route path="/pcp/matriz-insumos" element={<PCPClonePage mode="matriz" />} />
+                        <Route path="/pcp/controle-ops" element={<PCPLegacyClonePage mode="controle" />} />
+                        <Route path="/pcp/emitir-op" element={<PCPLegacyClonePage mode="emitir-op" />} />
+                        <Route path="/pcp/matriz-insumos" element={<PCPLegacyClonePage mode="matriz" />} />
                         <Route path="/pcp/produtos" element={<Navigate to="/cadastros" replace />} />
                         <Route path="/pcp/insumos" element={<Navigate to="/pcp/matriz-insumos" replace />} />
                         <Route path="/pcp/apontamento" element={<Navigate to="/pcp/apontamento/envase" replace />} />
                         <Route path="/pcp/apontamento/:setor" element={<PCPProductionPage />} />
-                        <Route path="/pcp" element={<Navigate to="/pcp/dashboard" replace />} />
+                        <Route path="/pcp" element={<Navigate to="/pcp/planejamento" replace />} />
+                        <Route path="/planejamento.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="planejamento" /></RoleGuard>} />
+                        <Route path="/ops.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="controle" /></RoleGuard>} />
+                        <Route path="/emitir_op.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="emitir-op" /></RoleGuard>} />
+                        <Route path="/pedidos.html" element={<OrdersPage />} />
+                        <Route path="/insumos.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="matriz" /></RoleGuard>} />
+                        <Route path="/admin.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="ajustes" /></RoleGuard>} />
+                        <Route path="/historico.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="historico" /></RoleGuard>} />
+                        <Route path="/form.html" element={<RoleGuard allowed={PCP_ROLES}><PCPLegacyClonePage mode="registro" /></RoleGuard>} />
                         <Route path="/cadastros" element={<RoleGuard allowed={CADASTROS_ROLES}><CadastrosPage /></RoleGuard>} />
                         <Route path="/logistica" element={<LogisticaPage />} />
                         <Route path="/logistica/agendamentos" element={<LogisticaAgendamentosPage />} />
                         <Route path="/expedicao" element={<ExpedicaoPage />} />
                         <Route path="/faturamento" element={<FaturamentoPage />} />
-                        <Route path="/rh" element={<RoleGuard allowed={ADMIN_ONLY}><TeamPage /></RoleGuard>} />
+                        <Route path="/rh" element={<RoleGuard allowed={ADMIN_ONLY}><RHPage /></RoleGuard>} />
                         <Route path="/compras" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasDashboard /></RoleGuard>} />
+                        <Route path="/compras.html" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasDashboard /></RoleGuard>} />
                         <Route path="/compras/fornecedores" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasFornecedores /></RoleGuard>} />
                         <Route path="/compras/fornecedores/:id" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasFornecedorDetalhe /></RoleGuard>} />
                         <Route path="/compras/itens" element={<RoleGuard allowed={COMPRAS_ROLES}><ComprasItens /></RoleGuard>} />
