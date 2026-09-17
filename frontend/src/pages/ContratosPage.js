@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -8,13 +9,34 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { BACKEND_URL } from "@/lib/backend";
 import {
   FileText, Plus, Loader2, Download, Search, X, RefreshCw,
-  Building2, CheckCircle2, Calendar, ExternalLink
+  Building2, CheckCircle2, Calendar, PenLine, ShoppingCart
 } from "lucide-react";
+
+const CONTRACT_STATUS = {
+  gerado: { label: "Gerado — aguardando assinatura", className: "bg-amber-100 text-amber-800 border-amber-200" },
+  enviado: { label: "Enviado — aguardando assinatura", className: "bg-blue-100 text-blue-700 border-blue-200" },
+  assinado: { label: "Assinado", className: "bg-green-100 text-green-700 border-green-200" },
+  vigente: { label: "Vigente", className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+};
+
+function ContractStatusBadge({ contrato }) {
+  const status = contrato?.status || "gerado";
+  const config = CONTRACT_STATUS[status] || { label: status, className: "bg-muted text-muted-foreground border-border" };
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border ${config.className}`}>
+      <CheckCircle2 className="h-3 w-3" />{config.label}
+    </span>
+  );
+}
 
 function formatDate(iso) {
   if (!iso) return "—";
@@ -204,11 +226,41 @@ function useDownloadContrato(contrato) {
   return { downloading, handleDownload };
 }
 
-function ContratoDetailModal({ contrato, onClose }) {
+function ContratoDetailModal({ contrato, onClose, canSign, onSigned }) {
+  const navigate = useNavigate();
   const { downloading, handleDownload } = useDownloadContrato(contrato || {});
+  const [signing, setSigning] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [completion, setCompletion] = useState(null);
   if (!contrato) return null;
   const c = contrato.contratante || {};
   const f = contrato.fabricante || {};
+  const needsSignature = ["gerado", "enviado"].includes(contrato.status || "gerado");
+  const canRetrySku = ["assinado", "vigente"].includes(contrato.status) && contrato.pedido_liberado_para_emissao !== true;
+
+  const handleSign = async () => {
+    setSigning(true);
+    try {
+      const { data } = await api.post(`/contratos/${contrato.id}/assinar`, {
+        observacoes: needsSignature ? "Assinatura confirmada no módulo de Contratos" : "Reprocessamento de SKU solicitado no módulo de Contratos",
+      });
+      const codes = (data.skus_gerados || [])
+        .map(item => item.sku?.codigo_interno)
+        .filter(Boolean);
+      if (data.pedido_liberado_para_emissao) {
+        setCompletion({ ...data, skuCodes: codes });
+      } else {
+        const reason = (data.sku_bloqueios || []).join(" | ") || "Não foi possível gerar o SKU.";
+        toast.error(`CGI assinado, mas o pedido não foi liberado: ${reason}`);
+      }
+      onSigned(data);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Erro ao assinar CGI e gerar SKU");
+    } finally {
+      setSigning(false);
+    }
+  };
+
   return (
     <Dialog open={!!contrato} onOpenChange={(v) => { if (!v) onClose(); }}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -218,13 +270,17 @@ function ContratoDetailModal({ contrato, onClose }) {
             {contrato.numero_contrato}
           </DialogTitle>
           <DialogDescription className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 border border-green-200">
-              <CheckCircle2 className="h-3 w-3" />gerado
-            </span>
+            <ContractStatusBadge contrato={contrato} />
             <span className="text-xs text-muted-foreground">Kickoff: {contrato.numero_kickoff} · v{contrato.kickoff_versao}</span>
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-5">
+          {contrato.status === "assinado" && contrato.pedido_liberado_para_emissao && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300">
+              <p className="font-semibold">CGI assinado e SKU gerado com sucesso.</p>
+              <p className="mt-0.5 text-xs">O pedido está liberado para seguir ao PCP.</p>
+            </div>
+          )}
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Contratante</p>
             <div className="grid grid-cols-2 gap-2 text-sm">
@@ -268,11 +324,72 @@ function ContratoDetailModal({ contrato, onClose }) {
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" onClick={onClose}>Fechar</Button>
+          {canSign && (needsSignature || canRetrySku) && (
+            <Button onClick={() => setConfirmOpen(true)} disabled={signing} className="gap-1.5 bg-green-600 hover:bg-green-700">
+              {signing ? <Loader2 className="h-4 w-4 animate-spin" /> : <PenLine className="h-4 w-4" />}
+              {needsSignature ? "Assinar CGI e gerar SKU" : "Reprocessar SKU"}
+            </Button>
+          )}
           <Button onClick={handleDownload} disabled={downloading} className="gap-1.5">
             {downloading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Baixar PDF
           </Button>
         </div>
+
+        <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{needsSignature ? "Assinar CGI e gerar SKU?" : "Reprocessar geração do SKU?"}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {needsSignature
+                  ? "Ao confirmar, o CGI será marcado como assinado, o SKU será gerado e vinculado ao pedido para liberação ao PCP."
+                  : "O sistema tentará gerar e vincular novamente o SKU pendente ao pedido."}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={signing}>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleSign} disabled={signing} className="bg-green-600 hover:bg-green-700">
+                {needsSignature ? "Confirmar assinatura" : "Reprocessar SKU"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <Dialog open={!!completion} onOpenChange={(open) => { if (!open) setCompletion(null); }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-emerald-700">
+                <CheckCircle2 className="h-6 w-6" />
+                CGI assinado e SKU gerado
+              </DialogTitle>
+              <DialogDescription>
+                O SKU foi vinculado ao pedido, que já está liberado para prosseguir ao PCP.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-900 dark:bg-emerald-950/30">
+              <p className="text-xs font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-400">SKU gerado</p>
+              <p className="mt-1 font-mono text-base font-semibold text-emerald-900 dark:text-emerald-200">
+                {completion?.skuCodes?.join(", ") || "SKU vinculado"}
+              </p>
+              {completion?.numero_pedido && <p className="mt-2 text-sm">Pedido: <strong>{completion.numero_pedido}</strong></p>}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCompletion(null)}>Permanecer aqui</Button>
+              <Button
+                className="gap-2 bg-emerald-600 hover:bg-emerald-700"
+                disabled={!completion?.pedido_id}
+                onClick={() => {
+                  const pedidoId = completion?.pedido_id;
+                  setCompletion(null);
+                  onClose();
+                  if (pedidoId) navigate(`/orders/${pedidoId}`);
+                }}
+              >
+                <ShoppingCart className="h-4 w-4" />Prosseguir para pedido
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
@@ -291,9 +408,7 @@ function ContratoCard({ contrato, onClick }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold">{contrato.numero_contrato}</span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700 border border-green-200">
-                <CheckCircle2 className="h-3 w-3" />gerado
-              </span>
+              <ContractStatusBadge contrato={contrato} />
             </div>
             <p className="text-sm text-muted-foreground mt-0.5 truncate">
               Kickoff: {contrato.numero_kickoff} · v{contrato.kickoff_versao}
@@ -401,7 +516,16 @@ export default function ContratosPage() {
       )}
 
       <GenerateDialog open={generateOpen} onClose={() => setGenerateOpen(false)} onGenerated={fetchContratos} />
-      <ContratoDetailModal contrato={selectedContrato} onClose={() => setSelectedContrato(null)} />
+      <ContratoDetailModal
+        contrato={selectedContrato}
+        canSign={canGenerate}
+        onClose={() => setSelectedContrato(null)}
+        onSigned={(updated) => {
+          setSelectedContrato(updated);
+          setContratos(current => current.map(item => item.id === updated.id ? updated : item));
+          fetchContratos();
+        }}
+      />
     </div>
   );
 }

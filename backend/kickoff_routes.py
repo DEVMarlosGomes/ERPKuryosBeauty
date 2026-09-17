@@ -400,7 +400,7 @@ def _merge_questionario(base: Dict[str, Any], incoming: Dict[str, Any]) -> Dict[
 
 async def _find_project_proposta(project_id: str, tenant_id: str) -> Dict[str, Any]:
     collection = getattr(db, "propostas_comerciais", None)
-    if not collection:
+    if collection is None:
         return {}
     doc = await collection.find_one({"projeto_id": project_id, "tenant_id": tenant_id}, {"_id": 0})
     return doc or {}
@@ -408,7 +408,7 @@ async def _find_project_proposta(project_id: str, tenant_id: str) -> Dict[str, A
 
 async def _find_project_samples(project_id: str, tenant_id: str) -> List[Dict[str, Any]]:
     collection = getattr(db, "crm_samples", None)
-    if not collection:
+    if collection is None:
         return []
     cursor = collection.find({"projeto_id": project_id, "tenant_id": tenant_id}, {"_id": 0})
     return await cursor.to_list(500)
@@ -440,7 +440,7 @@ async def _build_questionario_composicao(project: dict, client: dict, formula_ct
     approved = _approved_variations(samples)
     formula = formula_ctx.get("formula") or {}
     formula_items = []
-    if formula.get("id") and getattr(db, "pd_formula_items", None):
+    if formula.get("id") and getattr(db, "pd_formula_items", None) is not None:
         formula_items = await db.pd_formula_items.find({"formula_id": formula["id"]}, {"_id": 0}).to_list(1000)
 
     first_item = (proposta.get("items_pedido") or [{}])[0] if proposta.get("items_pedido") else {}
@@ -723,21 +723,27 @@ async def _get_user_for_roles(tenant_id: str, roles: List[str]) -> Optional[Dict
     return None
 
 
-async def _find_formula_context(formula_id: str, tenant_id: str) -> Optional[Dict[str, Any]]:
-    formula = await db.pd_formulas.find_one({"id": formula_id, "tenant_id": tenant_id}, {"_id": 0})
+async def _find_formula_context(
+    formula_id: str,
+    tenant_id: str,
+    *,
+    database=None,
+) -> Optional[Dict[str, Any]]:
+    source_db = database if database is not None else db
+    formula = await source_db.pd_formulas.find_one({"id": formula_id, "tenant_id": tenant_id}, {"_id": 0})
     if not formula:
         return None
-    development = await db.pd_developments.find_one(
+    development = await source_db.pd_developments.find_one(
         {"id": formula.get("development_id"), "tenant_id": tenant_id},
         {"_id": 0},
     )
     if not development:
         return None
-    pd_request = await db.pd_requests.find_one(
+    pd_request = await source_db.pd_requests.find_one(
         {"id": development.get("pd_request_id"), "tenant_id": tenant_id},
         {"_id": 0},
     )
-    approval = await db.pd_approvals.find_one(
+    approval = await source_db.pd_approvals.find_one(
         {"development_id": development["id"]},
         {"_id": 0},
     )
@@ -749,13 +755,20 @@ async def _find_formula_context(formula_id: str, tenant_id: str) -> Optional[Dic
     }
 
 
-async def _resolve_registered_formula_for_project(project_id: str, tenant_id: str, explicit_formula_id: Optional[str] = None) -> Dict[str, Any]:
-    project = await db.crm_projects.find_one({"id": project_id, "tenant_id": tenant_id}, {"_id": 0})
+async def _resolve_registered_formula_for_project(
+    project_id: str,
+    tenant_id: str,
+    explicit_formula_id: Optional[str] = None,
+    *,
+    database=None,
+) -> Dict[str, Any]:
+    source_db = database if database is not None else db
+    project = await source_db.crm_projects.find_one({"id": project_id, "tenant_id": tenant_id}, {"_id": 0})
     if not project:
         raise HTTPException(status_code=404, detail="Projeto nao encontrado")
 
     if explicit_formula_id:
-        ctx = await _find_formula_context(explicit_formula_id, tenant_id)
+        ctx = await _find_formula_context(explicit_formula_id, tenant_id, database=source_db)
         if not ctx:
             raise HTTPException(status_code=404, detail="Formula nao encontrada")
         pd_request = ctx.get("pd_request") or {}
@@ -766,7 +779,7 @@ async def _resolve_registered_formula_for_project(project_id: str, tenant_id: st
             raise HTTPException(status_code=400, detail="A formula informada ainda nao esta registrada no Banco P&D.")
         return {"project": project, **ctx}
 
-    requests_docs = await db.pd_requests.find(
+    requests_docs = await source_db.pd_requests.find(
         {"tenant_id": tenant_id, "linked_projeto_id": project_id},
         {"_id": 0},
     ).to_list(500)
@@ -777,7 +790,7 @@ async def _resolve_registered_formula_for_project(project_id: str, tenant_id: st
         )
 
     req_map = {req["id"]: req for req in requests_docs if req.get("id")}
-    devs = await db.pd_developments.find(
+    devs = await source_db.pd_developments.find(
         {"tenant_id": tenant_id, "pd_request_id": {"$in": list(req_map.keys())}},
         {"_id": 0},
     ).to_list(500)
@@ -788,13 +801,13 @@ async def _resolve_registered_formula_for_project(project_id: str, tenant_id: st
         )
 
     dev_map = {dev["id"]: dev for dev in devs if dev.get("id")}
-    approvals = await db.pd_approvals.find(
+    approvals = await source_db.pd_approvals.find(
         {"development_id": {"$in": list(dev_map.keys())}},
         {"_id": 0},
     ).to_list(500)
     approvals_map = {doc["development_id"]: doc for doc in approvals if doc.get("development_id")}
 
-    formulas = await db.pd_formulas.find(
+    formulas = await source_db.pd_formulas.find(
         {"tenant_id": tenant_id, "development_id": {"$in": list(dev_map.keys())}},
         {"_id": 0},
     ).sort([("version", -1), ("created_at", -1)]).to_list(1000)
@@ -1456,6 +1469,9 @@ async def create_kickoff_for_project(project_id: str, user: dict, explicit_formu
         "approved_by_name": "",
     }
     await db.kickoffs.insert_one(kickoff)
+    # O driver adiciona `_id` (ObjectId) ao proprio dicionario inserido. Esse
+    # detalhe interno nao pode vazar para respostas JSON do FastAPI.
+    kickoff.pop("_id", None)
     await _sync_project_kickoff_summary(kickoff)
     await _enqueue_block_tasks_after_create(kickoff, user)
     await audit_log(

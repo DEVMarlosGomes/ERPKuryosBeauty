@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { formatApiError } from "@/lib/formatError";
 import {
   ArrowDown,
   ArrowRight,
@@ -335,7 +336,7 @@ export default function OrdersPage() {
       toast.success("Prioridades atualizadas");
       await fetchOrders();
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao salvar prioridades");
+      toast.error(formatApiError(err) || "Erro ao salvar prioridades");
     } finally {
       setSavingPriority(false);
     }
@@ -370,7 +371,7 @@ export default function OrdersPage() {
       toast.success(`OP ${res.data.numero_op} enviada ao PCP`);
       await fetchOrders();
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao gerar OP");
+      toast.error(formatApiError(err) || "Erro ao gerar OP");
     } finally {
       setCreatingOpId("");
     }

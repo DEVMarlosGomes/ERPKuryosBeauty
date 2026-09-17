@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
+import { formatApiError } from "@/lib/formatError";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -195,7 +196,7 @@ export default function OrderDetail() {
       setJustificativa("");
       toast.success("Pedido atualizado!");
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao salvar");
+      toast.error(formatApiError(err) || "Erro ao salvar");
     } finally {
       setSaving(false);
     }
@@ -213,7 +214,7 @@ export default function OrderDetail() {
       setShowReproduzir(false);
       navigate(`/orders/${res.data.order.id}`);
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao reproduzir pedido");
+      toast.error(formatApiError(err) || "Erro ao reproduzir pedido");
     } finally {
       setReproducaoLoading(false);
     }
@@ -226,7 +227,7 @@ export default function OrderDetail() {
       setForm(deepClone(res.data));
       toast.success("Status atualizado!");
     } catch (err) {
-      toast.error("Erro ao alterar status");
+      toast.error(formatApiError(err) || "Erro ao alterar status");
     }
   };
 
@@ -262,7 +263,7 @@ export default function OrderDetail() {
       toast.success("Anexo enviado");
       fetchOrder();
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao enviar anexo");
+      toast.error(formatApiError(err) || "Erro ao enviar anexo");
     } finally {
       setUploadingAttachment(false);
     }
@@ -291,7 +292,7 @@ export default function OrderDetail() {
       setForm(deepClone(res.data));
       toast.success("CGI assinado com sucesso!");
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao assinar CGI");
+      toast.error(formatApiError(err) || "Erro ao assinar CGI");
     }
   };
 
@@ -301,7 +302,7 @@ export default function OrderDetail() {
       setOrder(res.data); setForm(deepClone(res.data));
       toast.success("Aprovação do cliente registrada");
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro");
+      toast.error(formatApiError(err) || "Erro");
     }
   };
 
@@ -311,7 +312,7 @@ export default function OrderDetail() {
       setOrder(res.data); setForm(deepClone(res.data));
       toast.success("Solicitacao de confirmacao enviada ao cliente");
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao solicitar confirmacao");
+      toast.error(formatApiError(err) || "Erro ao solicitar confirmacao");
     }
   };
 
@@ -321,7 +322,7 @@ export default function OrderDetail() {
       setOrder(res.data); setForm(deepClone(res.data));
       toast.success("Aprovação comercial registrada");
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Sem permissão ou erro ao aprovar");
+      toast.error(formatApiError(err) || "Sem permissao ou erro ao aprovar");
     }
   };
 
@@ -333,7 +334,7 @@ export default function OrderDetail() {
       setOrder(res.data); setForm(deepClone(res.data));
       toast.success("Pedido rejeitado comercialmente");
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Sem permissão ou erro");
+      toast.error(formatApiError(err) || "Sem permissao ou erro");
     }
   };
 
@@ -355,7 +356,7 @@ export default function OrderDetail() {
       fetchOrder();
       navigate(`/pcp/controle-ops?op=${encodeURIComponent(res.data.id)}`);
     } catch (err) {
-      toast.error(err.response?.data?.detail || "Erro ao gerar OP");
+      toast.error(formatApiError(err) || "Erro ao gerar OP");
     }
   };
 

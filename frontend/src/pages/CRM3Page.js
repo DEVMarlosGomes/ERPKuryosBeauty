@@ -63,8 +63,20 @@ const STAGES = [
 
 const STAGE_LABELS = Object.fromEntries(STAGES.map(s => [s.id, s.label]));
 
+function canRegisterClientResult(variacao = {}) {
+    const label = String(variacao.status_pd_label || "").toLowerCase();
+    return (
+        variacao.status === "enviada"
+        || variacao.status === "aguardando_informacao"
+        || variacao.status === "aguardando_informação"
+        || variacao.status_pd_raw === "aguardando_aprovacao"
+        || label.includes("aguardando")
+    ) && !variacao.resultado_cliente_registrado_em;
+}
+
 export default function CRM3Page() {
     const { user: authUser } = useAuth();
+    const isAdmin = authUser?.role === "admin";
     const wsRef = useRef(null);
     const [samples, setSamples] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -304,6 +316,10 @@ export default function CRM3Page() {
     };
 
     const handleUpdateSample = async (sampleId, updates) => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem editar cards de amostra.");
+            return;
+        }
         try {
             await api.put(`/crm/samples/${sampleId}`, updates);
             toast.success("Amostra atualizada!");
@@ -314,6 +330,10 @@ export default function CRM3Page() {
     };
 
     const handleDeleteSample = async () => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem remover cards de amostra.");
+            return;
+        }
         if (!selectedSample) return;
         if (!window.confirm(`Excluir amostra "${selectedSample.nome_produto || selectedSample.nome_amostra}" e TODAS as variações/cards P&D vinculados? Ação irreversível.`)) return;
         try {
@@ -327,6 +347,10 @@ export default function CRM3Page() {
     };
 
     const handleUpdateVariacao = async (sampleId, variacaoId, updates) => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem editar variações.");
+            return;
+        }
         try {
             await api.put(`/crm/samples/${sampleId}/variacoes/${variacaoId}`, updates);
             toast.success("Variação atualizada!");
@@ -340,6 +364,10 @@ export default function CRM3Page() {
     };
 
     const handleDeleteVariacao = async (sampleId, variacaoId, codigo) => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem remover variações.");
+            return;
+        }
         if (!window.confirm(`Excluir a variação ${codigo}? O card P&D vinculado também será removido.`)) return;
         try {
             await api.delete(`/crm/samples/${sampleId}/variacoes/${variacaoId}`);
@@ -364,6 +392,10 @@ export default function CRM3Page() {
     }]);
 
     const handleAddVariacoesSubmit = async () => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem adicionar variações.");
+            return;
+        }
         if (!selectedSample) return;
         const valid = newVariacoes.filter(v => v.descricao_aplicacao.trim() || v.referencia_fragrancia.trim());
         if (valid.length === 0) {
@@ -395,6 +427,23 @@ export default function CRM3Page() {
             loadSamples();
             const response = await api.get(`/crm/samples/${selectedSample.id}`);
             setSelectedSample(response.data);
+        } catch (e) {
+            toast.error(formatApiError(e));
+        }
+    };
+
+    const handleSyncMissingPdCards = async () => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem enviar pendências ao P&D.");
+            return;
+        }
+        try {
+            const { data } = await api.post("/crm/samples/sync-missing-pd-cards");
+            toast.success(data?.message || "Amostras pendentes enviadas ao P&D.");
+            if (data?.errors?.length) {
+                toast.warning(`${data.errors.length} item(ns) não puderam ser sincronizados. Veja o log do backend.`);
+            }
+            await loadSamples();
         } catch (e) {
             toast.error(formatApiError(e));
         }
@@ -438,7 +487,14 @@ export default function CRM3Page() {
                     <h1 className="text-3xl font-heading font-semibold tracking-tight">Pipeline de Amostras</h1>
                     <p className="text-sm text-muted-foreground mt-1">{samples.length} amostras</p>
                 </div>
-                <ViewSwitcher value={view} onChange={setView} testIdPrefix="crm3" />
+                <div className="flex items-center gap-2">
+                    {isAdmin && (
+                        <Button variant="outline" onClick={handleSyncMissingPdCards}>
+                            Enviar pendentes ao P&D
+                        </Button>
+                    )}
+                    <ViewSwitcher value={view} onChange={setView} testIdPrefix="crm3" />
+                </div>
             </div>
 
             {(() => {
@@ -771,9 +827,11 @@ export default function CRM3Page() {
                                                 </h4>
                                                 <p className="text-xs text-muted-foreground">Amostra #{selectedSample?.numero_amostra || '?'}</p>
                                             </div>
+                                            {isAdmin && (
                                             <Button size="sm" onClick={() => setShowAddVariacoes(true)} data-testid="btn-add-variacao">
                                                 <Plus className="h-4 w-4 mr-1" /> Adicionar Variação
                                             </Button>
+                                            )}
                                         </div>
                                         {(selectedSample?.variacoes || []).map((v) => {
                                             const vForm = resultadoForm[v.id] || {};
@@ -805,6 +863,7 @@ export default function CRM3Page() {
                                                             </button>
                                                         )}
                                                     </div>
+                                                    {isAdmin && (
                                                     <Button
                                                         variant="ghost" size="icon"
                                                         className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -815,6 +874,7 @@ export default function CRM3Page() {
                                                     >
                                                         <Trash2 className="h-3.5 w-3.5" />
                                                     </Button>
+                                                    )}
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div className="space-y-1 col-span-2">
@@ -886,16 +946,16 @@ export default function CRM3Page() {
                                                     </div>
                                                 </div>
                                                 {/* Registrar resultado do cliente — somente quando variação está em "enviada" */}
-                                                {v.status === "enviada" && (
+                                                {canRegisterClientResult(v) && (
                                                     <div
                                                         className="mt-3 p-3 border border-purple-200 rounded-lg bg-purple-50 dark:bg-purple-950/20"
                                                         data-testid="resultado-cliente-section"
                                                     >
                                                         <p className="text-xs font-semibold text-purple-800 dark:text-purple-300 mb-2">
-                                                            Registrar resultado do cliente
+                                                            Retorno do cliente para o P&D
                                                         </p>
                                                         <div className="flex flex-col gap-1.5 mb-2">
-                                                            {["aprovada", "retrabalho", "reprovada"].map(opt => (
+                                                            {["aprovada", "reprovada", "retrabalho"].map(opt => (
                                                                 <label
                                                                     key={opt}
                                                                     className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer border text-xs font-medium capitalize transition-colors ${
@@ -916,7 +976,7 @@ export default function CRM3Page() {
                                                                         }))}
                                                                         className="accent-purple-600"
                                                                     />
-                                                                    {opt === "aprovada" ? "Aprovada" : opt === "retrabalho" ? "Retrabalho" : "Reprovada / Arquivar"}
+                                                                    {opt === "aprovada" ? "Aprovar" : opt === "reprovada" ? "Reprovar" : "Retrabalho"}
                                                                 </label>
                                                             ))}
                                                         </div>
@@ -955,7 +1015,7 @@ export default function CRM3Page() {
                                                             disabled={!vForm.resultado || vForm.loading}
                                                             data-testid="btn-confirmar-resultado-cliente"
                                                         >
-                                                            {vForm.loading ? "Registrando..." : "Confirmar Resultado"}
+                                                            {vForm.loading ? "Enviando..." : "Enviar retorno ao P&D"}
                                                         </Button>
                                                     </div>
                                                 )}
@@ -967,6 +1027,7 @@ export default function CRM3Page() {
                                         )}
 
                                         <Separator className="my-4" />
+                                        {isAdmin && (
                                         <Button
                                             variant="outline"
                                             className="w-full text-destructive hover:text-destructive border-destructive/30"
@@ -975,6 +1036,7 @@ export default function CRM3Page() {
                                         >
                                             <Trash2 className="h-4 w-4 mr-2" /> Excluir Amostra Inteira
                                         </Button>
+                                        )}
                                     </div>
                                 </TabsContent>
 

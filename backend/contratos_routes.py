@@ -643,16 +643,15 @@ async def assinar_contrato(contrato_id: str, data: ContratoAssinarInput, request
         raise HTTPException(status_code=404, detail="Contrato nao encontrado.")
 
     current_status = contrato.get("status") or "gerado"
-    if current_status in {"assinado", "vigente"}:
-        return contrato
-    if current_status not in {"gerado", "enviado"}:
+    already_signed = current_status in {"assinado", "vigente"}
+    if not already_signed and current_status not in {"gerado", "enviado"}:
         raise HTTPException(
             status_code=409,
             detail=f"Contrato em status '{current_status}' nao pode ser assinado.",
         )
 
     ts = now_iso()
-    assinatura = {
+    assinatura = contrato.get("assinatura") or {
         "status": "assinado",
         "assinado_em": ts,
         "assinado_por": user["id"],
@@ -660,30 +659,97 @@ async def assinar_contrato(contrato_id: str, data: ContratoAssinarInput, request
         "assinatura_ref": data.assinatura_ref or "",
         "observacoes": data.observacoes or "",
     }
-    history = {
-        "from": current_status,
-        "to": "assinado",
-        "at": ts,
-        "by": user["id"],
-        "by_name": user.get("name", ""),
-        "observacoes": data.observacoes or "",
-    }
+    if not already_signed:
+        history = {
+            "from": current_status,
+            "to": "assinado",
+            "at": ts,
+            "by": user["id"],
+            "by_name": user.get("name", ""),
+            "observacoes": data.observacoes or "",
+        }
+        await db.contratos.update_one(
+            {"id": contrato_id, "tenant_id": user["tenant_id"]},
+            {"$set": {
+                "status": "assinado",
+                "assinatura": assinatura,
+                "signed_at": ts,
+                "signed_by": user["id"],
+                "signed_by_name": user.get("name", ""),
+                "updated_at": ts,
+            }, "$push": {"status_history": history}},
+        )
+    skus_gerados = []
+    projeto_id = contrato.get("projeto_id")
+    sku_dependencies = ("crm_samples", "crm_clients", "crm_projects", "skus")
+    if projeto_id and all(hasattr(db, name) for name in sku_dependencies):
+        from crm_routes import _generate_skus_for_project_approved_variations
+
+        skus_gerados = await _generate_skus_for_project_approved_variations(projeto_id, user)
+
+    successful_skus = [
+        item for item in skus_gerados
+        if item.get("sku") and not (item.get("sku") or {}).get("blocked")
+    ]
+    sku_bloqueios = [
+        (item.get("sku") or {}).get("reason") or "Falha desconhecida ao gerar SKU."
+        for item in skus_gerados
+        if (item.get("sku") or {}).get("blocked")
+    ]
+    if not successful_skus and not sku_bloqueios:
+        sku_bloqueios.append("Nenhuma amostra aprovada foi encontrada para gerar o SKU.")
+    pedido_liberado = bool(successful_skus) and not sku_bloqueios
+
+    orders_collection = getattr(db, "orders", None)
+    linked_order = None
+    if contrato.get("kickoff_id") and orders_collection is not None:
+        order_patch = {
+            "cgi_status": "assinado",
+            "cgi_assinado_em": contrato.get("signed_at") or ts,
+            "cgi_assinado_por": (contrato.get("assinatura") or {}).get("assinado_por_nome") or user.get("name", ""),
+            "liberado_para_emissao": pedido_liberado,
+            "liberado_para_emissao_em": ts if pedido_liberado else None,
+            "bloqueio_emissao": " | ".join(sku_bloqueios) if sku_bloqueios else "",
+            "skus_gerados_cgi": skus_gerados,
+            "updated_at": ts,
+        }
+        # O pedido e criado antes do CGI e seus itens ainda podem estar como
+        # "A definir". Vincula os SKUs na mesma ordem das variacoes aprovadas.
+        for index, item in enumerate(successful_skus):
+            sku = item["sku"]
+            order_patch[f"items.{index}.sku_id"] = sku.get("id")
+            order_patch[f"items.{index}.codigo_kuryos"] = sku.get("codigo_interno")
+        await db.orders.update_many(
+            {
+                "tenant_id": user["tenant_id"],
+                "kickoff_id": contrato["kickoff_id"],
+            },
+            {"$set": order_patch},
+        )
+        linked_order = await db.orders.find_one(
+            {
+                "tenant_id": user["tenant_id"],
+                "kickoff_id": contrato["kickoff_id"],
+            },
+            {"_id": 0},
+        )
     await db.contratos.update_one(
         {"id": contrato_id, "tenant_id": user["tenant_id"]},
         {"$set": {
-            "status": "assinado",
-            "assinatura": assinatura,
-            "signed_at": ts,
-            "signed_by": user["id"],
-            "signed_by_name": user.get("name", ""),
+            "pedido_liberado_para_emissao": pedido_liberado,
+            "skus_gerados_cgi": skus_gerados,
+            "sku_bloqueios": sku_bloqueios,
+            "sku_processado_em": ts,
+            "pedido_id": (linked_order or {}).get("id"),
+            "numero_pedido": (linked_order or {}).get("numero_pedido"),
             "updated_at": ts,
-        }, "$push": {"status_history": history}},
+        }},
     )
     await audit_log(
         tenant_id=user["tenant_id"],
         user_id=user["id"],
         user_name=user.get("name", ""),
-        action="contrato_assinado",
+        action="contrato_sku_reconciliado" if already_signed else "contrato_assinado",
         entity_type="contrato_cgi",
         entity_id=contrato_id,
         before={"status": current_status},
@@ -692,11 +758,20 @@ async def assinar_contrato(contrato_id: str, data: ContratoAssinarInput, request
             "kickoff_id": contrato.get("kickoff_id"),
             "projeto_id": contrato.get("projeto_id"),
             "client_id": contrato.get("client_id"),
+            "skus_gerados": len(successful_skus),
+            "pedido_liberado_para_emissao": pedido_liberado,
+            "sku_bloqueios": sku_bloqueios,
         },
     )
     updated = await db.contratos.find_one(
         {"id": contrato_id, "tenant_id": user["tenant_id"]}, {"_id": 0, "pdf_data": 0}
     )
+    if updated is not None:
+        updated["skus_gerados"] = skus_gerados
+        updated["pedido_liberado_para_emissao"] = pedido_liberado
+        updated["sku_bloqueios"] = sku_bloqueios
+        updated["pedido_id"] = (linked_order or {}).get("id")
+        updated["numero_pedido"] = (linked_order or {}).get("numero_pedido")
     return updated
 
 

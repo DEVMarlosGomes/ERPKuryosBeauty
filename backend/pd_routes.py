@@ -1958,13 +1958,16 @@ async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_s
     }
 
     if new_status == "APPROVED":
+        commercial_approved = bool(
+            variacao.get("aprovacao_externa")
+            and variacao.get("resultado") == "aprovada"
+        )
         set_ops.update({
-            "variacoes.$.status": "aprovada",
+            "variacoes.$.status": "aprovada" if commercial_approved else (variacao.get("status") or "enviada"),
             "variacoes.$.status_pd_raw": "aprovado",
-            "variacoes.$.status_pd_label": "Aprovado pelo Cliente",
-            "variacoes.$.resultado": "aprovada",
-            "variacoes.$.aprovacao_externa": True,
-            "variacoes.$.aprovado_cliente_em": now,
+            "variacoes.$.status_pd_label": "Amostra aprovada" if commercial_approved else "Aprovado pelo P&D",
+            "variacoes.$.aprovacao_pd": True,
+            "variacoes.$.aprovado_pd_em": now,
             "variacoes.$.enviado_comercial_em": variacao.get("enviado_comercial_em") or now,
             "data_envio": sample.get("data_envio") or now,
             "aprovacao_interna": True,
@@ -2008,6 +2011,19 @@ async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_s
     )
     updated_variacao = next((v for v in (updated_sample or {}).get("variacoes", []) if v.get("id") == variacao_id), None)
 
+    if new_status == "APPROVED" and updated_variacao and updated_variacao.get("aprovacao_externa"):
+        from crm_routes import _refresh_sample_project_approval_summary
+
+        await _refresh_sample_project_approval_summary(sample_id, user)
+        updated_sample = await db.crm_samples.find_one(
+            {"id": sample_id, "tenant_id": user["tenant_id"]},
+            {"_id": 0},
+        )
+        updated_variacao = next(
+            (v for v in (updated_sample or {}).get("variacoes", []) if v.get("id") == variacao_id),
+            None,
+        )
+
     if new_status == "REJECTED":
         await db.pd_updates.insert_one({
             "id": new_id(),
@@ -2027,18 +2043,29 @@ async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_s
             "created_at": now,
         })
 
-    sku_created = None
-    if new_status == "APPROVED" and updated_sample and updated_variacao:
-        from crm_routes import _create_sku_from_variacao_v2
+    # SKU nasce somente após a assinatura do CGI; aprovação da amostra não
+    # produz cadastro comercial nem pedido operacional.
+    return updated_sample, updated_variacao, None
 
-        sku_created = await _create_sku_from_variacao_v2(
-            updated_sample,
-            updated_variacao,
-            user,
-            fasttrack_variacao=True,
+
+async def _ensure_project_kickoff_after_pd_approval(pd_req: dict, user: dict) -> Optional[Dict[str, Any]]:
+    project_id = pd_req.get("crm_project_id") or pd_req.get("linked_projeto_id")
+    if not project_id:
+        project_id = pd_req.get("linked_project_id") or pd_req.get("projeto_id")
+    if not project_id and pd_req.get("linked_amostra_id"):
+        sample = await db.crm_samples.find_one(
+            {"id": pd_req["linked_amostra_id"], "tenant_id": user["tenant_id"]},
+            {"_id": 0, "projeto_id": 1},
         )
+        project_id = (sample or {}).get("projeto_id")
+    if not project_id:
+        return None
 
-    return updated_sample, updated_variacao, sku_created
+    return {
+        "project_id": project_id,
+        "waiting_for": "aprovacao_comercial_e_orcamento",
+        "message": "Amostra aprovada no P&D; SKU, pedido e Kickoff ainda não foram gerados.",
+    }
 
 
 @pd_router.put("/requests/{req_id}/status")
@@ -2052,16 +2079,9 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
     new_status = data.new_status
 
     # Aprovação/rejeição comercial: roles comerciais podem agir somente nessa transição
-    COMERCIAL_FULL = {"admin", "vendedor", "sales_ops", "sucesso_cliente"}
-    is_comercial_action = (
-        current == "WAITING_APPROVAL"
-        and new_status in ("APPROVED", "REJECTED")
-        and has_role(user, COMERCIAL_FULL)
-    )
-    if is_comercial_action:
-        require_roles(user, PD_FULL | COMERCIAL_FULL)
-    else:
-        require_roles(user, PD_FULL)
+    # O aceite do cliente pertence ao CRM/Comercial. Esta rota registra apenas
+    # a decisao tecnica do P&D.
+    require_roles(user, PD_FULL)
     
     if new_status not in VALID_STATUSES:
         raise HTTPException(status_code=400, detail=f"Status inválido: {new_status}")
@@ -2120,16 +2140,29 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
             titles = " | ".join(t.get("title", "") for t in blocking[:3])
             raise HTTPException(status_code=409, detail=f"Existem tarefas bloqueantes pendentes: {titles}")
 
-    if new_status == "APPROVED" and not is_comercial_action:
-        raise HTTPException(
-            status_code=403,
-            detail="Somente o Comercial pode aprovar a formulacao final. P&D deve entregar para aprovacao e aguardar a decisao comercial.",
-        )
-    if new_status == "REJECTED" and is_comercial_action and len(clean_text(data.comment)) < 5:
+    if new_status == "REJECTED" and len(clean_text(data.comment)) < 5:
         raise HTTPException(status_code=400, detail="Informe as anotacoes do retrabalho para o P&D antes de reprovar.")
 
     # Check / auto-register approval for APPROVED status
     if new_status == "APPROVED":
+        if pd_req.get("linked_amostra_id") and pd_req.get("linked_variacao_id"):
+            linked_sample = await db.crm_samples.find_one(
+                {"id": pd_req["linked_amostra_id"], "tenant_id": user["tenant_id"]},
+                {"_id": 0},
+            )
+            linked_variation = next(
+                (
+                    item for item in (linked_sample or {}).get("variacoes", [])
+                    if item.get("id") == pd_req["linked_variacao_id"]
+                ),
+                None,
+            )
+            if not linked_variation or not linked_variation.get("aprovacao_externa"):
+                raise HTTPException(
+                    status_code=409,
+                    detail="Aprovacao comercial do cliente pendente. O Comercial deve registrar o aceite antes do P&D aprovar.",
+                )
+
         dev = await db.pd_developments.find_one({"pd_request_id": req_id}, {"_id": 0})
         if dev:
             tests = await db.pd_tests.find({"development_id": dev["id"]}, {"_id": 0}).to_list(100)
@@ -2139,54 +2172,26 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
 
             approval = await db.pd_approvals.find_one({"development_id": dev["id"]}, {"_id": 0})
 
-            if is_comercial_action:
-                # Comercial clicking "Aprovar" IS the approval — upsert the record automatically
-                now = now_iso()
-                if approval:
-                    await db.pd_approvals.update_one(
-                        {"development_id": dev["id"]},
-                        {"$set": {
-                            "approved_by_internal": True,
-                            "approved_by_client": True,
-                            "approved_by_comercial": True,
-                            "approved_by_comercial_id": user["id"],
-                            "approved_by_comercial_name": user.get("name", ""),
-                            "approved_at": now,
-                            "updated_at": now,
-                        }}
-                    )
-                else:
-                    await db.pd_approvals.insert_one({
-                        "id": new_id(),
-                        "development_id": dev["id"],
-                        "pd_request_id": req_id,
-                        "tenant_id": user["tenant_id"],
-                        "approved_by_internal": True,
-                        "approved_by_client": True,
-                        "approved_by_comercial": True,
-                        "approved_by_comercial_id": user["id"],
-                        "approved_by_comercial_name": user.get("name", ""),
-                        "notes": f"Aprovado comercialmente por {user.get('name', '')}",
-                        "approved_at": now,
-                        "created_at": now,
-                        "updated_at": now,
-                    })
-            else:
-                # P&D team approval — enforce existing checklist
-                if not approval:
-                    raise HTTPException(status_code=400, detail="Registre uma aprovação antes de mover para APROVADO.")
-                if not approval.get("approved_by_internal"):
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Aprovação interna pendente. O líder de P&D deve aprovar internamente antes de marcar como APROVADO.",
-                    )
-                if not approval.get("approved_by_client"):
-                    raise HTTPException(
-                        status_code=400,
-                        detail="Aprovação do cliente pendente. Registre a confirmação do cliente antes de marcar como APROVADO.",
-                    )
+            if not approval or not approval.get("approved_by_client"):
+                raise HTTPException(
+                    status_code=409,
+                    detail="Aprovacao comercial do cliente pendente. Registre o aceite no CRM antes de aprovar no P&D.",
+                )
+            now = now_iso()
+            await db.pd_approvals.update_one(
+                {"development_id": dev["id"]},
+                {"$set": {
+                    "approved_by_internal": True,
+                    "internal_approval_at": now,
+                    "internal_approval_by": user["id"],
+                    "internal_approval_by_name": user.get("name", ""),
+                    "approved_at": now,
+                    "updated_at": now,
+                }},
+            )
     
     sku_created = None
+    kickoff_info = None
 
     request_update_fields = {"status": new_status, "updated_at": now_iso()}
     if d48_policy_snapshot:
@@ -2209,7 +2214,7 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
     except Exception as exc:
         logger.warning(f"PD→CRM reverse sync failed for req {req_id}: {exc}")
 
-    if is_comercial_action:
+    if new_status in ("APPROVED", "REJECTED"):
         try:
             _updated_sample, _updated_variacao, sku_created = await _sync_linked_variacao_from_pd_approval(
                 pd_req,
@@ -2219,6 +2224,9 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
             )
         except Exception as exc:
             logger.warning(f"PD commercial approval reverse sync failed for req {req_id}: {exc}")
+
+    if new_status == "APPROVED":
+        kickoff_info = await _ensure_project_kickoff_after_pd_approval(pd_req, user)
 
     await db.pd_request_status_history.insert_one({
         "id": new_id(),
@@ -2256,17 +2264,11 @@ async def transition_status(req_id: str, data: StatusTransition, request: Reques
             {"$set": {"status": "completed", "completed_at": now_iso()}}
         )
 
-    # Auto-create order when PD is APPROVED
-    if new_status == "APPROVED":
-        try:
-            from orders_routes import auto_create_order_on_pd_approval
-            await auto_create_order_on_pd_approval(req_id, user)
-        except Exception as exc:
-            logger.error(f"Failed to auto-create order for PD {req_id}: {exc}")
-    
     updated = await db.pd_requests.find_one({"id": req_id}, {"_id": 0})
     if sku_created is not None:
         updated["sku_created"] = sku_created
+    if kickoff_info is not None:
+        updated["kickoff_criado"] = kickoff_info
     return updated
 
 @pd_router.get("/requests/{req_id}/history")
@@ -5934,6 +5936,46 @@ async def catalog_price_history(item_id: str, request: Request):
 async def create_internal_research(data: InternalResearchCreate, request: Request):
     """Cria um desenvolvimento iniciado pelo lab (sem cliente / sem CRM)"""
     user = await get_current_user(request)
+    require_roles(user, ADMIN_ONLY)
+    project_name = clean_text(data.project_name)
+    if project_name:
+        existing_request = await db.pd_requests.find_one(
+            {
+                "tenant_id": user["tenant_id"],
+                "is_internal_research": True,
+                "is_deleted": {"$ne": True},
+                "project_name": {"$regex": f"^{re.escape(project_name)}$", "$options": "i"},
+            },
+            {"_id": 0, "id": 1, "project_name": 1},
+        )
+        if existing_request:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "type": "duplicate_card",
+                    "entity": "pd",
+                    "message": f"Pesquisa interna ja criada: {existing_request.get('project_name')}.",
+                    "existing_id": existing_request.get("id"),
+                },
+            )
+        existing_card = await db.pd_cards.find_one(
+            {
+                "tenant_id": user["tenant_id"],
+                "is_internal_research": True,
+                "produto": {"$regex": f"^{re.escape(project_name)}$", "$options": "i"},
+            },
+            {"_id": 0, "id": 1, "produto": 1},
+        )
+        if existing_card:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "type": "duplicate_card",
+                    "entity": "pd",
+                    "message": f"Card P&D ja criado: {existing_card.get('produto')}.",
+                    "existing_id": existing_card.get("id"),
+                },
+            )
     req_id = new_id()
 
     # Monta briefing

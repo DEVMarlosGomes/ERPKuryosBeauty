@@ -702,7 +702,7 @@ def test_repair_prefilled_fragrance_item_from_variacao_updates_legacy_brl_value(
     assert fake_db.pd_formula_items.update_calls[-1][1]["$set"]["price_usd"] == 10.0
 
 
-def test_sync_linked_variacao_from_pd_approval_generates_fasttrack_sku(monkeypatch):
+def test_sync_linked_variacao_from_pd_approval_waits_for_commercial_and_cgi(monkeypatch):
     fake_db = SimpleNamespace(
         crm_samples=TrackingCollection(
             [
@@ -743,17 +743,52 @@ def test_sync_linked_variacao_from_pd_approval_generates_fasttrack_sku(monkeypat
     )
 
     sample_set = fake_db.crm_samples.update_calls[-1][1]["$set"]
-    assert sample_set["variacoes.$.status"] == "aprovada"
-    assert sample_set["variacoes.$.resultado"] == "aprovada"
-    assert sample_set["variacoes.$.aprovacao_externa"] is True
+    assert sample_set["variacoes.$.status"] == "enviada"
+    assert sample_set["variacoes.$.status_pd_raw"] == "aprovado"
+    assert sample_set["variacoes.$.aprovacao_pd"] is True
+    assert "variacoes.$.aprovacao_externa" not in sample_set
     assert updated_sample["id"] == "sample-1"
     assert updated_variacao["id"] == "var-1"
-    assert sku_created["codigo_interno"] == "CAPA-TEST-0001"
-    assert called == {
-        "sample_id": "sample-1",
-        "variacao_id": "var-1",
-        "fasttrack": True,
-    }
+    assert sku_created is None
+    assert called == {}
+
+
+def test_pd_approval_finalizes_variation_after_commercial_approval(monkeypatch):
+    fake_db = SimpleNamespace(
+        crm_samples=TrackingCollection([{
+            "id": "sample-1",
+            "tenant_id": "tenant-1",
+            "data_envio": "2026-07-17T20:00:00+00:00",
+            "variacoes": [{
+                "id": "var-1",
+                "status": "enviada",
+                "resultado": "aprovada",
+                "aprovacao_externa": True,
+                "aprovacao_pd": False,
+            }],
+        }]),
+    )
+    pd_routes.db = fake_db
+    refreshed = []
+
+    async def fake_refresh(sample_id, user):
+        refreshed.append((sample_id, user["id"]))
+        return {"approved_variations": 1, "ready_for_quote": True}
+
+    monkeypatch.setattr(pd_routes, "now_iso_func", lambda: "2026-07-17T21:00:00+00:00")
+    monkeypatch.setattr(crm_routes, "_refresh_sample_project_approval_summary", fake_refresh)
+
+    asyncio.run(pd_routes._sync_linked_variacao_from_pd_approval(
+        {"linked_amostra_id": "sample-1", "linked_variacao_id": "var-1"},
+        {"id": "pd-1", "name": "P&D", "tenant_id": "tenant-1"},
+        "APPROVED",
+    ))
+
+    sample_set = fake_db.crm_samples.update_calls[-1][1]["$set"]
+    assert sample_set["variacoes.$.status"] == "aprovada"
+    assert sample_set["variacoes.$.aprovacao_pd"] is True
+    assert sample_set["variacoes.$.status_pd_label"] == "Amostra aprovada"
+    assert refreshed == [("sample-1", "pd-1")]
 
 
 def test_sync_linked_variacao_from_pd_rejection_pushes_rework_notes():
