@@ -2366,6 +2366,60 @@ async def aprovar_checklist(
 
 # ─── GET /api/cq/rncs ─────────────────────────────────────────────────────────
 
+@cq_router.post("/rncs", status_code=201)
+async def criar_rnc(data: RNCCreate, request: Request):
+    user = await get_current_user(request)
+    require_roles(user, CQ_ANALISTA)
+    tenant_id = user["tenant_id"]
+
+    if data.classificacao not in {"critica", "maior", "menor"}:
+        raise HTTPException(status_code=422, detail="classificacao invalida.")
+    if data.disposicao_imediata not in {"devolucao", "descarte", "reprocesso", "concessao"}:
+        raise HTTPException(status_code=422, detail="disposicao_imediata invalida.")
+    if not data.descricao.strip():
+        raise HTTPException(status_code=422, detail="descricao e obrigatoria.")
+
+    now = now_iso()
+    rnc = {
+        **data.model_dump(),
+        "id": new_id(),
+        "numero_rnc": await _next_rnc_number(tenant_id),
+        "tenant_id": tenant_id,
+        "status": "aberta",
+        "fotos_file_ids": [],
+        "comunicado_fornecedor_enviado": False,
+        "comunicado_enviado_em": None,
+        "resposta_fornecedor": None,
+        "capa_descricao": None,
+        "evidencia_resolucao": None,
+        "encerrado_por_id": None,
+        "encerrado_em": None,
+        "created_at": now,
+        "updated_at": now,
+        "log_auditoria": [{
+            "campo": "status",
+            "de": None,
+            "para": "aberta",
+            "usuario_id": user["id"],
+            "usuario_nome": user.get("name", ""),
+            "datetime": now,
+            "observacoes": "RNC aberta manualmente pela Qualidade.",
+        }],
+    }
+    await db.cq_rncs.insert_one(rnc)
+    await audit_log(
+        tenant_id=tenant_id,
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="create",
+        entity_type="cq_rnc",
+        entity_id=rnc["id"],
+        after=rnc,
+    )
+    rnc.pop("_id", None)
+    return rnc
+
+
 @cq_router.get("/rncs")
 async def listar_rncs(
     request: Request,

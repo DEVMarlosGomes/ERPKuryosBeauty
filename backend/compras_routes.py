@@ -1815,6 +1815,8 @@ async def _resolve_compras_item_formula(tenant_id: str, formula_item: Dict[str, 
     )
 
     queries: List[Dict[str, Any]] = []
+    if formula_item.get("id"):
+        queries.append({"tenant_id": tenant_id, "pd_formula_item_id": formula_item["id"]})
     if catalog_id:
         queries.extend([
             {"tenant_id": tenant_id, "catalog_id": catalog_id},
@@ -1841,6 +1843,166 @@ async def _resolve_compras_item_formula(tenant_id: str, formula_item: Dict[str, 
         if item:
             return item
     return None
+
+
+async def _create_compras_item_from_formula(tenant_id: str, formula_item: Dict[str, Any]) -> dict:
+    """Sincroniza um ingrediente do P&D com o cadastro mínimo de Compras."""
+    as_text = lambda value: str(value or "").strip()
+    formula_item_id = formula_item.get("id") or new_id()
+    existing = await db.compras_itens.find_one(
+        {"tenant_id": tenant_id, "pd_formula_item_id": formula_item_id},
+        {"_id": 0},
+    )
+    if existing:
+        return existing
+
+    catalog_id = formula_item.get("catalog_id")
+    codigo = as_text(
+        formula_item.get("codigo_interno")
+        or formula_item.get("mp_codigo")
+        or formula_item.get("codigo")
+        or ""
+    ).upper()
+    if not codigo:
+        reference = as_text(catalog_id or formula_item_id).upper().replace(" ", "-")
+        codigo = f"PD-{reference[:12]}"
+
+    descricao = as_text(
+        formula_item.get("ingredient_name")
+        or formula_item.get("nome_tecnico")
+        or formula_item.get("nome_comercial")
+        or codigo
+    )
+    classification = " ".join([
+        descricao,
+        as_text(formula_item.get("function", "")),
+        as_text(formula_item.get("phase", "")),
+    ]).lower()
+    categoria = "fragrancia" if "fragr" in classification else "mp"
+    now = now_iso()
+    doc = {
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "codigo_interno": codigo,
+        "descricao": descricao,
+        "categoria": categoria,
+        "sub_categoria": "",
+        "unidade_compra": as_text(formula_item.get("unidade_compra") or "kg"),
+        "fator_conversao_producao": 1.0,
+        "estoque_minimo": None,
+        "estoque_seguranca": 0.0,
+        "lead_time_dias": 0,
+        "requer_homologacao_cq": True,
+        "fornecedores_homologados": [],
+        "ultimo_preco_pago": None,
+        "origem": "sincronizacao_pd_cotacao",
+        "pd_formula_item_id": formula_item_id,
+        "pd_catalog_id": catalog_id,
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.compras_itens.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+async def create_quote_demands_for_project(project_id: str, user: Dict[str, Any]) -> Dict[str, Any]:
+    """Materializa no Compras a V1 aprovada pelo P&D ao entrar em Cotação.
+
+    A quantidade final depende do pedido; por isso a pré-cotação guarda a
+    participação da fórmula e deixa o retorno do fornecedor explicitamente
+    pendente, sem inventar uma necessidade de compra.
+    """
+    tenant_id = user["tenant_id"]
+    from kickoff_routes import _resolve_registered_formula_for_project
+
+    context = await _resolve_registered_formula_for_project(project_id, tenant_id, database=db)
+    formula = context.get("formula") or {}
+    formula_items = await db.pd_formula_items.find(
+        {"formula_id": formula.get("id")}, {"_id": 0}
+    ).to_list(500)
+    created = []
+    reused = []
+    unresolved = []
+    auto_created_items = []
+    now = now_iso()
+
+    for formula_item in formula_items:
+        compras_item = await _resolve_compras_item_formula(tenant_id, formula_item)
+        if not compras_item:
+            try:
+                compras_item = await _create_compras_item_from_formula(tenant_id, formula_item)
+                auto_created_items.append(compras_item["id"])
+            except Exception as exc:
+                logger.exception("Falha ao sincronizar item P&D para Compras")
+                unresolved.append({
+                    "formula_item_id": formula_item.get("id"),
+                    "descricao": formula_item.get("ingredient_name", ""),
+                    "status": "item_compras_nao_resolvido",
+                    "erro": str(exc),
+                })
+                continue
+
+        key = {
+            "tenant_id": tenant_id,
+            "projeto_id": project_id,
+            "formula_id": formula.get("id"),
+            "formula_item_id": formula_item.get("id"),
+            "origem": "pd_v1_cotacao",
+        }
+        existing = await db.compras_demandas.find_one(key, {"_id": 0})
+        if existing:
+            reused.append(existing)
+            continue
+
+        latest_quote = await db.compras_condicoes_comerciais.find_one(
+            {"tenant_id": tenant_id, "item_id": compras_item["id"]},
+            {"_id": 0},
+            sort=[("created_at", -1)],
+        )
+        doc = {
+            "id": new_id(),
+            **key,
+            "numero_solicitacao": await _next_demanda_numero(tenant_id),
+            "item_id": compras_item["id"],
+            "item_codigo": compras_item.get("codigo_interno", ""),
+            "item_descricao": compras_item.get("descricao", formula_item.get("ingredient_name", "")),
+            "unidade_compra": compras_item.get("unidade_compra", ""),
+            "quantidade": None,
+            "percentual_formula": float(formula_item.get("percentage") or 0),
+            "status": "em_cotacao",
+            "cotacao_status": "valor_disponivel" if latest_quote else "pendente_retorno_solicitacao",
+            "ultima_cotacao": latest_quote,
+            "motivo": "v1_aprovada_pd",
+            "fornecedor_selecionado_id": None,
+            "po_id": None,
+            "observacoes": "Quantidade será calculada após definição do pedido.",
+            "solicitante_id": user["id"],
+            "solicitante_nome": user.get("name", ""),
+            "created_at": now,
+            "updated_at": now,
+        }
+        await db.compras_demandas.insert_one(doc)
+        doc.pop("_id", None)
+        created.append(doc)
+
+    summary = {
+        "formula_id": formula.get("id"),
+        "created": len(created),
+        "reused": len(reused),
+        "unresolved": unresolved,
+        "auto_created_items": len(auto_created_items),
+        "status": (
+            "pendente_retorno_solicitacao"
+            if unresolved or not (created or reused) or any(not d.get("ultima_cotacao") for d in created + reused)
+            else "valores_disponiveis"
+        ),
+    }
+    await db.crm_projects.update_one(
+        {"id": project_id, "tenant_id": tenant_id},
+        {"$set": {"cotacao_compras": summary, "updated_at": now}},
+    )
+    return summary
 
 
 def _quantidade_formula_por_unidade(formula_item: Dict[str, Any]) -> float:

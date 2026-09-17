@@ -23,7 +23,13 @@ export function formatError(error) {
     if (Array.isArray(error.detail)) {
       return error.detail.map(e => e.msg || JSON.stringify(e)).join(", ");
     }
-    if (typeof error.detail.message === "string") return error.detail.message;
+    if (typeof error.detail.message === "string") {
+      const details = [
+        ...(Array.isArray(error.detail.bloqueios) ? error.detail.bloqueios : []),
+        ...(Array.isArray(error.detail.alertas) ? error.detail.alertas : []),
+      ].filter(Boolean).map(String);
+      return [error.detail.message, ...details].join(" ");
+    }
     return JSON.stringify(error.detail);
   }
 

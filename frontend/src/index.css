@@ -112,6 +112,108 @@
 ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
 
 @layer components {
+    /* Dashboard language mirrored from the PCP reference project: quiet
+       surfaces, large radii, light depth, segmented navigation and compact KPIs. */
+    .dashboard-shell {
+        width: 100%;
+        max-width: 1180px;
+        margin-inline: auto;
+        padding: 1.75rem 2rem 3.75rem;
+    }
+
+    .dashboard-shell-wide {
+        width: 100%;
+        max-width: 1500px;
+        margin-inline: auto;
+        padding: 1.75rem 2rem 3.75rem;
+    }
+
+    .dashboard-eyebrow {
+        margin-bottom: .25rem;
+        color: hsl(var(--muted-foreground));
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .dashboard-title {
+        font-size: clamp(1.75rem, 3vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -.02em;
+        line-height: 1.1;
+    }
+
+    .dashboard-panel {
+        overflow: hidden;
+        border: 1px solid hsl(var(--border) / .72) !important;
+        border-radius: 1.25rem !important;
+        background: hsl(var(--card));
+        box-shadow: 0 1px 2px hsl(var(--foreground) / .04), 0 12px 28px -14px hsl(var(--foreground) / .16) !important;
+    }
+
+    .dashboard-kpi {
+        position: relative;
+        overflow: hidden;
+        min-height: 6.25rem;
+        border-radius: 1rem !important;
+        box-shadow: 0 1px 2px hsl(var(--foreground) / .04), 0 12px 28px -18px hsl(var(--foreground) / .18) !important;
+    }
+
+    .dashboard-kpi::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 3px;
+        background: hsl(var(--primary));
+        opacity: .9;
+    }
+
+    .dashboard-tabs {
+        display: flex;
+        gap: .125rem;
+        overflow-x: auto;
+        padding: .25rem;
+        border: 0 !important;
+        border-radius: .75rem !important;
+        background: hsl(var(--foreground) / .06);
+    }
+
+    .dashboard-tab {
+        min-height: 2.25rem !important;
+        flex: 1 0 auto;
+        padding: .5rem .875rem !important;
+        border: 0 !important;
+        border-radius: .5625rem !important;
+        color: hsl(var(--muted-foreground));
+        font-size: .8125rem !important;
+        font-weight: 600 !important;
+        white-space: nowrap;
+    }
+
+    .dashboard-tab:hover { background: hsl(var(--foreground) / .04); color: hsl(var(--foreground)); }
+    .dashboard-tab[data-active="true"] {
+        background: hsl(var(--card));
+        color: hsl(var(--foreground));
+        box-shadow: var(--shadow-soft);
+    }
+
+    .dashboard-filterbar {
+        padding: 1rem;
+        border: 1px solid hsl(var(--border) / .72);
+        border-radius: 1rem !important;
+        background: hsl(var(--card));
+        box-shadow: var(--shadow-soft);
+    }
+
+    .dashboard-shell-wide .border-l-4.bg-card.shadow-sm {
+        border-radius: 1.25rem !important;
+        box-shadow: 0 1px 2px hsl(var(--foreground) / .04), 0 12px 28px -14px hsl(var(--foreground) / .16) !important;
+    }
+
+    @media (max-width: 640px) {
+        .dashboard-shell,
+        .dashboard-shell-wide { padding: 1.25rem 1rem 2.5rem; }
+    }
+
     .app-shell {
         background:
             radial-gradient(circle at 8% -10%, hsl(var(--primary) / 0.07), transparent 28rem),

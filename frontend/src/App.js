@@ -201,6 +201,8 @@ function AppLayout() {
                         <Route path="/contratos" element={<RoleGuard allowed={CONTRATOS_ROLES}><ContratosPage /></RoleGuard>} />
                         <Route path="/audit" element={<RoleGuard allowed={AUDIT_ROLES}><AuditLogPage /></RoleGuard>} />
                         <Route path="/cq" element={<RoleGuard allowed={CQ_ROLES}><CQDashboard /></RoleGuard>} />
+                        <Route path="/qualidade" element={<RoleGuard allowed={CQ_ROLES}><CQDashboard /></RoleGuard>} />
+                        <Route path="/qualidade.html" element={<RoleGuard allowed={CQ_ROLES}><CQDashboard /></RoleGuard>} />
                         <Route path="/cq/registros-analise" element={<RoleGuard allowed={CQ_ROLES}><CQListaRA /></RoleGuard>} />
                         <Route path="/cq/registros-analise/:id" element={<RoleGuard allowed={CQ_ROLES}><CQDetalheRA /></RoleGuard>} />
                         <Route path="/cq/checklists" element={<RoleGuard allowed={CQ_ROLES}><CQListaChecklists /></RoleGuard>} />

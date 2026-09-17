@@ -270,6 +270,8 @@ function flattenUniqueOptions(groups = {}, flatOptions = []) {
 
 export default function CRM1Page() {
     const { user } = useAuth();
+    const isAdmin = user?.role === "admin";
+    const canManageCommercialFlow = ["admin", "vendedor", "sales_ops", "sucesso_cliente"].includes(user?.role);
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -494,6 +496,14 @@ export default function CRM1Page() {
         }
 
         if (newStage === "projeto_em_discussao") {
+            // A passagem Qualificado -> Projeto sempre confirma os produtos de
+            // interesse antes de abrir o pre-briefing, mesmo quando os demais
+            // dados de qualificacao ja estiverem completos.
+            if (client.stage === "qualificado") {
+                openQualificationModal(client, true);
+                setBatchProjectError("");
+                return;
+            }
             if (client.stage === "prospeccao" && (client.missing_qualification_fields || []).length > 0) {
                 openQualificationModal(client, true);
                 setBatchProjectError("");
@@ -548,6 +558,10 @@ export default function CRM1Page() {
     };
 
     const handleCreateClient = async () => {
+        if (!canManageCommercialFlow) {
+            toast.error("Apenas o time Comercial pode criar cards de cliente.");
+            return;
+        }
         if (!isNewClientValid) return;
         try {
             // Filtrar decisores com nome vazio antes de enviar
@@ -609,6 +623,10 @@ export default function CRM1Page() {
     };
 
     const handleBatchProjectSubmit = async () => {
+        if (!canManageCommercialFlow) {
+            toast.error("Apenas o time Comercial pode criar cards de projeto.");
+            return;
+        }
         const valid = batchProjects.filter((project) => (
             project.nome_projeto.trim()
             && project.categoria
@@ -724,6 +742,23 @@ export default function CRM1Page() {
         }));
     };
 
+    const handleDeleteClient = async (client) => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem remover cards de cliente.");
+            return;
+        }
+        if (!client) return;
+        if (!window.confirm(`Excluir cliente "${client.nome_empresa}" e todos os projetos/amostras/cards P&D vinculados?`)) return;
+        try {
+            const { data } = await api.delete(`/crm/clients/${client.id}`);
+            toast.success(`Cliente excluído (${data.deleted_projects} projeto(s), ${data.deleted_samples} amostra(s)).`);
+            setSelectedClient(null);
+            await loadClients();
+        } catch (e) {
+            toast.error(formatApiError(e) || "Erro ao excluir cliente");
+        }
+    };
+
     if (loading) return (
         <div className="p-8 page-enter">
             <div className="animate-pulse space-y-4">
@@ -745,9 +780,11 @@ export default function CRM1Page() {
                 </div>
                 <div className="flex items-center gap-3">
                     <ViewSwitcher value={view} onChange={setView} testIdPrefix="crm1" />
-                    <Button onClick={() => { setNewClient(createEmptyClient(user?.id || "")); setShowNewClient(true); }} data-testid="new-client-btn">
-                        <Plus className="h-4 w-4 mr-2" /> Novo Cliente
-                    </Button>
+                    {canManageCommercialFlow && (
+                        <Button onClick={() => { setNewClient(createEmptyClient(user?.id || "")); setShowNewClient(true); }} data-testid="new-client-btn">
+                            <Plus className="h-4 w-4 mr-2" /> Novo Cliente
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -781,7 +818,12 @@ export default function CRM1Page() {
                                     </div>
                                     <div className="p-2 space-y-2 min-h-[200px]">
                                         {(filteredClientsByStage[stage.id] || []).map((client, index) => (
-                                            <Draggable draggableId={client.id} index={index} key={client.id}>
+                                            <Draggable
+                                                draggableId={client.id}
+                                                index={index}
+                                                key={client.id}
+                                                isDragDisabled={client.stage === "cliente_perdido" && !isAdmin}
+                                            >
                                                 {(provided, snapshot) => (
                                                     <div
                                                         ref={provided.innerRef}
@@ -878,6 +920,9 @@ export default function CRM1Page() {
                 client={selectedClient}
                 constants={crmConstants}
                 users={crmUsers}
+                isAdmin={isAdmin}
+                canEdit={canManageCommercialFlow}
+                onDelete={handleDeleteClient}
                 onCreateProject={(client) => openProjectBatchModal(client, false)}
                 onClose={() => { setSelectedClient(null); loadClients(); }}
             />
@@ -1349,6 +1394,52 @@ export default function CRM1Page() {
 
                         {qualificationDraft && (
                             <>
+                                <div className="space-y-2">
+                                    <Label>Categorias de Interesse</Label>
+                                    <div className="flex flex-wrap gap-2">
+                                        {projectCategoryOptions.map((option) => {
+                                            const active = (qualificationDraft.categoria_interesse || []).includes(option.value);
+                                            return (
+                                                <button
+                                                    key={`${option.group}-${option.value}`}
+                                                    type="button"
+                                                    className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${active ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}
+                                                    onClick={() => toggleQualificationCategory(option.value)}
+                                                >
+                                                    {option.label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label>Tem ANVISA?</Label>
+                                        <Select value={qualificationDraft.tem_anvisa || ""} onValueChange={(value) => setQualificationDraft((current) => ({ ...current, tem_anvisa: normalizeTemAnvisaValue(value) }))}>
+                                            <SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger>
+                                            <SelectContent>
+                                                {ANVISA_OPTIONS.map((option) => (
+                                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Volume Estimado Mensal</Label>
+                                        <Select value={qualificationDraft.volume_estimado_mensal || ""} onValueChange={(value) => setQualificationDraft((current) => ({ ...current, volume_estimado_mensal: value }))}>
+                                            <SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger>
+                                            <SelectContent>
+                                                {VOLUME_OPTIONS.map((option) => (
+                                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+
+                                <Separator />
+
                                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                                     <div className="space-y-2">
                                         <Label>Contato - Nome</Label>
@@ -1410,50 +1501,6 @@ export default function CRM1Page() {
                                             <SelectContent>
                                                 {segmentOptions.map((option) => (
                                                     <SelectItem key={option} value={option}>{formatSlugLabel(option)}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label>Categorias de Interesse</Label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {projectCategoryOptions.map((option) => {
-                                            const active = (qualificationDraft.categoria_interesse || []).includes(option.value);
-                                            return (
-                                                <button
-                                                    key={option.value}
-                                                    type="button"
-                                                    className={`px-2.5 py-1 rounded-full text-xs border transition-colors ${active ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:bg-accent"}`}
-                                                    onClick={() => toggleQualificationCategory(option.value)}
-                                                >
-                                                    {option.label}
-                                                </button>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label>Tem ANVISA?</Label>
-                                        <Select value={qualificationDraft.tem_anvisa || ""} onValueChange={(value) => setQualificationDraft((current) => ({ ...current, tem_anvisa: normalizeTemAnvisaValue(value) }))}>
-                                            <SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger>
-                                            <SelectContent>
-                                                {ANVISA_OPTIONS.map((option) => (
-                                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Volume Estimado Mensal</Label>
-                                        <Select value={qualificationDraft.volume_estimado_mensal || ""} onValueChange={(value) => setQualificationDraft((current) => ({ ...current, volume_estimado_mensal: value }))}>
-                                            <SelectTrigger><SelectValue placeholder="Selecionar" /></SelectTrigger>
-                                            <SelectContent>
-                                                {VOLUME_OPTIONS.map((option) => (
-                                                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                                                 ))}
                                             </SelectContent>
                                         </Select>
@@ -1760,7 +1807,7 @@ export default function CRM1Page() {
 
 
 // ======= Client Detail Sheet =======
-function ClientDetailSheet({ client, constants, onClose, onCreateProject }) {
+function ClientDetailSheet({ client, constants, isAdmin = false, canEdit = false, onClose, onCreateProject, onDelete }) {
     const [data, setData] = useState(null);
     const [fullData, setFullData] = useState(null);
     const [editing, setEditing] = useState({});
@@ -1790,6 +1837,11 @@ function ClientDetailSheet({ client, constants, onClose, onCreateProject }) {
 
     const handleSave = async () => {
         if (!data) return;
+        if (!canEdit) {
+            toast.error("Apenas o time Comercial pode editar cards de cliente.");
+            setEditing({});
+            return;
+        }
         setSaving(true);
         try {
             const updates = {};
@@ -1836,7 +1888,7 @@ function ClientDetailSheet({ client, constants, onClose, onCreateProject }) {
                         </Badge>
                         {data.cnpj && <span className="text-xs text-muted-foreground mono-num">{data.cnpj}</span>}
                     </div>
-                    {stageIndex >= 2 && (
+                    {canEdit && stageIndex >= 2 && (
                         <div className="pt-3">
                             <Button variant="outline" size="sm" onClick={() => onCreateProject?.(data)}>
                                 <Plus className="h-4 w-4 mr-2" /> Novo Projeto para este Cliente
@@ -2122,10 +2174,22 @@ function ClientDetailSheet({ client, constants, onClose, onCreateProject }) {
                                 </section>
                             )}
 
-                            {Object.keys(editing).length > 0 && (
+                            {canEdit && Object.keys(editing).length > 0 && (
                                 <div className="pt-3">
                                     <Button onClick={handleSave} disabled={saving} className="w-full">
                                         {saving ? "Salvando..." : "Salvar Alterações"}
+                                    </Button>
+                                </div>
+                            )}
+                            {isAdmin && (
+                                <div className="pt-3">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="w-full text-destructive hover:text-destructive border-destructive/40"
+                                        onClick={() => onDelete?.(data)}
+                                    >
+                                        Excluir Cliente
                                     </Button>
                                 </div>
                             )}

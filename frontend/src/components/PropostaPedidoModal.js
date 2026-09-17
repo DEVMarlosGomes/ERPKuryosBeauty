@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Trash2, X, AlertCircle, CheckCircle2, Clock, Paperclip } from "lucide-react";
+import { Plus, Trash2, X, AlertCircle, CheckCircle2, Clock, Paperclip, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
 import { formatApiError } from "@/lib/formatError";
@@ -91,6 +91,8 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
     const [showRequirements, setShowRequirements] = useState(false);
 
     const [saving, setSaving] = useState(false);
+    const [deciding, setDeciding] = useState(false);
+    const [decisionReason, setDecisionReason] = useState("");
 
     const projetoId = projeto?.id;
     const copy = modalCopyForProjectStage(projeto?.stage);
@@ -210,8 +212,8 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
 
     // ── Salvar ────────────────────────────────────────────────────────────────
 
-    const handleSave = async (novoStatus) => {
-        if (!projetoId) return;
+    const handleSave = async (novoStatus, advanceToBudget = false, keepOpen = false) => {
+        if (!projetoId) return false;
         setSaving(true);
         try {
             const payload = {
@@ -235,7 +237,12 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
                 status: novoStatus || status,
             };
             const { data } = await api.post(`/crm/projects/${projetoId}/proposta`, payload);
-            toast.success(novoStatus === "confirmado" ? "Pedido confirmado!" : "Proposta salva.");
+            if (advanceToBudget) {
+                await api.put(`/crm/projects/${projetoId}/move`, { stage: "orcamento_completo" });
+                toast.success("Cotação concluída. Orçamento liberado para decisão do cliente.");
+            } else {
+                toast.success("Proposta salva.");
+            }
             onSaved?.(data);
 
             // R20: buscar necessidades geradas e exibir painel
@@ -249,11 +256,40 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
                     }
                 } catch { /* ignora */ }
             }
-            onOpenChange(false);
+            if (!keepOpen) onOpenChange(false);
+            return true;
         } catch (e) {
             toast.error(formatApiError(e));
+            return false;
         } finally {
             setSaving(false);
+        }
+    };
+
+    const handleDecision = async (decision) => {
+        if (decision === "reprovado" && !decisionReason.trim()) {
+            toast.error("Informe o motivo da reprovação.");
+            return;
+        }
+        setDeciding(true);
+        try {
+            const saved = await handleSave("enviado", false, true);
+            if (!saved) return;
+            const { data } = await api.post(`/crm/projects/${projetoId}/proposta/decisao`, {
+                decisao: decision,
+                motivo: decisionReason.trim(),
+            });
+            if (decision === "aprovado") {
+                toast.success("Orçamento aprovado. Pedido em rascunho e Kickoff criados.");
+            } else {
+                toast.success("Orçamento reprovado e projeto arquivado.");
+            }
+            onSaved?.(data);
+            onOpenChange(false);
+        } catch (error) {
+            toast.error(formatApiError(error));
+        } finally {
+            setDeciding(false);
         }
     };
 
@@ -589,17 +625,43 @@ export default function PropostaPedidoModal({ open, onOpenChange, projeto, onSav
                     ) : (
                         <>
                             <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-                            <Button variant="secondary" disabled={saving} onClick={() => handleSave("rascunho")}>
+                            <Button variant="secondary" disabled={saving || deciding} onClick={() => handleSave("rascunho")}>
                                 {copy.saveLabel}
                             </Button>
-                            <Button
-                                disabled={saving || !podeConfirmar}
-                                title={!podeConfirmar ? "Nenhuma amostra aprovada pelo cliente" : ""}
-                                onClick={() => handleSave("confirmado")}
-                            >
-                                {!podeConfirmar && <AlertCircle className="h-4 w-4 mr-1.5" />}
-                                Confirmar pedido
-                            </Button>
+                            {projeto?.stage === "cotacao" && (
+                                <Button
+                                    disabled={saving || !podeConfirmar}
+                                    title={!podeConfirmar ? "A amostra precisa da aprovação do P&D e do Comercial" : ""}
+                                    onClick={() => handleSave("enviado", true)}
+                                >
+                                    {!podeConfirmar && <AlertCircle className="h-4 w-4 mr-1.5" />}
+                                    Finalizar cotação
+                                </Button>
+                            )}
+                            {["orcamento_completo", "em_negociacao"].includes(projeto?.stage) && (
+                                <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
+                                    <Input
+                                        value={decisionReason}
+                                        onChange={(event) => setDecisionReason(event.target.value)}
+                                        placeholder="Motivo (obrigatório se reprovado)"
+                                        className="sm:w-72"
+                                    />
+                                    <Button
+                                        variant="destructive"
+                                        disabled={saving || deciding}
+                                        onClick={() => handleDecision("reprovado")}
+                                    >
+                                        <XCircle className="h-4 w-4 mr-1.5" /> Reprovado
+                                    </Button>
+                                    <Button
+                                        disabled={saving || deciding || !podeConfirmar}
+                                        title={!podeConfirmar ? "A amostra precisa da aprovação do P&D e do Comercial" : ""}
+                                        onClick={() => handleDecision("aprovado")}
+                                    >
+                                        <CheckCircle2 className="h-4 w-4 mr-1.5" /> Aprovado
+                                    </Button>
+                                </div>
+                            )}
                         </>
                     )}
                 </DialogFooter>

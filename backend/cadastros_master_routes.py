@@ -93,16 +93,19 @@ class FornecedorCadastroCreate(BaseModel):
     telefone: str = ""
     categoria: str = ""
     observacoes: str = ""
+    endereco: Dict[str, Any] = Field(default_factory=dict)
 
 
 class FornecedorCadastroUpdate(BaseModel):
     razao_social: Optional[str] = None
+    cnpj: Optional[str] = None
     nome_fantasia: Optional[str] = None
     email: Optional[str] = None
     telefone: Optional[str] = None
     categoria: Optional[str] = None
     observacoes: Optional[str] = None
     status_cadastro: Optional[str] = None
+    endereco: Optional[Dict[str, Any]] = None
 
 
 class CategoriaMPCreate(BaseModel):
@@ -244,6 +247,7 @@ def _normalize_fornecedor(doc: dict) -> dict:
         "email": contato.get("email") or doc.get("email") or "",
         "telefone": contato.get("telefone") or contato.get("whatsapp") or doc.get("telefone") or "",
         "categorias": doc.get("categorias") or [],
+        "endereco": doc.get("endereco") or {},
         "status_cadastro": doc.get("status_cadastro") or "ativo",
         "status_homologacao": homologacao.get("status") or doc.get("status") or "nao_iniciada",
         "created_at": doc.get("created_at"),
@@ -486,6 +490,7 @@ async def create_fornecedor(data: FornecedorCadastroCreate, request: Request):
             "principal_compras": True,
         }],
         "categorias": [data.categoria] if _clean(data.categoria) else [],
+        "endereco": data.endereco or {},
         "observacoes": _clean(data.observacoes),
         "homologacao": {
             "status": "nao_iniciada",
@@ -515,9 +520,15 @@ async def update_fornecedor(fornecedor_id: str, data: FornecedorCadastroUpdate, 
         raise HTTPException(status_code=404, detail="Fornecedor nao encontrado.")
     payload = data.model_dump(exclude_unset=True)
     updates: Dict[str, Any] = {"updated_at": _now_iso()}
-    for field in ("razao_social", "nome_fantasia", "observacoes", "status_cadastro"):
+    for field in ("razao_social", "cnpj", "nome_fantasia", "observacoes", "status_cadastro"):
         if field in payload:
             updates[field] = payload[field]
+    if "cnpj" in payload:
+        if not is_valid_cnpj(payload["cnpj"]):
+            raise HTTPException(status_code=422, detail="CNPJ invalido.")
+        updates["cnpj_normalizado"] = normalize_cnpj(payload["cnpj"])
+    if "endereco" in payload:
+        updates["endereco"] = payload.get("endereco") or {}
     if "categoria" in payload:
         updates["categorias"] = [payload["categoria"]] if _clean(payload["categoria"]) else []
     if "email" in payload or "telefone" in payload:

@@ -463,6 +463,7 @@ export default function PDDetail() {
   const { user: authUser } = useAuth();
   const canEdit = authUser && ["admin", "gestor", "formulador", "lider_pd", "engenharia_produto"].includes(authUser.role);
   const canApproveCommercial = authUser && ["admin", "vendedor", "sales_ops", "sucesso_cliente"].includes(authUser.role);
+  const canApproveWaitingRequest = Boolean(canEdit || canApproveCommercial);
   const canManageApproval = Boolean(canEdit || canApproveCommercial);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -526,6 +527,14 @@ export default function PDDetail() {
           toast.warning(skuCreated.reason || "SKU não pôde ser gerado.");
         } else if (skuCreated.codigo_interno) {
           toast.success(`SKU gerado: ${skuCreated.codigo_interno}`);
+        }
+      }
+      const kickoffInfo = response?.data?.kickoff_criado;
+      if (newStatus === "APPROVED" && kickoffInfo) {
+        if (kickoffInfo.blocked) {
+          toast.warning(kickoffInfo.reason || "Kickoff ainda nao foi liberado.");
+        } else if (kickoffInfo.numero_kickoff) {
+          toast.success(`Kickoff liberado: ${kickoffInfo.numero_kickoff}`);
         }
       }
       fetchData();
@@ -706,7 +715,7 @@ export default function PDDetail() {
               })
             }
             {/* Botões de aprovação comercial — visíveis apenas para roles comerciais */}
-            {canApproveCommercial && req.status === "WAITING_APPROVAL" && (
+            {canApproveWaitingRequest && req.status === "WAITING_APPROVAL" && (
               <>
                 <Button size="sm" variant="destructive" onClick={handleCommercialReject} className="gap-1.5">
                   <XCircle className="h-3.5 w-3.5" /> Reprovar
@@ -746,7 +755,7 @@ export default function PDDetail() {
                 </p>
                 {req.status === "APPROVED" && (
                   <p className="text-xs text-green-700 dark:text-green-300 mt-0.5">
-                    Avance o <strong>Projeto CRM</strong> para o estágio <strong>"Pedido Aprovado"</strong> para criar o Kickoff automaticamente.
+                    O Projeto CRM avança para <strong>Pedido Aprovado</strong> e o Kickoff é criado automaticamente.
                   </p>
                 )}
               </div>
@@ -1028,7 +1037,7 @@ function OverviewTab({ req, dev, formulas, tests, samples, approval, costs, hist
   const [savingApproval, setSavingApproval] = useState(false);
   const canEditInternalApproval = Boolean(canEdit);
   const canEditClientApproval = Boolean(canEdit || canApproveCommercial);
-  const canUseCommercialDecision = Boolean(canApproveCommercial && req.status === "WAITING_APPROVAL");
+  const canUseCommercialDecision = Boolean((canApproveCommercial || canEdit) && req.status === "WAITING_APPROVAL");
 
   useEffect(() => {
     setApprovalForm({
@@ -1702,7 +1711,7 @@ function OverviewTab({ req, dev, formulas, tests, samples, approval, costs, hist
                         className="gap-1.5"
                       >
                         <XCircle className="h-3.5 w-3.5" />
-                        Reprovar Comercialmente
+                        Reprovar / Retrabalho
                       </Button>
                       <Button
                         size="sm"
@@ -1711,7 +1720,7 @@ function OverviewTab({ req, dev, formulas, tests, samples, approval, costs, hist
                         className="gap-1.5 bg-green-600 hover:bg-green-700 text-white"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        Aprovar Comercialmente
+                        Aprovar retorno
                       </Button>
                     </>
                   )}
@@ -1867,10 +1876,10 @@ function ImportFormulaDialog({ open, onOpenChange, devId, onImported }) {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Importar Fórmula</DialogTitle>
-          <p className="text-xs text-muted-foreground">
+          <DialogDescription className="text-xs text-muted-foreground">
             Busque uma fórmula de outra requisição e importe a composição como rascunho editável aqui —
             a fórmula de origem não é alterada.
-          </p>
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div className="relative">

@@ -56,6 +56,15 @@ const emptyFornecedor = {
   telefone: "",
   categoria: "",
   observacoes: "",
+  endereco: {
+    cep: "",
+    logradouro: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    uf: "",
+  },
 };
 
 const emptyCategoriaMp = {
@@ -81,6 +90,10 @@ const emptyProduto = {
   volume: "",
   unidade_volume: "ml",
   pd_request_id: "",
+  unidades_por_caixa: "",
+  peso_por_caixa: "",
+  prazo_validade_dias: "",
+  especificacoes_tecnicas: {},
   observacoes: "",
 };
 
@@ -113,6 +126,12 @@ const emptyProductTech = {
   formula: [{ material_id: "", material_nome: "", fase: "A", percentual: "", funcao: "" }],
   bom: [{ material_id: "", material_nome: "", quantidade: "", unidade: "un", etapa: "" }],
   especificacoes_tecnicas: {
+    versao_formula: "1",
+    versao_bom: "1",
+    versao_especificacao: "1",
+    unidades_por_caixa: "",
+    peso_por_caixa: "",
+    prazo_validade_dias: "",
     aspecto: "",
     cor: "",
     odor: "",
@@ -387,6 +406,7 @@ export default function CadastrosPage() {
         categoria: row.categoria || (row.categorias || [])[0] || "",
         email: row.email || (row.contatos || [])[0]?.email || "",
         telefone: row.telefone || (row.contatos || [])[0]?.telefone || "",
+        endereco: { ...emptyFornecedor.endereco, ...(row.endereco || {}) },
       } : emptyFornecedor);
     }
     if (kind === "categoriaProduto") {
@@ -401,6 +421,10 @@ export default function CadastrosPage() {
         ...row,
         cliente_id: row.cliente_id || "",
         volume: row.volume ?? "",
+        unidades_por_caixa: row.especificacoes_tecnicas?.unidades_por_caixa || "",
+        peso_por_caixa: row.especificacoes_tecnicas?.peso_por_caixa || "",
+        prazo_validade_dias: row.especificacoes_tecnicas?.prazo_validade_dias || "",
+        especificacoes_tecnicas: row.especificacoes_tecnicas || {},
       } : emptyProduto);
     }
     if (kind === "material") {
@@ -472,6 +496,7 @@ export default function CadastrosPage() {
           categoria: fornecedorForm.categoria,
           observacoes: fornecedorForm.observacoes,
           status_cadastro: fornecedorForm.status_cadastro,
+          endereco: fornecedorForm.endereco,
         } : fornecedorForm;
         if (isEditing) await api.put(`/cadastros/fornecedores/${editing.id}`, payload);
         else await api.post("/cadastros/fornecedores", payload);
@@ -506,6 +531,12 @@ export default function CadastrosPage() {
         const payload = {
           ...produtoForm,
           volume: produtoForm.volume === "" ? null : Number(produtoForm.volume),
+          especificacoes_tecnicas: {
+            ...(produtoForm.especificacoes_tecnicas || {}),
+            unidades_por_caixa: produtoForm.unidades_por_caixa,
+            peso_por_caixa: produtoForm.peso_por_caixa,
+            prazo_validade_dias: produtoForm.prazo_validade_dias,
+          },
         };
         if (isEditing) {
           await api.put(`/cadastros/produtos/${editing.id}`, {
@@ -516,6 +547,7 @@ export default function CadastrosPage() {
             pd_request_id: payload.pd_request_id,
             observacoes: payload.observacoes,
             status: payload.status,
+            especificacoes_tecnicas: payload.especificacoes_tecnicas,
           });
         } else {
           await api.post("/cadastros/produtos", payload);
@@ -591,6 +623,30 @@ export default function CadastrosPage() {
       await loadAll();
     } catch (error) {
       toast.error(error.response?.data?.detail || "Erro ao aprovar categoria");
+    }
+  };
+
+  const buscarCepFornecedor = async () => {
+    const cep = String(fornecedorForm.endereco?.cep || "").replace(/\D/g, "");
+    if (cep.length !== 8) return toast.error("Informe um CEP com 8 digitos.");
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      if (data.erro) return toast.error("CEP nao encontrado.");
+      setFornecedorForm({
+        ...fornecedorForm,
+        endereco: {
+          ...(fornecedorForm.endereco || emptyFornecedor.endereco),
+          cep,
+          logradouro: data.logradouro || "",
+          bairro: data.bairro || "",
+          cidade: data.localidade || "",
+          uf: data.uf || "",
+        },
+      });
+      toast.success("Endereco preenchido pelo CEP.");
+    } catch (error) {
+      toast.error("Nao foi possivel consultar o CEP.");
     }
   };
 
@@ -997,6 +1053,19 @@ export default function CadastrosPage() {
           <Field label="Email"><Input value={fornecedorForm.email} onChange={(e) => setFornecedorForm({ ...fornecedorForm, email: e.target.value })} /></Field>
           <Field label="Telefone"><Input value={fornecedorForm.telefone} onChange={(e) => setFornecedorForm({ ...fornecedorForm, telefone: e.target.value })} /></Field>
         </div>
+        <Separator />
+        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+          <Field label="CEP"><Input value={fornecedorForm.endereco?.cep || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), cep: e.target.value } })} /></Field>
+          <Button type="button" variant="outline" className="self-end" onClick={buscarCepFornecedor}>Buscar CEP</Button>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="Logradouro"><Input value={fornecedorForm.endereco?.logradouro || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), logradouro: e.target.value } })} /></Field>
+          <Field label="Numero"><Input value={fornecedorForm.endereco?.numero || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), numero: e.target.value } })} /></Field>
+          <Field label="Complemento"><Input value={fornecedorForm.endereco?.complemento || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), complemento: e.target.value } })} /></Field>
+          <Field label="Bairro"><Input value={fornecedorForm.endereco?.bairro || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), bairro: e.target.value } })} /></Field>
+          <Field label="Cidade"><Input value={fornecedorForm.endereco?.cidade || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), cidade: e.target.value } })} /></Field>
+          <Field label="UF"><Input maxLength={2} value={fornecedorForm.endereco?.uf || ""} onChange={(e) => setFornecedorForm({ ...fornecedorForm, endereco: { ...(fornecedorForm.endereco || emptyFornecedor.endereco), uf: e.target.value.toUpperCase() } })} /></Field>
+        </div>
         <Field label="Observacoes"><Textarea value={fornecedorForm.observacoes} onChange={(e) => setFornecedorForm({ ...fornecedorForm, observacoes: e.target.value })} /></Field>
       </CadastroDialog>
 
@@ -1058,6 +1127,9 @@ export default function CadastrosPage() {
           <Field label="Volume"><Input type="number" value={produtoForm.volume} onChange={(e) => setProdutoForm({ ...produtoForm, volume: e.target.value })} /></Field>
           <Field label="Unidade"><Input value={produtoForm.unidade_volume} onChange={(e) => setProdutoForm({ ...produtoForm, unidade_volume: e.target.value })} /></Field>
           <Field label="P&D concluido"><Input value={produtoForm.pd_request_id} onChange={(e) => setProdutoForm({ ...produtoForm, pd_request_id: e.target.value })} placeholder="ID do P&D aprovado, se houver" /></Field>
+          <Field label="Unidades por caixa"><Input type="number" value={produtoForm.unidades_por_caixa} onChange={(e) => setProdutoForm({ ...produtoForm, unidades_por_caixa: e.target.value })} /></Field>
+          <Field label="Peso por caixa"><Input type="number" step="0.001" value={produtoForm.peso_por_caixa} onChange={(e) => setProdutoForm({ ...produtoForm, peso_por_caixa: e.target.value })} /></Field>
+          <Field label="Prazo de validade (dias)"><Input type="number" value={produtoForm.prazo_validade_dias} onChange={(e) => setProdutoForm({ ...produtoForm, prazo_validade_dias: e.target.value })} /></Field>
         </div>
         <Field label="Observacoes"><Textarea value={produtoForm.observacoes} onChange={(e) => setProdutoForm({ ...produtoForm, observacoes: e.target.value })} /></Field>
       </CadastroDialog>

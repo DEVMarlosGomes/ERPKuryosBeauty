@@ -54,7 +54,7 @@ function LineCard({ linha, slot }) {
   const operando = slot?.status === "em_execucao";
 
   return (
-    <div className="min-h-[116px] rounded-2xl border border-white/5 bg-[#1f1f22] p-4 shadow-[0_14px_28px_rgba(0,0,0,0.35)]">
+    <div className="dashboard-panel min-h-[116px] rounded-2xl border border-white/5 bg-[#1f1f22] p-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-bold text-white">{linha?.nome || "Linha"}</h3>
         <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black ${operando ? "bg-[#063d16] text-[#04c821]" : "bg-white/5 text-zinc-400"}`}>
@@ -107,7 +107,7 @@ function GoalBar({ title, subtitle, produced, target, tone = "blue" }) {
 
 function MetricCard({ value, label, accent }) {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-[#1f1f22] p-5">
+    <div className="dashboard-kpi relative overflow-hidden rounded-2xl bg-[#1f1f22] p-5">
       <span className={`absolute inset-x-0 top-0 h-0.5 ${accent}`} />
       <p className="text-3xl font-black leading-none text-white">{value}</p>
       <p className="mt-2 text-sm font-bold text-zinc-500">{label}</p>
@@ -117,7 +117,7 @@ function MetricCard({ value, label, accent }) {
 
 function LaunchesCard({ rows }) {
   return (
-    <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+    <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
       <h2 className="mb-5 text-base font-black">Lancamentos por OP / Posto - Hoje</h2>
       <div>
         {rows.slice(0, 6).map((row, idx) => (
@@ -147,7 +147,7 @@ function LaunchesCard({ rows }) {
 
 function TurnosCard({ hasActive }) {
   return (
-    <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+    <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
       <h2 className="mb-8 text-base font-black">Turnos do Dia</h2>
       <div className="flex items-center justify-between gap-4">
         <div>
@@ -185,7 +185,7 @@ function ProgressLine({ name, produced, target, muted }) {
 function ProgressPanel({ linhas, slotByLinha, producedByLine, metaDia, produzidoDia }) {
   const fallback = [{ nome: "Linha 1" }, { nome: "Linha 2" }, { nome: "Linha 3" }];
   return (
-    <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+    <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
       <h2 className="mb-7 text-base font-black">Progresso Diario por Linha / Posto</h2>
       <ProgressLine name="Progresso do Envase (Meta Diaria)" produced={produzidoDia} target={metaDia} />
       <p className="mt-5 text-[11px] font-black uppercase tracking-widest text-zinc-500">Linhas de Envase</p>
@@ -211,7 +211,7 @@ function ProgressPanel({ linhas, slotByLinha, producedByLine, metaDia, produzido
 
 function OrdersProgress({ orders }) {
   return (
-    <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+    <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
       <h2 className="mb-5 text-base font-black">Acompanhamento de Pedidos</h2>
       <div className="space-y-3">
         {orders.slice(0, 8).map((order, idx) => {
@@ -329,11 +329,11 @@ export default function PCPDailyDashboard() {
 
   return (
     <div className="pcp-theme min-h-full bg-black text-white">
-        <main className="mx-auto min-h-screen w-full max-w-[1440px] px-4 py-6 md:px-8 lg:px-9">
+        <main className="dashboard-shell-wide min-h-screen">
           <header className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
-              <p className="text-xs font-semibold text-zinc-500">Sistema PCP - Producao do dia</p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight md:text-4xl">{formatLongDate(day)}</h1>
+              <p className="dashboard-eyebrow text-zinc-500">Sistema PCP · Produção do dia</p>
+              <h1 className="dashboard-title mt-2 font-black">{formatLongDate(day)}</h1>
               <div className="mt-2 flex items-center gap-2 text-xs font-bold text-[#04c821]">
                 <span className="h-2 w-2 rounded-full bg-[#04c821]" /> Ao vivo
               </div>
@@ -356,7 +356,7 @@ export default function PCPDailyDashboard() {
             <div className="mt-10 rounded-3xl bg-[#1b1b1e] p-12 text-center text-zinc-400">Carregando dashboard...</div>
           ) : (
             <div className="mt-7 space-y-5">
-              <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+              <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <h2 className="flex items-center gap-2 text-base font-black">
                     <AlertTriangle className="h-4 w-4 text-red-500" /> Status das Linhas - OP em Andamento
@@ -370,7 +370,7 @@ export default function PCPDailyDashboard() {
                 </div>
               </section>
 
-              <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+              <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
                 <h2 className="mb-5 text-base font-black">Acompanhamento e Empilhamento de Metas</h2>
                 <div className="space-y-4">
                   <GoalBar title={`Meta de hoje (${formatBR(day)})`} subtitle="Meta Diaria de Producao" produced={produzidoDia} target={metaDia} />
@@ -391,7 +391,7 @@ export default function PCPDailyDashboard() {
               </section>
 
               <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+                <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
                   <h2 className="mb-5 text-base font-black">Linhas de Envase (Envase)</h2>
                   <div className="flex min-h-[240px] items-center justify-center">
                     <div
@@ -402,7 +402,7 @@ export default function PCPDailyDashboard() {
                     </div>
                   </div>
                 </section>
-                <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+                <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
                   <h2 className="mb-5 text-base font-black">Rotulagem & Postos de Trabalho</h2>
                   <div className="flex min-h-[240px] items-center justify-center text-sm text-zinc-500">
                     Nenhuma producao registrada hoje.
@@ -412,7 +412,7 @@ export default function PCPDailyDashboard() {
 
               <ProgressPanel linhas={activeLinhas} slotByLinha={slotByLinha} producedByLine={producedByLine} metaDia={metaDia} produzidoDia={produzidoDia} />
 
-              <section className="rounded-3xl bg-[#1f1f22] p-5 md:p-6">
+              <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-base font-black">Programado vs Realizado</h2>
                   <button type="button" onClick={() => navigate("/pcp/planejamento")} className="min-h-8 rounded-md px-3 text-[11px] font-bold text-[#6485f2] hover:bg-[#6485f2]/10">Programar /</button>

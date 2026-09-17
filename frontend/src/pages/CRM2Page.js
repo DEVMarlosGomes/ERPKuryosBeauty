@@ -22,7 +22,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GripVertical, Building2, PackagePlus, Archive, ChevronRight, FlaskConical, ExternalLink, ShoppingCart, CheckCircle, XCircle } from "lucide-react";
+import { GripVertical, Building2, PackagePlus, Archive, ChevronRight, FlaskConical, ExternalLink, ShoppingCart, CheckCircle, XCircle, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import SampleBatchModal from "@/components/SampleBatchModal";
@@ -31,6 +31,7 @@ import DirectOrderModal from "@/components/DirectOrderModal";
 import ViewSwitcher from "@/components/ViewSwitcher";
 import FilterBar, { applyFilters } from "@/components/FilterBar";
 import ListView from "@/components/ListView";
+import { useAuth } from "@/contexts/AuthContext";
 
 function CRMSubNav({ active }) {
     const navigate = useNavigate();
@@ -67,7 +68,7 @@ const STAGES = [
     { id: "cotacao", label: "Cotação", color: "bg-orange-500" },
     { id: "orcamento_completo", label: "Orçamento Completo", color: "bg-rose-500" },
     { id: "em_negociacao", label: "Em Negociação", color: "bg-amber-500" },
-    { id: "pedido_aprovado", label: "Pedido Aprovado", color: "bg-lime-500" },
+    { id: "pedido_aprovado", label: "Pedido Fechado", color: "bg-lime-500" },
     { id: "projeto_arquivado", label: "Projeto Arquivado", color: "bg-slate-500" },
 ];
 
@@ -134,6 +135,9 @@ function commercialActionForStage(stage) {
 
 export default function CRM2Page() {
     const navigate = useNavigate();
+    const { user: authUser } = useAuth();
+    const isAdmin = authUser?.role === "admin";
+    const canManageCommercialFlow = ["admin", "vendedor", "sales_ops", "sucesso_cliente"].includes(authUser?.role);
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({});
@@ -397,6 +401,10 @@ export default function CRM2Page() {
     };
 
     const handleDragEnd = async (result) => {
+        if (!canManageCommercialFlow) {
+            toast.error("Apenas o time Comercial pode movimentar o CRM2.");
+            return;
+        }
         if (!result.destination) return;
         const { draggableId, source, destination } = result;
         if (source.droppableId === destination.droppableId) return;
@@ -416,6 +424,10 @@ export default function CRM2Page() {
     };
 
     const handleBatchSampleSubmit = async () => {
+        if (!canManageCommercialFlow) {
+            toast.error("Apenas o time Comercial pode criar cards de amostra.");
+            return;
+        }
         if (!batchProjectId) return;
         const validSamples = batchSamples.filter((sample) => (
             sample.nome_produto.trim()
@@ -481,6 +493,10 @@ export default function CRM2Page() {
     };
 
     const handleUpdateProject = async (projectId, updates) => {
+        if (!canManageCommercialFlow) {
+            toast.error("Apenas o time Comercial pode editar cards de projeto.");
+            return;
+        }
         try {
             await api.put(`/crm/projects/${projectId}`, updates);
             toast.success("Projeto atualizado.");
@@ -494,6 +510,10 @@ export default function CRM2Page() {
     };
 
     const handleManualSampleCreation = () => {
+        if (!canManageCommercialFlow) {
+            toast.error("Apenas o time Comercial pode criar cards de amostra.");
+            return;
+        }
         if (!selectedProjectId) return;
         setBatchProjectId(selectedProjectId);
         const inherited = createEmptySample();
@@ -513,6 +533,44 @@ export default function CRM2Page() {
             setShowArchiveDialog(false);
             setPendingArchiveProject(null);
             setArchiveReason("");
+        } catch (error) {
+            toast.error(formatApiError(error));
+        }
+    };
+
+    const handleSyncApprovedProjects = async () => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem sincronizar projetos aprovados.");
+            return;
+        }
+        try {
+            const { data } = await api.post("/crm/projects/sync-approved");
+            toast.success(data?.message || "Projetos aprovados sincronizados.");
+            if (data?.errors?.length) {
+                toast.warning(`${data.errors.length} projeto(s) ficaram pendentes. Confira os pre-requisitos.`);
+            }
+            await loadProjects();
+            if (selectedProjectId) {
+                await loadProjectDetail(selectedProjectId);
+            }
+        } catch (error) {
+            toast.error(formatApiError(error));
+        }
+    };
+
+    const handleDeleteProject = async () => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem remover cards de projeto.");
+            return;
+        }
+        if (!selectedProject) return;
+        if (!window.confirm(`Excluir projeto "${selectedProject.nome_projeto}" e suas amostras/cards P&D vinculados?`)) return;
+        try {
+            const { data } = await api.delete(`/crm/projects/${selectedProject.id}`);
+            toast.success(`Projeto excluído (${data.deleted_samples} amostra(s), ${data.deleted_pd_cards} card(s) P&D).`);
+            setSelectedProjectId(null);
+            setSelectedProjectData(null);
+            await loadProjects();
         } catch (error) {
             toast.error(formatApiError(error));
         }
@@ -560,6 +618,11 @@ export default function CRM2Page() {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
+                    {isAdmin && (
+                        <Button variant="outline" onClick={handleSyncApprovedProjects}>
+                            <RefreshCw className="h-4 w-4 mr-2" /> Sincronizar Aprovados
+                        </Button>
+                    )}
                     <Button variant="outline" onClick={() => setShowDirectOrder(true)}>
                         <ShoppingCart className="h-4 w-4 mr-2" /> Pedido Direto
                     </Button>
@@ -602,12 +665,14 @@ export default function CRM2Page() {
                                         </div>
                                         <div className="p-2 space-y-2 min-h-[420px]">
                                             {(projectsByStage[stage.id] || []).map((project, index) => (
-                                                <Draggable draggableId={project.id} index={index} key={project.id}>
+                                                <Draggable draggableId={project.id} index={index} key={project.id} isDragDisabled={!canManageCommercialFlow}>
                                                     {(draggableProvided, dragSnapshot) => (
                                                         <div
                                                             ref={draggableProvided.innerRef}
                                                             {...draggableProvided.draggableProps}
-                                                            className={`bg-card border border-border rounded-md p-3 cursor-pointer transition-transform duration-150 ${
+                                                            className={`border rounded-md p-3 cursor-pointer transition-transform duration-150 ${
+                                                                project.amostra_aprovada ? "bg-emerald-50 border-emerald-400 dark:bg-emerald-950/25" : "bg-card border-border"
+                                                            } ${
                                                                 dragSnapshot.isDragging ? "kanban-card-dragging" : "hover:-translate-y-0.5 hover:shadow-sm"
                                                             }`}
                                                             onClick={() => setSelectedProjectId(project.id)}
@@ -638,7 +703,10 @@ export default function CRM2Page() {
                                                                         {formatSlugLabel(project.posicionamento)}
                                                                     </Badge>
                                                                 )}
-                                                                <KickoffBadge project={project} />
+                                                                 <KickoffBadge project={project} />
+                                                                 {project.amostra_aprovada && (
+                                                                     <Badge className="text-[10px] bg-emerald-600 text-white">Amostra aprovada</Badge>
+                                                                 )}
                                                                 {project.prazo_desejado_amostra && (
                                                                     <span className="text-[10px] text-muted-foreground ml-auto">
                                                                         {new Date(project.prazo_desejado_amostra).toLocaleDateString("pt-BR")}
@@ -931,9 +999,11 @@ export default function CRM2Page() {
                                 <section className="space-y-3">
                                     <div className="flex items-center justify-between">
                                         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Histórico de amostras</h4>
-                                        <Button size="sm" onClick={handleManualSampleCreation}>
-                                            <PackagePlus className="h-4 w-4 mr-1" /> Criar amostras
-                                        </Button>
+                                        {canManageCommercialFlow && (
+                                            <Button size="sm" onClick={handleManualSampleCreation}>
+                                                <PackagePlus className="h-4 w-4 mr-1" /> Criar amostras
+                                            </Button>
+                                        )}
                                     </div>
                                     {(selectedProjectData?.samples || []).length === 0 && (
                                         <div className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
@@ -1051,7 +1121,8 @@ export default function CRM2Page() {
                                 </section>
                             </div>
 
-                            <div className="border-t p-4">
+                            {canManageCommercialFlow && (
+                            <div className="border-t p-4 space-y-2">
                                 <Button
                                     variant="outline"
                                     className="w-full justify-start text-muted-foreground"
@@ -1064,7 +1135,18 @@ export default function CRM2Page() {
                                     <Archive className="h-4 w-4 mr-2" />
                                     Arquivar projeto
                                 </Button>
+                                {isAdmin && (
+                                    <Button
+                                        variant="outline"
+                                        className="w-full justify-start text-destructive hover:text-destructive border-destructive/40"
+                                        onClick={handleDeleteProject}
+                                    >
+                                        <XCircle className="h-4 w-4 mr-2" />
+                                        Excluir projeto
+                                    </Button>
+                                )}
                             </div>
+                            )}
                         </>
                     )}
                 </SheetContent>
@@ -1091,6 +1173,10 @@ export default function CRM2Page() {
                 generateVariacaoLetters={generateVariacaoLetters}
                 constants={sampleConstants}
                 onAddSample={() => {
+                    if (!canManageCommercialFlow) {
+                        toast.error("Apenas o time Comercial pode criar cards de amostra.");
+                        return;
+                    }
                     const proj = projects.find(p => p.id === batchProjectId);
                     const inherited = createEmptySample();
                     if (proj) {

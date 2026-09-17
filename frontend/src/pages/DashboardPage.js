@@ -62,7 +62,7 @@ function KpiCard({ label, value, sub, Icon, tone = "default", onClick, alert }) 
   };
   return (
     <div
-      className={`rounded-xl border px-4 py-3.5 flex items-center gap-3 transition-all ${tones[tone]} ${onClick ? "cursor-pointer hover:brightness-95 hover:shadow-sm" : ""}`}
+      className={`dashboard-kpi rounded-xl border px-4 py-3.5 flex items-center gap-3 transition-all ${tones[tone]} ${onClick ? "cursor-pointer hover:-translate-y-0.5 hover:shadow-md" : ""}`}
       onClick={onClick}
     >
       {Icon && (
@@ -85,7 +85,7 @@ function KpiCard({ label, value, sub, Icon, tone = "default", onClick, alert }) 
 function Section({ title, Icon, accent, navPath, navigate, children, cols = 4 }) {
   const colMap = { 2: "grid-cols-2", 3: "grid-cols-2 sm:grid-cols-3", 4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4", 5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5", 6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6" };
   return (
-    <div className="border rounded-xl overflow-hidden">
+    <div className="dashboard-panel border rounded-xl overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3 border-b bg-muted/20">
         <div className="flex items-center gap-2.5">
           <span className={`w-1 h-4 ${accent} rounded-full`} />
@@ -133,7 +133,7 @@ function TaskQueue({ tasks, navigate }) {
   });
 
   return (
-    <div className="border rounded-xl overflow-hidden">
+    <div className="dashboard-panel border rounded-xl overflow-hidden">
       <div className="flex items-center justify-between px-5 py-3 border-b bg-muted/20">
         <div className="flex items-center gap-2.5">
           <span className="w-1 h-4 bg-primary rounded-full" />
@@ -243,7 +243,7 @@ function AdminDashboard({ erp, tasks, navigate }) {
 
       {/* 3-col: Kickoffs | CQ | Compras */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="border rounded-xl overflow-hidden">
+        <div className="dashboard-panel border rounded-xl overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3 border-b bg-muted/20">
             <span className="w-1 h-4 bg-amber-500 rounded-full" />
             <ClipboardList className="h-3.5 w-3.5 text-muted-foreground" />
@@ -257,7 +257,7 @@ function AdminDashboard({ erp, tasks, navigate }) {
           </div>
         </div>
 
-        <div className="border rounded-xl overflow-hidden">
+        <div className="dashboard-panel border rounded-xl overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3 border-b bg-muted/20">
             <span className="w-1 h-4 bg-cyan-500 rounded-full" />
             <Microscope className="h-3.5 w-3.5 text-muted-foreground" />
@@ -279,7 +279,7 @@ function AdminDashboard({ erp, tasks, navigate }) {
           </div>
         </div>
 
-        <div className="border rounded-xl overflow-hidden">
+        <div className="dashboard-panel border rounded-xl overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-3 border-b bg-muted/20">
             <span className="w-1 h-4 bg-orange-500 rounded-full" />
             <Package className="h-3.5 w-3.5 text-muted-foreground" />
@@ -504,11 +504,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-5">
+    <div className="dashboard-shell space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-heading font-semibold tracking-tight">{greetings[roleGroup]}</h1>
+          <p className="dashboard-eyebrow">Kuryos ERP · Visão consolidada</p>
+          <h1 className="dashboard-title font-heading">{greetings[roleGroup]}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Olá, <span className="font-medium text-foreground">{user?.name}</span> · {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
           </p>

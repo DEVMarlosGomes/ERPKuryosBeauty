@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, ChevronDown, ChevronUp, X } from "lucide-react";
 import { FieldHint } from "@/components/ui/FieldHint";
@@ -48,9 +48,11 @@ export default function SampleBatchModal({
     const variationParams = constants?.sample_parametros_variacao || [];
     // A4/A5: mesma fonte de verdade do CRM (categoria_interesse / project_tipo_servico) —
     // sem input livre divergente.
-    const categoriaOptions = Object.entries(constants?.categoria_interesse || {}).flatMap(([group, values]) =>
-        (values || []).map((value) => ({ value, group, label: formatSlugLabel(value) }))
-    );
+    const categoriaOptions = Array.from(new Map(
+        Object.entries(constants?.categoria_interesse || {}).flatMap(([group, values]) =>
+            (values || []).map((value) => [value, { value, group, label: formatSlugLabel(value) }])
+        )
+    ).values());
     const tipoServicoOptions = constants?.project_tipo_servico || [];
 
     const updateSample = (index, field, value) => {
@@ -83,9 +85,9 @@ export default function SampleBatchModal({
             <DialogContent className="max-w-5xl max-h-[92vh] flex flex-col p-0 overflow-hidden">
                 <DialogHeader className="p-6 pb-3 border-b bg-gradient-to-r from-primary/5 to-primary/10">
                     <DialogTitle className="font-heading text-2xl">Criar Amostras em Lote</DialogTitle>
-                    <p className="text-sm text-muted-foreground">
+                    <DialogDescription className="text-sm text-muted-foreground">
                         Cada amostra recebe numeração global e pode gerar variações independentes.
-                    </p>
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4">

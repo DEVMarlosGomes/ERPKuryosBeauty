@@ -37,6 +37,7 @@ function initials(name) {
 
 export default function PDPage() {
     const { user: authUser } = useAuth();
+    const isAdmin = authUser?.role === "admin";
     const canAssignExecutor = authUser && ["admin", "lider_pd", "formulador", "engenharia_produto"].includes(authUser.role);
     const [cards, setCards] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -137,9 +138,17 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
             if (reconnectTimer) {
                 window.clearTimeout(reconnectTimer);
             }
-            if (wsRef.current) {
-                wsRef.current.close();
-                wsRef.current = null;
+            const ws = wsRef.current;
+            wsRef.current = null;
+            if (ws) {
+                ws.onmessage = null;
+                ws.onclose = null;
+                ws.onerror = null;
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.close();
+                } else if (ws.readyState === WebSocket.CONNECTING) {
+                    ws.addEventListener("open", () => ws.close(), { once: true });
+                }
             }
         };
     }, []);
@@ -172,6 +181,9 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
     };
 
     const createInternalResearch = async () => {
+        if (!isAdmin) {
+            return toast.error("Apenas administradores podem criar cards P&D.");
+        }
         if (!researchForm.project_name.trim()) {
             return toast.error("Nome do projeto é obrigatório");
         }
@@ -224,6 +236,35 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
         finally { setAssigningExecutor(false); }
     };
 
+    const updateSelectedCard = async (updates) => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem editar cards P&D.");
+            return;
+        }
+        if (!selectedCard?.id) return;
+        try {
+            const { data } = await api.put(`/crm/pd/cards/${selectedCard.id}`, updates);
+            setSelectedCard(data);
+            toast.success("Card P&D atualizado.");
+            loadCards();
+        } catch (err) { toast.error(formatApiError(err)); }
+    };
+
+    const deleteSelectedCard = async () => {
+        if (!isAdmin) {
+            toast.error("Apenas administradores podem remover cards P&D.");
+            return;
+        }
+        if (!selectedCard?.id) return;
+        if (!window.confirm(`Excluir card P&D "${selectedCard.numero_completo || selectedCard.produto}"?`)) return;
+        try {
+            await api.delete(`/crm/pd/cards/${selectedCard.id}`);
+            toast.success("Card P&D excluído.");
+            setSelectedCard(null);
+            loadCards();
+        } catch (err) { toast.error(formatApiError(err)); }
+    };
+
     const openCardDetail = async (card) => {
         // If linked to pd_request, navigate to full detail page (like Abelinha print)
         if (card.pd_request_id) {
@@ -262,9 +303,11 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
                 </div>
                 <div className="flex items-center gap-2">
                     <ViewSwitcher value={view} onChange={setView} testIdPrefix="pd" />
-                    <Button onClick={() => setShowResearch(true)} className="gap-1.5">
-                        <Sparkles className="h-4 w-4" /> Nova Pesquisa Interna
-                    </Button>
+                    {isAdmin && (
+                        <Button onClick={() => setShowResearch(true)} className="gap-1.5">
+                            <Sparkles className="h-4 w-4" /> Nova Pesquisa Interna
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -412,6 +455,18 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
                                                                             <UserCircle2 className="h-3.5 w-3.5" /> Atribuir
                                                                         </button>
                                                                     ) : <span />}
+                                                                    {isAdmin && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setSelectedCard(card);
+                                                                            }}
+                                                                            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                                                                        >
+                                                                            Admin
+                                                                        </button>
+                                                                    )}
                                                                 </div>
                                                             </div>
                                                             <div {...provided.dragHandleProps} className="shrink-0">
@@ -570,6 +625,53 @@ const validCards = Array.isArray(data) ? data.filter(c => c && c.id) : (Array.is
                                         <p className="text-xs font-semibold text-muted-foreground mb-1">Responsável P&D</p>
                                         <p className="text-sm">{selectedCard.responsavel_pd || 'Não atribuído'}</p>
                                     </div>
+                                    {isAdmin && (
+                                        <div className="rounded-lg border border-border p-3 space-y-3">
+                                            <p className="text-xs font-semibold text-muted-foreground">Administração do card</p>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs">Responsável P&D</Label>
+                                                <Input
+                                                    defaultValue={selectedCard.responsavel_pd || ""}
+                                                    onBlur={(event) => {
+                                                        if (event.target.value !== (selectedCard.responsavel_pd || "")) {
+                                                            updateSelectedCard({ responsavel_pd: event.target.value });
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs">Prazo prometido</Label>
+                                                <Input
+                                                    type="date"
+                                                    defaultValue={selectedCard.prazo_prometido || ""}
+                                                    onBlur={(event) => {
+                                                        if (event.target.value !== (selectedCard.prazo_prometido || "")) {
+                                                            updateSelectedCard({ prazo_prometido: event.target.value || null });
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label className="text-xs">Observações específicas</Label>
+                                                <Textarea
+                                                    defaultValue={selectedCard.observacoes_especificas || ""}
+                                                    rows={3}
+                                                    onBlur={(event) => {
+                                                        if (event.target.value !== (selectedCard.observacoes_especificas || "")) {
+                                                            updateSelectedCard({ observacoes_especificas: event.target.value });
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                className="w-full text-destructive hover:text-destructive border-destructive/40"
+                                                onClick={deleteSelectedCard}
+                                            >
+                                                Excluir Card P&D
+                                            </Button>
+                                        </div>
+                                    )}
                                     {selectedCard.prazo_prometido && (
                                         <div>
                                             <p className="text-xs font-semibold text-muted-foreground mb-1">Prazo Prometido</p>

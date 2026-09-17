@@ -210,10 +210,11 @@ export default function ComprasDashboard() {
   };
 
   return (
-    <div className="mx-auto max-w-[1500px] space-y-5 p-4 md:p-6">
+    <div className="dashboard-shell-wide space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-heading font-bold tracking-tight">Compras</h1>
+          <p className="dashboard-eyebrow">Kuryos ERP · Suprimentos</p>
+          <h1 className="dashboard-title font-heading">Compras</h1>
           <p className="mt-1 text-sm text-muted-foreground">Solicitações, consolidação por fornecedor e cotação — alimentado pelo cadastro de Materiais</p>
         </div>
         <div className="flex items-center gap-3">
@@ -222,9 +223,9 @@ export default function ComprasDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-1 border-b border-border pt-10 md:grid-cols-6">
+      <div className="dashboard-tabs grid grid-cols-2 md:grid-cols-6">
         {TABS.map(([id, label]) => (
-          <button key={id} onClick={() => setActiveTab(id)} className={`min-h-[52px] border-b-2 px-3 pb-3 text-center text-sm font-bold leading-tight transition ${activeTab === id ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+          <button key={id} data-active={activeTab === id} onClick={() => setActiveTab(id)} className="dashboard-tab text-center leading-tight transition">
             {label}
           </button>
         ))}
@@ -681,7 +682,7 @@ function EtiquetaDialog({ po, onClose }) {
 
 function LegacyPanel({ title, subtitle, action, children }) {
   return (
-    <Card className="overflow-hidden rounded-2xl border-l-4 border-l-primary shadow-sm">
+    <Card className="dashboard-panel overflow-hidden rounded-2xl border-l-4 border-l-primary shadow-sm">
       {(title || action) && <div className="flex items-start justify-between gap-3 border-b px-5 py-4"><div><h2 className="text-sm font-black uppercase tracking-wide text-muted-foreground">{title}</h2>{subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}</div>{action}</div>}
       <CardContent className="p-0">{children}</CardContent>
     </Card>

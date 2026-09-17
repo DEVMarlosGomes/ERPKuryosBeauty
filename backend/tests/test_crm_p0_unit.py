@@ -179,6 +179,8 @@ def test_validate_client_payload_allows_minimal_lead_on_initial_create():
 
 
 def test_move_project_supports_crm2_quote_and_complete_budget_stages(monkeypatch):
+    import compras_routes
+
     fake_db = FakeDB()
     fake_db.crm_clients.docs = [{
         "id": "client-1",
@@ -225,12 +227,22 @@ def test_move_project_supports_crm2_quote_and_complete_budget_stages(monkeypatch
     async def fake_assert_no_blocking_tasks(**_kwargs):
         return None
 
+    async def fake_create_quote_demands_for_project(_project_id, _user):
+        return {
+            "formula_id": "formula-1",
+            "created": 2,
+            "reused": 0,
+            "unresolved": [],
+            "status": "pendente_retorno_solicitacao",
+        }
+
     monkeypatch.setattr(crm_routes, "_get_current_user", fake_get_current_user)
     monkeypatch.setattr(crm_routes, "require_roles", lambda *_args, **_kwargs: None)
     monkeypatch.setattr(crm_routes, "assert_no_blocking_tasks", fake_assert_no_blocking_tasks)
     monkeypatch.setattr(crm_routes, "trigger_tasks_for_transition", fake_trigger_tasks_for_transition)
     monkeypatch.setattr(crm_routes, "audit_log", fake_audit_log)
     monkeypatch.setattr(crm_routes, "_now_iso", lambda: "2026-09-14T12:00:00+00:00")
+    monkeypatch.setattr(compras_routes, "create_quote_demands_for_project", fake_create_quote_demands_for_project)
 
     quote_result = asyncio.run(
         crm_routes.move_project(
@@ -248,6 +260,7 @@ def test_move_project_supports_crm2_quote_and_complete_budget_stages(monkeypatch
     )
 
     assert quote_result["project"]["stage"] == "cotacao"
+    assert quote_result["cotacao_compras"]["created"] == 2
     assert quote_result["to_stage"] == crm_routes.STAGE_LABELS["cotacao"]
     assert budget_result["project"]["stage"] == "orcamento_completo"
     assert budget_result["to_stage"] == crm_routes.STAGE_LABELS["orcamento_completo"]
@@ -257,7 +270,7 @@ def test_move_project_supports_crm2_quote_and_complete_budget_stages(monkeypatch
     ]
     assert [entry["after"]["stage"] for entry in audit_entries] == ["cotacao", "orcamento_completo"]
     assert fake_db.crm_clients.docs[0]["stage"] == "negociacao"
-    assert fake_db.crm_clients.docs[0]["historico_movimentacoes"][0]["origem"] == "espelho_crm2_em_negociacao"
+    assert fake_db.crm_clients.docs[0]["historico_movimentacoes"][0]["origem"] == "espelho_crm2_cotacao"
 
 
 def test_validate_client_payload_rejects_invalid_canal_origem():

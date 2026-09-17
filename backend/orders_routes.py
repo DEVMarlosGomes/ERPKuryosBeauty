@@ -900,10 +900,6 @@ async def auto_create_order_on_pd_approval(pd_request_id: str, user: Dict[str, A
     if db is None:
         return None
     tenant_id = user["tenant_id"]
-    # Idempotency: skip if already exists
-    existing = await db.orders.find_one({"pd_request_id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0})
-    if existing:
-        return existing
 
     pd_req = await db.pd_requests.find_one({"id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0})
     if not pd_req:
@@ -915,10 +911,35 @@ async def auto_create_order_on_pd_approval(pd_request_id: str, user: Dict[str, A
 
     # Gap A: auto-link kickoff if the PD request's project has one
     kickoff_id = None
-    crm_proj_id = pd_req.get("crm_project_id")
+    crm_proj_id = (
+        pd_req.get("crm_project_id")
+        or pd_req.get("linked_projeto_id")
+        or pd_req.get("linked_project_id")
+        or pd_req.get("projeto_id")
+    )
+    if not crm_proj_id and pd_req.get("linked_amostra_id"):
+        sample = await db.crm_samples.find_one(
+            {"id": pd_req["linked_amostra_id"], "tenant_id": tenant_id},
+            {"_id": 0, "projeto_id": 1},
+        )
+        crm_proj_id = (sample or {}).get("projeto_id")
     if crm_proj_id:
         proj = await db.crm_projects.find_one({"id": crm_proj_id, "tenant_id": tenant_id}, {"_id": 0, "kickoff_id": 1})
         kickoff_id = proj.get("kickoff_id") if proj else None
+
+    # Idempotency: skip creating duplicates, but repair the kickoff link if it was
+    # created before the approval flow generated the kickoff.
+    existing = await db.orders.find_one({"pd_request_id": pd_request_id, "tenant_id": tenant_id}, {"_id": 0})
+    if existing:
+        if kickoff_id and not existing.get("kickoff_id"):
+            now = now_iso()
+            await db.orders.update_one(
+                {"id": existing["id"], "tenant_id": tenant_id},
+                {"$set": {"kickoff_id": kickoff_id, "updated_at": now}},
+            )
+            existing["kickoff_id"] = kickoff_id
+            existing["updated_at"] = now
+        return existing
 
     checklist_default = [{"categoria": c, "ativo": False, "origem": "kuryos", "status": "pendente", "responsavel": "", "data_prevista": None, "observacoes": ""} for c in CATEGORIAS_INSUMO]
     totals = _calculate_totals(items)
@@ -1646,12 +1667,33 @@ async def sign_cgi(order_id: str, request: Request):
     order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    contract = await db.contratos.find_one(
+        {
+            "tenant_id": user["tenant_id"],
+            "kickoff_id": order.get("kickoff_id"),
+            "status": {"$in": ["assinado", "vigente"]},
+        },
+        {"_id": 0},
+    )
+    if not contract:
+        raise HTTPException(
+            status_code=409,
+            detail="CGI ainda não foi assinado no módulo Contratos. Gere e assine o contrato antes de liberar o pedido.",
+        )
+    skus_gerados = []
+    if order.get("projeto_id"):
+        from crm_routes import _generate_skus_for_project_approved_variations
+
+        skus_gerados = await _generate_skus_for_project_approved_variations(order["projeto_id"], user)
     await db.orders.update_one(
-        {"id": order_id},
+        {"id": order_id, "tenant_id": user["tenant_id"]},
         {"$set": {
             "cgi_status": "assinado",
-            "cgi_assinado_em": now_iso(),
-            "cgi_assinado_por": user.get("name", ""),
+            "cgi_assinado_em": contract.get("signed_at") or now_iso(),
+            "cgi_assinado_por": contract.get("signed_by_name") or user.get("name", ""),
+            "liberado_para_emissao": True,
+            "liberado_para_emissao_em": now_iso(),
+            "skus_gerados_cgi": skus_gerados,
             "updated_at": now_iso(),
         }},
     )

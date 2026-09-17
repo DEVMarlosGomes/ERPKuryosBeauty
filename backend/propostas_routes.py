@@ -152,6 +152,7 @@ async def get_proposta(projeto_id: str, request: Request):
 async def upsert_proposta(projeto_id: str, payload: PropostaPayload, request: Request):
     """Cria ou substitui completamente a proposta do projeto."""
     user = await _get_current_user(request)
+    require_roles(user, WRITE_ROLES)
     project = await _get_project(projeto_id, user["tenant_id"])
 
     now = _now_iso()
@@ -215,6 +216,7 @@ async def upsert_proposta(projeto_id: str, payload: PropostaPayload, request: Re
 @propostas_router.patch("/{projeto_id}/proposta")
 async def patch_proposta(projeto_id: str, payload: PropostaPatch, request: Request):
     user = await _get_current_user(request)
+    require_roles(user, WRITE_ROLES)
     await _get_project(projeto_id, user["tenant_id"])
 
     patch = {k: v for k, v in payload.dict(exclude_unset=True).items() if v is not None}
@@ -248,6 +250,173 @@ async def patch_proposta(projeto_id: str, payload: PropostaPatch, request: Reque
     return updated
 
 
+async def _create_or_reuse_order_from_proposta(
+    project: dict,
+    proposta: dict,
+    kickoff: dict,
+    user: dict,
+) -> dict:
+    """Cria o rascunho editável do pedido somente após aprovação do orçamento."""
+    existing = await db.orders.find_one(
+        {
+            "tenant_id": user["tenant_id"],
+            "projeto_id": project["id"],
+            "origem": "orcamento_aprovado",
+        },
+        {"_id": 0},
+    )
+    if existing:
+        return existing
+
+    from orders_routes import (
+        ClienteData,
+        CondicoesData,
+        OrderCreate,
+        OrderItem,
+        _create_order_document,
+        _enrich_from_crm_client,
+    )
+
+    items = []
+    for raw in proposta.get("items_pedido") or []:
+        items.append(OrderItem(
+            sku_id=raw.get("sku_id") or None,
+            codigo_kuryos=raw.get("codigo_kuryos", ""),
+            codigo_cliente=raw.get("codigo_cliente", ""),
+            item=raw.get("item", ""),
+            prazo_entrega=raw.get("prazo_entrega", ""),
+            qtd=float(raw.get("qtd") or 0),
+            valor_unitario=float(raw.get("valor_unitario") or raw.get("preco_negociado") or 0),
+            valor_total=float(raw.get("valor_total") or 0),
+        ))
+
+    if not items:
+        samples = await db.crm_samples.find(
+            {"tenant_id": user["tenant_id"], "projeto_id": project["id"]},
+            {"_id": 0},
+        ).to_list(500)
+        for sample in samples:
+            for variation in sample.get("variacoes") or []:
+                if variation.get("resultado") != "aprovada":
+                    continue
+                label = " - ".join(filter(None, [
+                    sample.get("nome_produto") or sample.get("nome_amostra"),
+                    variation.get("descricao_aplicacao") or variation.get("codigo"),
+                ]))
+                items.append(OrderItem(
+                    item=label,
+                    qtd=0,
+                    valor_unitario=0,
+                    valor_total=0,
+                ))
+
+    cliente = await _enrich_from_crm_client(project.get("cliente_id", ""), user["tenant_id"])
+    order_data = OrderCreate(
+        kickoff_id=kickoff["id"],
+        cliente_id=project.get("cliente_id"),
+        cliente=ClienteData(**cliente),
+        items=items,
+        condicoes=CondicoesData(
+            prazo=proposta.get("condicoes_pagamento", ""),
+            forma_pgto=proposta.get("condicoes_pagamento", ""),
+        ),
+        observacoes=proposta.get("rodape_observacoes", ""),
+        allow_duplicate=True,
+    )
+    order = await _create_order_document(order_data, user, origem="pipeline")
+    await db.orders.update_one(
+        {"id": order["id"], "tenant_id": user["tenant_id"]},
+        {"$set": {
+            "projeto_id": project["id"],
+            "proposta_id": proposta.get("id"),
+            "origem": "orcamento_aprovado",
+            "aprovacao_cliente": "aprovado",
+            "aprovacao_cliente_em": _now_iso(),
+            "updated_at": _now_iso(),
+        }},
+    )
+    return await db.orders.find_one(
+        {"id": order["id"], "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+
+
+@propostas_router.post("/{projeto_id}/proposta/decisao")
+async def decidir_orcamento(projeto_id: str, payload: NegociacaoPayload, request: Request):
+    """Registra Aprovação/Reprovação e executa o marco comercial correspondente."""
+    user = await _get_current_user(request)
+    require_roles(user, WRITE_ROLES)
+    if payload.decisao not in NEGOTIATION_DECISIONS:
+        raise HTTPException(status_code=422, detail="decisao deve ser 'aprovado' ou 'reprovado'.")
+    if payload.decisao == "reprovado" and not payload.motivo.strip():
+        raise HTTPException(status_code=422, detail="Motivo obrigatório para reprovar o orçamento.")
+
+    project = await _get_project(projeto_id, user["tenant_id"])
+    proposta = await db.propostas_comerciais.find_one(
+        {"projeto_id": projeto_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+    if not proposta:
+        raise HTTPException(status_code=409, detail="Salve o orçamento antes de registrar a decisão do cliente.")
+
+    now = _now_iso()
+    decision_patch = {
+        "negociacao_status": payload.decisao,
+        "negociacao_motivo": payload.motivo.strip(),
+        "negociacao_evidencia_file_id": payload.evidencia_file_id,
+        "negociacao_observacoes": payload.observacoes,
+        "negociacao_decidida_em": now,
+        "negociacao_decidida_por": user["id"],
+        "updated_at": now,
+    }
+    await db.propostas_comerciais.update_one(
+        {"id": proposta["id"], "tenant_id": user["tenant_id"]},
+        {"$set": decision_patch},
+    )
+
+    from crm_routes import _advance_project_stage_if_needed
+
+    if payload.decisao == "reprovado":
+        project = await _advance_project_stage_if_needed(
+            projeto_id,
+            "projeto_arquivado",
+            user,
+            movement_source="orcamento_reprovado",
+            extra_set={"motivo_arquivamento": payload.motivo.strip()},
+        )
+        order = None
+        kickoff = None
+    else:
+        status = await get_amostras_status(projeto_id, request)
+        if not status.get("pode_confirmar"):
+            raise HTTPException(status_code=409, detail="É necessária ao menos uma amostra aprovada pelo P&D e pelo Comercial.")
+        project = await _advance_project_stage_if_needed(
+            projeto_id,
+            "pedido_aprovado",
+            user,
+            movement_source="orcamento_aprovado",
+        )
+        from kickoff_routes import create_kickoff_for_project
+
+        kickoff = await create_kickoff_for_project(projeto_id, user)
+        order = await _create_or_reuse_order_from_proposta(project, proposta, kickoff, user)
+
+    await audit_log(
+        tenant_id=user["tenant_id"],
+        user_id=user["id"],
+        user_name=user.get("name", ""),
+        action="orcamento_decidido",
+        entity_type="projeto",
+        entity_id=projeto_id,
+        before={"stage": project.get("stage") if project else None},
+        after={"decisao": payload.decisao, "motivo": payload.motivo},
+    )
+    return {
+        "decisao": payload.decisao,
+        "project": project,
+        "kickoff": kickoff,
+        "order": order,
+    }
+
+
 # ── R18: Status das amostras do projeto ──────────────────────────────────────
 
 @propostas_router.get("/{projeto_id}/amostras-status")
@@ -277,12 +446,9 @@ async def get_amostras_status(projeto_id: str, request: Request):
             status_raw = v.get("status", "solicitada")
             resultado = v.get("resultado", "")
             status_pd_raw = v.get("status_pd_raw", "")
-            aprovada = (
-                bool(v.get("aprovacao_externa"))
-                or status_raw == "aprovada"
-                or resultado == "aprovada"
-                or status_pd_raw in _STATUS_PD_APROVADO
-            )
+            aprovacao_pd = bool(v.get("aprovacao_pd")) or status_pd_raw in _STATUS_PD_APROVADO
+            aprovacao_comercial = bool(v.get("aprovacao_externa")) and resultado == "aprovada"
+            aprovada = aprovacao_pd and aprovacao_comercial
             if aprovada:
                 label = "aprovada"
                 total_aprovadas += 1
@@ -306,6 +472,8 @@ async def get_amostras_status(projeto_id: str, request: Request):
                 "descricao": v.get("descricao_aplicacao", ""),
                 "status": label,
                 "aprovada": aprovada,
+                "aprovacao_pd": aprovacao_pd,
+                "aprovacao_comercial": aprovacao_comercial,
                 "sku_id": sku_id,
                 "sku_codigo": "",
             })

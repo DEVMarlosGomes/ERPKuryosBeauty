@@ -2,6 +2,7 @@ import { Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 const BLOCO2_COMPONENTS = [
@@ -43,6 +44,23 @@ function rows(seed, hasArt = false) {
     fornecido_por: "",
     ...(hasArt ? { arte_cria_aprova: "", arte_aprovada: "" } : { especificacao_fornecedor_codigo: "" }),
     observacoes: "",
+  }));
+}
+
+function normalizeBinary(value) {
+  if (value === true) return "sim";
+  if (value === false || value == null) return "nao";
+  const normalized = String(value).trim().toLowerCase();
+  if (["", "nao", "não", "n", "ñ", "false", "0", "off"].includes(normalized)) return "nao";
+  return "sim";
+}
+
+function normalizeComponentRows(items, hasArt = false) {
+  return (items || []).map((item) => ({
+    ...item,
+    aplicavel: normalizeBinary(item.aplicavel),
+    definido: normalizeBinary(item.definido),
+    ...(hasArt ? { arte_aprovada: normalizeBinary(item.arte_aprovada) } : {}),
   }));
 }
 
@@ -105,11 +123,20 @@ function mergeQuestionnaire(value) {
     ...base,
     ...data,
     bloco0: { ...base.bloco0, ...(data.bloco0 || {}) },
-    bloco1: { ...base.bloco1, ...(data.bloco1 || {}) },
-    bloco2: { componentes: data.bloco2?.componentes?.length ? data.bloco2.componentes : base.bloco2.componentes },
-    bloco3: { componentes: data.bloco3?.componentes?.length ? data.bloco3.componentes : base.bloco3.componentes },
-    bloco4: { componentes: data.bloco4?.componentes?.length ? data.bloco4.componentes : base.bloco4.componentes },
-    bloco5: { ...base.bloco5, ...(data.bloco5 || {}) },
+    bloco1: {
+      ...base.bloco1,
+      ...(data.bloco1 || {}),
+      tem_cor: normalizeBinary(data.bloco1?.tem_cor),
+      tem_brilho_mica_glitter: normalizeBinary(data.bloco1?.tem_brilho_mica_glitter),
+    },
+    bloco2: { componentes: normalizeComponentRows(data.bloco2?.componentes?.length ? data.bloco2.componentes : base.bloco2.componentes) },
+    bloco3: { componentes: normalizeComponentRows(data.bloco3?.componentes?.length ? data.bloco3.componentes : base.bloco3.componentes, true) },
+    bloco4: { componentes: normalizeComponentRows(data.bloco4?.componentes?.length ? data.bloco4.componentes : base.bloco4.componentes) },
+    bloco5: {
+      ...base.bloco5,
+      ...(data.bloco5 || {}),
+      amostra_referencia_fornecida_cliente: normalizeBinary(data.bloco5?.amostra_referencia_fornecida_cliente),
+    },
     fechamento: { ...base.fechamento, ...(data.fechamento || {}) },
   };
 }
@@ -163,6 +190,29 @@ function TextField({ label, value, onChange, className = "", rows = 3 }) {
     <div className={className}>
       <Label>{label}</Label>
       <Textarea rows={rows} value={value || ""} onChange={(event) => onChange(event.target.value)} />
+    </div>
+  );
+}
+
+function YesNoToggle({ label, value, onChange, compact = false }) {
+  const checked = normalizeBinary(value) === "sim";
+  return (
+    <div className={compact ? "flex items-center" : "space-y-2"}>
+      {label && <Label>{label}</Label>}
+      <div
+        className={`inline-flex items-center gap-2 rounded-full border px-2.5 py-1.5 transition-colors ${checked
+          ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          : "border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400"
+        }`}
+      >
+        <Switch
+          checked={checked}
+          onCheckedChange={(next) => onChange(next ? "sim" : "nao")}
+          aria-label={label || "Alternar entre sim e nao"}
+          className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-red-500"
+        />
+        <span className="min-w-8 text-xs font-bold">{checked ? "SIM" : "NÃO"}</span>
+      </div>
     </div>
   );
 }
@@ -271,8 +321,8 @@ function ComponentTable({ title, value, onChange, defaults, hasArt = false }) {
             {list.map((row, index) => (
               <tr key={row.id || index}>
                 <td className="px-2 py-2"><Input value={row.componente || ""} onChange={(event) => updateRow(index, "componente", event.target.value)} /></td>
-                <td className="px-2 py-2"><Input value={row.aplicavel || ""} onChange={(event) => updateRow(index, "aplicavel", event.target.value)} placeholder="Sim/Nao" /></td>
-                <td className="px-2 py-2"><Input value={row.definido || ""} onChange={(event) => updateRow(index, "definido", event.target.value)} placeholder="Sim/Nao" /></td>
+                <td className="px-2 py-2"><YesNoToggle compact value={row.aplicavel} onChange={(next) => updateRow(index, "aplicavel", next)} /></td>
+                <td className="px-2 py-2"><YesNoToggle compact value={row.definido} onChange={(next) => updateRow(index, "definido", next)} /></td>
                 <td className="px-2 py-2"><Input value={row.fornecido_por || ""} onChange={(event) => updateRow(index, "fornecido_por", event.target.value)} /></td>
                 <td className="px-2 py-2">
                   <Input
@@ -280,7 +330,7 @@ function ComponentTable({ title, value, onChange, defaults, hasArt = false }) {
                     onChange={(event) => updateRow(index, hasArt ? "arte_cria_aprova" : "especificacao_fornecedor_codigo", event.target.value)}
                   />
                 </td>
-                {hasArt && <td className="px-2 py-2"><Input value={row.arte_aprovada || ""} onChange={(event) => updateRow(index, "arte_aprovada", event.target.value)} placeholder="Sim/Nao" /></td>}
+                {hasArt && <td className="px-2 py-2"><YesNoToggle compact value={row.arte_aprovada} onChange={(next) => updateRow(index, "arte_aprovada", next)} /></td>}
                 <td className="px-2 py-2"><Input value={row.observacoes || ""} onChange={(event) => updateRow(index, "observacoes", event.target.value)} /></td>
                 <td className="px-2 py-2">
                   <div className="flex gap-1">
@@ -367,8 +417,8 @@ export default function KickoffCompositionQuestionnaire({ value, onChange, onSav
             { value: "mps", label: "MPs" },
             { value: "nada", label: "Nada (Kuryos compra tudo)" },
           ]} />
-          <ChoiceGroup label="Tem Cor?" value={q.bloco1.tem_cor} onChange={(v) => update("bloco1", "tem_cor", v)} options={[{ value: "sim", label: "Sim" }, { value: "nao", label: "Nao" }]} />
-          <ChoiceGroup label="Tem Brilho/mica/glitter?" value={q.bloco1.tem_brilho_mica_glitter} onChange={(v) => update("bloco1", "tem_brilho_mica_glitter", v)} options={[{ value: "sim", label: "Sim" }, { value: "nao", label: "Nao" }]} />
+          <YesNoToggle label="Tem Cor?" value={q.bloco1.tem_cor} onChange={(v) => update("bloco1", "tem_cor", v)} />
+          <YesNoToggle label="Tem Brilho/mica/glitter?" value={q.bloco1.tem_brilho_mica_glitter} onChange={(v) => update("bloco1", "tem_brilho_mica_glitter", v)} />
           <Field label="Qual a viscosidade?" value={q.bloco1.viscosidade} onChange={(v) => update("bloco1", "viscosidade", v)} />
           <Field label="Qual a densidade?" value={q.bloco1.densidade} onChange={(v) => update("bloco1", "densidade", v)} />
           <Field className="md:col-span-2" label="Fragrancia / essencia definida ou aprovada - casa de fragrancia e codigos" value={q.bloco1.fragrancia_essencia} onChange={(v) => update("bloco1", "fragrancia_essencia", v)} />
@@ -392,7 +442,7 @@ export default function KickoffCompositionQuestionnaire({ value, onChange, onSav
       <Section title="Bloco 5 - Qualidade de recebimento">
         <TextField label="Especificacoes de CQ por componente (texto / anexos)" value={q.bloco5.especificacoes_cq_componentes} onChange={(v) => update("bloco5", "especificacoes_cq_componentes", v)} rows={4} />
         <TextField label="Testes / aprovacoes obrigatorios antes da producao" value={q.bloco5.testes_aprovacoes_obrigatorios} onChange={(v) => update("bloco5", "testes_aprovacoes_obrigatorios", v)} rows={4} />
-        <ChoiceGroup label="Amostra de referencia fornecida pelo cliente" value={q.bloco5.amostra_referencia_fornecida_cliente} onChange={(v) => update("bloco5", "amostra_referencia_fornecida_cliente", v)} options={[{ value: "sim", label: "Sim" }, { value: "nao", label: "Nao" }]} />
+        <YesNoToggle label="Amostra de referencia fornecida pelo cliente" value={q.bloco5.amostra_referencia_fornecida_cliente} onChange={(v) => update("bloco5", "amostra_referencia_fornecida_cliente", v)} />
       </Section>
 
       <Section title="Fechamento">
