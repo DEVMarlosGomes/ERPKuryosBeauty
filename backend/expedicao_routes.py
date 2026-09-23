@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
 from cq_routes import cq_verificar_liberacao_palete, cq_verificar_lote_aprovado
+from stock_ledger import baixar_saldo_lote_expedicao, estornar_saida_expedicao
 
 logger = logging.getLogger(__name__)
 
@@ -340,6 +341,9 @@ class ExpItem(BaseModel):
     lote: str = ""
     numero_serie: str = ""
     estoque_item_id: Optional[str] = None
+    saldo_lote_id: Optional[str] = None
+    lote_id: Optional[str] = None
+    palete_id: Optional[str] = None
     volumes: int = 1          # número de caixas/volumes deste item
     peso_unitario: float = 0  # kg por volume
 
@@ -362,6 +366,9 @@ class ExpOrderItemPartial(BaseModel):
     quantidade: float
     lote: str = ""
     estoque_item_id: Optional[str] = None
+    saldo_lote_id: Optional[str] = None
+    lote_id: Optional[str] = None
+    palete_id: Optional[str] = None
     volumes: int = 1
     peso_unitario: float = 0
     observacoes: str = ""
@@ -387,6 +394,7 @@ class ExpUpdate(BaseModel):
     codigo_rastreio: Optional[str] = None
     numero_nf_saida: Optional[str] = None
     observacoes: Optional[str] = None
+    idempotency_key: Optional[str] = None
 
 
 class ConferenciaItem(BaseModel):
@@ -536,6 +544,9 @@ async def create_ordem_from_order_items(data: ExpFromOrderItemsCreate, request: 
             "lote": raw.lote,
             "numero_serie": "",
             "estoque_item_id": raw.estoque_item_id,
+            "saldo_lote_id": raw.saldo_lote_id,
+            "lote_id": raw.lote_id,
+            "palete_id": raw.palete_id,
             "volumes": int(raw.volumes or 1),
             "peso_unitario": _as_float(raw.peso_unitario),
             "observacoes": raw.observacoes,
@@ -591,6 +602,129 @@ async def create_ordem_from_order_items(data: ExpFromOrderItemsCreate, request: 
     return exp
 
 
+async def _resolver_saldo_exato_expedicao(item: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    query: Dict[str, Any] = {"tenant_id": tenant_id}
+    if item.get("saldo_lote_id"):
+        query["id"] = item["saldo_lote_id"]
+    else:
+        if item.get("estoque_item_id"):
+            query["item_id"] = item["estoque_item_id"]
+        elif item.get("sku"):
+            query["codigo_item"] = item["sku"]
+        else:
+            raise HTTPException(
+                status_code=422,
+                detail="Item da expedicao sem saldo_lote_id, estoque_item_id ou SKU para identificar o lote.",
+            )
+        if item.get("lote"):
+            query["lote"] = item["lote"]
+        elif item.get("lote_id"):
+            query["$or"] = [{"lote_id": item["lote_id"]}, {"cq_lote_id": item["lote_id"]}]
+
+    candidates = await db.estoque_saldos_lote.find(query, {"_id": 0}).to_list(3)
+    candidates = [row for row in candidates if _as_float(row.get("quantidade", row.get("quantidade_atual"))) > 0]
+    if not candidates:
+        raise HTTPException(
+            status_code=404,
+            detail={"error": "lote_expedicao_nao_encontrado", "message": f"Lote nao encontrado para {item.get('produto_nome', 'item')}."},
+        )
+    if len(candidates) != 1:
+        raise HTTPException(
+            status_code=409,
+            detail={"error": "lote_expedicao_ambiguo", "message": "Selecione explicitamente saldo_lote_id/lote antes de expedir."},
+        )
+    return candidates[0]
+
+
+async def _baixar_lotes_da_expedicao(
+    exp: Dict[str, Any], user: Dict[str, Any], idempotency_key: str
+) -> List[Dict[str, Any]]:
+    tenant_id = user["tenant_id"]
+    baixados: List[Dict[str, Any]] = []
+    try:
+        for idx, item in enumerate(exp.get("items") or []):
+            quantidade = _as_float(item.get("quantidade"))
+            if quantidade <= 0:
+                raise HTTPException(status_code=422, detail=f"Quantidade invalida no item {idx + 1} da expedicao.")
+            saldo = await _resolver_saldo_exato_expedicao(item, tenant_id)
+            estoque_item = await db.estoque_items.find_one(
+                {"id": saldo.get("item_id"), "tenant_id": tenant_id}, {"_id": 0}
+            )
+            if not estoque_item:
+                raise HTTPException(status_code=404, detail=f"Item agregado nao encontrado para o lote {saldo.get('lote')}.")
+            item_cq = dict(item)
+            item_cq["lote_id"] = saldo.get("cq_lote_id") or saldo.get("lote_id")
+            await _assert_liberado_para_expedicao(estoque_item, item_cq, tenant_id)
+            event = await baixar_saldo_lote_expedicao(
+                db, new_id_fn=_new_id, now_iso_fn=_now, tenant_id=tenant_id,
+                saldo_lote_id=saldo["id"], quantidade=quantidade, expedicao_id=exp["id"],
+                item_index=idx, idempotency_key=idempotency_key, usuario=user,
+            )
+            baixados.append({
+                "item_index": idx, "saldo_lote_id": saldo["id"], "estoque_item_id": saldo.get("item_id"),
+                "lote_id": saldo.get("cq_lote_id") or saldo.get("lote_id"), "lote": saldo.get("lote", ""),
+                "quantidade": quantidade, "movimento_id": event.get("id"),
+            })
+        return baixados
+    except Exception:
+        for entry in reversed(baixados):
+            await estornar_saida_expedicao(
+                db, new_id_fn=_new_id, now_iso_fn=_now, tenant_id=tenant_id,
+                saldo_lote_id=entry["saldo_lote_id"], quantidade=entry["quantidade"],
+                expedicao_id=exp["id"], item_index=entry["item_index"], idempotency_key=idempotency_key,
+                usuario=user, motivo="Compensacao de falha no despacho da expedicao",
+            )
+        raise
+
+
+async def _finalizar_reexpedicao_devolucao(exp: Dict[str, Any], user: Dict[str, Any]) -> None:
+    devolucao_id = exp.get("devolucao_cliente_id")
+    if not devolucao_id:
+        return
+    tid = user["tenant_id"]
+    now = _now()
+    devolucao = await db.devolucoes_cliente.find_one(
+        {"id": devolucao_id, "tenant_id": tid}, {"_id": 0}
+    )
+    if not devolucao:
+        return
+    await db.devolucoes_cliente.update_one(
+        {"id": devolucao_id, "tenant_id": tid},
+        {"$set": {"status": "reexpedido", "reexpedido_em": now,
+                  "reexpedicao_id": exp["id"], "updated_at": now}},
+    )
+    if devolucao.get("rt_id"):
+        await db.retrabalho_ordens.update_one(
+            {"id": devolucao["rt_id"], "tenant_id": tid},
+            {"$set": {"status": "reexpedido", "reexpedicao_id": exp["id"], "updated_at": now}},
+        )
+    nf = await db.faturamento_notas.find_one(
+        {"tenant_id": tid, "devolucao_cliente_id": devolucao_id}, {"_id": 0}
+    )
+    if nf:
+        return
+    count = await db.faturamento_notas.count_documents({"tenant_id": tid})
+    nf = {
+        "id": _new_id(), "tenant_id": tid, "numero_interno": f"NF-{count + 1:06d}",
+        "numero_nfe": None, "chave_acesso": None, "order_id": exp.get("order_id"),
+        "order_numero": exp.get("order_numero"), "exp_id": exp["id"], "exp_numero": exp.get("numero_exp"),
+        "cliente_nome": exp.get("cliente_nome", ""), "cliente_id": exp.get("cliente_id"),
+        "cliente_cnpj": "", "valor_produtos": 0.0, "valor_frete": 0.0, "valor_impostos": 0.0,
+        "valor_total": 0.0, "forma_pagamento": "", "condicao_pagamento": "",
+        "data_emissao": now[:10], "data_vencimento": None, "status": "rascunho",
+        "status_pagamento": "aguardando", "valor_pago": 0.0, "data_pagamento": None,
+        "duplicatas_geradas": False, "total_parcelas": 0, "devolucao_cliente_id": devolucao_id,
+        "tipo_nota": "reexpedicao_retrabalho", "observacoes": f"NF de reexpedicao da devolucao {devolucao_id}",
+        "historico": [{"de": None, "para": "rascunho", "por": user.get("name", ""), "em": now}],
+        "created_by": user["id"], "created_by_name": user.get("name", ""), "created_at": now, "updated_at": now,
+    }
+    await db.faturamento_notas.insert_one(nf)
+    await db.devolucoes_cliente.update_one(
+        {"id": devolucao_id, "tenant_id": tid},
+        {"$set": {"nf_reexpedicao_id": nf["id"], "nf_reexpedicao_numero": nf["numero_interno"], "updated_at": now}},
+    )
+
+
 @expedicao_router.put("/ordens/{exp_id}")
 async def update_ordem(exp_id: str, data: ExpUpdate, request: Request):
     user = await get_current_user(request)
@@ -602,6 +736,16 @@ async def update_ordem(exp_id: str, data: ExpUpdate, request: Request):
     updates: Dict[str, Any] = {"updated_at": now}
     historico = list(exp.get("historico", []))
     payload = data.model_dump(exclude_unset=True)
+
+    if payload.get("status") == "expedido" and payload.get("idempotency_key"):
+        replay_tx = await db.expedicao_transacoes.find_one(
+            {"tenant_id": user["tenant_id"], "expedicao_id": exp_id,
+             "idempotency_key": payload["idempotency_key"]}, {"_id": 0}
+        )
+        if replay_tx and replay_tx.get("status") == "concluida":
+            await _finalizar_reexpedicao_devolucao(exp, user)
+            exp["idempotent_replay"] = True
+            return exp
 
     if "status" in payload:
         novo_status = payload["status"]
@@ -619,52 +763,57 @@ async def update_ordem(exp_id: str, data: ExpUpdate, request: Request):
 
         # When expedido: register WMS exit for each item with estoque_item_id
         if novo_status == "expedido":
+            idempotency_key = (payload.get("idempotency_key") or "").strip()
+            if len(idempotency_key) < 8:
+                raise HTTPException(status_code=422, detail={
+                    "error": "idempotency_key_obrigatoria",
+                    "message": "Informe idempotency_key para confirmar a expedicao sem risco de baixa duplicada.",
+                })
+            tx_query = {"tenant_id": user["tenant_id"], "expedicao_id": exp_id, "idempotency_key": idempotency_key}
+            tx = await db.expedicao_transacoes.find_one(tx_query, {"_id": 0})
+            if tx and tx.get("status") == "concluida":
+                replay = await db.expedicao_ordens.find_one({"id": exp_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+                replay["idempotent_replay"] = True
+                return replay
+            if tx and tx.get("status") == "falha_compensada":
+                raise HTTPException(status_code=409, detail={
+                    "error": "transacao_expedicao_compensada",
+                    "message": "Esta tentativa foi compensada. Gere uma nova chave para tentar novamente.",
+                })
+            await db.expedicao_transacoes.update_one(
+                tx_query,
+                {"$setOnInsert": {"id": (tx or {}).get("id") or _new_id(), **tx_query,
+                                   "status": "processando", "created_at": now},
+                 "$set": {"updated_at": now}}, upsert=True,
+            )
+            claim = await db.expedicao_ordens.update_one(
+                {"id": exp_id, "tenant_id": user["tenant_id"], "status": "conferido",
+                 "$or": [{"despacho_lock": {"$exists": False}}, {"despacho_lock": idempotency_key}]},
+                {"$set": {"despacho_lock": idempotency_key, "updated_at": now}},
+            )
+            if claim.matched_count != 1:
+                raise HTTPException(status_code=409, detail={
+                    "error": "expedicao_em_processamento",
+                    "message": "Outra confirmacao de despacho ja esta processando esta expedicao.",
+                })
             data_exp = payload.get("data_expedicao") or now[:10]
             updates["data_expedicao"] = data_exp
-            for item in exp.get("items", []):
-                eid = item.get("estoque_item_id")
-                if not eid:
-                    continue
-                est = await db.estoque_items.find_one({"id": eid, "tenant_id": user["tenant_id"]}, {"_id": 0})
-                if not est:
-                    raise HTTPException(status_code=404, detail=f"Item de estoque nao encontrado para expedicao: {eid}")
-                qty_antes = est.get("quantidade_atual", 0)
-                qty_saida = float(item.get("quantidade", 0))
-                if qty_saida > qty_antes:
-                    raise HTTPException(
-                        status_code=400,
-                        detail=f"Saldo insuficiente para expedir {item.get('produto_nome', eid)}: atual={qty_antes}, saida={qty_saida}",
-                    )
-                await _assert_liberado_para_expedicao(est, item, user["tenant_id"])
-                qty_depois = qty_antes - qty_saida
-                await db.estoque_items.update_one(
-                    {"id": eid},
-                    {"$set": {"quantidade_atual": qty_depois, "updated_at": now}}
+            try:
+                baixas = await _baixar_lotes_da_expedicao(exp, user, idempotency_key)
+                updates["baixas_lote"] = baixas
+                updates["idempotency_key_despacho"] = idempotency_key
+                await db.expedicao_transacoes.update_one(tx_query, {"$set": {
+                    "status": "estoque_baixado", "baixas": baixas, "updated_at": _now(),
+                }})
+            except Exception as exc:
+                await db.expedicao_ordens.update_one(
+                    {"id": exp_id, "tenant_id": user["tenant_id"], "despacho_lock": idempotency_key},
+                    {"$unset": {"despacho_lock": ""}, "$set": {"updated_at": _now()}},
                 )
-                mov = {
-                    "id": _new_id(),
-                    "tenant_id": user["tenant_id"],
-                    "item_id": eid,
-                    "setor": est.get("setor", "FABRICA"),
-                    "tipo_item": "produto_acabado",
-                    "nome_item": item.get("produto_nome", ""),
-                    "codigo_item": item.get("sku", ""),
-                    "lote": item.get("lote", ""),
-                    "tipo": "SAIDA_EXPEDICAO",
-                    "direcao": "saida",
-                    "quantidade": qty_saida,
-                    "unidade": item.get("unidade", "un"),
-                    "quantidade_antes": qty_antes,
-                    "quantidade_depois": qty_depois,
-                    "motivo": f"Expedição {exp['numero_exp']}",
-                    "referencia": exp_id,
-                    "documento": exp.get("numero_exp", ""),
-                    "usuario": user["name"],
-                    "usuario_id": user["id"],
-                    "created_at": now,
-                }
-                await db.estoque_movimentos.insert_one(mov)
-
+                await db.expedicao_transacoes.update_one(tx_query, {"$set": {
+                    "status": "falha_compensada", "erro": str(exc), "updated_at": _now(),
+                }})
+                raise
         if novo_status == "entregue":
             updates["data_entrega"] = payload.get("data_entrega") or now[:10]
 
@@ -673,7 +822,22 @@ async def update_ordem(exp_id: str, data: ExpUpdate, request: Request):
         if field in payload and payload[field] is not None:
             updates[field] = payload[field]
 
-    await db.expedicao_ordens.update_one({"id": exp_id}, {"$set": updates})
+    expedition_update: Dict[str, Any] = {"$set": updates}
+    if payload.get("status") == "expedido":
+        expedition_update["$unset"] = {"despacho_lock": ""}
+    await db.expedicao_ordens.update_one(
+        {"id": exp_id, "tenant_id": user["tenant_id"]}, expedition_update
+    )
+    if payload.get("status") == "expedido":
+        updated_exp = await db.expedicao_ordens.find_one(
+            {"id": exp_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+        )
+        await _finalizar_reexpedicao_devolucao(updated_exp or exp, user)
+        await db.expedicao_transacoes.update_one(
+            {"tenant_id": user["tenant_id"], "expedicao_id": exp_id,
+             "idempotency_key": payload.get("idempotency_key")},
+            {"$set": {"status": "concluida", "concluida_em": _now(), "updated_at": _now()}},
+        )
     return await db.expedicao_ordens.find_one({"id": exp_id}, {"_id": 0})
 
 

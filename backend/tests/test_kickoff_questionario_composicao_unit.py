@@ -140,6 +140,51 @@ def _complete_questionario():
     return q
 
 
+def test_bom_new_item_is_sent_to_cadastros_without_duplicate(monkeypatch):
+    kickoff = {
+        "id": "ko-1",
+        "tenant_id": "tenant-1",
+        "numero_kickoff": "KO-2026-0001",
+        "projeto_id": "proj-1",
+        "bloco1": {"cliente": "Cliente Teste"},
+        "bloco2": {},
+        "bloco3": {},
+        "bloco4": {},
+        "bom": [
+            {"descricao": "Agua", "codigo_interno": "MP-00001", "tipo": "mp_formula", "unidade": "kg"},
+            {"descricao": "Frasco exclusivo", "codigo_interno": "KO-2026-0001-embalagem", "tipo": "embalagem_primaria", "unidade": "un", "quantidade_total_pedido": 1000},
+        ],
+    }
+    kickoff_routes.db = SimpleNamespace(
+        cadastro_bom_solicitacoes=FakeCollection([]),
+        kickoffs=FakeCollection([kickoff]),
+    )
+    kickoff_routes.new_id_func = lambda: "cad-bom-1"
+    kickoff_routes.now_iso_func = lambda: "2026-09-18T12:00:00+00:00"
+
+    async def fake_find(_kickoff, line):
+        if line["descricao"] == "Agua":
+            return {"id": "item-agua"}, {"id": "mat-agua"}
+        return None, None
+
+    async def fake_task(**kwargs):
+        return {"id": "task-1"}
+
+    monkeypatch.setattr(kickoff_routes, "_find_registered_bom_item", fake_find)
+    monkeypatch.setattr(kickoff_routes, "_create_or_reuse_task", fake_task)
+
+    summary = asyncio.run(kickoff_routes._sync_bom_registration_requests(
+        kickoff,
+        {"id": "user-1", "name": "Admin", "tenant_id": "tenant-1"},
+    ))
+
+    assert summary["pendentes"] == 1
+    assert summary["solicitacoes_criadas"] == 1
+    assert kickoff["bom"][0]["cadastro_status"] == "cadastrado"
+    assert kickoff["bom"][1]["cadastro_status"] == "pendente_cadastro"
+    assert kickoff_routes.db.cadastro_bom_solicitacoes.docs[0]["descricao"] == "Frasco exclusivo"
+
+
 def test_questionario_template_matches_doc_component_tables():
     template = kickoff_routes._questionario_template()
 

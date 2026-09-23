@@ -38,8 +38,10 @@ const NEXT_STATUS = {
 };
 
 function emptyItem() {
-    return { order_item_id: "", produto_nome: "", sku: "", quantidade: "", unidade: "un", lote: "", volumes: 1, peso_unitario: 0 };
+    return { order_item_id: "", produto_nome: "", sku: "", quantidade: "", unidade: "un", lote: "", estoque_item_id: "", saldo_lote_id: "", lote_id: "", palete_id: "", volumes: 1, peso_unitario: 0 };
 }
+
+const newDispatchKey = () => `despacho-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`;
 
 function emptyForm() {
     return {
@@ -80,7 +82,7 @@ export default function ExpedicaoPage() {
 
     // Dispatch dialog (conferido → expedido)
     const [showDispatch, setShowDispatch] = useState(false);
-    const [dispatchForm, setDispatchForm] = useState({ codigo_rastreio: "", transportadora: "", numero_nf_saida: "" });
+    const [dispatchForm, setDispatchForm] = useState({ codigo_rastreio: "", transportadora: "", numero_nf_saida: "", idempotency_key: newDispatchKey() });
 
     // Conferência dialog (preparando → conferido)
     const [showConferencia, setShowConferencia] = useState(false);
@@ -136,10 +138,15 @@ export default function ExpedicaoPage() {
         const o = orders.find(x => x.id === orderId);
         if (!o) { setField("order_id", ""); setFulfillment(null); return; }
         let summary = null;
+        let factoryLots = [];
         try {
-            const { data } = await api.get(`/orders/${orderId}/fulfillment-summary`);
-            summary = data;
-            setFulfillment(data);
+            const [summaryRes, lotsRes] = await Promise.all([
+                api.get(`/orders/${orderId}/fulfillment-summary`),
+                api.get("/estoque/wms/saldos", { params: { setor: "FABRICA", somente_com_saldo: true } }),
+            ]);
+            summary = summaryRes.data;
+            factoryLots = (lotsRes.data?.saldos || []).filter(lot => ["aprovado", "concessao"].includes(lot.posicao_cq || lot.cq_status));
+            setFulfillment(summaryRes.data);
         } catch {
             setFulfillment(null);
         }
@@ -153,13 +160,20 @@ export default function ExpedicaoPage() {
             items: (o.items || []).map((i, idx) => {
                 const orderItemId = i.id || `item-${idx + 1}`;
                 const balance = balanceByItem.get(orderItemId);
+                const sku = i.codigo_kuryos || i.sku || "";
+                const lots = factoryLots.filter(lot => String(lot.codigo_item || "").trim().toLowerCase() === String(sku).trim().toLowerCase());
+                const selectedLot = lots.length === 1 ? lots[0] : null;
                 return ({
                 order_item_id: orderItemId,
                 produto_nome: i.item || i.descricao || i.produto || "",
-                sku: i.codigo_kuryos || i.sku || "",
+                sku,
                 quantidade: String(balance?.saldo_produzido_disponivel ?? i.qtd ?? i.quantidade ?? ""),
                 unidade: i.unidade || "un",
-                lote: "",
+                lote: selectedLot?.lote || "",
+                estoque_item_id: selectedLot?.item_id || "",
+                saldo_lote_id: selectedLot?.id || "",
+                lote_id: selectedLot?.cq_lote_id || selectedLot?.lote_id || "",
+                lotes_disponiveis: lots,
                 volumes: 1,
                 peso_unitario: 0,
                 qtd_pedido: balance?.qtd_pedido,
@@ -191,6 +205,10 @@ export default function ExpedicaoPage() {
                         order_item_id: i.order_item_id,
                         quantidade: Number(i.quantidade),
                         lote: i.lote,
+                        estoque_item_id: i.estoque_item_id || null,
+                        saldo_lote_id: i.saldo_lote_id || null,
+                        lote_id: i.lote_id || null,
+                        palete_id: i.palete_id || null,
                         volumes: Number(i.volumes) || 1,
                         peso_unitario: Number(i.peso_unitario) || 0,
                     })),
@@ -217,6 +235,10 @@ export default function ExpedicaoPage() {
                     quantidade: Number(i.quantidade),
                     unidade: i.unidade,
                     lote: i.lote,
+                    estoque_item_id: i.estoque_item_id || null,
+                    saldo_lote_id: i.saldo_lote_id || null,
+                    lote_id: i.lote_id || null,
+                    palete_id: i.palete_id || null,
                     volumes: Number(i.volumes) || 1,
                     peso_unitario: Number(i.peso_unitario) || 0,
                 })),
@@ -258,6 +280,7 @@ export default function ExpedicaoPage() {
                 codigo_rastreio: "",
                 transportadora: exp.transportadora || "",
                 numero_nf_saida: exp.numero_nf_saida || "",
+                idempotency_key: newDispatchKey(),
             });
             setShowDispatch(true);
             return;
@@ -311,6 +334,7 @@ export default function ExpedicaoPage() {
                 codigo_rastreio: dispatchForm.codigo_rastreio,
                 transportadora: dispatchForm.transportadora,
                 numero_nf_saida: dispatchForm.numero_nf_saida,
+                idempotency_key: dispatchForm.idempotency_key,
             });
             toast.success("Despacho confirmado — estoque atualizado");
             setShowDispatch(false);
@@ -958,8 +982,25 @@ export default function ExpedicaoPage() {
                                         <div className="grid grid-cols-3 gap-2">
                                             <div>
                                                 <Label className="text-xs">Lote</Label>
-                                                <Input value={item.lote} onChange={e => setItem(idx, "lote", e.target.value)}
-                                                    placeholder="Opcional" className="mt-0.5 h-8 text-sm" />
+                                                {item.lotes_disponiveis?.length ? (
+                                                    <Select value={item.saldo_lote_id || undefined} onValueChange={value => {
+                                                        const lot = item.lotes_disponiveis.find(option => option.id === value);
+                                                        setForm(current => {
+                                                            const items = [...current.items];
+                                                            items[idx] = { ...items[idx], saldo_lote_id: lot.id, estoque_item_id: lot.item_id,
+                                                                lote_id: lot.cq_lote_id || lot.lote_id || "", lote: lot.lote || "" };
+                                                            return { ...current, items };
+                                                        });
+                                                    }}>
+                                                        <SelectTrigger className="mt-0.5 h-8 text-sm"><SelectValue placeholder="Selecione o lote" /></SelectTrigger>
+                                                        <SelectContent>{item.lotes_disponiveis.map(lot => (
+                                                            <SelectItem key={lot.id} value={lot.id}>{lot.lote} — {lot.quantidade_disponivel ?? lot.quantidade} un</SelectItem>
+                                                        ))}</SelectContent>
+                                                    </Select>
+                                                ) : (
+                                                    <Input value={item.lote} onChange={e => setItem(idx, "lote", e.target.value)}
+                                                        placeholder="Lote obrigatório" className="mt-0.5 h-8 text-sm" />
+                                                )}
                                             </div>
                                             <div>
                                                 <Label className="text-xs">Volumes</Label>

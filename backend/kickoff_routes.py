@@ -2,6 +2,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 import csv
 import io
+import re
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -38,6 +39,15 @@ def new_id() -> str:
 
 def now_iso() -> str:
     return now_iso_func()
+
+
+def _bom_registration_key(line: Dict[str, Any]) -> str:
+    raw = "|".join([
+        str(line.get("tipo") or "").strip().lower(),
+        str(line.get("codigo_interno") or "").strip().lower(),
+        str(line.get("descricao") or "").strip().lower(),
+    ])
+    return " ".join(raw.split())
 
 
 KICKOFF_STATUSES = {
@@ -1218,12 +1228,162 @@ async def _refresh_bom(kickoff: dict) -> dict:
         kickoff["bom"] = []
         return kickoff
     bom_lines = await _build_bom_lines(kickoff)
+    previous_by_key = {
+        _bom_registration_key(line): line
+        for line in (kickoff.get("bom") or [])
+    }
+    registration_fields = (
+        "cadastro_status",
+        "cadastro_solicitacao_id",
+        "material_id",
+        "compras_item_id",
+        "cadastro_concluido_em",
+    )
+    for line in bom_lines:
+        line["cadastro_chave"] = _bom_registration_key(line)
+        previous = previous_by_key.get(line["cadastro_chave"]) or {}
+        for field in registration_fields:
+            if previous.get(field) not in (None, ""):
+                line[field] = previous[field]
     await db.kickoffs.update_one(
         {"id": kickoff["id"], "tenant_id": kickoff["tenant_id"]},
         {"$set": {"bom": bom_lines, "updated_at": now_iso()}},
     )
     kickoff["bom"] = bom_lines
     return kickoff
+
+
+async def _find_registered_bom_item(kickoff: dict, line: Dict[str, Any]) -> Tuple[Optional[dict], Optional[dict]]:
+    tenant_id = kickoff["tenant_id"]
+    code = str(line.get("codigo_interno") or "").strip()
+    description = str(line.get("descricao") or "").strip()
+    alternatives = []
+    if code:
+        alternatives.append({"codigo_interno": code})
+    if description:
+        alternatives.extend([
+            {"descricao": {"$regex": f"^{re.escape(description)}$", "$options": "i"}},
+            {"nome": {"$regex": f"^{re.escape(description)}$", "$options": "i"}},
+        ])
+    if not alternatives:
+        return None, None
+    compras_item = await db.compras_itens.find_one(
+        {"tenant_id": tenant_id, "$or": alternatives}, {"_id": 0}
+    )
+    material = await db.materiais.find_one(
+        {"tenant_id": tenant_id, "$or": alternatives}, {"_id": 0}
+    )
+    return compras_item, material
+
+
+async def _sync_bom_registration_requests(kickoff: dict, user: dict) -> Dict[str, Any]:
+    """Create an idempotent Cadastros queue for BOM lines not yet available to Compras."""
+    tenant_id = kickoff["tenant_id"]
+    now = now_iso()
+    bom = list(kickoff.get("bom") or [])
+    created = 0
+    reused = 0
+    registered = 0
+    kickoff_file_ids = []
+    for block_name in ("bloco2", "bloco3", "bloco4"):
+        for key, value in (kickoff.get(block_name) or {}).items():
+            if key.endswith("_file_id") and value and value not in kickoff_file_ids:
+                kickoff_file_ids.append(value)
+
+    for line in bom:
+        key = line.get("cadastro_chave") or _bom_registration_key(line)
+        line["cadastro_chave"] = key
+        compras_item, material = await _find_registered_bom_item(kickoff, line)
+        if compras_item:
+            line.update({
+                "cadastro_status": "cadastrado",
+                "compras_item_id": compras_item.get("id"),
+                "material_id": (material or {}).get("id"),
+            })
+            registered += 1
+            continue
+
+        request_key = {
+            "tenant_id": tenant_id,
+            "kickoff_id": kickoff["id"],
+            "bom_chave": key,
+        }
+        existing = await db.cadastro_bom_solicitacoes.find_one(request_key, {"_id": 0})
+        if existing:
+            request_doc = existing
+            reused += 1
+        else:
+            request_doc = {
+                "id": new_id(),
+                **request_key,
+                "numero_kickoff": kickoff.get("numero_kickoff", ""),
+                "projeto_id": kickoff.get("projeto_id"),
+                "cliente_id": kickoff.get("cliente_id"),
+                "cliente_nome": (kickoff.get("bloco1") or {}).get("cliente", ""),
+                "descricao": line.get("descricao", ""),
+                "codigo_sugerido": line.get("codigo_interno", ""),
+                "tipo_bom": line.get("tipo", ""),
+                "unidade": line.get("unidade") or "un",
+                "quantidade_por_unidade": line.get("quantidade_por_unidade") or 0,
+                "quantidade_total_pedido": line.get("quantidade_total_pedido") or 0,
+                "fornecedor_principal": line.get("fornecedor_principal"),
+                "especificacoes": {
+                    "bom": line,
+                    "bloco3": kickoff.get("bloco3") or {},
+                    "bloco4": kickoff.get("bloco4") or {},
+                },
+                "anexo_file_ids": kickoff_file_ids,
+                "status": "pendente_cadastro",
+                "material_id": (material or {}).get("id"),
+                "compras_item_id": None,
+                "demanda_compra_id": None,
+                "created_by": user.get("id", ""),
+                "created_by_name": user.get("name", ""),
+                "created_at": now,
+                "updated_at": now,
+            }
+            await db.cadastro_bom_solicitacoes.insert_one(request_doc)
+            request_doc.pop("_id", None)
+            created += 1
+
+        line.update({
+            "cadastro_status": request_doc.get("status") or "pendente_cadastro",
+            "cadastro_solicitacao_id": request_doc["id"],
+            "material_id": request_doc.get("material_id"),
+            "compras_item_id": request_doc.get("compras_item_id"),
+        })
+        await _create_or_reuse_task(
+            kickoff=kickoff,
+            title=f"Cadastrar item novo do BOM: {line.get('descricao', '')}",
+            task_code=f"cadastrar_item_bom:{request_doc['id']}",
+            category="cadastros",
+            due_in_days=2,
+            created_by=user,
+            responsible_roles=["engenharia_produto", "compras", "admin"],
+            description=(
+                "Item novo identificado no BOM. Anexe a ficha/especificacao, conclua o cadastro "
+                "operacional e libere-o para cotacao em Compras."
+            ),
+            blocking=True,
+        )
+
+    pending = sum(1 for line in bom if line.get("cadastro_status") != "cadastrado")
+    summary = {
+        "status": "liberado_compras" if pending == 0 else "aguardando_cadastros",
+        "total_bom": len(bom),
+        "cadastrados": registered,
+        "pendentes": pending,
+        "solicitacoes_criadas": created,
+        "solicitacoes_reutilizadas": reused,
+        "updated_at": now,
+    }
+    await db.kickoffs.update_one(
+        {"id": kickoff["id"], "tenant_id": tenant_id},
+        {"$set": {"bom": bom, "cadastro_bom": summary, "updated_at": now}},
+    )
+    kickoff["bom"] = bom
+    kickoff["cadastro_bom"] = summary
+    return summary
 
 
 async def _create_homologation_tasks_for_bom(kickoff: dict, user: dict):
@@ -1800,6 +1960,7 @@ async def update_kickoff_bloco4(kickoff_id: str, data: KickoffBloco4Input, reque
     )
     kickoff = await _get_kickoff_or_404(kickoff["id"], user["tenant_id"])
     kickoff = await _refresh_bom(kickoff)
+    await _sync_bom_registration_requests(kickoff, user)
     await _create_homologation_tasks_for_bom(kickoff, user)
     await _enqueue_approval_task(kickoff, user, "lider_pd")
     await audit_log(
@@ -1913,6 +2074,16 @@ async def approve_kickoff(kickoff_id: str, data: KickoffApprovalInput, request: 
         raise HTTPException(status_code=400, detail="Decisao invalida")
     require_roles(user, APPROVAL_ROLE_MAP[data.etapa])
     kickoff = await _refresh_bom(kickoff)
+    cadastro_summary = await _sync_bom_registration_requests(kickoff, user)
+    if data.etapa == "direcao" and cadastro_summary.get("pendentes"):
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "Aprovacao final bloqueada: existem itens novos do BOM aguardando cadastro e anexo.",
+                "pendentes_cadastro": cadastro_summary.get("pendentes"),
+                "acao": "Conclua os itens em Cadastros > Pendencias BOM para liberar Compras.",
+            },
+        )
     await _validate_kickoff_ready_for_approval(kickoff)
 
     current_step = _current_approval_step(kickoff)

@@ -630,6 +630,225 @@ def _build_eta_payload(op: Dict[str, Any], events: List[Dict[str, Any]], slots: 
     }
 
 
+def _latest_op_activity(op: Dict[str, Any], now_dt: datetime) -> datetime:
+    """Best known production timestamp, used when an OP is finished."""
+    candidates: List[datetime] = []
+    for apontamento in op.get("apontamentos") or []:
+        parsed = _parse_datetime_or_none(apontamento.get("horario") or apontamento.get("em"))
+        if parsed:
+            candidates.append(parsed)
+    for key in ("fechado_producao_em", "pcp_confirmed_at", "updated_at"):
+        parsed = _parse_datetime_or_none(op.get(key))
+        if parsed:
+            candidates.append(parsed)
+    return max(candidates) if candidates else now_dt
+
+
+def _live_slot_prediction(slot: Dict[str, Any], op: Dict[str, Any], now_dt: datetime) -> Dict[str, Any]:
+    """Calculate the current end forecast from production postings and pauses."""
+    start = _slot_datetime(slot, "data_inicio", "hora_inicio")
+    end = _slot_datetime(slot, "data_fim", "hora_fim")
+    if not start or not end:
+        return {}
+    if end <= start:
+        end = start + timedelta(minutes=max(int(_as_float(slot.get("setup_tempo_min"))), 1))
+    baseline_end = (
+        _slot_datetime(slot, "data_fim_original", "hora_fim_original")
+        if slot.get("data_fim_original") and slot.get("hora_fim_original")
+        else None
+    ) or end
+
+    planned = _as_float(slot.get("qtd_planejada")) or _op_planned_quantity(op)
+    produced = _op_produced_quantity(op)
+    percentage = min(round((produced / planned) * 100, 2), 100.0) if planned > 0 else 0.0
+    completed = op.get("status") in {"aguardando_confirmacao_pcp", "concluida"} or (planned > 0 and produced >= planned)
+    started = op.get("status") in {"em_processo", "pausada"} or produced > 0
+    pause_minutes = _op_pause_minutes(op, now_dt)
+    rate_per_minute = 0.0
+
+    if completed:
+        predicted_end = _latest_op_activity(op, now_dt)
+        live_status = "concluido"
+    else:
+        productive_until = max(now_dt, start)
+        elapsed = max(_minutes_between(start, productive_until) - pause_minutes, 1)
+        if started and produced > 0:
+            rate_per_minute = produced / elapsed
+        if rate_per_minute > 0 and planned > produced:
+            predicted_end = now_dt + timedelta(minutes=max(int(round((planned - produced) / rate_per_minute)), 1))
+        elif started and now_dt > end:
+            predicted_end = now_dt + (end - start)
+        else:
+            predicted_end = end
+        live_status = "pausado" if op.get("status") == "pausada" else "em_execucao" if started else "planejado"
+
+    cascade_delta = int(round((predicted_end - end).total_seconds() / 60))
+    deviation = int(round((predicted_end - baseline_end).total_seconds() / 60))
+    timing = "atrasado" if deviation > 1 else "adiantado" if deviation < -1 else "no_prazo"
+    return {
+        "start": start,
+        "scheduled_end": end,
+        "predicted_end": predicted_end,
+        "deviation_minutes": deviation,
+        "cascade_delta_minutes": cascade_delta,
+        "planned_quantity": planned,
+        "produced_quantity": produced,
+        "percentage": percentage,
+        "rate_per_hour": round(rate_per_minute * 60, 3),
+        "pause_minutes": pause_minutes,
+        "timing": timing,
+        "live_status": live_status,
+    }
+
+
+def _shifted_slot_fields(start: datetime, end: datetime) -> Dict[str, Any]:
+    return {
+        "data": start.date().isoformat(),
+        "data_inicio": start.date().isoformat(),
+        "data_fim": end.date().isoformat(),
+        "hora_inicio": start.strftime("%H:%M"),
+        "hora_fim": end.strftime("%H:%M"),
+    }
+
+
+def _build_schedule_cascade(
+    current_slot: Dict[str, Any],
+    following_slots: List[Dict[str, Any]],
+    prediction: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """Return downstream moves while preserving durations and gaps."""
+    delta_minutes = prediction.get("cascade_delta_minutes", prediction.get("deviation_minutes")) if prediction else 0
+    if not delta_minutes:
+        return []
+    delta = timedelta(minutes=delta_minutes)
+    previous_end = prediction["predicted_end"]
+    moves: List[Dict[str, Any]] = []
+    ordered = sorted(
+        following_slots,
+        key=lambda row: _slot_datetime(row, "data_inicio", "hora_inicio") or datetime.max.replace(tzinfo=timezone.utc),
+    )
+    for slot in ordered:
+        if slot.get("id") == current_slot.get("id") or slot.get("status") in {"concluido", "cancelado"}:
+            continue
+        old_start = _slot_datetime(slot, "data_inicio", "hora_inicio")
+        old_end = _slot_datetime(slot, "data_fim", "hora_fim")
+        if not old_start or not old_end or old_start <= prediction["start"]:
+            continue
+        duration = max(old_end - old_start, timedelta(minutes=1))
+        new_start = max(old_start + delta, previous_end)
+        new_end = new_start + duration
+        moves.append({
+            "slot": slot,
+            "old_start": old_start,
+            "old_end": old_end,
+            "new_start": new_start,
+            "new_end": new_end,
+            "shift_minutes": int(round((new_start - old_start).total_seconds() / 60)),
+        })
+        previous_end = new_end
+    return moves
+
+
+async def recalculate_live_schedule_for_op(
+    op_id: str,
+    tenant_id: str,
+    actor_name: str = "Sistema PCP",
+    now_value: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Update one OP forecast and cascade its deviation through the same production line."""
+    now_dt = _parse_datetime_or_none(now_value) or _parse_datetime_or_none(_now()) or datetime.now(timezone.utc)
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not op:
+        return {"op_id": op_id, "reprogramados": 0, "ignorado": "op_nao_encontrada"}
+    slots = await db.pcp_programacao.find(
+        {"tenant_id": tenant_id, "linha_id": {"$exists": True}}, {"_id": 0}
+    ).sort("data_inicio", 1).to_list(5000)
+    op_slots = [row for row in slots if row.get("op_id") == op_id and row.get("status") != "cancelado"]
+    if not op_slots:
+        return {"op_id": op_id, "reprogramados": 0, "ignorado": "sem_programacao"}
+
+    current = next((row for row in op_slots if row.get("status") == "em_execucao"), op_slots[-1])
+    prediction = _live_slot_prediction(current, op, now_dt)
+    if not prediction:
+        return {"op_id": op_id, "reprogramados": 0, "ignorado": "horario_invalido"}
+
+    now_iso = now_dt.isoformat()
+    current_updates: Dict[str, Any] = {
+        "qtd_produzida": prediction["produced_quantity"],
+        "percentual_concluido": prediction["percentage"],
+        "ritmo_hora": prediction["rate_per_hour"],
+        "pausa_minutos": prediction["pause_minutes"],
+        "previsao_fim": prediction["predicted_end"].isoformat(),
+        "desvio_minutos": prediction["deviation_minutes"],
+        "situacao_tempo": prediction["timing"],
+        "status_tempo_real": prediction["live_status"],
+        "recalculado_em": now_iso,
+        "updated_at": now_iso,
+    }
+    if not current.get("data_fim_original"):
+        current_updates["data_fim_original"] = prediction["scheduled_end"].date().isoformat()
+    if not current.get("hora_fim_original"):
+        current_updates["hora_fim_original"] = prediction["scheduled_end"].strftime("%H:%M")
+    target_status = current.get("status")
+    if prediction["live_status"] == "concluido":
+        target_status = "concluido"
+    elif prediction["live_status"] in {"em_execucao", "pausado"} and current.get("status") == "planejado":
+        target_status = "em_execucao"
+    if target_status != current.get("status"):
+        historico_atual = list(current.get("historico") or [])
+        historico_atual.append({
+            "de": current.get("status"),
+            "para": target_status,
+            "por": actor_name,
+            "em": now_iso,
+            "origem": "apontamento_tempo_real",
+        })
+        current_updates["status"] = target_status
+        current_updates["historico"] = historico_atual
+    current_updates.update(_shifted_slot_fields(prediction["start"], prediction["predicted_end"]))
+    await db.pcp_programacao.update_one(
+        {"id": current["id"], "tenant_id": tenant_id}, {"$set": current_updates}
+    )
+
+    same_line = [row for row in slots if row.get("linha_id") == current.get("linha_id")]
+    moves = _build_schedule_cascade(current, same_line, prediction)
+    for move in moves:
+        slot = move["slot"]
+        historico = list(slot.get("historico") or [])
+        historico.append({
+            "de": slot.get("status"),
+            "para": slot.get("status"),
+            "por": actor_name,
+            "em": now_iso,
+            "origem": "apontamento_tempo_real",
+            "op_origem_id": op_id,
+            "deslocamento_minutos": move["shift_minutes"],
+        })
+        updates = _shifted_slot_fields(move["new_start"], move["new_end"])
+        updates.update({
+            "historico": historico,
+            "ajustado_por_op_id": op_id,
+            "ajuste_cascata_minutos": move["shift_minutes"],
+            "desvio_acumulado_minutos": int(slot.get("desvio_acumulado_minutos") or 0) + move["shift_minutes"],
+            "recalculado_em": now_iso,
+            "updated_at": now_iso,
+        })
+        await db.pcp_programacao.update_one(
+            {"id": slot["id"], "tenant_id": tenant_id}, {"$set": updates}
+        )
+
+    return {
+        "op_id": op_id,
+        "slot_id": current.get("id"),
+        "linha_id": current.get("linha_id"),
+        "situacao_tempo": prediction["timing"],
+        "desvio_minutos": prediction["deviation_minutes"],
+        "previsao_fim": prediction["predicted_end"].isoformat(),
+        "percentual_concluido": prediction["percentage"],
+        "reprogramados": len(moves),
+    }
+
+
 def _day_closing_reconciliation(ops: List[Dict[str, Any]], data_ref: str) -> List[Dict[str, Any]]:
     rows = []
     for op in ops:
@@ -1096,6 +1315,37 @@ async def list_programacao(
         ]
     slots = await db.pcp_programacao.find(query, {"_id": 0}).sort("data_inicio", 1).to_list(1000)
     return slots
+
+
+class ProgramacaoTempoRealRequest(BaseModel):
+    op_id: Optional[str] = None
+    now: Optional[str] = None
+
+
+@pcp_router.post("/programacao/recalcular-tempo-real")
+async def recalcular_programacao_tempo_real(data: ProgramacaoTempoRealRequest, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    if data.op_id:
+        op_ids = [data.op_id]
+    else:
+        active = await db.ops.find(
+            {"tenant_id": tid, "status": {"$in": ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp"]}},
+            {"_id": 0, "id": 1},
+        ).to_list(1000)
+        op_ids = [row.get("id") for row in active if row.get("id")]
+
+    results = []
+    for op_id in op_ids:
+        results.append(await recalculate_live_schedule_for_op(
+            op_id, tid, user.get("name") or "Sistema PCP", data.now
+        ))
+    return {
+        "recalculado_em": data.now or _now(),
+        "ops_processadas": len(results),
+        "slots_reprogramados": sum(int(row.get("reprogramados") or 0) for row in results),
+        "resultados": results,
+    }
 
 
 @pcp_router.post("/importar-programacao")

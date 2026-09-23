@@ -7,6 +7,7 @@ categorias sem duplicar as colecoes que ja alimentam CRM, Compras, P&D e PCP.
 
 import logging
 import re
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
@@ -21,6 +22,7 @@ from workflow_engine import (
     next_sku_per_pair_v2,
     normalise_cli4,
     suggest_cli4_candidates,
+    create_workflow_task,
 )
 
 logger = logging.getLogger(__name__)
@@ -56,6 +58,10 @@ async def create_cadastros_master_indexes():
     await db.cadastros_auditoria.create_index([("tenant_id", 1), ("created_at", -1)])
     await db.crm_clients.create_index([("tenant_id", 1), ("cli4", 1)])
     await db.materiais.create_index([("tenant_id", 1), ("categoria_mp_id", 1)])
+    await db.cadastro_bom_solicitacoes.create_index(
+        [("tenant_id", 1), ("kickoff_id", 1), ("bom_chave", 1)], unique=True
+    )
+    await db.cadastro_bom_solicitacoes.create_index([("tenant_id", 1), ("status", 1), ("created_at", -1)])
 
 
 class ClienteCadastroCreate(BaseModel):
@@ -179,6 +185,24 @@ class MaterialCadastroUpdate(BaseModel):
     status: Optional[str] = None
     especificacoes_tecnicas: Optional[Dict[str, Any]] = None
     enderecamento: Optional[Dict[str, Any]] = None
+
+
+class CadastroBomUpdate(BaseModel):
+    descricao: Optional[str] = None
+    unidade: Optional[str] = None
+    observacoes: Optional[str] = None
+    anexo_file_ids: Optional[List[str]] = None
+
+
+class CadastroBomConcluir(BaseModel):
+    nome: Optional[str] = None
+    tipo: Optional[str] = None
+    unidade_estoque: Optional[str] = None
+    unidade_compra: Optional[str] = None
+    categoria_mp_id: str = ""
+    fornecedor_id: str = ""
+    observacoes: str = ""
+    anexo_file_ids: List[str] = Field(default_factory=list)
 
 
 def _clean(value: Any) -> str:
@@ -308,6 +332,10 @@ async def cadastros_dashboard(request: Request):
             "tenant_id": tenant_id,
             "cadastro_pendente": True,
         }),
+        "itens_bom_aguardando_cadastro": await db.cadastro_bom_solicitacoes.count_documents({
+            "tenant_id": tenant_id,
+            "status": {"$in": ["pendente_cadastro", "em_cadastro"]},
+        }),
     }
     return {
         "totais": {
@@ -327,6 +355,320 @@ async def cadastros_dashboard(request: Request):
             {"nome": "Estoque Lab", "status": "conectado", "detalhe": "Materiais podem ser vinculados ao banco de custos e estoque."},
         ],
     }
+
+
+def _bom_material_type(tipo_bom: str) -> str:
+    value = _clean(tipo_bom).lower()
+    if value == "mp_formula":
+        return "MP"
+    if value == "rotulo":
+        return "RT"
+    if value == "emb_secundaria":
+        return "ES"
+    return "EP"
+
+
+def _bom_purchase_category(tipo_bom: str) -> str:
+    return "mp" if _clean(tipo_bom).lower() == "mp_formula" else "embalagem"
+
+
+async def _bom_request_or_404(request_id: str, tenant_id: str) -> dict:
+    doc = await db.cadastro_bom_solicitacoes.find_one(
+        {"id": request_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail="Solicitacao de cadastro do BOM nao encontrada.")
+    return doc
+
+
+async def _decorate_bom_request(doc: dict) -> dict:
+    file_ids = list(dict.fromkeys(doc.get("anexo_file_ids") or []))
+    files = []
+    if file_ids:
+        files = await db.files.find(
+            {"tenant_id": doc["tenant_id"], "id": {"$in": file_ids}, "is_deleted": False},
+            {"_id": 0, "storage_path": 0},
+        ).to_list(100)
+    return {**doc, "anexos": files, "anexos_count": len(files)}
+
+
+@cadastros_master_router.get("/solicitacoes-bom")
+async def list_cadastro_bom_requests(
+    request: Request,
+    status: Optional[str] = None,
+    q: Optional[str] = Query(None),
+):
+    user = await _get_current_user(request)
+    require_roles(user, READ_ROLES)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if status and status != "todos":
+        query["status"] = status
+    if q:
+        query["$or"] = [
+            {"descricao": {"$regex": q, "$options": "i"}},
+            {"codigo_sugerido": {"$regex": q, "$options": "i"}},
+            {"numero_kickoff": {"$regex": q, "$options": "i"}},
+            {"cliente_nome": {"$regex": q, "$options": "i"}},
+        ]
+    docs = await db.cadastro_bom_solicitacoes.find(query, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return {
+        "solicitacoes": [await _decorate_bom_request(doc) for doc in docs],
+        "total": len(docs),
+        "pendentes": sum(1 for doc in docs if doc.get("status") in {"pendente_cadastro", "em_cadastro"}),
+    }
+
+
+@cadastros_master_router.post("/solicitacoes-bom/sincronizar")
+async def sync_existing_kickoff_bom_requests(request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, READ_ROLES)
+    from kickoff_routes import _sync_bom_registration_requests
+
+    kickoffs = await db.kickoffs.find(
+        {
+            "tenant_id": user["tenant_id"],
+            "status": {"$nin": ["arquivado", "substituida"]},
+            "bom.0": {"$exists": True},
+        },
+        {"_id": 0},
+    ).to_list(1000)
+    results = []
+    for kickoff in kickoffs:
+        results.append(await _sync_bom_registration_requests(kickoff, user))
+    return {
+        "kickoffs_processados": len(results),
+        "solicitacoes_criadas": sum(int(row.get("solicitacoes_criadas") or 0) for row in results),
+        "pendentes": sum(int(row.get("pendentes") or 0) for row in results),
+    }
+
+
+@cadastros_master_router.put("/solicitacoes-bom/{request_id}")
+async def update_cadastro_bom_request(request_id: str, data: CadastroBomUpdate, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CATEGORY_WRITE_ROLES)
+    existing = await _bom_request_or_404(request_id, user["tenant_id"])
+    if existing.get("status") == "cadastrado":
+        raise HTTPException(status_code=409, detail="Item ja cadastrado e liberado para Compras.")
+    payload = data.model_dump(exclude_unset=True)
+    if "anexo_file_ids" in payload:
+        payload["anexo_file_ids"] = list(dict.fromkeys(payload.get("anexo_file_ids") or []))
+    payload.update({"status": "em_cadastro", "updated_at": _now_iso()})
+    await db.cadastro_bom_solicitacoes.update_one(
+        {"id": request_id, "tenant_id": user["tenant_id"]}, {"$set": payload}
+    )
+    updated = await _bom_request_or_404(request_id, user["tenant_id"])
+    await _audit(user, "cadastro_bom_atualizado", "cadastro_bom", request_id, before=existing, after=updated)
+    return await _decorate_bom_request(updated)
+
+
+async def _ensure_material_from_bom_request(doc: dict, data: CadastroBomConcluir, user: dict) -> dict:
+    tenant_id = user["tenant_id"]
+    if doc.get("material_id"):
+        material = await db.materiais.find_one({"id": doc["material_id"], "tenant_id": tenant_id}, {"_id": 0})
+        if material:
+            return material
+    name = _clean(data.nome or doc.get("descricao"))
+    existing = await db.materiais.find_one(
+        {"tenant_id": tenant_id, "nome": {"$regex": f"^{re.escape(name)}$", "$options": "i"}}, {"_id": 0}
+    )
+    if existing:
+        return existing
+    tipo2 = _material_tipo_from_business(data.tipo) if data.tipo else _bom_material_type(doc.get("tipo_bom", ""))
+    unit = data.unidade_compra or doc.get("unidade") or "un"
+    now = _now_iso()
+    material = {
+        "id": _new_id(),
+        "tenant_id": tenant_id,
+        "codigo_interno": await _next_material_code(tenant_id, tipo2),
+        "tipo2": tipo2,
+        "subtipo": doc.get("tipo_bom", ""),
+        "nome": name,
+        "descricao": _clean(data.observacoes or doc.get("observacoes")),
+        "categoria_mp_id": data.categoria_mp_id or "",
+        "categoria_mp_codigo": "",
+        "categoria_mp_nome": "",
+        "unidade_estoque": data.unidade_estoque or unit,
+        "unidade_compra": unit,
+        "fator_conversao": 1.0,
+        "fornecedores": [],
+        "atributos": {},
+        "especificacoes_tecnicas": doc.get("especificacoes") or {},
+        "enderecamento": {},
+        "status": "ativo",
+        "origem": "kickoff_bom",
+        "kickoff_id": doc.get("kickoff_id"),
+        "cadastro_solicitacao_id": doc["id"],
+        "anexo_file_ids": list(dict.fromkeys((doc.get("anexo_file_ids") or []) + (data.anexo_file_ids or []))),
+        "created_by": user["id"],
+        "created_by_name": user.get("name", ""),
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.materiais.insert_one(material)
+    material.pop("_id", None)
+    return material
+
+
+async def _ensure_purchase_item_from_material(doc: dict, material: dict, user: dict) -> dict:
+    tenant_id = user["tenant_id"]
+    existing = await db.compras_itens.find_one(
+        {"tenant_id": tenant_id, "codigo_interno": material["codigo_interno"]}, {"_id": 0}
+    )
+    if existing:
+        return existing
+    now = _now_iso()
+    item = {
+        "id": _new_id(),
+        "tenant_id": tenant_id,
+        "codigo_interno": material["codigo_interno"],
+        "descricao": material.get("nome") or doc.get("descricao", ""),
+        "categoria": _bom_purchase_category(doc.get("tipo_bom", "")),
+        "sub_categoria": doc.get("tipo_bom", ""),
+        "unidade_compra": material.get("unidade_compra") or doc.get("unidade") or "un",
+        "fator_conversao_producao": material.get("fator_conversao") or 1.0,
+        "estoque_minimo": None,
+        "estoque_seguranca": 0.0,
+        "lead_time_dias": 0,
+        "requer_homologacao_cq": True,
+        "fornecedores_homologados": [],
+        "ultimo_preco_pago": None,
+        "material_id": material["id"],
+        "origem": "kickoff_bom_cadastro",
+        "kickoff_id": doc.get("kickoff_id"),
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.compras_itens.insert_one(item)
+    item.pop("_id", None)
+    return item
+
+
+async def _ensure_purchase_demand_from_bom(doc: dict, item: dict, user: dict) -> dict:
+    tenant_id = user["tenant_id"]
+    existing = await db.compras_demandas.find_one(
+        {"tenant_id": tenant_id, "cadastro_solicitacao_id": doc["id"], "origem": "kickoff_bom_cadastro"},
+        {"_id": 0},
+    )
+    if existing:
+        return existing
+    year = datetime.now(timezone.utc).year
+    sequence = await next_sequence(tenant_id, f"compras_demanda_{year}", start=1)
+    now = _now_iso()
+    demand = {
+        "id": _new_id(),
+        "tenant_id": tenant_id,
+        "numero_solicitacao": f"SC-{year}-{sequence:03d}",
+        "origem": "kickoff_bom_cadastro",
+        "kickoff_id": doc.get("kickoff_id"),
+        "cadastro_solicitacao_id": doc["id"],
+        "projeto_id": doc.get("projeto_id"),
+        "item_id": item["id"],
+        "item_codigo": item.get("codigo_interno", ""),
+        "item_descricao": item.get("descricao", ""),
+        "unidade_compra": item.get("unidade_compra", ""),
+        "quantidade": max(float(doc.get("quantidade_total_pedido") or 0), 1.0),
+        "data_limite_pedido": None,
+        "urgente": False,
+        "motivo": f"Novo item cadastrado pelo BOM do Kickoff {doc.get('numero_kickoff', '')}",
+        "fornecedor_selecionado_id": None,
+        "fornecedor_selecionado_nome": "",
+        "condicao_comercial_id": None,
+        "po_id": None,
+        "status": "pendente",
+        "cotacao_status": "pendente_retorno_solicitacao",
+        "observacoes": "Liberado automaticamente por Cadastros para iniciar cotacao.",
+        "solicitante_id": user["id"],
+        "solicitante_nome": user.get("name", ""),
+        "created_at": now,
+        "updated_at": now,
+    }
+    await db.compras_demandas.insert_one(demand)
+    demand.pop("_id", None)
+    return demand
+
+
+@cadastros_master_router.post("/solicitacoes-bom/{request_id}/concluir")
+async def conclude_cadastro_bom_request(request_id: str, data: CadastroBomConcluir, request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, CATEGORY_WRITE_ROLES)
+    doc = await _bom_request_or_404(request_id, user["tenant_id"])
+    if doc.get("status") == "cadastrado" and doc.get("demanda_compra_id"):
+        return await _decorate_bom_request(doc)
+    attachment_ids = list(dict.fromkeys((doc.get("anexo_file_ids") or []) + (data.anexo_file_ids or [])))
+    if not attachment_ids:
+        raise HTTPException(
+            status_code=422,
+            detail="Anexe ao menos uma ficha, desenho, especificacao ou documento antes de concluir o cadastro.",
+        )
+    material = await _ensure_material_from_bom_request(doc, data, user)
+    purchase_item = await _ensure_purchase_item_from_material(doc, material, user)
+    demand = await _ensure_purchase_demand_from_bom(doc, purchase_item, user)
+    now = _now_iso()
+    updates = {
+        "status": "cadastrado",
+        "material_id": material["id"],
+        "material_codigo": material.get("codigo_interno"),
+        "compras_item_id": purchase_item["id"],
+        "demanda_compra_id": demand["id"],
+        "anexo_file_ids": attachment_ids,
+        "concluido_por": user["id"],
+        "concluido_por_nome": user.get("name", ""),
+        "concluido_em": now,
+        "updated_at": now,
+    }
+    await db.cadastro_bom_solicitacoes.update_one(
+        {"id": request_id, "tenant_id": user["tenant_id"]}, {"$set": updates}
+    )
+
+    kickoff = await db.kickoffs.find_one({"id": doc.get("kickoff_id"), "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if kickoff:
+        bom = list(kickoff.get("bom") or [])
+        for line in bom:
+            if line.get("cadastro_chave") == doc.get("bom_chave"):
+                line.update({
+                    "cadastro_status": "cadastrado",
+                    "cadastro_solicitacao_id": request_id,
+                    "material_id": material["id"],
+                    "codigo_interno": material.get("codigo_interno"),
+                    "compras_item_id": purchase_item["id"],
+                    "cadastro_concluido_em": now,
+                })
+        pending = sum(1 for line in bom if line.get("cadastro_status") != "cadastrado")
+        summary = {
+            "status": "liberado_compras" if pending == 0 else "aguardando_cadastros",
+            "total_bom": len(bom),
+            "cadastrados": len(bom) - pending,
+            "pendentes": pending,
+            "updated_at": now,
+        }
+        await db.kickoffs.update_one(
+            {"id": kickoff["id"], "tenant_id": user["tenant_id"]},
+            {"$set": {"bom": bom, "cadastro_bom": summary, "updated_at": now}},
+        )
+
+    await create_workflow_task(
+        tenant_id=user["tenant_id"],
+        entity_type="compras_demanda",
+        entity_id=demand["id"],
+        title=f"Cotar novo item cadastrado: {purchase_item.get('codigo_interno')} - {purchase_item.get('descricao')}",
+        description=(
+            f"Item originado do BOM do Kickoff {doc.get('numero_kickoff', '')}. "
+            "Cadastro e anexo concluidos; iniciar cotacao e registrar retorno dos fornecedores."
+        ),
+        category="compras",
+        blocking=False,
+        due_in_days=2,
+        created_by=user,
+        metadata={
+            "module_origin": "cadastros",
+            "kickoff_id": doc.get("kickoff_id"),
+            "cadastro_solicitacao_id": request_id,
+            "item_id": purchase_item["id"],
+        },
+    )
+    updated = await _bom_request_or_404(request_id, user["tenant_id"])
+    await _audit(user, "cadastro_bom_concluido", "cadastro_bom", request_id, before=doc, after=updated)
+    return await _decorate_bom_request(updated)
 
 
 @cadastros_master_router.get("/clientes")
