@@ -45,14 +45,16 @@ const CATEGORIA_CONFIG = {
 const STATUS_CONFIG = {
     pendente:      { label: "Pendente",       cls: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" },
     em_retrabalho: { label: "Em Retrabalho",  cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-    concluido:     { label: "Aguardando CQ",  cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
-    reprovado:     { label: "Reprovado",      cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+    aguardando_cq: { label: "Aguardando CQ",  cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
+    liberado:      { label: "Liberado pelo CQ", cls: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" },
+    reprovado_cq:  { label: "Reprovado no CQ", cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+    reexpedido:    { label: "Reexpedido",     cls: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
     cancelado:     { label: "Cancelado",      cls: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
 };
 
 const NEXT_STATUS = {
     pendente:      "em_retrabalho",
-    em_retrabalho: "concluido",
+    em_retrabalho: "aguardando_cq",
 };
 
 const NEXT_STATUS_LABEL = {
@@ -190,7 +192,7 @@ export default function CQRetrabalho() {
     const handleAdvanceStatus = async (rt) => {
         const next = NEXT_STATUS[rt.status];
         if (!next) return;
-        if (next === "concluido") {
+        if (next === "aguardando_cq") {
             setSelectedRT(rt);
             setObsConc("");
             setShowConcluir(true);
@@ -250,7 +252,7 @@ export default function CQRetrabalho() {
         total: ordens.length,
         pendente: ordens.filter(o => o.status === "pendente").length,
         em_retrabalho: ordens.filter(o => o.status === "em_retrabalho").length,
-        concluido: ordens.filter(o => o.status === "concluido").length,
+        aguardando_cq: ordens.filter(o => o.status === "aguardando_cq").length,
     };
 
     const categoriaCfg = form.categoria ? CATEGORIA_CONFIG[form.categoria] : null;
@@ -280,7 +282,7 @@ export default function CQRetrabalho() {
                         { label: "Total", value: counts.total, cls: "text-foreground" },
                         { label: "Pendentes", value: counts.pendente, cls: "text-slate-600" },
                         { label: "Em Retrabalho", value: counts.em_retrabalho, cls: "text-amber-600" },
-                        { label: "Aguard. CQ", value: counts.concluido, cls: "text-blue-600" },
+                        { label: "Aguard. CQ", value: counts.aguardando_cq, cls: "text-blue-600" },
                     ].map(s => (
                         <Card key={s.label}>
                             <CardContent className="p-3">

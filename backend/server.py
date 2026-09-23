@@ -44,7 +44,7 @@ from pd_routes import pd_router, init_pd, run_stability_scheduler, check_stabili
 from crm_routes import crm_router, init_crm, run_alert_scheduler
 from estoque_routes import estoque_router, init_estoque, create_estoque_indexes
 from recebimento_routes import recebimento_router, init_recebimento, create_recebimento_indexes
-from retrabalho_routes import retrabalho_router, init_retrabalho
+from retrabalho_routes import retrabalho_router, init_retrabalho, create_retrabalho_indexes
 from expedicao_routes import expedicao_router, init_expedicao
 from faturamento_routes import faturamento_router, init_faturamento
 from pcp_routes import pcp_router, init_pcp
@@ -2185,6 +2185,7 @@ async def startup():
 
     # Initialize Retrabalho module
     init_retrabalho(db, get_current_user, new_id, now_iso)
+    await create_retrabalho_indexes()
 
     # Initialize Expedição + Faturamento modules
     init_expedicao(db, get_current_user, new_id, now_iso)
@@ -2327,6 +2328,9 @@ async def startup():
     await db.faturamento_notas.create_index([("tenant_id", 1), ("status", 1)])
     await db.faturamento_notas.create_index([("tenant_id", 1), ("status_pagamento", 1)])
     await db.faturamento_notas.create_index([("tenant_id", 1), ("created_at", -1)])
+    await db.faturamento_notas.create_index(
+        [("tenant_id", 1), ("devolucao_cliente_id", 1)], unique=True, sparse=True
+    )
     await db.faturamento_duplicatas.create_index([("tenant_id", 1), ("status", 1)])
     await db.faturamento_duplicatas.create_index([("tenant_id", 1), ("nf_id", 1)])
     await db.faturamento_duplicatas.create_index([("tenant_id", 1), ("data_vencimento", 1)])

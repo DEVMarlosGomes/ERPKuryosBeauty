@@ -54,6 +54,8 @@ TASK_CATEGORY_ROLES = {
     "qa": "gestor",         # CQ Approval
     "documentacao": "gestor",
     "engenharia_produto": "gestor",
+    "cadastros": "engenharia_produto",
+    "compras": "compras",
     "cliente_feedback": "vendedor",
     "fechamento": "vendedor",
     "manual": "vendedor",

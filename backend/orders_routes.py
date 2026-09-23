@@ -7,10 +7,21 @@ Orders Module (Pedidos) - Production Order management
 from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from pymongo.errors import DuplicateKeyError
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone, timedelta
 import io
 import logging
+
+from stock_ledger import (
+    append_lot_ledger_event,
+    consumir_reserva_saldo_lote,
+    estornar_consumo_saldo_lote,
+    liberar_reserva_saldo_lote,
+    reservar_saldo_lote,
+    saldo_quantidade_disponivel,
+    saldo_quantidade_reservada,
+)
 import math
 import hashlib
 import re
@@ -56,6 +67,20 @@ def new_id():
 
 def now_iso():
     return now_iso_func()
+
+
+async def _refresh_pcp_live_schedule(op_id: str, user: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Keep PCP planning synchronized without making production actions depend on it."""
+    try:
+        from pcp_routes import recalculate_live_schedule_for_op
+        return await recalculate_live_schedule_for_op(
+            op_id,
+            user["tenant_id"],
+            user.get("name") or "Sistema PCP",
+        )
+    except Exception:
+        logger.exception("Falha ao recalcular programacao em tempo real da OP %s", op_id)
+        return None
 
 
 def _smtp_configured() -> bool:
@@ -323,6 +348,15 @@ class OPUpdate(BaseModel):
     linha_id: Optional[str] = None
     linha_nome: Optional[str] = None
     pcp_numero: Optional[str] = None
+
+
+class PAConferenceCreate(BaseModel):
+    endereco_id: Optional[str] = None
+    endereco_codigo: Optional[str] = None
+    quantidade_paletes: int = Field(default=1, ge=1, le=500)
+    data_validade: Optional[str] = None
+    observacoes: str = ""
+    idempotency_key: str = Field(min_length=8, max_length=160)
 
 
 OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"]
@@ -2030,8 +2064,12 @@ def _stock_quantity(saldo: Dict[str, Any]) -> float:
     return _as_float(saldo.get("quantidade"))
 
 
+def _stock_available_quantity(saldo: Dict[str, Any]) -> float:
+    return saldo_quantidade_disponivel(saldo)
+
+
 def _stock_is_pickable(saldo: Dict[str, Any]) -> bool:
-    if _stock_quantity(saldo) <= 0:
+    if _stock_available_quantity(saldo) <= 0:
         return False
     status = str(saldo.get("status") or "").strip().lower()
     posicao_cq = str(saldo.get("posicao_cq") or saldo.get("cq_status") or "").strip().lower()
@@ -2057,7 +2095,7 @@ async def _suggest_fefo_for_requirement(tenant_id: str, requirement: Dict[str, A
     for saldo in saldos:
         if remaining <= 0:
             break
-        available = _stock_quantity(saldo)
+        available = _stock_available_quantity(saldo)
         take = round(min(available, remaining), 6)
         if take <= 0:
             continue
@@ -2107,7 +2145,7 @@ async def _assert_confirm_lines_pickable(tenant_id: str, lines: List[Dict[str, A
             )
         if not _stock_is_pickable(saldo) or not _saldo_is_pickable(saldo, endereco):
             raise HTTPException(status_code=422, detail=f"Lote bloqueado por CQ/WMS: {saldo.get('lote') or saldo_id}")
-        available = _stock_quantity(saldo)
+        available = _stock_available_quantity(saldo)
         if requested > available:
             raise HTTPException(
                 status_code=422,
@@ -2141,6 +2179,10 @@ def _saldo_lote_quantity(saldo: Dict[str, Any]) -> float:
     return _as_float(saldo.get("quantidade_atual"))
 
 
+def _saldo_lote_available_quantity(saldo: Dict[str, Any]) -> float:
+    return saldo_quantidade_disponivel(saldo)
+
+
 def _saldo_cq_position(saldo: Dict[str, Any]) -> str:
     return _normalize_match_token(
         saldo.get("posicao_cq") or saldo.get("cq_status") or saldo.get("status_cq") or "livre"
@@ -2148,7 +2190,7 @@ def _saldo_cq_position(saldo: Dict[str, Any]) -> str:
 
 
 def _saldo_is_pickable(saldo: Dict[str, Any], endereco: Optional[Dict[str, Any]]) -> bool:
-    if _saldo_lote_quantity(saldo) <= 0:
+    if _saldo_lote_available_quantity(saldo) <= 0:
         return False
     if _normalize_match_token(saldo.get("status")) in {"zerado", "bloqueado", "bloqueada", "inativo", "inativa"}:
         return False
@@ -2318,7 +2360,7 @@ def _suggest_fefo_for_requirements(
         separacoes = []
         total_available = 0.0
         for saldo in matches:
-            available = _saldo_lote_quantity(saldo)
+            available = _saldo_lote_available_quantity(saldo)
             total_available = round(total_available + available, 6)
             if remaining <= 0:
                 continue
@@ -2337,6 +2379,8 @@ def _suggest_fefo_for_requirements(
                 "setor": saldo.get("setor") or endereco.get("setor") or "",
                 "posicao_cq": saldo.get("posicao_cq") or saldo.get("cq_status") or saldo.get("status_cq") or "livre",
                 "quantidade_disponivel": available,
+                "quantidade_fisica": _saldo_lote_quantity(saldo),
+                "quantidade_reservada": saldo_quantidade_reservada(saldo),
                 "quantidade_sugerida": suggested,
                 "unidade": saldo.get("unidade") or requirement.get("unidade") or "",
             })
@@ -3554,6 +3598,151 @@ async def suggest_wms_picking_for_op(op_id: str, request: Request):
     return await _build_wms_picking_suggestion(op, tenant_id)
 
 
+def _ledger_reservations_supported() -> bool:
+    return (
+        hasattr(db, "estoque_movimentos_lote")
+        and hasattr(db, "estoque_saldos_lote")
+        and hasattr(db.estoque_saldos_lote, "find_one_and_update")
+    )
+
+
+async def _reserve_confirmed_picking_lines(
+    op: Dict[str, Any],
+    separacao_id: str,
+    lines: List[Dict[str, Any]],
+    user: Dict[str, Any],
+) -> bool:
+    """Reserva cada lote de forma atomica e compensa reservas parciais em erro."""
+    if not _ledger_reservations_supported():
+        return False
+
+    reserved: List[Dict[str, Any]] = []
+    try:
+        for line in lines:
+            await reservar_saldo_lote(
+                db,
+                new_id_fn=new_id,
+                now_iso_fn=now_iso,
+                tenant_id=user["tenant_id"],
+                saldo_lote_id=line["saldo_lote_id"],
+                quantidade=line["quantidade"],
+                op_id=op["id"],
+                wms_separacao_id=separacao_id,
+                usuario=user,
+                material_key=line.get("material_key") or "",
+            )
+            reserved.append(line)
+        return True
+    except Exception:
+        for line in reversed(reserved):
+            try:
+                await liberar_reserva_saldo_lote(
+                    db,
+                    new_id_fn=new_id,
+                    now_iso_fn=now_iso,
+                    tenant_id=user["tenant_id"],
+                    saldo_lote_id=line["saldo_lote_id"],
+                    quantidade=line["quantidade"],
+                    op_id=op["id"],
+                    wms_separacao_id=separacao_id,
+                    usuario=user,
+                    motivo="Compensacao automatica de confirmacao de separacao incompleta",
+                    material_key=line.get("material_key") or "",
+                )
+            except Exception:
+                logger.exception(
+                    "Falha ao compensar reserva parcial da OP %s no saldo %s",
+                    op.get("id"),
+                    line.get("saldo_lote_id"),
+                )
+        raise
+
+
+async def _rollback_confirmed_picking_lines(
+    op: Dict[str, Any],
+    separacao_id: str,
+    lines: List[Dict[str, Any]],
+    user: Dict[str, Any],
+    motivo: str,
+) -> None:
+    if not _ledger_reservations_supported():
+        return
+    for line in reversed(lines):
+        await liberar_reserva_saldo_lote(
+            db,
+            new_id_fn=new_id,
+            now_iso_fn=now_iso,
+            tenant_id=user["tenant_id"],
+            saldo_lote_id=line["saldo_lote_id"],
+            quantidade=line["quantidade"],
+            op_id=op["id"],
+            wms_separacao_id=separacao_id,
+            usuario=user,
+            motivo=motivo,
+            material_key=line.get("material_key") or "",
+        )
+
+
+async def _release_op_picking_reservations(op: Dict[str, Any], user: Dict[str, Any], motivo: str) -> int:
+    if not _ledger_reservations_supported():
+        return 0
+    separacoes = await db.wms_separacoes.find(
+        {
+            "tenant_id": user["tenant_id"],
+            "op_id": op["id"],
+            "reserva_aplicada": True,
+            "reserva_liberada": {"$ne": True},
+        },
+        {"_id": 0},
+    ).to_list(100)
+    ledger_events = await db.estoque_movimentos_lote.find(
+        {
+            "tenant_id": user["tenant_id"],
+            "op_id": op["id"],
+            "evento": {"$in": ["CONSUMO_OP", "ESTORNO_CONSUMO_OP"]},
+        },
+        {"_id": 0},
+    ).to_list(10000)
+    consumed_by_line: Dict[tuple, float] = {}
+    for event in ledger_events:
+        metadata = event.get("metadata") or {}
+        key = (event.get("wms_separacao_id"), event.get("saldo_lote_id"), metadata.get("material_key") or "")
+        sign = 1.0 if event.get("evento") == "CONSUMO_OP" else -1.0
+        consumed_by_line[key] = round(consumed_by_line.get(key, 0.0) + sign * _as_float(event.get("quantidade")), 6)
+    released = 0
+    for separacao in separacoes:
+        for line in separacao.get("linhas") or []:
+            material_key = line.get("material_key") or ""
+            line_key = (separacao["id"], line.get("saldo_lote_id"), material_key)
+            quantidade_restante = round(max(_as_float(line.get("quantidade")) - consumed_by_line.get(line_key, 0.0), 0.0), 6)
+            if quantidade_restante <= 0:
+                continue
+            await liberar_reserva_saldo_lote(
+                db,
+                new_id_fn=new_id,
+                now_iso_fn=now_iso,
+                tenant_id=user["tenant_id"],
+                saldo_lote_id=line["saldo_lote_id"],
+                quantidade=quantidade_restante,
+                op_id=op["id"],
+                wms_separacao_id=separacao["id"],
+                usuario=user,
+                motivo=motivo,
+                material_key=material_key,
+            )
+            released += 1
+        await db.wms_separacoes.update_one(
+            {"id": separacao["id"], "tenant_id": user["tenant_id"]},
+            {"$set": {
+                "reserva_liberada": True,
+                "reserva_liberada_em": now_iso(),
+                "empenho_status": "liberado",
+                "updated_at": now_iso(),
+            }},
+        )
+    return released
+
+
 @ops_router.post("/{op_id}/material-picking/confirm")
 @ops_router.post("/{op_id}/wms-separacao/confirmar")
 async def confirm_wms_picking_for_op(op_id: str, data: WMSPickingConfirm, request: Request):
@@ -3592,9 +3781,13 @@ async def confirm_wms_picking_for_op(op_id: str, data: WMSPickingConfirm, reques
     await _assert_confirm_lines_pickable(tenant_id, validated["linhas"])
 
     now = now_iso()
+    separacao_id = new_id()
+    reserva_aplicada = await _reserve_confirmed_picking_lines(op, separacao_id, validated["linhas"], user)
     status = "confirmada_com_falta" if validated["faltas"] else "confirmada"
+    linhas_empenhadas = [{**line, "quantidade_empenhada": _as_float(line.get("quantidade"))} for line in validated["linhas"]]
+    quantidade_empenhada = round(sum(line["quantidade_empenhada"] for line in linhas_empenhadas), 6)
     doc = {
-        "id": new_id(),
+        "id": separacao_id,
         "tenant_id": tenant_id,
         "op_id": op["id"],
         "numero_op": op.get("numero_op"),
@@ -3602,11 +3795,15 @@ async def confirm_wms_picking_for_op(op_id: str, data: WMSPickingConfirm, reques
         "allocation_id": op.get("allocation_id"),
         "sales_order_item_id": op.get("sales_order_item_id"),
         "status": status,
-        "linhas": validated["linhas"],
+        "linhas": linhas_empenhadas,
         "faltas": validated["faltas"],
         "alertas": suggestion.get("alertas") or [],
         "estoque_baixado": False,
         "destructive_stock_movement": False,
+        "reserva_aplicada": reserva_aplicada,
+        "reserva_liberada": False,
+        "empenho_status": "empenhado_com_falta" if validated["faltas"] else "empenhado",
+        "quantidade_empenhada": quantidade_empenhada,
         "idempotency_key": idempotency_key or None,
         "observacoes": data.observacoes or "",
         "created_at": now,
@@ -3614,7 +3811,14 @@ async def confirm_wms_picking_for_op(op_id: str, data: WMSPickingConfirm, reques
         "created_by": user.get("id", ""),
         "created_by_name": user.get("name", ""),
     }
-    await db.wms_separacoes.insert_one(doc)
+    try:
+        await db.wms_separacoes.insert_one(doc)
+    except Exception:
+        if reserva_aplicada:
+            await _rollback_confirmed_picking_lines(
+                op, separacao_id, validated["linhas"], user, "Compensacao por falha ao gravar empenho da OP"
+            )
+        raise
     doc.pop("_id", None)
 
     await _insert_production_order_event(
@@ -3632,15 +3836,241 @@ async def confirm_wms_picking_for_op(op_id: str, data: WMSPickingConfirm, reques
             "estoque_baixado": False,
         },
     )
-    await db.ops.update_one(
-        {"id": op_id, "tenant_id": tenant_id},
-        {"$set": {
-            "wms_separacao_id": doc["id"],
-            "wms_separacao_status": status,
-            "updated_at": now,
-        }},
-    )
+    try:
+        await db.ops.update_one(
+            {"id": op_id, "tenant_id": tenant_id},
+            {"$set": {
+                "wms_separacao_id": doc["id"],
+                "wms_separacao_status": status,
+                "empenho_status": doc["empenho_status"],
+                "quantidade_empenhada": quantidade_empenhada,
+                "updated_at": now,
+            }},
+        )
+    except Exception:
+        if reserva_aplicada:
+            await _rollback_confirmed_picking_lines(
+                op, separacao_id, validated["linhas"], user, "Compensacao por falha ao vincular empenho na OP"
+            )
+        await db.wms_separacoes.update_one(
+            {"id": separacao_id, "tenant_id": tenant_id},
+            {"$set": {"status": "cancelada", "empenho_status": "cancelado", "reserva_liberada": True, "updated_at": now_iso()}},
+        )
+        raise
     return doc
+
+
+def _pa_stable_id(kind: str, tenant_id: str, op_id: str, item_idx: int = 0, suffix: str = "") -> str:
+    seed = f"kuryos:pa:{tenant_id}:{op_id}:{item_idx}:{kind}:{suffix}"
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, seed))
+
+
+@ops_router.post("/{op_id}/conferir-pa")
+async def conferir_produto_acabado(op_id: str, data: PAConferenceCreate, request: Request):
+    """Confere a OP e cria PA, lote, saldo, palete e RA uma unica vez."""
+    user = await get_current_user(request)
+    require_roles(user, PCP_CONFIRM_ROLES)
+    tenant_id = user["tenant_id"]
+    op = await db.ops.find_one({"id": op_id, "tenant_id": tenant_id}, {"_id": 0})
+    if not op:
+        raise HTTPException(status_code=404, detail="OP nao encontrada")
+
+    existing = await db.pa_conferencias.find_one(
+        {"tenant_id": tenant_id, "op_id": op_id, "idempotency_key": data.idempotency_key}, {"_id": 0}
+    )
+    if existing and existing.get("status") == "concluida":
+        existing["idempotent_replay"] = True
+        return existing
+    other = await db.pa_conferencias.find_one(
+        {"tenant_id": tenant_id, "op_id": op_id, "status": "concluida"}, {"_id": 0}
+    )
+    if other:
+        other["idempotent_replay"] = True
+        return other
+    if op.get("status") != "aguardando_confirmacao_pcp":
+        raise HTTPException(
+            status_code=422,
+            detail="A Conferencia de PA exige OP em aguardando_confirmacao_pcp.",
+        )
+
+    endereco_query: Dict[str, Any] = {"tenant_id": tenant_id}
+    if data.endereco_id:
+        endereco_query["id"] = data.endereco_id
+    elif data.endereco_codigo:
+        endereco_query["codigo"] = data.endereco_codigo.strip()
+    else:
+        endereco_query["codigo"] = "PA-QUARENTENA"
+    endereco = await db.wms_enderecos.find_one(endereco_query, {"_id": 0})
+    if not endereco and not data.endereco_id and not data.endereco_codigo:
+        default_address_id = _pa_stable_id("endereco-quarentena", tenant_id, "default")
+        endereco = {
+            "id": default_address_id, "tenant_id": tenant_id, "codigo": "PA-QUARENTENA",
+            "setor": "FABRICA", "predio": "PA", "rua": "QUARENTENA", "nivel": "0", "posicao": "0",
+            "tipo": "quarentena_pa", "status": "livre", "descricao": "Area transitoria da Conferencia de PA",
+            "created_at": now_iso(), "updated_at": now_iso(),
+        }
+        await db.wms_enderecos.update_one(
+            {"id": default_address_id, "tenant_id": tenant_id}, {"$setOnInsert": endereco}, upsert=True
+        )
+    if not endereco:
+        raise HTTPException(status_code=404, detail="Endereco WMS nao encontrado.")
+    if endereco.get("setor") != "FABRICA":
+        raise HTTPException(status_code=422, detail="O PA deve entrar em endereco do setor FABRICA.")
+
+    items = list(op.get("items") or [])
+    if not items:
+        raise HTTPException(status_code=422, detail="OP sem itens para conferir.")
+    for idx, item in enumerate(items):
+        if _as_float(item.get("qtd_produzida")) <= 0:
+            raise HTTPException(status_code=422, detail=f"Item {idx + 1} sem quantidade produzida.")
+
+    now = now_iso()
+    conference_id = _pa_stable_id("conference", tenant_id, op_id)
+    await db.pa_conferencias.update_one(
+        {"tenant_id": tenant_id, "op_id": op_id},
+        {"$setOnInsert": {
+            "id": conference_id,
+            "tenant_id": tenant_id,
+            "op_id": op_id,
+            "op_numero": op.get("numero_op", ""),
+            "idempotency_key": data.idempotency_key,
+            "status": "processando",
+            "created_at": now,
+        }, "$set": {"updated_at": now}},
+        upsert=True,
+    )
+
+    resultados: List[Dict[str, Any]] = []
+    for idx, item in enumerate(items):
+        quantity = round(_as_float(item.get("qtd_produzida")), 6)
+        item_id = _pa_stable_id("item", tenant_id, op_id, idx)
+        lote_id = _pa_stable_id("lote", tenant_id, op_id, idx)
+        saldo_id = _pa_stable_id("saldo", tenant_id, op_id, idx)
+        ra_id = _pa_stable_id("ra", tenant_id, op_id, idx)
+        lote = (item.get("lote") or f"{op.get('numero_op', op_id)}-{idx + 1}").strip()
+        nome = item.get("item") or item.get("nome") or f"Produto acabado OP {op.get('numero_op', '')}"
+        sku = item.get("codigo_kuryos") or item.get("sku") or ""
+        unidade = item.get("unidade") or "un"
+        numero_ra = f"RA-PA-{op.get('numero_op') or op_id[:8]}-{idx + 1}"
+
+        estoque_item = {
+            "id": item_id, "tenant_id": tenant_id, "tipo_item": "produto_acabado", "setor": "FABRICA",
+            "nome": nome, "codigo": sku, "produto_id": item.get("sku_id") or item.get("produto_id"),
+            "unidade": unidade, "quantidade_atual": quantity, "estoque_minimo": 0,
+            "localizacao": endereco.get("codigo", ""), "localizacao_estruturada": endereco.get("codigo", ""),
+            "lote": lote, "validade": data.data_validade, "observacoes": data.observacoes,
+            "posicao_cq": "quarentena", "cq_status": "em_analise", "cq_lote_id": lote_id,
+            "cq_ra_id": ra_id, "op_id": op_id, "op_numero": op.get("numero_op", ""),
+            "created_by": user["id"], "created_by_name": user.get("name", ""), "created_at": now, "updated_at": now,
+        }
+        await db.estoque_items.update_one(
+            {"id": item_id, "tenant_id": tenant_id}, {"$setOnInsert": estoque_item}, upsert=True
+        )
+
+        saldo = {
+            "id": saldo_id, "tenant_id": tenant_id, "item_id": item_id, "produto_id": estoque_item.get("produto_id"),
+            "tipo_item": "produto_acabado", "setor": "FABRICA", "nome_item": nome, "codigo_item": sku,
+            "lote_id": lote_id, "cq_lote_id": lote_id, "lote": lote, "validade": data.data_validade,
+            "endereco_id": endereco["id"], "endereco_codigo": endereco.get("codigo", ""),
+            "quantidade": quantity, "quantidade_atual": quantity, "quantidade_reservada": 0,
+            "unidade": unidade, "status": "quarentena", "posicao_cq": "quarentena", "cq_status": "em_analise",
+            "cq_ra_id": ra_id, "wms_quarantine_physical": True, "op_id": op_id,
+            "created_at": now, "updated_at": now,
+        }
+        await db.estoque_saldos_lote.update_one(
+            {"id": saldo_id, "tenant_id": tenant_id}, {"$setOnInsert": saldo}, upsert=True
+        )
+
+        ra = {
+            "id": ra_id, "numero_ra": numero_ra, "tenant_id": tenant_id, "tipo": "produto_acabado",
+            "status": "rascunho", "lote_id": lote_id, "lote_numero": lote, "item_id": item_id,
+            "item_nome": nome, "item_tipo": "produto_acabado", "quantidade_recebida": quantity,
+            "unidade": unidade, "data_validade_fornecedor": data.data_validade, "parametros": [],
+            "resultado_geral": None, "analista_id": user["id"], "analista_nome": user.get("name", ""),
+            "data_analise": None, "fotos_file_ids": [], "amostra_retencao_id": None, "rnc_id": None,
+            "coa_gerado": False, "coa_enviado_cliente": False, "coa_enviado_em": None,
+            "op_id": op_id, "op_numero": op.get("numero_op", ""), "created_at": now, "updated_at": now,
+            "log_auditoria": [],
+        }
+        await db.cq_registros_analise.update_one(
+            {"id": ra_id, "tenant_id": tenant_id}, {"$setOnInsert": ra}, upsert=True
+        )
+        status_entry = {
+            "id": _pa_stable_id("cq-status", tenant_id, op_id, idx), "tenant_id": tenant_id,
+            "lote_id": lote_id, "lote_numero": lote, "status_anterior": None, "status_novo": "em_analise",
+            "motivo": f"RA {numero_ra} criada na Conferencia de PA", "ra_id": ra_id,
+            "alterado_por_id": user["id"], "alterado_por_nome": user.get("name", ""), "created_at": now,
+        }
+        await db.cq_status_lote.update_one(
+            {"id": status_entry["id"], "tenant_id": tenant_id}, {"$setOnInsert": status_entry}, upsert=True
+        )
+
+        pallet_ids = []
+        pallet_base_qty = round(quantity / data.quantidade_paletes, 6)
+        for pallet_idx in range(data.quantidade_paletes):
+            pallet_id = _pa_stable_id("palete", tenant_id, op_id, idx, str(pallet_idx))
+            pallet_ids.append(pallet_id)
+            pallet_qty = (pallet_base_qty if pallet_idx < data.quantidade_paletes - 1
+                          else round(quantity - pallet_base_qty * (data.quantidade_paletes - 1), 6))
+            pallet = {
+                "id": pallet_id, "tenant_id": tenant_id, "op_id": op_id, "estoque_item_id": item_id,
+                "saldo_lote_id": saldo_id, "item_nome": nome, "codigo_item": sku, "lote": lote,
+                "lote_interno": lote, "endereco_id": endereco["id"], "endereco_codigo": endereco.get("codigo", ""),
+                "etiqueta_codigo": f"PAL-PA-{pallet_id[:8].upper()}", "quantidade": pallet_qty,
+                "capa_palete": {"codigo": f"CAPA-PA-{pallet_id[:8].upper()}", "status_cq": "em_analise", "observacoes": data.observacoes},
+                "sequencia": pallet_idx + 1, "total_paletes": data.quantidade_paletes,
+                "status": "quarentena", "posicao_cq": "quarentena", "cq_status": "em_analise",
+                "cq_lote_id": lote_id, "cq_ra_id": ra_id, "created_at": now, "updated_at": now,
+            }
+            await db.wms_paletes.update_one(
+                {"id": pallet_id, "tenant_id": tenant_id}, {"$setOnInsert": pallet}, upsert=True
+            )
+
+        pa_ledger_key = f"pa:{conference_id}:{idx}"
+        ledger_exists = await db.estoque_movimentos_lote.find_one(
+            {"tenant_id": tenant_id, "idempotency_key": pa_ledger_key}, {"_id": 0}
+        )
+        if not ledger_exists:
+            try:
+                await append_lot_ledger_event(
+                    db, new_id_fn=new_id, now_iso_fn=now_iso, tenant_id=tenant_id, saldo=saldo,
+                    natureza="movimento", evento="ENTRADA_PRODUTO_ACABADO", quantidade=quantity,
+                    quantidade_delta=quantity, quantidade_antes=0, quantidade_depois=quantity,
+                    motivo=f"Conferencia de PA da OP {op.get('numero_op', op_id)}", documento=op.get("numero_op", ""),
+                    referencia=conference_id, op_id=op_id, usuario=user, idempotency_key=pa_ledger_key,
+                    metadata={"ra_id": ra_id, "lote_id": lote_id, "palete_ids": pallet_ids},
+                )
+            except DuplicateKeyError:
+                pass
+        resultados.append({"item_idx": idx, "estoque_item_id": item_id, "saldo_lote_id": saldo_id,
+                           "lote_id": lote_id, "lote": lote, "ra_id": ra_id, "numero_ra": numero_ra,
+                           "palete_ids": pallet_ids, "quantidade": quantity})
+
+    await db.wms_enderecos.update_one(
+        {"id": endereco["id"], "tenant_id": tenant_id}, {"$set": {"status": "ocupado", "updated_at": now}}
+    )
+    await _release_op_picking_reservations(op, user, "Liberacao automatica apos Conferencia de PA")
+    await db.ops.update_one(
+        {"id": op_id, "tenant_id": tenant_id}, {"$set": {
+            "status": "concluida", "pcp_status": "confirmado", "pa_conferencia_id": conference_id,
+            "pa_conferido_em": now, "pa_conferido_por": user.get("name", ""), "empenho_status": "liberado",
+            "empenho_liberado_em": now, "pcp_confirmed_by": user.get("name", ""), "pcp_confirmed_at": now,
+            "updated_at": now,
+        }}
+    )
+    await db.pa_conferencias.update_one(
+        {"id": conference_id, "tenant_id": tenant_id}, {"$set": {
+            "status": "concluida", "endereco_id": endereco["id"], "endereco_codigo": endereco.get("codigo", ""),
+            "itens": resultados, "conferido_por": user.get("name", ""), "conferido_por_id": user["id"],
+            "concluida_em": now, "updated_at": now,
+        }}
+    )
+    updated_op = await db.ops.find_one({"id": op_id, "tenant_id": tenant_id}, {"_id": 0})
+    await _record_op_producao_to_sku(updated_op)
+    await _refresh_pcp_live_schedule(op_id, user)
+    result = await db.pa_conferencias.find_one({"id": conference_id, "tenant_id": tenant_id}, {"_id": 0})
+    result["op"] = updated_op
+    return result
 
 
 @ops_router.put("/{op_id}")
@@ -3654,6 +4084,11 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
         raise HTTPException(status_code=400, detail=f"Status inválido. Permitidos: {OP_STATUSES}")
     if payload.get("status") == "concluida":
         require_roles(user, PCP_CONFIRM_ROLES)
+        if not op.get("pa_conferencia_id"):
+            raise HTTPException(
+                status_code=422,
+                detail={"error": "conferencia_pa_obrigatoria", "message": "Conclua pela Conferencia de PA para criar lote, palete e RA."},
+            )
     if payload.get("status") in {"em_processo", "aguardando_confirmacao_pcp", "concluida"}:
         bloqueios = _technical_review_blocks_operation(op)
         if bloqueios:
@@ -3664,9 +4099,18 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
                     "bloqueios": bloqueios,
                 },
             )
+    if payload.get("status") in {"concluida", "cancelada"}:
+        await _release_op_picking_reservations(
+            op,
+            user,
+            "Liberacao automatica ao encerrar OP" if payload.get("status") == "concluida" else "Liberacao automatica ao cancelar OP",
+        )
     update_fields: Dict[str, Any] = {k: v for k, v in payload.items() if v is not None or k == "observacoes"}
     now = now_iso()
     update_fields["updated_at"] = now
+    if payload.get("status") in {"concluida", "cancelada"}:
+        update_fields["empenho_status"] = "liberado"
+        update_fields["empenho_liberado_em"] = now
     if payload.get("status") == "aguardando_confirmacao_pcp":
         update_fields["pcp_status"] = "aguardando_confirmacao"
         update_fields["fechado_producao_por"] = user["name"]
@@ -3681,6 +4125,11 @@ async def update_op(op_id: str, data: OPUpdate, request: Request):
     # On conclusion: compute un/h and push to SKU production history (RN-SK-05)
     if payload.get("status") == "concluida":
         await _record_op_producao_to_sku(updated)
+
+    if payload.get("status") in {"em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida"}:
+        live_schedule = await _refresh_pcp_live_schedule(op_id, user)
+        if live_schedule:
+            updated["programacao_tempo_real"] = live_schedule
 
     return updated
 
@@ -3992,6 +4441,167 @@ async def send_op_rework_to_pd(op_id: str, data: OPReworkCreate, request: Reques
     return update_doc
 
 
+async def _item_material_requirements(op: Dict[str, Any], item: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
+    planned = _positive_quantity(item.get("qtd_planejada") or item.get("qtd"))
+    sku = await _resolve_sku_for_op_item(op, item, tenant_id)
+    if not sku:
+        return {"requirements": [], "alertas": ["SKU nao encontrado para consumo do apontamento."]}
+    bom_items = await _active_bom_items_for_sku(sku, tenant_id)
+    if not bom_items:
+        return {"requirements": [], "alertas": [f"BOM nao encontrado para SKU {sku.get('codigo_interno') or sku.get('id')}."]}
+    requirements: Dict[str, Dict[str, Any]] = {}
+    for bom_item in bom_items:
+        _merge_requirement(requirements, bom_item, _bom_item_required_quantity(bom_item, planned, sku))
+    return {"requirements": list(requirements.values()), "alertas": []}
+
+
+async def _prepare_apontamento_consumption_plan(
+    op: Dict[str, Any],
+    item_idx: int,
+    produced_after: float,
+    user: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    if not _ledger_reservations_supported():
+        return []
+    separacoes = await db.wms_separacoes.find(
+        {
+            "tenant_id": user["tenant_id"],
+            "op_id": op["id"],
+            "reserva_aplicada": True,
+            "reserva_liberada": {"$ne": True},
+        },
+        {"_id": 0},
+    ).to_list(100)
+    if not separacoes:
+        raise HTTPException(
+            status_code=422,
+            detail={"error": "op_sem_empenho", "message": "Confirme a separacao/empenho dos lotes antes de apontar a producao."},
+        )
+
+    item = (op.get("items") or [])[item_idx]
+    planned = _positive_quantity(item.get("qtd_planejada") or item.get("qtd"))
+    if planned <= 0:
+        raise HTTPException(status_code=422, detail="Item da OP sem quantidade planejada para calcular consumo.")
+    requirements = await _item_material_requirements(op, item, user["tenant_id"])
+    if requirements["alertas"]:
+        raise HTTPException(status_code=422, detail={"error": "bom_invalido_para_consumo", "alertas": requirements["alertas"]})
+
+    events = await db.estoque_movimentos_lote.find(
+        {"tenant_id": user["tenant_id"], "op_id": op["id"], "evento": {"$in": ["CONSUMO_OP", "ESTORNO_CONSUMO_OP"]}},
+        {"_id": 0},
+    ).to_list(10000)
+    consumed_by_item_material: Dict[tuple, float] = {}
+    consumed_by_line: Dict[tuple, float] = {}
+    for event in events:
+        metadata = event.get("metadata") or {}
+        material_key = metadata.get("material_key") or ""
+        sign = 1.0 if event.get("evento") == "CONSUMO_OP" else -1.0
+        quantity = sign * _as_float(event.get("quantidade"))
+        item_key = (int(metadata.get("op_item_idx") or 0), material_key)
+        consumed_by_item_material[item_key] = round(consumed_by_item_material.get(item_key, 0.0) + quantity, 6)
+        line_key = (event.get("wms_separacao_id"), event.get("saldo_lote_id"), material_key)
+        consumed_by_line[line_key] = round(consumed_by_line.get(line_key, 0.0) + quantity, 6)
+
+    ratio = min(max(produced_after / planned, 0.0), 1.0)
+    plan: List[Dict[str, Any]] = []
+    for requirement in requirements["requirements"]:
+        material_key = requirement.get("material_key") or ""
+        target = round(_as_float(requirement.get("required_quantity")) * ratio, 6)
+        already = consumed_by_item_material.get((item_idx, material_key), 0.0)
+        remaining = round(max(target - already, 0.0), 6)
+        if remaining <= 0:
+            continue
+        for separacao in separacoes:
+            for line in separacao.get("linhas") or []:
+                if (line.get("material_key") or "") != material_key:
+                    continue
+                line_key = (separacao.get("id"), line.get("saldo_lote_id"), material_key)
+                line_remaining = round(max(_as_float(line.get("quantidade")) - consumed_by_line.get(line_key, 0.0), 0.0), 6)
+                take = round(min(line_remaining, remaining), 6)
+                if take <= 0:
+                    continue
+                plan.append({
+                    "saldo_lote_id": line["saldo_lote_id"],
+                    "wms_separacao_id": separacao["id"],
+                    "material_key": material_key,
+                    "quantidade": take,
+                    "lote": line.get("lote", ""),
+                })
+                remaining = round(remaining - take, 6)
+                if remaining <= 0:
+                    break
+            if remaining <= 0:
+                break
+        if remaining > 0.000001:
+            raise HTTPException(
+                status_code=409,
+                detail={
+                    "error": "empenho_insuficiente_para_apontamento",
+                    "message": f"Empenho insuficiente para o material {requirement.get('nome_material') or material_key}.",
+                    "material_key": material_key,
+                    "quantidade_faltante": remaining,
+                },
+            )
+    return plan
+
+
+async def _consume_apontamento_plan(
+    op: Dict[str, Any],
+    item_idx: int,
+    apontamento_id: str,
+    plan: List[Dict[str, Any]],
+    user: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    consumed: List[Dict[str, Any]] = []
+    try:
+        for entry in plan:
+            await consumir_reserva_saldo_lote(
+                db,
+                new_id_fn=new_id,
+                now_iso_fn=now_iso,
+                tenant_id=user["tenant_id"],
+                saldo_lote_id=entry["saldo_lote_id"],
+                quantidade=entry["quantidade"],
+                op_id=op["id"],
+                wms_separacao_id=entry["wms_separacao_id"],
+                apontamento_id=apontamento_id,
+                usuario=user,
+                material_key=entry["material_key"],
+                op_item_idx=item_idx,
+            )
+            consumed.append(entry)
+        return consumed
+    except Exception:
+        await _rollback_apontamento_consumption(op, item_idx, apontamento_id, consumed, user, "Compensacao de consumo parcial")
+        raise
+
+
+async def _rollback_apontamento_consumption(
+    op: Dict[str, Any],
+    item_idx: int,
+    apontamento_id: str,
+    consumed: List[Dict[str, Any]],
+    user: Dict[str, Any],
+    motivo: str,
+) -> None:
+    for entry in reversed(consumed):
+        await estornar_consumo_saldo_lote(
+            db,
+            new_id_fn=new_id,
+            now_iso_fn=now_iso,
+            tenant_id=user["tenant_id"],
+            saldo_lote_id=entry["saldo_lote_id"],
+            quantidade=entry["quantidade"],
+            op_id=op["id"],
+            wms_separacao_id=entry["wms_separacao_id"],
+            apontamento_id=apontamento_id,
+            usuario=user,
+            motivo=motivo,
+            material_key=entry["material_key"],
+            op_item_idx=item_idx,
+        )
+
+
 class ApontamentoCreate(BaseModel):
     item_idx: int = 0
     qtd_produzida: float
@@ -3999,6 +4609,7 @@ class ApontamentoCreate(BaseModel):
     setor: str = "envase"
     horario: Optional[str] = None
     observacoes: str = ""
+    idempotency_key: Optional[str] = None
 
 
 @ops_router.post("/{op_id}/apontar")
@@ -4012,13 +4623,24 @@ async def apontar_producao(op_id: str, data: ApontamentoCreate, request: Request
     if data.qtd_produzida <= 0:
         raise HTTPException(status_code=400, detail="Quantidade produzida deve ser positiva")
 
+    if data.idempotency_key:
+        existing = await db.ops.find_one(
+            {"id": op_id, "tenant_id": user["tenant_id"], "apontamentos.idempotency_key": data.idempotency_key},
+            {"_id": 0},
+        )
+        if existing:
+            existing["idempotent_replay"] = True
+            return existing
+
     items = list(op.get("items", []))
     if data.item_idx >= len(items):
         raise HTTPException(status_code=400, detail=f"item_idx {data.item_idx} inválido")
 
     now = now_iso()
+    apontamento_id = new_id()
     apontamento = {
-        "id": new_id(),
+        "id": apontamento_id,
+        "idempotency_key": data.idempotency_key or apontamento_id,
         "item_idx": data.item_idx,
         "item_nome": items[data.item_idx].get("item", ""),
         "qtd_produzida": data.qtd_produzida,
@@ -4030,19 +4652,43 @@ async def apontar_producao(op_id: str, data: ApontamentoCreate, request: Request
         "em": now,
     }
 
-    # Accumulate qtd_produzida on the item
-    items[data.item_idx]["qtd_produzida"] = (
-        float(items[data.item_idx].get("qtd_produzida") or 0) + data.qtd_produzida
-    )
+    produced_after = float(items[data.item_idx].get("qtd_produzida") or 0) + data.qtd_produzida
+    planned_quantity = _positive_quantity(items[data.item_idx].get("qtd_planejada") or items[data.item_idx].get("qtd"))
+    if planned_quantity > 0 and produced_after > planned_quantity + 0.000001:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "error": "apontamento_acima_do_planejado",
+                "message": "O apontamento excede a quantidade planejada da OP.",
+                "planejado": planned_quantity,
+                "ja_produzido": _as_float(items[data.item_idx].get("qtd_produzida")),
+                "tentativa": data.qtd_produzida,
+            },
+        )
+    plan = await _prepare_apontamento_consumption_plan(op, data.item_idx, produced_after, user)
+    consumed = await _consume_apontamento_plan(op, data.item_idx, apontamento_id, plan, user)
+    apontamento["consumos"] = consumed
+    apontamento["consumo_total"] = round(sum(_as_float(entry.get("quantidade")) for entry in consumed), 6)
+    items[data.item_idx]["qtd_produzida"] = produced_after
 
-    await db.ops.update_one(
-        {"id": op_id},
-        {
-            "$push": {"apontamentos": apontamento},
-            "$set": {"items": items, "updated_at": now},
-        }
-    )
-    return await db.ops.find_one({"id": op_id}, {"_id": 0})
+    try:
+        await db.ops.update_one(
+            {"id": op_id, "tenant_id": user["tenant_id"]},
+            {
+                "$push": {"apontamentos": apontamento},
+                "$set": {"items": items, "updated_at": now},
+            }
+        )
+    except Exception:
+        await _rollback_apontamento_consumption(
+            op, data.item_idx, apontamento_id, consumed, user, "Estorno por falha ao gravar apontamento"
+        )
+        raise
+    updated = await db.ops.find_one({"id": op_id}, {"_id": 0})
+    live_schedule = await _refresh_pcp_live_schedule(op_id, user)
+    if live_schedule:
+        updated["programacao_tempo_real"] = live_schedule
+    return updated
 
 
 # ─── Pausa / Retomada ─────────────────────────────────────────────────────────
@@ -4080,7 +4726,11 @@ async def pausar_op(op_id: str, data: PausaCreate, request: Request):
         {"id": op_id},
         {"$push": {"pausas": pausa}, "$set": {"status": "pausada", "updated_at": now}}
     )
-    return await db.ops.find_one({"id": op_id}, {"_id": 0})
+    updated = await db.ops.find_one({"id": op_id}, {"_id": 0})
+    live_schedule = await _refresh_pcp_live_schedule(op_id, user)
+    if live_schedule:
+        updated["programacao_tempo_real"] = live_schedule
+    return updated
 
 
 @ops_router.post("/{op_id}/retomar")
@@ -4111,7 +4761,11 @@ async def retomar_op(op_id: str, request: Request):
         {"id": op_id},
         {"$set": {"pausas": pausas, "status": "em_processo", "updated_at": now}}
     )
-    return await db.ops.find_one({"id": op_id}, {"_id": 0})
+    updated = await db.ops.find_one({"id": op_id}, {"_id": 0})
+    live_schedule = await _refresh_pcp_live_schedule(op_id, user)
+    if live_schedule:
+        updated["programacao_tempo_real"] = live_schedule
+    return updated
 
 
 # ─── Registro de perdas ───────────────────────────────────────────────────────

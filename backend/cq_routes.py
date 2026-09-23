@@ -23,6 +23,8 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
 import logging
 
+from stock_ledger import append_lot_ledger_event
+
 from fastapi import APIRouter, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
@@ -1087,6 +1089,99 @@ async def salvar_parametros(ra_id: str, data: RAParametrosUpdate, request: Reque
 
 
 # ─── POST /api/cq/registros-analise/{ra_id}/aprovar ───────────────────────────
+async def _propagar_decisao_cq_wms(
+    ra: Dict[str, Any],
+    decisao: str,
+    posicao_cq: str,
+    user: Dict[str, Any],
+    now: str,
+) -> None:
+    """Mantem item agregado, saldos por lote, paletes e recebimento coerentes."""
+    tenant_id = user["tenant_id"]
+    item_id = ra.get("item_id")
+    if not item_id:
+        return
+
+    saldos = []
+    if hasattr(db, "estoque_saldos_lote"):
+        saldos = await db.estoque_saldos_lote.find(
+            {"tenant_id": tenant_id, "item_id": item_id}, {"_id": 0}
+        ).to_list(1000)
+        status_wms = "disponivel" if posicao_cq == "aprovado" else "reprovado"
+        await db.estoque_saldos_lote.update_many(
+            {"tenant_id": tenant_id, "item_id": item_id},
+            {"$set": {
+                "posicao_cq": posicao_cq,
+                "cq_status": decisao,
+                "cq_lote_id": ra.get("lote_id"),
+                "cq_ra_id": ra.get("id"),
+                "status": status_wms,
+                "cq_decidido_em": now,
+                "updated_at": now,
+            }},
+        )
+
+    if hasattr(db, "wms_paletes"):
+        await db.wms_paletes.update_many(
+            {"tenant_id": tenant_id, "estoque_item_id": item_id},
+            {"$set": {
+                "status": posicao_cq,
+                "posicao_cq": posicao_cq,
+                "cq_status": decisao,
+                "cq_lote_id": ra.get("lote_id"),
+                "cq_ra_id": ra.get("id"),
+                "capa_palete.status_cq": decisao,
+                "cq_decidido_em": now,
+                "updated_at": now,
+            }},
+        )
+
+    if hasattr(db, "estoque_movimentos_lote"):
+        for saldo in saldos:
+            await append_lot_ledger_event(
+                db,
+                new_id_fn=new_id,
+                now_iso_fn=now_iso,
+                tenant_id=tenant_id,
+                saldo=saldo,
+                natureza="status",
+                evento="CQ_STATUS_ALTERADO",
+                motivo=f"Decisao do CQ: {decisao}",
+                documento=ra.get("numero_ra", ""),
+                referencia=ra.get("id", ""),
+                usuario=user,
+                idempotency_key=f"cq:{ra.get('id')}:{saldo.get('id')}:{decisao}",
+                metadata={
+                    "status_anterior": saldo.get("posicao_cq") or saldo.get("cq_status"),
+                    "status_novo": posicao_cq,
+                    "lote_id": ra.get("lote_id"),
+                },
+            )
+
+
+async def _recalcular_status_recebimento(recebimento_id: str, tenant_id: str, now: str) -> None:
+    if not recebimento_id or not hasattr(db, "recebimentos"):
+        return
+    recebimento = await db.recebimentos.find_one(
+        {"id": recebimento_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not recebimento:
+        return
+    statuses = [str(item.get("ra_status") or "quarentena") for item in recebimento.get("items") or []]
+    if statuses and all(status in {"aprovado", "concessao"} for status in statuses):
+        status = "aprovado"
+    elif statuses and all(status == "reprovado" for status in statuses):
+        status = "reprovado"
+    elif any(status == "reprovado" for status in statuses):
+        status = "parcialmente_reprovado"
+    else:
+        status = "quarentena"
+    await db.recebimentos.update_one(
+        {"id": recebimento_id, "tenant_id": tenant_id},
+        {"$set": {"status": status, "updated_at": now}},
+    )
+
+
 @cq_router.post("/registros-analise/{ra_id}/aprovar")
 async def aprovar_ra(ra_id: str, data: AprovarInput, request: Request):
     user = await get_current_user(request)
@@ -1224,6 +1319,9 @@ async def aprovar_ra(ra_id: str, data: AprovarInput, request: Request):
                 }
             },
         )
+        await _recalcular_status_recebimento(ra["recebimento_id"], tenant_id, now)
+
+    await _propagar_decisao_cq_wms(ra, data.decisao, posicao_cq, user, now)
 
     ret_id: Optional[str] = None
     rnc_id: Optional[str] = None
@@ -1301,6 +1399,22 @@ async def aprovar_ra(ra_id: str, data: AprovarInput, request: Request):
         )
 
     ra_updated = await db.cq_registros_analise.find_one({"id": ra_id}, {"_id": 0})
+    if ra.get("origem_rt_id"):
+        rt_status = "liberado" if data.decisao in {"aprovado", "concessao"} else "reprovado_cq"
+        await db.retrabalho_ordens.update_one(
+            {"id": ra["origem_rt_id"], "tenant_id": tenant_id},
+            {"$set": {"status": rt_status, "cq_decisao": data.decisao,
+                      "cq_decidido_em": now, "updated_at": now}},
+        )
+        rt = await db.retrabalho_ordens.find_one(
+            {"id": ra["origem_rt_id"], "tenant_id": tenant_id}, {"_id": 0}
+        )
+        if rt and rt.get("devolucao_cliente_id"):
+            await db.devolucoes_cliente.update_one(
+                {"id": rt["devolucao_cliente_id"], "tenant_id": tenant_id},
+                {"$set": {"status": "liberado_cq" if rt_status == "liberado" else "reprovado_cq",
+                          "cq_decisao": data.decisao, "cq_decidido_em": now, "updated_at": now}},
+            )
     return ra_updated
 
 

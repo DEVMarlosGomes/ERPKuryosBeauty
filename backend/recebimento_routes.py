@@ -20,6 +20,8 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta, timezone
 import logging
 
+from stock_ledger import append_lot_ledger_event
+
 logger = logging.getLogger(__name__)
 
 recebimento_router = APIRouter(prefix="/api/recebimento")
@@ -371,6 +373,49 @@ async def _atualizar_po_recebimento_item_a_item(po: dict, recebimento: dict, use
     return divergencias
 
 
+async def _resolver_endereco_recebimento(
+    tenant_id: str,
+    setor: str,
+    endereco_id: Optional[str],
+    endereco_codigo: str,
+) -> tuple[str, str]:
+    if endereco_id:
+        endereco = await db.wms_enderecos.find_one(
+            {"id": endereco_id, "tenant_id": tenant_id}, {"_id": 0}
+        )
+        if not endereco:
+            raise HTTPException(status_code=404, detail=f"Endereco WMS nao encontrado: {endereco_id}")
+        return endereco["id"], endereco.get("codigo", endereco_codigo)
+
+    codigo = endereco_codigo.strip() or f"REC-{setor}-QUARENTENA"
+    endereco = await db.wms_enderecos.find_one(
+        {"tenant_id": tenant_id, "codigo": codigo}, {"_id": 0}
+    )
+    if not endereco:
+        endereco = {
+            "id": f"recebimento-{tenant_id}-{setor}".lower(),
+            "tenant_id": tenant_id,
+            "codigo": codigo,
+            "setor": setor,
+            "predio": "REC",
+            "rua": setor[:12],
+            "nivel": "0",
+            "posicao": "0",
+            "tipo": "quarentena_recebimento",
+            "status": "livre",
+            "descricao": f"Quarentena automatica de recebimento - {setor}",
+            "created_at": now_iso(),
+            "updated_at": now_iso(),
+        }
+        await db.wms_enderecos.update_one(
+            {"tenant_id": tenant_id, "codigo": codigo}, {"$setOnInsert": endereco}, upsert=True
+        )
+        endereco = await db.wms_enderecos.find_one(
+            {"tenant_id": tenant_id, "codigo": codigo}, {"_id": 0}
+        )
+    return endereco["id"], endereco.get("codigo", codigo)
+
+
 async def _registrar_saldo_wms_lote(item_doc: dict, endereco_id: Optional[str], endereco_codigo: str, qtd: float, user: dict, recebimento_id: str):
     if not endereco_id:
         return None
@@ -407,7 +452,11 @@ async def _registrar_saldo_wms_lote(item_doc: dict, endereco_id: Optional[str], 
             "quantidade_atual": 0.0,
             "unidade": item_doc.get("unidade", "kg"),
             "posicao_cq": "quarentena",
+            "cq_status": "quarentena",
+            "cq_lote_id": item_doc.get("lote_id"),
+            "cq_ra_id": item_doc.get("ra_id"),
             "status": "quarentena",
+            "quantidade_reservada": 0.0,
             "recebimento_id": recebimento_id,
             "created_at": now,
             "updated_at": now,
@@ -415,13 +464,43 @@ async def _registrar_saldo_wms_lote(item_doc: dict, endereco_id: Optional[str], 
         await db.estoque_saldos_lote.insert_one(saldo)
     await db.estoque_saldos_lote.update_one(
         {"id": saldo["id"], "tenant_id": user["tenant_id"]},
-        {"$set": {"quantidade": novo, "quantidade_atual": novo, "status": "quarentena", "updated_at": now}},
+        {"$set": {
+            "quantidade": novo,
+            "quantidade_atual": novo,
+            "status": "quarentena",
+            "posicao_cq": "quarentena",
+            "cq_status": "quarentena",
+            "cq_lote_id": item_doc.get("lote_id"),
+            "cq_ra_id": item_doc.get("ra_id"),
+            "updated_at": now,
+        }},
     )
     await db.wms_enderecos.update_one(
         {"id": endereco_id, "tenant_id": user["tenant_id"]},
         {"$set": {"status": "ocupado", "updated_at": now}},
     )
-    return await db.estoque_saldos_lote.find_one({"id": saldo["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+    saldo_atualizado = await db.estoque_saldos_lote.find_one({"id": saldo["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if hasattr(db, "estoque_movimentos_lote"):
+        await append_lot_ledger_event(
+            db,
+            new_id_fn=new_id,
+            now_iso_fn=now_iso,
+            tenant_id=user["tenant_id"],
+            saldo=saldo_atualizado,
+            natureza="movimento",
+            evento="ENTRADA_RECEBIMENTO",
+            quantidade=float(qtd),
+            quantidade_delta=float(qtd),
+            quantidade_antes=atual,
+            quantidade_depois=novo,
+            motivo=f"Recebimento {recebimento_id}",
+            documento=item_doc.get("numero_nf", ""),
+            referencia=recebimento_id,
+            usuario=user,
+            idempotency_key=f"recebimento:{recebimento_id}:{saldo['id']}",
+            metadata={"ra_id": item_doc.get("ra_id"), "lote_id": item_doc.get("lote_id")},
+        )
+    return saldo_atualizado
 
 
 async def _criar_paletes(item_doc: dict, palete_data: Optional[RecebimentoPaleteInput], user: dict, recebimento_id: str) -> List[dict]:
@@ -671,14 +750,23 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
     - Cria registro imutável do recebimento
     """
     user = await get_current_user(request)
+    return await registrar_recebimento_unificado(data, user, origem="recebimento")
+
+
+async def registrar_recebimento_unificado(
+    data: RecebimentoCreate,
+    user: Dict[str, Any],
+    origem: str = "recebimento",
+) -> Dict[str, Any]:
+    """Nucleo unico usado por Logistica e pelo recebimento iniciado na PO."""
     tid = user["tenant_id"]
 
     if not data.items:
         raise HTTPException(status_code=400, detail="Informe ao menos um item")
 
-    receiving_v2 = await _receiving_feature_enabled(tid, RECEIVING_INTERNAL_LOT_FLAG)
-    recebimento_key = _recebimento_key(data) if receiving_v2 else None
-    idempotency_key = (data.idempotency_key or "").strip() if receiving_v2 else None
+    receiving_v2 = True
+    recebimento_key = _recebimento_key(data)
+    idempotency_key = (data.idempotency_key or recebimento_key).strip()
     if recebimento_key:
         existing = await db.recebimentos.find_one(
             {"tenant_id": tid, "recebimento_key": recebimento_key},
@@ -870,8 +958,13 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
             "checklist": checklist,
             "checklist_status": checklist_status,
         }
+        endereco_id, endereco_codigo = await _resolver_endereco_recebimento(
+            tid, setor, item.endereco_id, item.endereco_codigo
+        )
+        item_processado["endereco_id"] = endereco_id
+        item_processado["endereco_codigo"] = endereco_codigo
         saldo_wms = await _registrar_saldo_wms_lote(
-            item_processado, item.endereco_id, item.endereco_codigo, item.quantidade, user, entrada_id
+            item_processado, endereco_id, endereco_codigo, item.quantidade, user, entrada_id
         )
         paletes = await _criar_paletes(item_processado, item.palete, user, entrada_id)
         item_processado["saldo_wms"] = saldo_wms
@@ -888,6 +981,7 @@ async def create_entrada(data: RecebimentoCreate, request: Request):
         "recebimento_key": recebimento_key,
         "idempotency_key": idempotency_key,
         "receiving_internal_lot_v2": bool(receiving_v2),
+        "origem_registro": origem,
         "po_id": data.po_id,
         "po_numero": data.po_numero,
         "agendamento_id": data.agendamento_id,

@@ -2708,12 +2708,17 @@ class POCancelarInput(BaseModel):
 class POReceberItemInput(BaseModel):
     item_id: str
     quantidade_recebida: float
+    lote: str = ""
+    validade: Optional[str] = None
+    endereco_id: Optional[str] = None
+    quantidade_paletes: int = Field(default=1, ge=1, le=500)
 
 
 class POReceberParcialInput(BaseModel):
     nf_numero: str
     nf_data: str
     itens_recebidos: List[POReceberItemInput]
+    idempotency_key: Optional[str] = None
 
 
 async def _gerar_numero_po(tenant_id: str) -> str:
@@ -3238,38 +3243,62 @@ async def receber_parcial_po(po_id: str, data: POReceberParcialInput, request: R
     if po["status"] not in {"emitida", "confirmada", "parcialmente_recebida"}:
         raise HTTPException(status_code=400, detail=f"Recebimento não permitido para PO com status '{po['status']}'.")
 
-    recebidos_map = {r.item_id: float(r.quantidade_recebida) for r in data.itens_recebidos}
-    itens = po.get("itens", [])
-    divergencias: List[str] = []
-
-    for it in itens:
-        iid = it.get("item_id")
-        if iid in recebidos_map:
-            nova_rec = float(it.get("quantidade_recebida", 0)) + recebidos_map[iid]
-            it["quantidade_recebida"] = nova_rec
-            sol = float(it.get("quantidade_solicitada", 0))
-            if nova_rec < sol - 0.001:
-                divergencias.append(f"{it.get('item_descricao', iid)}: solicitado {sol:.3f}, recebido {nova_rec:.3f}")
-
-    novo_status = "recebida" if _todos_itens_recebidos(itens) else "parcialmente_recebida"
-    nf_entry = {
-        "nf_id": new_id(), "nf_numero": data.nf_numero, "nf_data": data.nf_data,
-        "status_cq": None,
-        "recebido_por_id": user["id"], "recebido_por_nome": user.get("name", ""), "recebido_em": now_iso(),
-    }
-    log_entry = {"acao": "recebimento_registrado", "nf_numero": data.nf_numero,
-                 "itens": [{"item_id": r.item_id, "qtd": r.quantidade_recebida} for r in data.itens_recebidos],
-                 "por_id": user["id"], "por_nome": user.get("name", ""), "em": now_iso()}
-
-    await db.compras_pos.update_one(
-        {"id": po_id, "tenant_id": tenant_id},
-        {"$set": {"itens": itens, "status": novo_status, "updated_at": now_iso()},
-         "$push": {"nfs_vinculadas": nf_entry, "log_auditoria": log_entry}},
+    from recebimento_routes import (
+        RecebimentoCreate,
+        RecebimentoItem,
+        RecebimentoPaleteInput,
+        registrar_recebimento_unificado,
     )
 
+    po_items = po.get("itens") or []
+    receiving_items = []
+    for raw in data.itens_recebidos:
+        po_item = next((item for item in po_items if item.get("item_id") == raw.item_id or item.get("id") == raw.item_id), None)
+        if not po_item:
+            raise HTTPException(status_code=404, detail=f"Item da PO nao encontrado: {raw.item_id}")
+        categoria = str(po_item.get("tipo_mp") or po_item.get("tipo_material") or po_item.get("categoria") or "FORMULACAO").upper()
+        if "ROTUL" in categoria:
+            tipo_mp = "ROTULO"
+        elif "EMBAL" in categoria or "FRASCO" in categoria or "TAMPA" in categoria:
+            tipo_mp = "EMBALAGEM"
+        else:
+            tipo_mp = "FORMULACAO"
+        receiving_items.append(RecebimentoItem(
+            nome=po_item.get("item_descricao") or po_item.get("nome") or raw.item_id,
+            codigo=po_item.get("item_codigo") or po_item.get("codigo_interno") or "",
+            tipo_mp=tipo_mp,
+            quantidade=raw.quantidade_recebida,
+            unidade=po_item.get("unidade_compra") or po_item.get("unidade") or "un",
+            lote=raw.lote or f"{data.nf_numero}-{str(raw.item_id)[-8:]}",
+            validade=raw.validade,
+            mp_id=po_item.get("item_id") or raw.item_id,
+            po_item_id=po_item.get("id"),
+            endereco_id=raw.endereco_id,
+            palete=RecebimentoPaleteInput(quantidade_paletes=raw.quantidade_paletes),
+        ))
+
+    idem = data.idempotency_key or (
+        f"compras:{po_id}:{data.nf_numero}:" + ";".join(
+            sorted(f"{item.item_id}:{float(item.quantidade_recebida):.6f}" for item in data.itens_recebidos)
+        )
+    )
+    recebimento = await registrar_recebimento_unificado(
+        RecebimentoCreate(
+            po_id=po_id,
+            po_numero=po.get("numero_po"),
+            fornecedor_id=po.get("fornecedor_id"),
+            fornecedor_nome=po.get("fornecedor_nome"),
+            numero_nf=data.nf_numero,
+            data_nf=data.nf_data,
+            idempotency_key=idem,
+            items=receiving_items,
+        ),
+        user,
+        origem="compras_po",
+    )
     po_atualizada = await _get_po_or_404(po_id, tenant_id)
     await _verificar_gatilho_financeiro(po_atualizada, tenant_id)
-
+    divergencias = (recebimento.get("integracao_po") or {}).get("divergencias") or []
     if divergencias:
         await create_workflow_task(
             tenant_id=tenant_id,
@@ -3288,7 +3317,9 @@ async def receber_parcial_po(po_id: str, data: POReceberParcialInput, request: R
             metadata={"task_type": "standard", "module_origin": "compras"},
         )
 
-    return {**po_atualizada, "divergencias": divergencias, "nf_registrada": nf_entry}
+    return {**po_atualizada, "divergencias": divergencias, "recebimento": recebimento,
+            "nf_registrada": next((nf for nf in reversed(po_atualizada.get("nfs_vinculadas") or [])
+                                    if nf.get("recebimento_key") == recebimento.get("recebimento_key")), None)}
 
 
 # ══════════════════════════════════════════════════════════════════════════════

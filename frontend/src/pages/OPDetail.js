@@ -42,6 +42,9 @@ function numberBR(value) {
   return Number(value || 0).toLocaleString("pt-BR", { maximumFractionDigits: 3 });
 }
 
+const newApontamentoKey = () => `apontamento-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`;
+const newPAKey = () => `conferencia-pa-${globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`}`;
+
 function apiErrorMessage(e, fallback = "Erro") {
   const detail = e.response?.data?.detail;
   if (typeof detail === "string") return detail;
@@ -60,7 +63,7 @@ export default function OPDetail() {
 
   // Apontamento
   const [showApontar, setShowApontar] = useState(false);
-  const [apontForm, setApontForm] = useState({ item_idx: 0, qtd_produzida: "", turno: "integral", observacoes: "" });
+  const [apontForm, setApontForm] = useState({ item_idx: 0, qtd_produzida: "", turno: "integral", observacoes: "", idempotency_key: newApontamentoKey() });
 
   // Pausa
   const [showPausar, setShowPausar] = useState(false);
@@ -77,6 +80,9 @@ export default function OPDetail() {
   const [pickingLoading, setPickingLoading] = useState(false);
   const [pickingSaving, setPickingSaving] = useState(false);
   const [pickingBlocked, setPickingBlocked] = useState("");
+  const [showPA, setShowPA] = useState(false);
+  const [paAddresses, setPaAddresses] = useState([]);
+  const [paForm, setPaForm] = useState({ endereco_id: "", quantidade_paletes: 1, data_validade: "", observacoes: "", idempotency_key: newPAKey() });
 
   const fetchOp = useCallback(async () => {
     try {
@@ -159,6 +165,7 @@ export default function OPDetail() {
         qtd_produzida: Number(apontForm.qtd_produzida),
         turno: apontForm.turno,
         observacoes: apontForm.observacoes,
+        idempotency_key: `${id}-${apontForm.idempotency_key}`,
       });
       setOp(res.data); setForm(deepClone(res.data)); setShowApontar(false);
       toast.success("Apontamento registrado");
@@ -227,6 +234,34 @@ export default function OPDetail() {
     }
   };
 
+  const openPAConference = async () => {
+    setSaving(true);
+    try {
+      const { data } = await api.get("/estoque/wms/enderecos", { params: { setor: "FABRICA" } });
+      const addresses = data.enderecos || [];
+      setPaAddresses(addresses);
+      setPaForm({ endereco_id: addresses[0]?.id || "__AUTO__", quantidade_paletes: 1, data_validade: "", observacoes: "", idempotency_key: newPAKey() });
+      setShowPA(true);
+    } catch (e) { toast.error(apiErrorMessage(e, "Erro ao carregar endereços WMS")); }
+    finally { setSaving(false); }
+  };
+
+  const handlePAConference = async () => {
+    if (!paForm.endereco_id) { toast.error("Selecione um endereço WMS da Fábrica"); return; }
+    setSaving(true);
+    try {
+      const { data } = await api.post(`/ops/${id}/conferir-pa`, {
+        ...paForm,
+        endereco_id: paForm.endereco_id === "__AUTO__" ? null : paForm.endereco_id,
+        quantidade_paletes: Number(paForm.quantidade_paletes),
+        data_validade: paForm.data_validade || null,
+      });
+      setOp(data.op); setForm(deepClone(data.op)); setShowPA(false);
+      toast.success("PA conferido: lote, palete e RA criados em quarentena");
+    } catch (e) { toast.error(apiErrorMessage(e, "Erro na Conferência de PA")); }
+    finally { setSaving(false); }
+  };
+
   const handleConfirmPicking = async () => {
     if (!picking) return;
     setPickingSaving(true);
@@ -237,7 +272,7 @@ export default function OPDetail() {
         linhas: [],
         observacoes: "Confirmado pelo Detalhe da OP",
       });
-      toast.success(res.data?.status === "confirmada_com_falta" ? "Separacao confirmada com falta" : "Separacao confirmada");
+      toast.success(res.data?.status === "confirmada_com_falta" ? "Separacao reservada com falta" : "Materiais reservados para a OP");
       await fetchOp();
       await loadPicking();
     } catch (e) {
@@ -304,7 +339,7 @@ export default function OPDetail() {
             )}
             {form.status === "em_processo" && !editing && (
               <>
-                <Button size="sm" variant="outline" onClick={() => { setApontForm({ item_idx: 0, qtd_produzida: "", turno: "integral", observacoes: "" }); setShowApontar(true); }}>
+                <Button size="sm" variant="outline" onClick={() => { setApontForm({ item_idx: 0, qtd_produzida: "", turno: "integral", observacoes: "", idempotency_key: newApontamentoKey() }); setShowApontar(true); }}>
                   <Plus className="h-3.5 w-3.5 mr-1" />Apontar
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => { setPausaForm({ motivo: "", tipo: "outro" }); setShowPausar(true); }}>
@@ -319,8 +354,8 @@ export default function OPDetail() {
               </>
             )}
             {form.status === "aguardando_confirmacao_pcp" && !editing && (
-              <Button size="sm" onClick={() => quickStatus("concluida")}>
-                <CheckCircle2 className="h-3.5 w-3.5 mr-1" />Confirmar PCP
+              <Button size="sm" onClick={openPAConference} disabled={saving}>
+                <CheckCircle2 className="h-3.5 w-3.5 mr-1" />Conferência de PA
               </Button>
             )}
             {!editing && (tecnico.revisao_obrigatoria || bloqueiosTecnicos.length > 0) && (
@@ -510,7 +545,7 @@ export default function OPDetail() {
                   </div>
                   <div className="rounded-md border bg-muted/30 px-3 py-2">
                     <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Status OP</p>
-                    <p className="mt-1 truncate text-sm font-bold">{form.wms_separacao_status || "pendente"}</p>
+                    <p className="mt-1 truncate text-sm font-bold">{form.empenho_status || form.wms_separacao_status || "pendente"}</p>
                   </div>
                 </div>
 
@@ -550,6 +585,9 @@ export default function OPDetail() {
                                   <div className="min-w-0">
                                     <p className="truncate font-mono font-semibold">{line.lote || "SEM-LOTE"} · {line.endereco_codigo || "-"}</p>
                                     <p className="truncate text-muted-foreground">Val. {line.validade || "-"} · {line.posicao_cq || "livre"}</p>
+                                    <p className="truncate text-muted-foreground">
+                                      Fisico {numberBR(line.quantidade_fisica ?? line.quantidade_disponivel)} · Reservado {numberBR(line.quantidade_reservada || 0)} · Disponivel {numberBR(line.quantidade_disponivel)}
+                                    </p>
                                   </div>
                                   <span className="shrink-0 font-mono font-bold">{numberBR(line.quantidade_sugerida)}</span>
                                 </div>
@@ -573,7 +611,7 @@ export default function OPDetail() {
                 </div>
                 <div className="flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
                   <Warehouse className="h-4 w-4 shrink-0" />
-                  A confirmacao registra a separacao e nao baixa estoque automaticamente neste slice.
+                  A confirmacao reserva o saldo do lote para esta OP. A baixa fisica ocorrera no apontamento de producao.
                 </div>
               </>
             )}
@@ -763,6 +801,54 @@ export default function OPDetail() {
             <Button onClick={handleSendRework} disabled={saving}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <AlertTriangle className="h-4 w-4 mr-1" />}
               Enviar ao P&D
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPA} onOpenChange={setShowPA}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader><DialogTitle>Conferência de Produto Acabado</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Ao confirmar, o sistema cria o PA, lote, saldo WMS, palete e Registro de Análise em quarentena.
+            </p>
+            <div>
+              <Label>Endereço WMS da Fábrica *</Label>
+              <Select value={paForm.endereco_id} onValueChange={v => setPaForm(f => ({ ...f, endereco_id: v }))}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione o endereço" /></SelectTrigger>
+                <SelectContent>
+                  {!paAddresses.length && <SelectItem value="__AUTO__">PA-QUARENTENA — criação automática</SelectItem>}
+                  {paAddresses.map(address => (
+                    <SelectItem key={address.id} value={address.id}>{address.codigo} — {address.status || "livre"}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!paAddresses.length && <p className="mt-1 text-xs text-muted-foreground">O endereço transitório PA-QUARENTENA será criado automaticamente.</p>}
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Quantidade de paletes</Label>
+                <Input className="mt-1" type="number" min="1" max="500" value={paForm.quantidade_paletes}
+                  onChange={e => setPaForm(f => ({ ...f, quantidade_paletes: e.target.value }))} />
+              </div>
+              <div>
+                <Label>Validade</Label>
+                <Input className="mt-1" type="date" value={paForm.data_validade}
+                  onChange={e => setPaForm(f => ({ ...f, data_validade: e.target.value }))} />
+              </div>
+            </div>
+            <div>
+              <Label>Observações</Label>
+              <Textarea className="mt-1" rows={3} value={paForm.observacoes}
+                onChange={e => setPaForm(f => ({ ...f, observacoes: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowPA(false)} disabled={saving}>Cancelar</Button>
+            <Button onClick={handlePAConference} disabled={saving || !paForm.endereco_id}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Warehouse className="h-4 w-4 mr-1" />}
+              Confirmar e gerar PA
             </Button>
           </DialogFooter>
         </DialogContent>

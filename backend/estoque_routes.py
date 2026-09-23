@@ -10,6 +10,12 @@ from datetime import datetime, timezone
 import logging
 
 from cq_routes import cq_verificar_lote_aprovado, cq_verificar_liberacao_palete
+from stock_ledger import (
+    append_lot_ledger_event,
+    create_stock_ledger_indexes,
+    saldo_quantidade_disponivel,
+    saldo_quantidade_reservada,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +44,16 @@ async def create_estoque_indexes():
     await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("endereco_id", 1), ("quantidade", 1)])
     await db.estoque_saldos_lote.create_index([("tenant_id", 1), ("wms_quarantine_physical", 1), ("status", 1)])
     await db.estoque_movimentos_lote.create_index([("tenant_id", 1), ("created_at", -1)])
+    await create_stock_ledger_indexes(db)
     await db.wms_quarantine_movements.create_index([("tenant_id", 1), ("created_at", -1)])
     await db.wms_quarantine_movements.create_index([("tenant_id", 1), ("idempotency_key", 1)], sparse=True)
+    await db.wms_separacoes.create_index([("tenant_id", 1), ("op_id", 1), ("status", 1)])
+    await db.wms_separacoes.create_index(
+        [("tenant_id", 1), ("op_id", 1), ("idempotency_key", 1)], unique=True, sparse=True
+    )
+    await db.pa_conferencias.create_index([("tenant_id", 1), ("op_id", 1)], unique=True)
+    await db.pa_conferencias.create_index([("tenant_id", 1), ("idempotency_key", 1)], unique=True)
+    await db.expedicao_transacoes.create_index([("tenant_id", 1), ("expedicao_id", 1), ("idempotency_key", 1)], unique=True)
 
 
 # ============ CONSTANTS ============
@@ -512,32 +526,24 @@ async def _log_movimento_lote(
     quantidade_depois: float,
     referencia: str = "",
 ):
-    movimento = {
-        "id": _new_id(),
-        "tenant_id": user["tenant_id"],
-        "saldo_lote_id": saldo.get("id"),
-        "item_id": saldo.get("item_id"),
-        "item_nome": saldo.get("item_nome", ""),
-        "codigo_item": saldo.get("codigo_item", ""),
-        "lote": saldo.get("lote", ""),
-        "endereco_id": saldo.get("endereco_id"),
-        "endereco_codigo": saldo.get("endereco_codigo", ""),
-        "setor": saldo.get("setor", ""),
-        "tipo": tipo,
-        "direcao": "entrada" if tipo.endswith("_ENTRADA") or tipo == "AJUSTE_ENTRADA" or float(quantidade_depois) >= float(quantidade_antes) else "saida",
-        "quantidade": float(quantidade),
-        "unidade": saldo.get("unidade", "un"),
-        "quantidade_antes": float(quantidade_antes),
-        "quantidade_depois": float(quantidade_depois),
-        "motivo": motivo,
-        "documento": documento,
-        "referencia": referencia,
-        "usuario": user["name"],
-        "usuario_id": user["id"],
-        "created_at": _now_iso(),
-    }
-    await db.estoque_movimentos_lote.insert_one(movimento)
-    return _serialize(movimento)
+    delta = float(quantidade_depois) - float(quantidade_antes)
+    return await append_lot_ledger_event(
+        db,
+        new_id_fn=_new_id,
+        now_iso_fn=_now_iso,
+        tenant_id=user["tenant_id"],
+        saldo=saldo,
+        natureza="movimento",
+        evento=tipo,
+        quantidade=float(quantidade),
+        quantidade_delta=delta,
+        quantidade_antes=float(quantidade_antes),
+        quantidade_depois=float(quantidade_depois),
+        motivo=motivo,
+        documento=documento,
+        referencia=referencia,
+        usuario=user,
+    )
 
 
 async def _assert_saida_liberada_por_cq(item: dict, tipo_movimento: str):
@@ -1127,7 +1133,36 @@ async def listar_saldos_lote(
     saldos = await db.estoque_saldos_lote.find(query, {"_id": 0}).sort("updated_at", -1).to_list(20000)
     if somente_com_saldo:
         saldos = [s for s in saldos if _saldo_quantidade(s) > 0]
+    for saldo in saldos:
+        saldo["quantidade_reservada"] = saldo_quantidade_reservada(saldo)
+        saldo["quantidade_disponivel"] = saldo_quantidade_disponivel(saldo)
     return {"saldos": saldos, "total": len(saldos)}
+
+
+@estoque_router.get("/wms/ledger")
+async def listar_ledger_lote(
+    request: Request,
+    saldo_lote_id: Optional[str] = None,
+    item_id: Optional[str] = None,
+    op_id: Optional[str] = None,
+    natureza: Optional[str] = None,
+    evento: Optional[str] = None,
+    limit: int = 500,
+):
+    user = await _get_current_user(request)
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    for key, value in (
+        ("saldo_lote_id", saldo_lote_id),
+        ("item_id", item_id),
+        ("op_id", op_id),
+        ("natureza", natureza),
+        ("evento", evento),
+    ):
+        if value:
+            query[key] = value
+    safe_limit = max(1, min(int(limit or 500), 5000))
+    events = await db.estoque_movimentos_lote.find(query, {"_id": 0}).sort("created_at", -1).to_list(safe_limit)
+    return {"eventos": events, "total": len(events)}
 
 
 @estoque_router.get("/wms/quarentena/policy")

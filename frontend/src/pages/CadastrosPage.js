@@ -32,6 +32,8 @@ import {
   Users,
   Warehouse,
   FolderPlus,
+  Paperclip,
+  ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -180,6 +182,9 @@ function StatusBadge({ value }) {
     ativo: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
     ativa: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
     pendente: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+    pendente_cadastro: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+    em_cadastro: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+    cadastrado: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
     inativo: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
     inativa: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
     suspenso: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
@@ -346,11 +351,14 @@ export default function CadastrosPage() {
   const [projetoForm, setProjetoForm] = useState(emptyProjeto);
   const [editing, setEditing] = useState({ kind: null, id: null });
   const [productTechForm, setProductTechForm] = useState(emptyProductTech);
+  const [solicitacoesBom, setSolicitacoesBom] = useState([]);
+  const [processingBomId, setProcessingBomId] = useState("");
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [dash, cli, forn, prod, mats, catProd, catMp] = await Promise.all([
+      await api.post("/cadastros/solicitacoes-bom/sincronizar").catch(() => null);
+      const [dash, cli, forn, prod, mats, catProd, catMp, bomRequests] = await Promise.all([
         api.get("/cadastros/dashboard"),
         api.get("/cadastros/clientes"),
         api.get("/cadastros/fornecedores"),
@@ -358,6 +366,7 @@ export default function CadastrosPage() {
         api.get("/cadastros/materiais-cadastro"),
         api.get("/cadastros/categorias"),
         api.get("/cadastros/categorias-mp"),
+        api.get("/cadastros/solicitacoes-bom"),
       ]);
       setDashboard(dash.data);
       setClientes(cli.data.clientes || []);
@@ -366,6 +375,7 @@ export default function CadastrosPage() {
       setMateriais(mats.data.materiais || []);
       setCategoriasProduto(catProd.data.categorias || []);
       setCategoriasMp(catMp.data.categorias || []);
+      setSolicitacoesBom(bomRequests.data.solicitacoes || []);
     } catch (error) {
       toast.error(error.response?.data?.detail || "Erro ao carregar cadastros");
     } finally {
@@ -385,8 +395,9 @@ export default function CadastrosPage() {
       materiais: materiais.filter((m) => has(m, ["codigo_interno", "nome", "subtipo", "tipo2"])),
       categoriasProduto: categoriasProduto.filter((c) => has(c, ["cat3", "nome", "status"])),
       categoriasMp: categoriasMp.filter((c) => has(c, ["catmp3", "nome", "tipo", "status"])),
+      solicitacoesBom: solicitacoesBom.filter((r) => has(r, ["descricao", "codigo_sugerido", "numero_kickoff", "cliente_nome", "status"])),
     };
-  }, [search, clientes, fornecedores, produtos, materiais, categoriasProduto, categoriasMp]);
+  }, [search, clientes, fornecedores, produtos, materiais, categoriasProduto, categoriasMp, solicitacoesBom]);
 
   const produtosComSku = produtos.filter((p) => p.codigo_interno).length;
   const produtosComPd = produtos.filter((p) => p.pd_concluido || p.pd_request_id).length;
@@ -659,6 +670,62 @@ export default function CadastrosPage() {
     setDialog("projeto");
   };
 
+  const uploadBomAttachment = async (row, file) => {
+    if (!file) return;
+    setProcessingBomId(row.id);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const upload = await api.post("/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
+      const ids = [...new Set([...(row.anexo_file_ids || []), upload.data.id])];
+      await api.put(`/cadastros/solicitacoes-bom/${row.id}`, { anexo_file_ids: ids });
+      toast.success("Documento anexado à solicitação de cadastro.");
+      await loadAll();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || "Não foi possível anexar o documento.");
+    } finally {
+      setProcessingBomId("");
+    }
+  };
+
+  const downloadBomAttachment = async (file) => {
+    try {
+      const response = await api.get(`/files/${file.id}`, { responseType: "blob" });
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = file.original_filename || "anexo";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Não foi possível baixar o anexo.");
+    }
+  };
+
+  const concludeBomRegistration = async (row) => {
+    if (!(row.anexo_file_ids || []).length) {
+      toast.error("Anexe a ficha, desenho ou especificação antes de concluir o cadastro.");
+      return;
+    }
+    if (!window.confirm(`Cadastrar “${row.descricao}” e liberar automaticamente para cotação em Compras?`)) return;
+    setProcessingBomId(row.id);
+    try {
+      await api.post(`/cadastros/solicitacoes-bom/${row.id}/concluir`, {
+        nome: row.descricao,
+        unidade_estoque: row.unidade || "un",
+        unidade_compra: row.unidade || "un",
+        anexo_file_ids: row.anexo_file_ids || [],
+      });
+      toast.success("Cadastro concluído e demanda liberada para cotação em Compras.");
+      await loadAll();
+    } catch (error) {
+      const detail = error.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : detail?.message || "Não foi possível concluir o cadastro.");
+    } finally {
+      setProcessingBomId("");
+    }
+  };
+
   const activeCategoriasProduto = categoriasProduto.filter((c) => c.status === "ativa");
   const activeCategoriasMp = categoriasMp.filter((c) => c.status === "ativa");
 
@@ -684,12 +751,13 @@ export default function CadastrosPage() {
       <SearchBar value={search} onChange={setSearch} onRefresh={loadAll} placeholder="Buscar por SKU, cliente, fornecedor, CNPJ ou categoria..." />
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="grid h-auto grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-10">
+        <TabsList className="grid h-auto grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-11">
           <TabsTrigger value="dashboard">Visao</TabsTrigger>
           <TabsTrigger value="clientes">Clientes</TabsTrigger>
           <TabsTrigger value="fornecedores">Fornecedores</TabsTrigger>
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
           <TabsTrigger value="materiais">MPs/Insumos</TabsTrigger>
+          <TabsTrigger value="pendencias-bom">Pendências BOM</TabsTrigger>
           <TabsTrigger value="engenharia">Formulas/BOM</TabsTrigger>
           <TabsTrigger value="fichas">Fichas</TabsTrigger>
           <TabsTrigger value="enderecos">Enderecos</TabsTrigger>
@@ -746,6 +814,30 @@ export default function CadastrosPage() {
               tone="muted"
             />
           </div>
+        </TabsContent>
+
+        <TabsContent value="pendencias-bom" className="space-y-4">
+          <Card className="rounded-lg border-l-4 border-l-amber-500">
+            <CardContent className="flex flex-col gap-3 p-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h2 className="font-semibold">Novos itens identificados no BOM do Kickoff</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Cadastros anexa a ficha técnica, cria o material e libera automaticamente uma solicitação para Compras iniciar a cotação.</p>
+              </div>
+              <Badge className="w-fit bg-amber-100 text-amber-700">{solicitacoesBom.filter((r) => r.status !== "cadastrado").length} pendente(s)</Badge>
+            </CardContent>
+          </Card>
+          <ResponsiveTable
+            rows={filtered.solicitacoesBom}
+            getKey={(r) => r.id}
+            emptyText={loading ? "Carregando..." : "Nenhum item novo do BOM aguardando cadastro."}
+            columns={[
+              { key: "numero_kickoff", label: "Kickoff", render: (r) => <div><span className="font-mono font-semibold">{r.numero_kickoff}</span><p className="text-xs text-muted-foreground">{r.cliente_nome || "Cliente"}</p></div> },
+              { key: "descricao", label: "Item do BOM", render: (r) => <div><b>{r.descricao}</b><p className="text-xs text-muted-foreground">{r.tipo_bom} · {r.quantidade_total_pedido || 0} {r.unidade}</p></div> },
+              { key: "status", label: "Status", render: (r) => <StatusBadge value={r.status} /> },
+              { key: "anexos", label: "Anexos", render: (r) => <div className="flex flex-wrap gap-1">{(r.anexos || []).map((file) => <button key={file.id} className="text-xs text-primary underline" onClick={() => downloadBomAttachment(file)}>{file.original_filename}</button>)}{!(r.anexos || []).length && <span className="text-xs text-amber-600">Obrigatório</span>}</div> },
+              { key: "acao", label: "Ação", render: (r) => r.status === "cadastrado" ? <div className="space-y-1"><StatusBadge value="ativo" /><p className="text-xs text-muted-foreground">Compras liberado</p></div> : <div className="flex flex-wrap justify-end gap-2"><label className="inline-flex cursor-pointer items-center rounded-md border px-3 py-2 text-xs font-medium hover:bg-muted"><Paperclip className="mr-1 h-3.5 w-3.5" />Anexar<input type="file" className="hidden" accept=".pdf,.png,.jpg,.jpeg,.xlsx,.docx" disabled={processingBomId === r.id} onChange={(e) => uploadBomAttachment(r, e.target.files?.[0])} /></label><Button size="sm" disabled={processingBomId === r.id || !(r.anexo_file_ids || []).length} onClick={() => concludeBomRegistration(r)}><ShoppingCart className="mr-1 h-3.5 w-3.5" />Cadastrar e liberar</Button></div> },
+            ]}
+          />
         </TabsContent>
 
         <TabsContent value="clientes">

@@ -8,6 +8,7 @@ import {
   FileSpreadsheet,
   PackageCheck,
   Plus,
+  Radio,
   RefreshCw,
   Search,
   ShoppingCart,
@@ -200,8 +201,10 @@ function SearchInput({ value, setValue, placeholder }) {
   );
 }
 
-function usePcpData() {
+function usePcpData(live = false) {
   const [loading, setLoading] = useState(true);
+  const [lastSync, setLastSync] = useState(null);
+  const [liveConnected, setLiveConnected] = useState(true);
   const [day, setDay] = useState(() => ymd(new Date()));
   const [historyRange, setHistoryRange] = useState({ inicio: addDays(ymd(new Date()), -29), fim: ymd(new Date()) });
   const [data, setData] = useState({ linhas: [], slots: [], ops: [], orders: [], skus: [], catalog: [], historico: { rows: [], kpis: {} } });
@@ -222,6 +225,8 @@ function usePcpData() {
         safe("/pcp/historico", { params: { data_inicio: historyRange.inicio, data_fim: historyRange.fim } }, { rows: [], kpis: {} }),
       ]);
       setData({ linhas: linhas.data || [], slots: slots.data || [], ops: ops.data || [], orders: orders.data || [], skus: skus.data || [], catalog: catalog.data || [], historico: historico.data || { rows: [], kpis: {} } });
+      setLastSync(new Date());
+      setLiveConnected(true);
     } catch {
       toast.error("Nao foi possivel carregar o PCP.");
     } finally {
@@ -230,7 +235,39 @@ function usePcpData() {
   }, [day, historyRange]);
 
   useEffect(() => { load(); }, [load]);
-  return { ...data, loading, day, setDay, historyRange, setHistoryRange, load };
+
+  const refreshLive = useCallback(async (notify = false) => {
+    const weekStart = startOfWeek(day);
+    const weekEnd = addDays(weekStart, 6);
+    try {
+      const recalculo = await api.post("/pcp/programacao/recalcular-tempo-real", {});
+      const [slots, ops, historico] = await Promise.all([
+        api.get("/pcp/programacao", { params: { data_inicio: weekStart, data_fim: weekEnd } }),
+        api.get("/ops"),
+        api.get("/pcp/historico", { params: { data_inicio: historyRange.inicio, data_fim: historyRange.fim } }),
+      ]);
+      setData((current) => ({ ...current, slots: slots.data || [], ops: ops.data || [], historico: historico.data || { rows: [], kpis: {} } }));
+      setLastSync(new Date());
+      setLiveConnected(true);
+      if (notify) toast.success(`${recalculo.data?.ops_processadas || 0} OP(s) recalculada(s) em tempo real.`);
+      return recalculo.data;
+    } catch (err) {
+      setLiveConnected(false);
+      if (notify) toast.error(apiDetail(err, "Nao foi possivel sincronizar a programacao."));
+      return null;
+    }
+  }, [day, historyRange]);
+
+  useEffect(() => {
+    if (!live) return undefined;
+    refreshLive(false);
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") refreshLive(false);
+    }, 10000);
+    return () => window.clearInterval(timer);
+  }, [live, refreshLive]);
+
+  return { ...data, loading, day, setDay, historyRange, setHistoryRange, load, refreshLive, lastSync, liveConnected };
 }
 
 function TopTabs({ active, setActive }) {
@@ -270,7 +307,11 @@ function WeeklyGrid({ data, weekStart }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] text-sm">
             <thead className="bg-muted text-xs uppercase text-muted-foreground"><tr>{["Linha", "07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "Total do dia"].map((h) => <th key={h} className="p-3 text-left">{h}</th>)}</tr></thead>
-            <tbody>{lines.map((line) => <tr key={line.id} className="border-b"><td className="p-3 font-black">{line.nome}</td><td colSpan={10} className="p-2">{data.slots.filter((slot) => slot.linha_id === line.id).slice(0, 4).map((slot) => <Badge key={slot.id} className="mr-2 bg-primary/10 text-primary">{safeText(slot.produto_nome || slot.op_numero)}</Badge>)}</td><td className="p-3 font-black text-primary">{fmt(data.slots.filter((slot) => slot.linha_id === line.id).reduce((sum, slot) => sum + Number(slot.qtd_planejada || 0), 0))}</td></tr>)}</tbody>
+            <tbody>{lines.map((line) => <tr key={line.id} className="border-b"><td className="p-3 font-black">{line.nome}</td><td colSpan={10} className="p-2"><div className="flex flex-wrap gap-2">{data.slots.filter((slot) => slot.linha_id === line.id).map((slot) => {
+              const deviation = Number(slot.desvio_minutos || slot.desvio_acumulado_minutos || slot.ajuste_cascata_minutos || 0);
+              const timingClass = slot.situacao_tempo === "atrasado" || deviation > 1 ? "border-red-300 bg-red-500/10 text-red-600" : slot.situacao_tempo === "adiantado" || deviation < -1 ? "border-emerald-300 bg-emerald-500/10 text-emerald-600" : "border-primary/30 bg-primary/10 text-primary";
+              return <div key={slot.id} className={`rounded-md border px-2.5 py-1.5 text-xs ${timingClass}`}><b>{slot.hora_inicio || "--:--"}-{slot.hora_fim || "--:--"}</b> {safeText(slot.op_numero || slot.produto_nome)}{deviation !== 0 && <span className="ml-2 font-black">{deviation > 0 ? "+" : ""}{deviation}min</span>}<div className="mt-0.5 opacity-80">{fmt(slot.qtd_produzida)}/{fmt(slot.qtd_planejada)} un. {slot.previsao_fim ? `- prev. ${String(slot.previsao_fim).slice(11, 16)}` : ""}</div></div>;
+            })}</div></td><td className="p-3 font-black text-primary">{fmt(data.slots.filter((slot) => slot.linha_id === line.id).reduce((sum, slot) => sum + Number(slot.qtd_planejada || 0), 0))}</td></tr>)}</tbody>
           </table>
         </div>
       </CardContent>
@@ -279,13 +320,15 @@ function WeeklyGrid({ data, weekStart }) {
 }
 
 function PlanningModule({ initial = "quantidades" }) {
-  const data = usePcpData();
+  const data = usePcpData(true);
   const [tab, setTab] = useState(initial);
   const weekStart = startOfWeek(data.day);
   const weekEnd = addDays(weekStart, 4);
   const activeOps = data.ops.filter((op) => ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp"].includes(op.status));
   const scheduledIds = new Set(data.slots.map((slot) => slot.op_id).filter(Boolean));
   const unscheduled = activeOps.filter((op) => !scheduledIds.has(op.id));
+  const delayed = data.slots.filter((slot) => slot.situacao_tempo === "atrasado" || Number(slot.desvio_minutos || 0) > 1);
+  const ahead = data.slots.filter((slot) => slot.situacao_tempo === "adiantado" || Number(slot.desvio_minutos || 0) < -1);
 
   async function programar(op, idx) {
     const line = data.linhas.find((linha) => linha.status !== "inativa") || data.linhas[0];
@@ -302,10 +345,10 @@ function PlanningModule({ initial = "quantidades" }) {
 
   return (
     <div className="space-y-4">
-      <Header title="Planejamento de Producao" subtitle={`${isoWeek(data.day)}a Semana - ${dateBR(weekStart)} a ${dateBR(weekEnd)}`} online="Online" />
+      <Header title="Planejamento de Producao" subtitle={`${isoWeek(data.day)}a Semana - ${dateBR(weekStart)} a ${dateBR(weekEnd)}`} online={data.liveConnected ? `Ao vivo${data.lastSync ? ` - ${data.lastSync.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` : ""}` : "Reconectando"} />
       <TopTabs active={tab} setActive={setTab} />
-      <CardBox className="border-l-4 border-l-amber-500"><CardContent className="p-4 text-sm text-amber-800 dark:text-amber-200"><b>Auto-ajuste PAUSADO.</b> A Grade Semanal so muda quando alguem edita. Se uma OP nao rodou, remaneje manualmente; programar, agendar e editar continuam funcionando normalmente.</CardContent></CardBox>
-      {tab === "quantidades" && <><WeekControls data={data} weekStart={weekStart} weekEnd={weekEnd} /><div className="grid gap-3 md:grid-cols-4"><Stat value={fmt(data.slots.reduce((sum, slot) => sum + Number(slot.qtd_planejada || 0), 0))} label="Meta semana" /><Stat value={fmt(data.slots.length)} label="Slots planejados" /><Stat value={fmt(new Set(data.slots.map((slot) => slot.data || slot.data_inicio)).size)} label="Dias com prog." /><Stat value={fmt(activeOps.length)} label="Pedidos ativos" /></div><WeeklyGrid data={data} weekStart={weekStart} /></>}
+      <CardBox className={`border-l-4 ${data.liveConnected ? "border-l-emerald-500" : "border-l-red-500"}`}><CardContent className="flex flex-col gap-3 p-4 text-sm md:flex-row md:items-center md:justify-between"><div className={data.liveConnected ? "text-emerald-700 dark:text-emerald-300" : "text-red-700 dark:text-red-300"}><b className="inline-flex items-center gap-2"><Radio className="h-4 w-4" />Auto-ajuste {data.liveConnected ? "ATIVO" : "RECONECTANDO"}.</b> Apontamentos, pausas e conclusoes atualizam a previsao e deslocam automaticamente os prazos seguintes da mesma linha.</div><Button variant="outline" onClick={() => data.refreshLive(true)}><RefreshCw className="mr-2 h-4 w-4" />Recalcular agora</Button></CardContent></CardBox>
+      {tab === "quantidades" && <><WeekControls data={data} weekStart={weekStart} weekEnd={weekEnd} /><div className="grid gap-3 md:grid-cols-5"><Stat value={fmt(data.slots.reduce((sum, slot) => sum + Number(slot.qtd_planejada || 0), 0))} label="Meta semana" /><Stat value={fmt(data.slots.length)} label="Slots planejados" /><Stat value={fmt(data.slots.reduce((sum, slot) => sum + Number(slot.qtd_produzida || 0), 0))} label="Produzido apontado" tone="green" /><Stat value={fmt(delayed.length)} label="Atrasados" tone="red" /><Stat value={fmt(ahead.length)} label="Adiantados" tone="green" /></div><WeeklyGrid data={data} weekStart={weekStart} /></>}
       {tab === "ops" && <OpsPlanning data={data} activeOps={activeOps} unscheduled={unscheduled} programar={programar} />}
       {tab === "agenda" && <Agenda ops={activeOps} programar={programar} />}
       {tab === "config" && <Config data={data} />}
@@ -438,14 +481,8 @@ function ControlOpsModule() {
     return { op, steps, count, status: count === 5 ? "Concluida" : count ? "Em andamento" : "Nao iniciada" };
   });
 
-  async function confirm(op) {
-    try {
-      await api.put(`/ops/${op.id}`, { status: "concluida" });
-      toast.success("Conclusao confirmada.");
-      data.load();
-    } catch (err) {
-      toast.error(apiDetail(err, "Nao foi possivel confirmar."));
-    }
+  function confirm(op) {
+    navigate(`/ops/${op.id}`);
   }
 
   async function cancelOp(op) {
@@ -460,16 +497,8 @@ function ControlOpsModule() {
     }
   }
 
-  async function registerEntry(op) {
-    const endereco = window.prompt("Endereco de entrada do produto acabado:");
-    if (!endereco) return;
-    try {
-      await api.put(`/ops/${op.id}`, { entrada_produto_acabado_endereco: endereco, entrada_produto_acabado_em: new Date().toISOString() });
-      toast.success("Entrada registrada para conferencia da Logistica.");
-      data.load();
-    } catch (err) {
-      toast.error(apiDetail(err, "Nao foi possivel registrar entrada."));
-    }
+  function registerEntry(op) {
+    navigate(`/ops/${op.id}`);
   }
 
   function exportChecklist() {
