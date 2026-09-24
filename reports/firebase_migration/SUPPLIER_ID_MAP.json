@@ -1,0 +1,3633 @@
+{
+  "source_node": "fornecedores",
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "entries": [
+    {
+      "legacy_id": "-P-uGz4b0g5iycZj9j0_",
+      "normalized_cnpj": "44346930000177",
+      "normalized_name": "COLORMIX INDUSTRIA E COMERCIO DE PIGMENTOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-uHFokL0wJsZZkBciM",
+      "normalized_cnpj": "20140058000148",
+      "normalized_name": "TERRA VIVAH COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-uHVs309gbcihQ7Na2",
+      "normalized_cnpj": "08406410000149",
+      "normalized_name": "CARLOS CRAMER PROD. AROM. DO BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-z16EDVnwoaYzp-xAk",
+      "normalized_cnpj": "",
+      "normalized_name": "CLARIANT",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-zO-Avf3tTGrq6ahlu",
+      "normalized_cnpj": "",
+      "normalized_name": "DPS QUIMICA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-zOh96Yj-UXdoyT2fr",
+      "normalized_cnpj": "",
+      "normalized_name": "RUDNIK QUIMICA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-zPI5bmjN5ItO8MGKH",
+      "normalized_cnpj": "",
+      "normalized_name": "CEREALCOOL",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P-zRvuv6928vj0Fdsf2",
+      "normalized_cnpj": "",
+      "normalized_name": "BRENNTAG",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0b1nxYofGBbHhJvESH",
+      "normalized_cnpj": "",
+      "normalized_name": "QUIMI FORMULA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0bZCihGlCp_wmPUliG",
+      "normalized_cnpj": "12327762000186",
+      "normalized_name": "CPK GRAFICA & EDITORA BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0bcNFpqVaDoT87uncR",
+      "normalized_cnpj": "76360874000111",
+      "normalized_name": "INPLAVEL INDUSTRIA DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0bfyzLOBsj40OJhx9A",
+      "normalized_cnpj": "24587522000108",
+      "normalized_name": "PARAISO DAS ESSENCIAS COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "CONFLICT",
+      "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+    },
+    {
+      "legacy_id": "-P0bjc5jZtOTYBF65fvb",
+      "normalized_cnpj": "07869813000161",
+      "normalized_name": "SIEM TECNOLOGIA DA EMBALAGEM LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0buTa_xTReurtLKxox",
+      "normalized_cnpj": "43144462000195",
+      "normalized_name": "SIGMA DO BRASIL EMBALAGENS ETIQUETAS ADESIVAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0cBUEq3nWnpYhhK03z",
+      "normalized_cnpj": "63927009000162",
+      "normalized_name": "AMEERATI DO BRASIL COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0cJhYcvxYpeNG3fZ8x",
+      "normalized_cnpj": "30000652000197",
+      "normalized_name": "FILATO BENE ESPARTA TERNOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0cwASvbXOLcx4bOGkp",
+      "normalized_cnpj": "48770023000101",
+      "normalized_name": "GRAFICA MEGALABEL ETIQUETAS E ROTULOS ADESIVOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P0gUq4cTzMCpOgOQ9EI",
+      "normalized_cnpj": "",
+      "normalized_name": "CORANTEC CORANTES NATURAIS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1-c_ITewxfO8v2OLeE",
+      "normalized_cnpj": "03858468000100",
+      "normalized_name": "SAFIRA COSMETICOS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "CONFLICT",
+      "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+    },
+    {
+      "legacy_id": "-P11TOi6ssrnb-PrNu6t",
+      "normalized_cnpj": "",
+      "normalized_name": "LUNAGREEN BIOATIVOS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P15j3MJlS-iMbbQAo7_",
+      "normalized_cnpj": "52842517000121",
+      "normalized_name": "BIOFLORA INDUSTRIA E COMERCIO LTDA - EPP",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "CONFLICT",
+      "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+    },
+    {
+      "legacy_id": "-P16H34wGNgdPj9YRSK3",
+      "normalized_cnpj": "34538625000123",
+      "normalized_name": "LALAMOVE TECNOLOGIA (BRASIL) LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1AfQRpdt9IWoTXI8-5",
+      "normalized_cnpj": "03938189000156",
+      "normalized_name": "REIS ETIQUETAS E ROTULOS ADESIVOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1F5YG_WFGDkyd-LGoX",
+      "normalized_cnpj": "01046455000100",
+      "normalized_name": "DEGRADE MAQUINAS E SISTEMAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1GfAlRzEA8nvwHAJs0",
+      "normalized_cnpj": "01860614000106",
+      "normalized_name": "LAPIENDRIUS INDUSTRIA E COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1VAFtyw-tVSQGx4W4K",
+      "normalized_cnpj": "52842517000121",
+      "normalized_name": "BIOFLORA INDUSTRIA E COMERCIO LTDA - EPP",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "CONFLICT",
+      "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+    },
+    {
+      "legacy_id": "-P1WI0dPzdRneA0GlmRz",
+      "normalized_cnpj": "33321531000135",
+      "normalized_name": "LOMARPACK IMPORTACOES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1aSVGzcHdGeAvGGW35",
+      "normalized_cnpj": "09518361000107",
+      "normalized_name": "PREMIER PACK INDUSTRIA E COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "-P1fXTaRfLfXrUG-dbM2",
+      "normalized_cnpj": "53235180000157",
+      "normalized_name": "D P V PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm1",
+      "normalized_cnpj": "66986746000124",
+      "normalized_name": "VOLP INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm10",
+      "normalized_cnpj": "11441387000138",
+      "normalized_name": "TRANSBRITTO EXPRESS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm100",
+      "normalized_cnpj": "06313527000152",
+      "normalized_name": "ADEGRAF ETIQUETAS ADESIVAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm101",
+      "normalized_cnpj": "67666834000101",
+      "normalized_name": "GARDEN QUIMICA INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm102",
+      "normalized_cnpj": "29883917000163",
+      "normalized_name": "FDB - INDUSTRIA E COMERCIO DE EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm103",
+      "normalized_cnpj": "18754827000156",
+      "normalized_name": "BEPACK INDUSTRIA DE EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm104",
+      "normalized_cnpj": "29080535869",
+      "normalized_name": "JEAN - INSTALACOES ELETRICAS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm105",
+      "normalized_cnpj": "34661277000187",
+      "normalized_name": "CS COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm106",
+      "normalized_cnpj": "00151610000196",
+      "normalized_name": "SIND.TRAB.IND.QUIM.FARM.PLAST. SIMILARES DE SAO PAULO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm107",
+      "normalized_cnpj": "31517941000120",
+      "normalized_name": "CHAPARRAL DISTRIBUIDORA DE PRODUTOS DE LIMPEZA E EMBALAGENS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm108",
+      "normalized_cnpj": "25064966000113",
+      "normalized_name": "PAPEL ONLINE INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm109",
+      "normalized_cnpj": "11045287000192",
+      "normalized_name": "CAUE DISTRIBUIDORA DE AGUA MINERAL E SUPRIMENTOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm11",
+      "normalized_cnpj": "06075614000119",
+      "normalized_name": "VOLLMENS FRAGRANCES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm110",
+      "normalized_cnpj": "00627303000481",
+      "normalized_name": "QUARKS COMERCIAL IMPORTADORA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm111",
+      "normalized_cnpj": "04531871000192",
+      "normalized_name": "VERSACOLOR ROTULOS E ETIQUETAS ADESIVAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm112",
+      "normalized_cnpj": "59945840000170",
+      "normalized_name": "4. TABELIONATO DE PROTESTO DE TITULOS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm113",
+      "normalized_cnpj": "50386473000147",
+      "normalized_name": "EXPRESSO RODO JABOTI LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm114",
+      "normalized_cnpj": "21790864000124",
+      "normalized_name": "ALB COMERCIO DE ETIQUETAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm115",
+      "normalized_cnpj": "04159549000184",
+      "normalized_name": "TROPICOS COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm116",
+      "normalized_cnpj": "21332506000178",
+      "normalized_name": "INTERNET DESIGN BRASIL CONSULTORIA E ASSESSORIA EM INFORMATI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm117",
+      "normalized_cnpj": "19614012000134",
+      "normalized_name": "UNIAO COMERCIO DE EQUIPAMENTOS CONTRA INCENDIO LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm118",
+      "normalized_cnpj": "61142089001510",
+      "normalized_name": "DIERBERGER OLEOS ESSENCIAIS SA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm119",
+      "normalized_cnpj": "04196584000173",
+      "normalized_name": "MASTER PUMPS EMBALAGENS COMERCIO IMPORTACAO E EXPORTACAO LTD",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm12",
+      "normalized_cnpj": "01142107000137",
+      "normalized_name": "AQIA QUIMICA INOVATIVA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm120",
+      "normalized_cnpj": "65837247000102",
+      "normalized_name": "TECHNOVEDA TAMPAS E MOLDES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm121",
+      "normalized_cnpj": "73136665000109",
+      "normalized_name": "QUIMIHOUSE PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm122",
+      "normalized_cnpj": "68344878000188",
+      "normalized_name": "ROBERG NUTRIGENOMICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm123",
+      "normalized_cnpj": "04191975000103",
+      "normalized_name": "OXYPLAS INDUSTRIA E COMERCIO LTDA. EM RECUPERACAO JUDICIAL",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm124",
+      "normalized_cnpj": "54290182000101",
+      "normalized_name": "Q7 CONSULTORIA EMPRESARIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm125",
+      "normalized_cnpj": "41269632000132",
+      "normalized_name": "PHYTOATTIVE COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm126",
+      "normalized_cnpj": "12795433000160",
+      "normalized_name": "TOP QUALITY SOLUCOES GRAFICAS LTDA.1",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm127",
+      "normalized_cnpj": "23029776000130",
+      "normalized_name": "ELIZABETH MARQUES",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm128",
+      "normalized_cnpj": "16935723000112",
+      "normalized_name": "DISTRIOL - INDUSTRIA E COMERCIO LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm129",
+      "normalized_cnpj": "05242712000130",
+      "normalized_name": "DISPOFIX INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm13",
+      "normalized_cnpj": "01722256000175",
+      "normalized_name": "UNIVAR SOLUTIONS BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm130",
+      "normalized_cnpj": "33839275000172",
+      "normalized_name": "CONSELHO FEDERAL DE QUIMICA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm131",
+      "normalized_cnpj": "37197657000109",
+      "normalized_name": "RETRATIL COMERCIO DISTRIBUICAO IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm132",
+      "normalized_cnpj": "40432544046210",
+      "normalized_name": "CLARO S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm133",
+      "normalized_cnpj": "12134331000101",
+      "normalized_name": "ECOBOLHA INDUSTRIA E COMERCIO DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm134",
+      "normalized_cnpj": "46026803000116",
+      "normalized_name": "COMERCIO DE PAPELARIA ZONA LESTE LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm135",
+      "normalized_cnpj": "15287545000106",
+      "normalized_name": "CETRO SOLUCOES EM EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm136",
+      "normalized_cnpj": "00394460021653",
+      "normalized_name": "MINISTERIO DA FAZENDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm137",
+      "normalized_cnpj": "60746948000112",
+      "normalized_name": "BANCO BRADESCO S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm138",
+      "normalized_cnpj": "16865877000185",
+      "normalized_name": "RVS TRANSPORTES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm139",
+      "normalized_cnpj": "22132650000123",
+      "normalized_name": "KL MANUTENCAO EM BOMBAS, MOTORES E PAINEIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm14",
+      "normalized_cnpj": "62432778000127",
+      "normalized_name": "ASHLAND COMERCIO DE ESPECIALIDADES QUIMICAS DO BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm140",
+      "normalized_cnpj": "00745262000185",
+      "normalized_name": "SANKOU COMERCIO E INDUSTRIA DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm141",
+      "normalized_cnpj": "29864616000192",
+      "normalized_name": "ONIPACK EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm142",
+      "normalized_cnpj": "10290557000168",
+      "normalized_name": "SALES EQUIPAMENTOS E PRODUTOS DE HIGIENE PROFISSIONAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm143",
+      "normalized_cnpj": "04394799000107",
+      "normalized_name": "CPR INDUSTRIA E COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm144",
+      "normalized_cnpj": "10714239000187",
+      "normalized_name": "ZEVISOPRO INDUSTRIA E COMERCIO DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm145",
+      "normalized_cnpj": "13239169000140",
+      "normalized_name": "ROLLON PLAST BAURU ESFERAS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm146",
+      "normalized_cnpj": "03528527000181",
+      "normalized_name": "WEENER INDUSTRIA PLASTICA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm147",
+      "normalized_cnpj": "21147115000183",
+      "normalized_name": "VANICE GAGLIARDI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm148",
+      "normalized_cnpj": "12065117000132",
+      "normalized_name": "CROMA - AUTO ADESIVOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm149",
+      "normalized_cnpj": "01722256000760",
+      "normalized_name": "UNIVAR SOLUTIONS BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm15",
+      "normalized_cnpj": "24037139000178",
+      "normalized_name": "ARON CAIQUE MENDES COSTA 12040082646",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm150",
+      "normalized_cnpj": "24796145000109",
+      "normalized_name": "COSMO CIENCIA COMERCIO DE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm151",
+      "normalized_cnpj": "12558779000144",
+      "normalized_name": "POLYSTAR COMERCIO DE ESSENCIAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm152",
+      "normalized_cnpj": "18323476000129",
+      "normalized_name": "SUMMIT COSMETICS LATIN AMERICA ESPECIALIDADES COSMETICAS LTD",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm153",
+      "normalized_cnpj": "59579284000165",
+      "normalized_name": "1 TABELIAO DE PROTESTO DE LETRAS E TITULOS DA COMARCA DA CAP",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm154",
+      "normalized_cnpj": "26589893000146",
+      "normalized_name": "KRONOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm155",
+      "normalized_cnpj": "00394460005887",
+      "normalized_name": "MINISTERIO DA FAZENDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm156",
+      "normalized_cnpj": "65833410000169",
+      "normalized_name": "BRASLIMPO COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm157",
+      "normalized_cnpj": "32431804000131",
+      "normalized_name": "C.B.P DE FRANCA DISTRIBUICAO E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm158",
+      "normalized_cnpj": "00644000000124",
+      "normalized_name": "CCI QUIMICA IMPORT EXPORT E REPRESENTACOES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm159",
+      "normalized_cnpj": "44211891000109",
+      "normalized_name": "VALOR PACK INDUSTRIA E COMERCIO DE EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm16",
+      "normalized_cnpj": "03689717000180",
+      "normalized_name": "A EMBAGEL EMBALAGENS DE VIDROS E PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm160",
+      "normalized_cnpj": "12927351000121",
+      "normalized_name": "MENDESPLAST INDUSTRIA DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm161",
+      "normalized_cnpj": "06861118000190",
+      "normalized_name": "IGOR FERNANDO SIMIDAMORE VICIANA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm162",
+      "normalized_cnpj": "04678459000108",
+      "normalized_name": "CABO ELETRO COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm163",
+      "normalized_cnpj": "64949480000114",
+      "normalized_name": "L'ESSENCE INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm164",
+      "normalized_cnpj": "10267112000167",
+      "normalized_name": "RENORATO CLICHES E ARTES GRAFICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm165",
+      "normalized_cnpj": "26592713000185",
+      "normalized_name": "DLF DESCARTAVEIS E EPIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm166",
+      "normalized_cnpj": "08621165000192",
+      "normalized_name": "COMERCIAL B.L. FESTO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm167",
+      "normalized_cnpj": "03676880000109",
+      "normalized_name": "ALUDROL INDUSTRIA QUIMICA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm168",
+      "normalized_cnpj": "23150805000117",
+      "normalized_name": "CROMIX PRODUTOS GRAFICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm169",
+      "normalized_cnpj": "11325308000123",
+      "normalized_name": "IPQ PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm17",
+      "normalized_cnpj": "04779431000310",
+      "normalized_name": "KORETECH SISTEMAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm170",
+      "normalized_cnpj": "06021009000165",
+      "normalized_name": "PLASTOW INDUSTRIA E COMERCIO DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm171",
+      "normalized_cnpj": "29302348000387",
+      "normalized_name": "GURGELMIX MAQUINAS E FERRAMENTAS S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm172",
+      "normalized_cnpj": "04887625000178",
+      "normalized_name": "BRASIL TERMINAL PORTUARIO S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm173",
+      "normalized_cnpj": "19762315000102",
+      "normalized_name": "LOGLINE SOLUCOES LOGISTICAS INTEGRADAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm174",
+      "normalized_cnpj": "47333719000108",
+      "normalized_name": "MANDACARU PERSONALIZADOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm175",
+      "normalized_cnpj": "00196533000190",
+      "normalized_name": "MATRIZ COMERCIO DE ESSENCIAS E EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm176",
+      "normalized_cnpj": "09293381000119",
+      "normalized_name": "FENIX EXTINTORES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm177",
+      "normalized_cnpj": "13065239000191",
+      "normalized_name": "REP - RELOGIOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm178",
+      "normalized_cnpj": "03659166000102",
+      "normalized_name": "INSTITUTO BRASILEIRO DO MEIO AMBIENTE E DOS RECURSOS NATURAI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm179",
+      "normalized_cnpj": "04676345000110",
+      "normalized_name": "INCOM INDUSTRIAL SLU LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm18",
+      "normalized_cnpj": "00026910000577",
+      "normalized_name": "SWEETMIX INDUSTRIA COMERCIO IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm180",
+      "normalized_cnpj": "33332447000117",
+      "normalized_name": "RG AMBIENTAL CONSULTORIA ASSESSORIA 7 FACILITY LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm181",
+      "normalized_cnpj": "21012134000100",
+      "normalized_name": "OAK FRAGRANCES INDUSTRIA E COMERCIO IMPORTACAO E EXPORTACAO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm182",
+      "normalized_cnpj": "10591391000110",
+      "normalized_name": "A V S COMERCIO DE CARTUCHOS PARA IMPRESSORAS E ARTIGOS DE IN",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm183",
+      "normalized_cnpj": "47857863000143",
+      "normalized_name": "CARTOON PACK LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm184",
+      "normalized_cnpj": "43776491000170",
+      "normalized_name": "CETESB COMPANHIA AMBIENTAL DO ESTADO DE SAO PAULO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm185",
+      "normalized_cnpj": "11280174000171",
+      "normalized_name": "RODRIGO ALAPENHA ANDRADE",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm186",
+      "normalized_cnpj": "13343037000164",
+      "normalized_name": "WR GRAFICA E EDITORA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm187",
+      "normalized_cnpj": "05992846000179",
+      "normalized_name": "ELETROTEC SOLUCOES EM BALANCAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm188",
+      "normalized_cnpj": "25488584000117",
+      "normalized_name": "TECH SOLUCOES ,COMERCIO DE EMBALAGENS E SERVICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm189",
+      "normalized_cnpj": "10693887000285",
+      "normalized_name": "FOCUS TECNOLOGIA COMERCIAL QUIMICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm19",
+      "normalized_cnpj": "24121922000115",
+      "normalized_name": "MRE SOPRO EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm190",
+      "normalized_cnpj": "61600839000155",
+      "normalized_name": "CENTRO DE INTEGRACAO EMPRESA ESCOLA CIE E",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm191",
+      "normalized_cnpj": "01222857000208",
+      "normalized_name": "MAXXI QUIMICA COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm192",
+      "normalized_cnpj": "01140047000113",
+      "normalized_name": "AROMATY ESSENCIAS E FRAGRANCIAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm193",
+      "normalized_cnpj": "24212662000193",
+      "normalized_name": "PEX TA ENTREGUE LOGISTICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm194",
+      "normalized_cnpj": "01056417000139",
+      "normalized_name": "ORGANISYS SOFTWARE LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm195",
+      "normalized_cnpj": "62226170000146",
+      "normalized_name": "CENTRO DAS INDUSTRIAS DO ESTADO DE SAO PAULO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm196",
+      "normalized_cnpj": "04715903000100",
+      "normalized_name": "FORPRINTER INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm197",
+      "normalized_cnpj": "74254244000137",
+      "normalized_name": "JD ROYALE INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm198",
+      "normalized_cnpj": "11102150000122",
+      "normalized_name": "MARCOS ANTONIO CAETANO DE ARAUJO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm199",
+      "normalized_cnpj": "51200779000120",
+      "normalized_name": "R3R SOROCABA GRAFICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm2",
+      "normalized_cnpj": "10351268000121",
+      "normalized_name": "SABER QUIMICA INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm20",
+      "normalized_cnpj": "45483146000173",
+      "normalized_name": "USINA SANTA ROSA LTDA EM RECUPERACAO JUDICIAL",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm200",
+      "normalized_cnpj": "43456666000161",
+      "normalized_name": "JETMACK CODIFICACAO INDUSTRIAL LIMITADA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm201",
+      "normalized_cnpj": "43287807000160",
+      "normalized_name": "DANIEL CALDEIRA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm202",
+      "normalized_cnpj": "16734811000156",
+      "normalized_name": "GINGER FRAGRANCES & INGREDIENTS INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm203",
+      "normalized_cnpj": "55560760000145",
+      "normalized_name": "SIM ACABAMENTOS E ARTES GRAFICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm204",
+      "normalized_cnpj": "12358281000138",
+      "normalized_name": "MUNDIQUIMICA COMERCIO, IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm205",
+      "normalized_cnpj": "34643993000212",
+      "normalized_name": "OXYGEN COMERCIO DE PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm206",
+      "normalized_cnpj": "14559670000157",
+      "normalized_name": "OSVALDO PEDROSA PEREIRA JUNIOR - CORANTES",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm207",
+      "normalized_cnpj": "60620812000595",
+      "normalized_name": "BRASILMINAS INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm208",
+      "normalized_cnpj": "02990490000146",
+      "normalized_name": "PROLAB - LABORATORIO DE BIOTECNOLOGIA S/S LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm209",
+      "normalized_cnpj": "56507239000107",
+      "normalized_name": "SILK MAC INDUSTRIA E COMERCIO DE MAQUINAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm21",
+      "normalized_cnpj": "28599828000127",
+      "normalized_name": "TECPRINTT COMERCIO E MANUTENCAO DE MAQUINAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm210",
+      "normalized_cnpj": "05773938000168",
+      "normalized_name": "Z1 INFORMATICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm211",
+      "normalized_cnpj": "04681311000114",
+      "normalized_name": "NOVA LIMP COMERCIO DE EMBALAGENS E DESCARTAVEIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm212",
+      "normalized_cnpj": "33647776000157",
+      "normalized_name": "FQS SERVICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm213",
+      "normalized_cnpj": "56993512000150",
+      "normalized_name": "CYKLOP DO BRASIL EMBALAGENS LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm214",
+      "normalized_cnpj": "35083892000116",
+      "normalized_name": "SOROPACK TRANSFORMACAO DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm215",
+      "normalized_cnpj": "01003471000116",
+      "normalized_name": "HELIFER INDUSTRIA E COMERCIO DE EQUIPAMENTOS HIDRAULICOS LTD",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm216",
+      "normalized_cnpj": "05431967000141",
+      "normalized_name": "CONTROLE ANALITICO ANALISES TECNICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm217",
+      "normalized_cnpj": "20502999000184",
+      "normalized_name": "PAPALEGUAS ETIQUETAS E PRODUTOS TEXTEIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm218",
+      "normalized_cnpj": "24587522000108",
+      "normalized_name": "LOJA PARAISO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "CONFLICT",
+      "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+    },
+    {
+      "legacy_id": "wm219",
+      "normalized_cnpj": "49610434860",
+      "normalized_name": "LUCCA DE CAMILLIS LESTINGI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm22",
+      "normalized_cnpj": "19964354000184",
+      "normalized_name": "MANA LIMP COMERCIO DE PRODUTOS DE LIMPEZA E DESCARTAVEIS LTD",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm220",
+      "normalized_cnpj": "41975374843",
+      "normalized_name": "GUSTAVO VIZIOLI CALLEGARO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm221",
+      "normalized_cnpj": "08235213893",
+      "normalized_name": "MARIO CALLEGARO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm222",
+      "normalized_cnpj": "24587269840",
+      "normalized_name": "ANA PAULA VIZIOLI CALLEGARO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm223",
+      "normalized_cnpj": "12707412000498",
+      "normalized_name": "EFRATEC AUTOMACAO E MANUTENCAO EM EQUIPAMENTOS ELETRONICOS L",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm224",
+      "normalized_cnpj": "10652438000299",
+      "normalized_name": "UNIPLAS INDUSTRIA E COMERCIO DE EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm225",
+      "normalized_cnpj": "03588398000117",
+      "normalized_name": "FILHOS DO REI VARIEDADES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm226",
+      "normalized_cnpj": "09158640000107",
+      "normalized_name": "SPX SERVICOS DE IMAGEM LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm228",
+      "normalized_cnpj": "55054313000114",
+      "normalized_name": "PORTO VAGAS E SOLUCOES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm229",
+      "normalized_cnpj": "07051641000114",
+      "normalized_name": "REAL COMERCIO DE MATERIAIS ELETRICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm23",
+      "normalized_cnpj": "04662542000180",
+      "normalized_name": "FITCOM ETIQUETAS E EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm230",
+      "normalized_cnpj": "04627291000284",
+      "normalized_name": "KATIA REGINA DE BRITO VIEIRA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm231",
+      "normalized_cnpj": "00394460014959",
+      "normalized_name": "MINISTERIO DA FAZENDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm232",
+      "normalized_cnpj": "20748165000153",
+      "normalized_name": "ATITUDE CONTABILIDADE E APOIO ADMINISTRATIVO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm233",
+      "normalized_cnpj": "04820866000108",
+      "normalized_name": "COLARES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm234",
+      "normalized_cnpj": "11325308000204",
+      "normalized_name": "IPQ PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm235",
+      "normalized_cnpj": "41630573000186",
+      "normalized_name": "INSTITUTO REVER",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm236",
+      "normalized_cnpj": "21314825000150",
+      "normalized_name": "SCALE YOU SERVICOS EMPRESARIAIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm237",
+      "normalized_cnpj": "46379400000150",
+      "normalized_name": "ESTADO DE SAO PAULO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm238",
+      "normalized_cnpj": "03007331000141",
+      "normalized_name": "EBAZAR.COM.BR. LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm239",
+      "normalized_cnpj": "60886413000147",
+      "normalized_name": "LIQUIGAS DISTRIBUIDORA S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm24",
+      "normalized_cnpj": "54651716001150",
+      "normalized_name": "SUPRICORP SUPRIMENTOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm240",
+      "normalized_cnpj": "07621912000120",
+      "normalized_name": "LION PACKING LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm241",
+      "normalized_cnpj": "00767554000119",
+      "normalized_name": "KURYOS BEAUTY PACKING INDUSTRIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm242",
+      "normalized_cnpj": "55426843000146",
+      "normalized_name": "MISS ROSE IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm243",
+      "normalized_cnpj": "05229112000132",
+      "normalized_name": "F.P.M. COMERCIO DE ETIQUETAS ADESIVAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm244",
+      "normalized_cnpj": "56998701001279",
+      "normalized_name": "ABBOTT LABORATORIOS DO BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm245",
+      "normalized_cnpj": "46722681000100",
+      "normalized_name": "LAGO CORP SEGURANCA E SERVICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm246",
+      "normalized_cnpj": "58723256000107",
+      "normalized_name": "JCP DISTRIBUIDORA DE PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm247",
+      "normalized_cnpj": "",
+      "normalized_name": "JOSE CARLOS DA SILVA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm248",
+      "normalized_cnpj": "51462471000152",
+      "normalized_name": "LABSYNTH PRODUTOS PARA LABORATORIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm249",
+      "normalized_cnpj": "00136948000179",
+      "normalized_name": "APCOM ESSENCIAS E PRODUTOS PARA COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm25",
+      "normalized_cnpj": "62947908000164",
+      "normalized_name": "QUIESPER COMERCIO E DISTRIBUICAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm250",
+      "normalized_cnpj": "58309709000820",
+      "normalized_name": "CHEMYUNION LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm251",
+      "normalized_cnpj": "26002928000107",
+      "normalized_name": "VMB BOX LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm252",
+      "normalized_cnpj": "18164034000187",
+      "normalized_name": "UTIVIDROS COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm253",
+      "normalized_cnpj": "11791551000137",
+      "normalized_name": "TUBEPACK INDUSTRIA E COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm254",
+      "normalized_cnpj": "47611432000100",
+      "normalized_name": "MAPACK COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm255",
+      "normalized_cnpj": "91389460000451",
+      "normalized_name": "EMBACAPS QUIMICA E FARMACEUTICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm256",
+      "normalized_cnpj": "64170582000137",
+      "normalized_name": "RINEN - INDUSTRIA E COMERCIO DE PRODUTOS QUIMICOS LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm257",
+      "normalized_cnpj": "29873894000106",
+      "normalized_name": "TAVARES CHEMICAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm258",
+      "normalized_cnpj": "62514971000107",
+      "normalized_name": "SCENTEC ESSENCIAS E FRAGRANCIAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm259",
+      "normalized_cnpj": "02914525000168",
+      "normalized_name": "RETRAPLAST COMERCIO DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm26",
+      "normalized_cnpj": "54470604000120",
+      "normalized_name": "GREENTECH BRASIL PRODUTOS FARMACOCOSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm260",
+      "normalized_cnpj": "28913819000169",
+      "normalized_name": "EKOGRAF PUBLICIDADE EIRELI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm261",
+      "normalized_cnpj": "07808640000171",
+      "normalized_name": "RICARO IMPORTACAO INDUSTRIA E COMERCIO DE EMBALAGENS E INSUM",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm262",
+      "normalized_cnpj": "14050364000271",
+      "normalized_name": "TECFAG COMERCIO E IMPORTACAO DE MAQUINAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm263",
+      "normalized_cnpj": "42558791000110",
+      "normalized_name": "ASSESSA INDUSTRIA COMERCIO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm264",
+      "normalized_cnpj": "38799478000104",
+      "normalized_name": "ONE ATIVOS COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm265",
+      "normalized_cnpj": "62934294000186",
+      "normalized_name": "ZEVIPLAST IND. E COM. DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm266",
+      "normalized_cnpj": "00969530000142",
+      "normalized_name": "YVA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm267",
+      "normalized_cnpj": "16804691000116",
+      "normalized_name": "CRC FILMES FLEXIVEIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm268",
+      "normalized_cnpj": "24322159000190",
+      "normalized_name": "INOVA PRINT ETIQUETAS E ROTULOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm269",
+      "normalized_cnpj": "56260748000188",
+      "normalized_name": "GRIF ROTULOS E ETIQUETAS ADESIVAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm27",
+      "normalized_cnpj": "93763555000176",
+      "normalized_name": "ALPHA QUIMICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm270",
+      "normalized_cnpj": "02347915000101",
+      "normalized_name": "MILAN COMERCIO E ACABAMENTOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm271",
+      "normalized_cnpj": "18858535000163",
+      "normalized_name": "HS INKLASER LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm272",
+      "normalized_cnpj": "14221871000140",
+      "normalized_name": "MA DECOR INDUSTRIA E COMERCIO DE VIDROS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm273",
+      "normalized_cnpj": "21155993000140",
+      "normalized_name": "BIOTECHS IMPORTACAO, EXPORTACAO E DISTRIBUICAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm274",
+      "normalized_cnpj": "55689556000129",
+      "normalized_name": "VCF BEAUTY COSMETICS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm275",
+      "normalized_cnpj": "52555578000108",
+      "normalized_name": "JOAMAR COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm276",
+      "normalized_cnpj": "00997332000192",
+      "normalized_name": "FAV105 - FRAGRANCES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm277",
+      "normalized_cnpj": "03858468000100",
+      "normalized_name": "SSRR INDUSTRIAL E COMERCIAL DE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "CONFLICT",
+      "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+    },
+    {
+      "legacy_id": "wm278",
+      "normalized_cnpj": "29320261000170",
+      "normalized_name": "MADRI LABEL ROTULOS ADESIVOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm279",
+      "normalized_cnpj": "28250499000104",
+      "normalized_name": "MANBO COM - COMERCIO DE MATERIAIS E SERVICOS - EIRELI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm28",
+      "normalized_cnpj": "60874724000943",
+      "normalized_name": "INDUSTRIA QUIMICA ANASTACIO S A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm280",
+      "normalized_cnpj": "11328157000167",
+      "normalized_name": "MICRO LIVRE SOLUCOES EM INFORMATICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm281",
+      "normalized_cnpj": "41092364000126",
+      "normalized_name": "FUSIONTEC SOLUCOES TECNOLOGICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm282",
+      "normalized_cnpj": "18236120000158",
+      "normalized_name": "NU PAGAMENTOS S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm283",
+      "normalized_cnpj": "07698596000194",
+      "normalized_name": "WEBMAIS SISTEMAS LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm284",
+      "normalized_cnpj": "33565187000120",
+      "normalized_name": "HACKEANDO PROCESSOS E CURSOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm285",
+      "normalized_cnpj": "61991956000197",
+      "normalized_name": "IMOBILIARIA NOVOLAR LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm286",
+      "normalized_cnpj": "61573796000166",
+      "normalized_name": "ALLIANZ SEGUROS S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm287",
+      "normalized_cnpj": "00360305000104",
+      "normalized_name": "CAIXA ECONOMICA FEDERAL",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm288",
+      "normalized_cnpj": "03563689000150",
+      "normalized_name": "DECOLAR. COM LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm289",
+      "normalized_cnpj": "18277493000177",
+      "normalized_name": "LOGGI TECNOLOGIA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm29",
+      "normalized_cnpj": "49698723000103",
+      "normalized_name": "M CASSAB COMERCIO E INDUSTRIA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm290",
+      "normalized_cnpj": "15436940000103",
+      "normalized_name": "AMAZON SERVICOS DE VAREJO DO BRASIL LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm291",
+      "normalized_cnpj": "33189165000102",
+      "normalized_name": "NEW GRU AUTORIZADO PPA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm292",
+      "normalized_cnpj": "03753088000100",
+      "normalized_name": "CATHO ONLINE LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm293",
+      "normalized_cnpj": "47674429000128",
+      "normalized_name": "ANDRA S/A ELECTRIC SOLUTIONS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm294",
+      "normalized_cnpj": "05079078000167",
+      "normalized_name": "NOVA ITAQUERA COMERCIO DE BORRACHAS LTDA - ME",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm295",
+      "normalized_cnpj": "34094860000153",
+      "normalized_name": "KT EPI DISTRIBUIDORA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm296",
+      "normalized_cnpj": "17895646000187",
+      "normalized_name": "UBER DO BRASIL TECNOLOGIA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm297",
+      "normalized_cnpj": "36906018000102",
+      "normalized_name": "YURI DELPHIS DA SILVA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm298",
+      "normalized_cnpj": "10461302000200",
+      "normalized_name": "SOLIDES TECNOLOGIA S/A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm299",
+      "normalized_cnpj": "24889612000145",
+      "normalized_name": "TRANSBELT COMERCIO IMPORTACAO E EXPORTACAO DE CORREIAS INDUS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm3",
+      "normalized_cnpj": "25421152000199",
+      "normalized_name": "IMAGEPACK INDUSTRIA DE EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm30",
+      "normalized_cnpj": "01876559000142",
+      "normalized_name": "SARFAM INDUSTRIA COMERCIO E IMPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm300",
+      "normalized_cnpj": "03112386000111",
+      "normalized_name": "AGENCIA NACIONAL DE VIGILANCIA SANITARIA - ANVISA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm301",
+      "normalized_cnpj": "47973603000133",
+      "normalized_name": "TMS SERVICE LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm302",
+      "normalized_cnpj": "03715399000185",
+      "normalized_name": "PREVINE ASSISTENCIA MEDICA E SAUDE OCUPACIONAL",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm303",
+      "normalized_cnpj": "30300869000112",
+      "normalized_name": "AGUAVITAL MAIS LTDA - ME",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm304",
+      "normalized_cnpj": "21887791000193",
+      "normalized_name": "ERA & NAGOSHI SOCIEDADE DE ADVOGADOS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm305",
+      "normalized_cnpj": "36437409000117",
+      "normalized_name": "ENGENHARIA DAS ESSENCIAS COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm306",
+      "normalized_cnpj": "32031707000151",
+      "normalized_name": "CERTSIM CERTIFICACAO DIGITAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm307",
+      "normalized_cnpj": "90400888000142",
+      "normalized_name": "BANCO SANTANDER (BRASIL) S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm308",
+      "normalized_cnpj": "45239701000116",
+      "normalized_name": "SALVY LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm309",
+      "normalized_cnpj": "08644416000154",
+      "normalized_name": "ARGILAS DO BRASIL COMERCIO DE INSUMOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm31",
+      "normalized_cnpj": "08168879000197",
+      "normalized_name": "AMIK DO BRASIL PRODUTOS QUIMICOS PARA INDUSTRIA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm310",
+      "normalized_cnpj": "53037016000135",
+      "normalized_name": "COMERCIO DE OLEOS E ESSENCIAS SILEIRA MARTINS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm311",
+      "normalized_cnpj": "76487032000125",
+      "normalized_name": "ELECTROLUX DO BRASIL S/A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm312",
+      "normalized_cnpj": "57981711000101",
+      "normalized_name": "MARKETPLACE SHOPEE LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm313",
+      "normalized_cnpj": "35615943000103",
+      "normalized_name": "M. M. COMERCIO E LOCACAO DE PORTA PALLETS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm314",
+      "normalized_cnpj": "59534812000160",
+      "normalized_name": "ALPHA LABEL ROTULOS E ETIQUETAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm315",
+      "normalized_cnpj": "11082046000113",
+      "normalized_name": "TMS MANUTENCAO E AUTOMACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm316",
+      "normalized_cnpj": "12813212000177",
+      "normalized_name": "RNX FUNDO DE INVESTIMENTO EM DIREITOS CREDITORIOS MULTISSETO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm317",
+      "normalized_cnpj": "03282817000198",
+      "normalized_name": "METROTEC COMERCIO E ASSESSORIA TECNICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm318",
+      "normalized_cnpj": "53860659000184",
+      "normalized_name": "GRUPLAST ARTIGOS PLASTICOS PARA ARMAZENAGEM LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm319",
+      "normalized_cnpj": "20277727000128",
+      "normalized_name": "OUTLINE SOLUCOES GRAFICAS E DIGITAIS DIGITAIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm32",
+      "normalized_cnpj": "33424730000179",
+      "normalized_name": "DINACO IMPORTACAO, COMERCIO LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm320",
+      "normalized_cnpj": "51948699000157",
+      "normalized_name": "MEGRAFICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm321",
+      "normalized_cnpj": "06258533000154",
+      "normalized_name": "BAUMANN INDUSTRIA E COMERCIO DE MAQUINAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm322",
+      "normalized_cnpj": "46156405000114",
+      "normalized_name": "HABIBI PERFUMES COMERCIO DE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm323",
+      "normalized_cnpj": "48539407009255",
+      "normalized_name": "BASF S.A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm324",
+      "normalized_cnpj": "18653871000170",
+      "normalized_name": "CALIYAH IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm325",
+      "normalized_cnpj": "52113636000143",
+      "normalized_name": "I.R INDUSTRIA E COMERCIO DE GRAVACOES TECNICAS DE BRINDES E",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm326",
+      "normalized_cnpj": "10693887000447",
+      "normalized_name": "FOCUS TECNOLOGIA COMERCIAL QUIMICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm327",
+      "normalized_cnpj": "26353320000119",
+      "normalized_name": "MARCO ANTONIO NOCELLI",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm328",
+      "normalized_cnpj": "27672980000125",
+      "normalized_name": "ROFLASK ROTULAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm329",
+      "normalized_cnpj": "21614366000120",
+      "normalized_name": "JRSP INDUSTRIAL, COMERCIAL, IMPORTACAO, EXPORTACAO DE COSMET",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm33",
+      "normalized_cnpj": "55469126000797",
+      "normalized_name": "EXPAK EXPORTADORA E IMPORTADORA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm330",
+      "normalized_cnpj": "59258863000106",
+      "normalized_name": "EBPM COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm331",
+      "normalized_cnpj": "11660106000138",
+      "normalized_name": "VERISURE BRASIL MONITORAMENTO DE ALARMES S.A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm332",
+      "normalized_cnpj": "46291012000113",
+      "normalized_name": "SOIE COMERCIO DE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm333",
+      "normalized_cnpj": "53559275000126",
+      "normalized_name": "HASS INDUSTRIA ALIMENTICIA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm334",
+      "normalized_cnpj": "52869819000193",
+      "normalized_name": "PREMIER FILTROS E SERVICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm335",
+      "normalized_cnpj": "53689607000197",
+      "normalized_name": "KAZEN CHEMICAL DISTRIBUIDORA DE PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm336",
+      "normalized_cnpj": "34830124000116",
+      "normalized_name": "MEGA BANK SECURITIZADORA DE ATIVOS EMPRESARIAIS S.A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm337",
+      "normalized_cnpj": "28194046000108",
+      "normalized_name": "SEVEN SOLUCOES AMBIENTAIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm338",
+      "normalized_cnpj": "42792898000128",
+      "normalized_name": "MOLDPLASTIC INDUSTRIA DE VACUUM FORMING LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm339",
+      "normalized_cnpj": "04897944000164",
+      "normalized_name": "REGISTRACOM WEBVISAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm34",
+      "normalized_cnpj": "05243830000163",
+      "normalized_name": "ALCHOIS COMERCIO DE PRODUTOS QUIMICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm340",
+      "normalized_cnpj": "32223020000118",
+      "normalized_name": "FLASH TECNOLOGIA E INSTITUICAO DE PAGAMENTO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm341",
+      "normalized_cnpj": "42256085000113",
+      "normalized_name": "WIKE MAKE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm342",
+      "normalized_cnpj": "07867951000101",
+      "normalized_name": "CROMAFLEX INDUSTRIA GRAFICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm343",
+      "normalized_cnpj": "30830703000108",
+      "normalized_name": "FEITEIRA E FARRAGONI FERRAMENTARIA E INDUSTRIA DE PLASTICO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm344",
+      "normalized_cnpj": "54189939000175",
+      "normalized_name": "FORTUNE COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm345",
+      "normalized_cnpj": "58520439000125",
+      "normalized_name": "FRACAO QUIMICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm346",
+      "normalized_cnpj": "60881299001215",
+      "normalized_name": "CNA S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm347",
+      "normalized_cnpj": "51883086000189",
+      "normalized_name": "DOM SOPRO EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm348",
+      "normalized_cnpj": "07621912000472",
+      "normalized_name": "LION PACKING LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm349",
+      "normalized_cnpj": "55863039000124",
+      "normalized_name": "JJ MARTINS COMERCIO DE CHAVES E ACESSORIOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm35",
+      "normalized_cnpj": "49258304000142",
+      "normalized_name": "TSUBAKI EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm350",
+      "normalized_cnpj": "05414466000157",
+      "normalized_name": "D.F.J. AUTOMACAO COMERCIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm351",
+      "normalized_cnpj": "33424730000683",
+      "normalized_name": "DINACO IMPORTACAO COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm352",
+      "normalized_cnpj": "00330845000498",
+      "normalized_name": "SERV BRASILEIRO DE APOIO AS MICRO E PEQUENAS EMPRESAS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm353",
+      "normalized_cnpj": "44861706000113",
+      "normalized_name": "VIDROS PARA AUTOS JACARE LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm354",
+      "normalized_cnpj": "60403434000164",
+      "normalized_name": "B.T.I. BRASIL INTERMEDIACAO E NEGOCIOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm355",
+      "normalized_cnpj": "40006458000172",
+      "normalized_name": "FEEDSTOCK BRASIL IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm356",
+      "normalized_cnpj": "20665846000158",
+      "normalized_name": "INDFILTROS FILTROS INDUSTRIAIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm357",
+      "normalized_cnpj": "26835091000179",
+      "normalized_name": "FGL ADMINISTRACAO DE SERVICOS E COMERCIO DE MONITORAMENTO LT",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm358",
+      "normalized_cnpj": "12826733000169",
+      "normalized_name": "SPECIAL DECOR ART EM VIDROS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm359",
+      "normalized_cnpj": "58141225000148",
+      "normalized_name": "BEAUTYPACK EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm36",
+      "normalized_cnpj": "61154480000563",
+      "normalized_name": "ALCOOL FERREIRA S A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm360",
+      "normalized_cnpj": "61289152000140",
+      "normalized_name": "AFEER OF ARABIAN LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm361",
+      "normalized_cnpj": "50264355000166",
+      "normalized_name": "COPPOLA PACK LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm362",
+      "normalized_cnpj": "17910635000129",
+      "normalized_name": "AVENCA INDUSTRIA COSMETICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm363",
+      "normalized_cnpj": "55239107000189",
+      "normalized_name": "UNIGRAFICA INDUSTRIA GRAFICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm364",
+      "normalized_cnpj": "64125681000105",
+      "normalized_name": "SEUNOURA BEAUTY LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm365",
+      "normalized_cnpj": "60160546000131",
+      "normalized_name": "DIGICROM ANALITICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm366",
+      "normalized_cnpj": "40652492000114",
+      "normalized_name": "CALIX SOLUCOES DE INFORMATICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm367",
+      "normalized_cnpj": "05159733000197",
+      "normalized_name": "TREND PACK DISTRIBUICAO E REPRESENTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm368",
+      "normalized_cnpj": "07574875000146",
+      "normalized_name": "AZ EMBALAGENS DE PAPELAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm369",
+      "normalized_cnpj": "25247287000341",
+      "normalized_name": "B. B. A. INDUSTRIA E COMERCIO IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm370",
+      "normalized_cnpj": "27774583000326",
+      "normalized_name": "LEADPAK SOLUCOES DE FORNECIMENTO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm371",
+      "normalized_cnpj": "14111367000197",
+      "normalized_name": "SQ QUIMICA IMP. E DIST. DE PROD. QUIMICOS LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm372",
+      "normalized_cnpj": "45661011000150",
+      "normalized_name": "CAPITALBANK S/A - CREDITO E SOLUCOES FINANCEIRAS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm373",
+      "normalized_cnpj": "14092426000127",
+      "normalized_name": "SENES FRAGRANCIAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm374",
+      "normalized_cnpj": "22980155000174",
+      "normalized_name": "TRANSPRESS TRANSPORTE EXPRESSO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm376",
+      "normalized_cnpj": "25247287000180",
+      "normalized_name": "B. B. A. INDUSTRIA E COMERCIO IMPORTACAO E EXPORTACAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm378",
+      "normalized_cnpj": "59313437000128",
+      "normalized_name": "GOTESP EQUIPAMENTOS PARA EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm38",
+      "normalized_cnpj": "34626919000107",
+      "normalized_name": "CASA DO CHARM SAUDE E BELEZA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm39",
+      "normalized_cnpj": "24413865000490",
+      "normalized_name": "BARUERI ATACADISTA DE MATERIAL DE CONSTRUCAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm4",
+      "normalized_cnpj": "10888455000149",
+      "normalized_name": "MARINGA PACK INDUSTRIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm40",
+      "normalized_cnpj": "11743867000153",
+      "normalized_name": "LABEL INDUSTRIA DE ETIQUETAS, ROTULOS ADESIVOS E EDITORA GRA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm41",
+      "normalized_cnpj": "02443366000160",
+      "normalized_name": "ART'S ESSENCIAS INDUSTRIA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm42",
+      "normalized_cnpj": "18335962000167",
+      "normalized_name": "AROMA CHA BRASIL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm43",
+      "normalized_cnpj": "17848832000165",
+      "normalized_name": "FULLPLAS EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm44",
+      "normalized_cnpj": "12622248000173",
+      "normalized_name": "VERSATIL CLEAN COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm45",
+      "normalized_cnpj": "48589626000101",
+      "normalized_name": "EMBLEMA EMBALAGENS ESPECIAIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm46",
+      "normalized_cnpj": "61997755000105",
+      "normalized_name": "VALLILO GRAFICA E EDITORA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm47",
+      "normalized_cnpj": "13425155000111",
+      "normalized_name": "AMERICAN PRINT ARTES GRAFICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm48",
+      "normalized_cnpj": "03707183000178",
+      "normalized_name": "FLORA BIOTEC INDUSTRIAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm49",
+      "normalized_cnpj": "00196533000514",
+      "normalized_name": "MATRIZ COMERCIO DE ESSENCIAS E EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm5",
+      "normalized_cnpj": "61269320000136",
+      "normalized_name": "ALCOOL SANTA CRUZ LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm50",
+      "normalized_cnpj": "12195059000161",
+      "normalized_name": "PETROSOL COMERCIO DE TAMBORES BOMBONAS E CONTAINERS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm51",
+      "normalized_cnpj": "03328617000129",
+      "normalized_name": "CESTA SILCO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm52",
+      "normalized_cnpj": "63064968000100",
+      "normalized_name": "NAWT'S LIFE INDUSTRIA E COMERCIO DE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm53",
+      "normalized_cnpj": "45923919000195",
+      "normalized_name": "SALUTE INDUSTRIA DE PAPELAO ONDULADO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm54",
+      "normalized_cnpj": "00268097000118",
+      "normalized_name": "ADVANCE SOFT SERVICO DE INFORMATICA E COMERCIO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm55",
+      "normalized_cnpj": "61695227000193",
+      "normalized_name": "ELETROPAULO METROPOLITANA ELETRICIDADE DE SAO PAULO S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm56",
+      "normalized_cnpj": "26444529000198",
+      "normalized_name": "MAXNIVEL TECNOLOGIA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm57",
+      "normalized_cnpj": "04891850000188",
+      "normalized_name": "CONFEDERACAO NACIONAL DAS COOPERATIVAS DO SICOOB LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm58",
+      "normalized_cnpj": "00108786000165",
+      "normalized_name": "NET SERVICOS DE COMUNICACAO S/A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm59",
+      "normalized_cnpj": "43776517000180",
+      "normalized_name": "COMPANHIA DE SANEAMENTO BASICO DO ESTADO DE SAO PAULO - SABE",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm6",
+      "normalized_cnpj": "00196533000433",
+      "normalized_name": "MATRIZ COMERCIO DE ESSENCIAS E EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm60",
+      "normalized_cnpj": "66970229000167",
+      "normalized_name": "CLARO NXT TELECOMUNICACOES S/A",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm61",
+      "normalized_cnpj": "21085169000161",
+      "normalized_name": "FIGUEIRA E FELICIANO INDUSTRIA DE COSMETICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm62",
+      "normalized_cnpj": "12616888000170",
+      "normalized_name": "LG CASTRO INDUSTRIA DE MOVEIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm63",
+      "normalized_cnpj": "51557353000128",
+      "normalized_name": "TUDELA IND E COM DE MAQUINAS E FERRAMENTAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm64",
+      "normalized_cnpj": "02558157000162",
+      "normalized_name": "TELEFONICA BRASIL S.A.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm65",
+      "normalized_cnpj": "10290169000187",
+      "normalized_name": "L. G. FLEX INDUSTRIA DE COMPONENTES PARA MOVEIS LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm66",
+      "normalized_cnpj": "00007154000105",
+      "normalized_name": "FERRAGENS CARMOSINA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm67",
+      "normalized_cnpj": "09545818000164",
+      "normalized_name": "ERIVALDO CESARIO DA PAIXAO SUCATAS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm68",
+      "normalized_cnpj": "17624286000189",
+      "normalized_name": "MPG EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm69",
+      "normalized_cnpj": "57644825000166",
+      "normalized_name": "PARPULOV ELETROELETRONICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm7",
+      "normalized_cnpj": "28681136000123",
+      "normalized_name": "SINGULAR LABEL ARTES GRAFICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm70",
+      "normalized_cnpj": "34028316000103",
+      "normalized_name": "EMPRESA BRASILEIRA DE CORREIOS E TELEGRAFOS",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm71",
+      "normalized_cnpj": "06070344000153",
+      "normalized_name": "IRMAOS CARDOSO DEDETIZADORA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm72",
+      "normalized_cnpj": "09579592000112",
+      "normalized_name": "D. A. BRASIL COMERCIO DE ALCOOL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm73",
+      "normalized_cnpj": "19870412000100",
+      "normalized_name": "SANTICERRI ASSESSORIA A MEDICINA DO TRABALHO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm74",
+      "normalized_cnpj": "64626179000170",
+      "normalized_name": "CASA DO LOJISTA ATACADISTA DE MATERIAIS PARA CONSTRUCAO LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm75",
+      "normalized_cnpj": "06275679000108",
+      "normalized_name": "L. M. COMERCIO DE INSUMOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm76",
+      "normalized_cnpj": "96563531000161",
+      "normalized_name": "TERAMOVEIS SERVICOS E COMERCIALIZACAO DE MOVEIS E EQUIPAMENT",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm77",
+      "normalized_cnpj": "14074056000103",
+      "normalized_name": "COMERCIO DE MATERIAIS DE CONSTRUCAO SAN JORGE- LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm78",
+      "normalized_cnpj": "03900000000136",
+      "normalized_name": "RANTYSET GRAFICA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm79",
+      "normalized_cnpj": "38890331000117",
+      "normalized_name": "DIFUSAO MARCAS E PATENTES LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm8",
+      "normalized_cnpj": "05401653000104",
+      "normalized_name": "COSMOCIENCIA ESPECIALIDADES QUIMICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm80",
+      "normalized_cnpj": "01685053000156",
+      "normalized_name": "SUL AMERICA COMPANHIA DE SEGURO SAUDE",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm81",
+      "normalized_cnpj": "07232703000194",
+      "normalized_name": "FIBRASIL LOGISTICA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm82",
+      "normalized_cnpj": "53237962000125",
+      "normalized_name": "EMPRESA DE TRANSPORTES PAJUCARA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm83",
+      "normalized_cnpj": "29044631000194",
+      "normalized_name": "LAC-LAB - LABORATORIO DE AVALIACAO DA CONFORMIDADE PARA PROD",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm84",
+      "normalized_cnpj": "04132851000149",
+      "normalized_name": "INJ-TAMP INDUSTRIA E COMERCIO DE PLASTICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm85",
+      "normalized_cnpj": "32560925000183",
+      "normalized_name": "RCBOX COMERCIO DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm86",
+      "normalized_cnpj": "04025339000101",
+      "normalized_name": "FEMAPACK INDUSTRIA DE EMBALAGENS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm87",
+      "normalized_cnpj": "46133978000122",
+      "normalized_name": "WP DIGITAL LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm88",
+      "normalized_cnpj": "51421302000174",
+      "normalized_name": "EMPRESA BRASILEIRA DE AUTOMACAO E CONTROLE LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm89",
+      "normalized_cnpj": "26634186000124",
+      "normalized_name": "INNPACK SOLUCOES PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm9",
+      "normalized_cnpj": "62890199000128",
+      "normalized_name": "ADAMANTIUM DESTILARIA LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm90",
+      "normalized_cnpj": "57953841000130",
+      "normalized_name": "P W T COMERCIO E MANUTENCAO DE EQUIPAMENTOS HIDRAULICOS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm91",
+      "normalized_cnpj": "05669277000125",
+      "normalized_name": "CORREIA E SOARES COMERCIO DE SACARIAS E CAIXAS DE PAPELAO LT",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm92",
+      "normalized_cnpj": "42626281000132",
+      "normalized_name": "FLASH ETIQUETAS E PRODUTOS TEXTEIS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm93",
+      "normalized_cnpj": "30863575000107",
+      "normalized_name": "NATURALIS NUTRICAO & FARMA LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm94",
+      "normalized_cnpj": "62624580000145",
+      "normalized_name": "CONSELHO REGIONAL DE QUIMICA IV REGIAO",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm95",
+      "normalized_cnpj": "08575171000150",
+      "normalized_name": "FELIPE CRUZ FERREIRA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm96",
+      "normalized_cnpj": "45725009000521",
+      "normalized_name": "IMCD BRASIL COMERCIO E INDUSTRIA DE PRODUTOS QUIMICOS LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm97",
+      "normalized_cnpj": "02752024000122",
+      "normalized_name": "LABORATORIOS ECOLYZER LTDA.",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm98",
+      "normalized_cnpj": "07393262000102",
+      "normalized_name": "GRIPLASTIC INDUSTRIA E COMERCIO DE EMBALAGENS PLASTICAS LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    },
+    {
+      "legacy_id": "wm99",
+      "normalized_cnpj": "08829865000258",
+      "normalized_name": "TECNOPAR TECNOLOGIA EM AUTOMACOES LTDA",
+      "current_supplier_id": null,
+      "name_suggestion_target_ids": [],
+      "classification": "INSERT_CANDIDATE",
+      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+    }
+  ]
+}

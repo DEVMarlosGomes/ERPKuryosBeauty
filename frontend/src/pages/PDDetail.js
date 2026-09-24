@@ -521,13 +521,8 @@ export default function PDDetail() {
     try {
       const response = await api.put(`/pd/requests/${id}/status`, { new_status: newStatus, is_backward: isBackward, comment: comment || undefined });
       toast.success(isBackward ? "Etapa retrocedida!" : "Status atualizado!");
-      const skuCreated = response?.data?.sku_created;
-      if (newStatus === "APPROVED" && skuCreated) {
-        if (skuCreated.blocked) {
-          toast.warning(skuCreated.reason || "SKU não pôde ser gerado.");
-        } else if (skuCreated.codigo_interno) {
-          toast.success(`SKU gerado: ${skuCreated.codigo_interno}`);
-        }
+      if (newStatus === "APPROVED") {
+        toast.info("Amostra aprovada. O SKU continuará aguardando a assinatura do CGI.");
       }
       const kickoffInfo = response?.data?.kickoff_criado;
       if (newStatus === "APPROVED" && kickoffInfo) {

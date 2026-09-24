@@ -1,6 +1,11 @@
 from datetime import datetime, timezone
+import asyncio
+from types import SimpleNamespace
 
-from pcp_routes import _build_schedule_cascade, _live_slot_prediction
+import pytest
+
+import pcp_routes
+from pcp_routes import _apply_schedule_cascade, _build_schedule_cascade, _live_slot_prediction
 
 
 def _slot(slot_id, start_date, start_time, end_date, end_time, **extra):
@@ -99,3 +104,35 @@ def test_repeated_refresh_keeps_total_deviation_without_shifting_twice():
     assert prediction["deviation_minutes"] == 180
     assert prediction["cascade_delta_minutes"] == 0
     assert moves == []
+
+
+def test_schedule_cascade_restores_every_slot_when_standalone_write_fails():
+    class FailingCollection:
+        def __init__(self):
+            self.docs = {
+                "s1": {"id": "s1", "tenant_id": "t1", "hora_inicio": "08:00"},
+                "s2": {"id": "s2", "tenant_id": "t1", "hora_inicio": "10:00"},
+            }
+            self.calls = 0
+
+        async def update_one(self, query, update, **_kwargs):
+            self.calls += 1
+            if self.calls == 2:
+                raise RuntimeError("falha injetada na cascata")
+            self.docs[query["id"]].update(update["$set"])
+
+        async def replace_one(self, query, replacement, upsert=False):
+            self.docs[query["id"]] = dict(replacement)
+
+    collection = FailingCollection()
+    pcp_routes.db = SimpleNamespace(pcp_programacao=collection)
+    changes = [
+        {"snapshot": dict(collection.docs["s1"]), "updates": {"hora_inicio": "09:00"}},
+        {"snapshot": dict(collection.docs["s2"]), "updates": {"hora_inicio": "11:00"}},
+    ]
+
+    with pytest.raises(RuntimeError):
+        asyncio.run(_apply_schedule_cascade("t1", changes))
+
+    assert collection.docs["s1"]["hora_inicio"] == "08:00"
+    assert collection.docs["s2"]["hora_inicio"] == "10:00"

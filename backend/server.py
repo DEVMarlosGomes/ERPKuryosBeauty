@@ -20,6 +20,7 @@ from bson import ObjectId
 from pymongo.errors import DuplicateKeyError, OperationFailure
 import os
 import logging
+import secrets
 import uuid
 import bcrypt
 import jwt
@@ -48,7 +49,13 @@ from retrabalho_routes import retrabalho_router, init_retrabalho, create_retraba
 from expedicao_routes import expedicao_router, init_expedicao
 from faturamento_routes import faturamento_router, init_faturamento
 from pcp_routes import pcp_router, init_pcp
-from orders_routes import orders_router, ops_router, init_orders
+from orders_routes import (
+    orders_router,
+    ops_router,
+    init_orders,
+    PCP_MATERIAL_PICKING_FLAG,
+    PCP_QUANTITY_PLANNING_FLAG,
+)
 from kickoff_routes import kickoff_router, init_kickoff
 from compras_routes import compras_router, init_compras, create_compras_indexes
 from contratos_routes import contratos_router, init_contratos
@@ -64,6 +71,8 @@ from rh_routes import rh_router, init_rh
 from workflow_engine import init_workflow, run_workflow_notification_scheduler
 from workflow_routes import workflow_router, init_workflow_routes
 from rbac import (
+    ROLES,
+    LEGACY_ALIASES,
     require_roles,
     has_role,
     COMERCIAL_FULL,
@@ -80,13 +89,19 @@ COMMERCIAL_PIPELINE_READ_ROLES = COMMERCIAL_PIPELINE_ROLES
 
 # ============ SETUP ============
 missing_env_defaults = []
+_ENVIRONMENT = os.environ.get("ENVIRONMENT", "development").strip().lower()
+_IS_PRODUCTION = bool(os.environ.get("RENDER") or _ENVIRONMENT == "production")
 
 mongo_url = os.environ.get("MONGO_URL", "mongodb://127.0.0.1:27017")
 if "MONGO_URL" not in os.environ:
+    if _IS_PRODUCTION:
+        raise RuntimeError("MONGO_URL obrigatoria em producao; Mongo local padrao foi bloqueado.")
     missing_env_defaults.append("MONGO_URL")
 
 db_name = os.environ.get("DB_NAME", "kuryos_crm")
 if "DB_NAME" not in os.environ:
+    if _IS_PRODUCTION:
+        raise RuntimeError("DB_NAME obrigatoria em producao.")
     missing_env_defaults.append("DB_NAME")
 
 client = AsyncIOMotorClient(mongo_url)
@@ -104,9 +119,14 @@ async def force_utf8_json_responses(request: Request, call_next):
         response.headers["content-type"] = "application/json; charset=utf-8"
     return response
 
-JWT_SECRET = os.environ.get("JWT_SECRET", "dev-only-change-me")
-if "JWT_SECRET" not in os.environ:
+JWT_SECRET = os.environ.get("JWT_SECRET", "").strip()
+if not JWT_SECRET:
+    if _IS_PRODUCTION:
+        raise RuntimeError("JWT_SECRET obrigatoria em producao.")
+    JWT_SECRET = secrets.token_urlsafe(48)
     missing_env_defaults.append("JWT_SECRET")
+elif len(JWT_SECRET) < 32 or JWT_SECRET in {"dev-only-change-me", "change-me", "secret"}:
+    raise RuntimeError("JWT_SECRET insegura: use um segredo aleatorio com pelo menos 32 caracteres.")
 JWT_ALGORITHM = "HS256"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -132,6 +152,47 @@ def new_id():
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
+
+
+DEFAULT_OPERATIONAL_FEATURES = {
+    PCP_MATERIAL_PICKING_FLAG: True,
+    PCP_QUANTITY_PLANNING_FLAG: True,
+}
+
+
+async def ensure_tenant_operational_feature_defaults(tenant_id: str) -> dict:
+    """Enable stable PCP features when absent, preserving explicit tenant choices."""
+    existing = await db.tenant_settings.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    timestamp = now_iso()
+    if existing is None:
+        document = {
+            "tenant_id": tenant_id,
+            "features": dict(DEFAULT_OPERATIONAL_FEATURES),
+            "created_at": timestamp,
+            "updated_at": timestamp,
+        }
+        await db.tenant_settings.insert_one(document)
+        return document
+
+    features = existing.get("features") or {}
+    missing = {
+        f"features.{flag}": enabled
+        for flag, enabled in DEFAULT_OPERATIONAL_FEATURES.items()
+        if flag not in features
+    }
+    if missing:
+        missing["updated_at"] = timestamp
+        await db.tenant_settings.update_one(
+            {"tenant_id": tenant_id},
+            {"$set": missing},
+        )
+        features = {**features, **{
+            flag: enabled
+            for flag, enabled in DEFAULT_OPERATIONAL_FEATURES.items()
+            if flag not in features
+        }}
+        existing = {**existing, "features": features, "updated_at": timestamp}
+    return existing
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -163,7 +224,7 @@ async def get_current_user(request: Request) -> dict:
         if payload.get("type") != "access":
             raise HTTPException(status_code=401, detail="Invalid token type")
         user = await db.users.find_one({"id": payload["sub"]})
-        if not user:
+        if not user or user.get("is_deleted") or user.get("active") is False:
             raise HTTPException(status_code=401, detail="User not found")
         return {k: v for k, v in user.items() if k not in ("_id", "password_hash")}
     except jwt.ExpiredSignatureError:
@@ -171,7 +232,6 @@ async def get_current_user(request: Request) -> dict:
     except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-_IS_PRODUCTION = bool(os.environ.get("RENDER") or os.environ.get("ENVIRONMENT") == "production")
 _COOKIE_SECURE = _IS_PRODUCTION
 _COOKIE_SAMESITE = "none" if _IS_PRODUCTION else "lax"
 
@@ -370,6 +430,7 @@ async def register(input_data: RegisterInput, response: Response):
 
     tenant_id = new_id()
     await db.tenants.insert_one({"id": tenant_id, "name": input_data.org_name, "created_at": now_iso()})
+    await ensure_tenant_operational_feature_defaults(tenant_id)
 
     user_id = new_id()
     await db.users.insert_one({
@@ -388,7 +449,7 @@ async def register(input_data: RegisterInput, response: Response):
 async def login(input_data: LoginInput, response: Response):
     email = input_data.email.lower().strip()
     user = await db.users.find_one({"email": email})
-    if not user:
+    if not user or user.get("is_deleted") or user.get("active") is False:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     if not verify_password(input_data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -419,7 +480,7 @@ async def refresh_token(request: Request, response: Response):
         if payload.get("type") != "refresh":
             raise HTTPException(status_code=401, detail="Invalid token type")
         user = await db.users.find_one({"id": payload["sub"]})
-        if not user:
+        if not user or user.get("is_deleted") or user.get("active") is False:
             raise HTTPException(status_code=401, detail="User not found")
         access = create_access_token(user["id"], user["email"], user["tenant_id"], user["role"])
         response.set_cookie(key="access_token", value=access, httponly=True, secure=False, samesite="lax", max_age=43200, path="/")
@@ -444,13 +505,23 @@ async def get_board(pipeline_id: str, request: Request):
     if not pipeline:
         raise HTTPException(status_code=404, detail="Pipeline not found")
 
-    stages = await db.stages.find({"pipeline_id": pipeline_id}, {"_id": 0}).sort("order", 1).to_list(100)
+    stages = await db.stages.find(
+        {"pipeline_id": pipeline_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).sort("order", 1).to_list(100)
     stage_ids = [s["id"] for s in stages]
 
-    fields = await db.fields.find({"stage_id": {"$in": stage_ids}}, {"_id": 0}).to_list(500)
-    cards = await db.cards.find({"pipeline_id": pipeline_id, "tenant_id": user["tenant_id"]}, {"_id": 0}).to_list(5000)
+    fields = await db.fields.find(
+        {"stage_id": {"$in": stage_ids}, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(500)
+    cards = await db.cards.find(
+        {"pipeline_id": pipeline_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"_id": 0},
+    ).to_list(5000)
 
-    users_list = await db.users.find({"tenant_id": user["tenant_id"]}, {"_id": 0, "password_hash": 0}).to_list(100)
+    users_list = await db.users.find(
+        {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"_id": 0, "password_hash": 0},
+    ).to_list(100)
 
     fields_by_stage = {}
     for f in fields:
@@ -549,9 +620,11 @@ async def delete_stage(stage_id: str, request: Request):
     if cards_count > 0:
         raise HTTPException(status_code=400, detail=f"Não é possível excluir: {cards_count} card(s) neste estágio. Mova-os primeiro.")
 
-    await db.fields.delete_many({"stage_id": stage_id})
-    await db.stages.delete_one({"id": stage_id})
-    return {"message": "Estágio removido"}
+    now = now_iso()
+    archive = {"is_deleted": True, "archived_at": now, "archived_by": user.get("id")}
+    await db.fields.update_many({"stage_id": stage_id}, {"$set": archive})
+    await db.stages.update_one({"id": stage_id}, {"$set": archive})
+    return {"message": "Estágio arquivado", "archived": True}
 
 @router.put("/stages/reorder")
 async def reorder_stages(data: StageReorder, request: Request):
@@ -598,9 +671,12 @@ async def delete_field(field_id: str, request: Request):
     if not field:
         raise HTTPException(status_code=404, detail="Campo não encontrado")
 
-    await db.field_values.delete_many({"field_id": field_id})
-    await db.fields.delete_one({"id": field_id})
-    return {"message": "Campo removido"}
+    now = now_iso()
+    await db.fields.update_one(
+        {"id": field_id},
+        {"$set": {"is_deleted": True, "archived_at": now, "archived_by": user.get("id")}},
+    )
+    return {"message": "Campo arquivado; valores preservados", "archived": True}
 
 # ============ CARD ROUTES ============
 
@@ -916,15 +992,28 @@ async def move_card(card_id: str, data: CardMove, request: Request):
 @router.delete("/cards/{card_id}")
 async def delete_card(card_id: str, request: Request):
     user = await get_commercial_user(request)
-    result = await db.cards.delete_one({"id": card_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    existing = await db.cards.find_one(
+        {"id": card_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+    if not existing:
         raise HTTPException(status_code=404, detail="Card not found")
-    await db.field_values.delete_many({"card_id": card_id})
-    await db.card_products.delete_many({"card_id": card_id})
-    await db.card_amostras.delete_many({"card_id": card_id})
-    await db.card_history.delete_many({"card_id": card_id})
-    await db.messages.delete_many({"card_id": card_id})
-    return {"message": "Card deleted"}
+    now = now_iso()
+    await db.cards.update_one(
+        {"id": card_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {
+            "is_deleted": True,
+            "archived_at": now,
+            "archived_by": user.get("id"),
+            "archived_by_name": user.get("name", ""),
+            "updated_at": now,
+        }},
+    )
+    await db.card_history.insert_one({
+        "id": new_id(), "card_id": card_id, "action": "Card arquivado",
+        "details": "Arquivamento pela rota legada de exclusão; dados relacionados preservados.",
+        "user_id": user["id"], "user_name": user["name"], "created_at": now,
+    })
+    return {"message": "Card archived", "archived": True, "card_id": card_id}
 
 # ============ CARD DETAILS (aggregate) ============
 
@@ -994,7 +1083,7 @@ async def add_amostra(card_id: str, data: AmostraCreate, request: Request):
 async def list_amostras(card_id: str, request: Request):
     user = await get_commercial_user(request)
     amostras = await db.card_amostras.find(
-        {"card_id": card_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+        {"card_id": card_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}, {"_id": 0}
     ).sort("created_at", 1).to_list(100)
     return amostras
 
@@ -1016,10 +1105,11 @@ async def update_amostra(card_id: str, amostra_id: str, data: AmostraUpdate, req
 @router.delete("/cards/{card_id}/amostras/{amostra_id}")
 async def delete_amostra(card_id: str, amostra_id: str, request: Request):
     user = await get_commercial_user(request)
-    result = await db.card_amostras.delete_one(
-        {"id": amostra_id, "card_id": card_id, "tenant_id": user["tenant_id"]}
+    result = await db.card_amostras.update_one(
+        {"id": amostra_id, "card_id": card_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
     )
-    if result.deleted_count == 0:
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Amostra not found")
     return {"message": "Amostra removida"}
 
@@ -1057,7 +1147,9 @@ async def save_field_values(card_id: str, values: List[FieldValueSave], request:
 @router.get("/cards/{card_id}/products")
 async def list_products(card_id: str, request: Request):
     await get_commercial_user(request)
-    products = await db.card_products.find({"card_id": card_id}, {"_id": 0}).to_list(100)
+    products = await db.card_products.find(
+        {"card_id": card_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(100)
     return products
 
 @router.post("/cards/{card_id}/products")
@@ -1081,9 +1173,12 @@ async def add_product(card_id: str, data: ProductCreate, request: Request):
 
 @router.delete("/card-products/{product_id}")
 async def delete_product(product_id: str, request: Request):
-    await get_commercial_user(request)
-    result = await db.card_products.delete_one({"id": product_id})
-    if result.deleted_count == 0:
+    user = await get_commercial_user(request)
+    result = await db.card_products.update_one(
+        {"id": product_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted"}
 
@@ -1092,7 +1187,9 @@ async def delete_product(product_id: str, request: Request):
 @router.get("/tasks")
 async def list_tasks(request: Request):
     user = await get_current_user(request)
-    tasks = await db.tasks.find({"tenant_id": user["tenant_id"]}, {"_id": 0}).sort("created_at", -1).to_list(500)
+    tasks = await db.tasks.find(
+        {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).sort("created_at", -1).to_list(500)
     return tasks
 
 @router.post("/tasks")
@@ -1126,10 +1223,24 @@ async def update_task(task_id: str, data: TaskUpdate, request: Request):
 @router.delete("/tasks/{task_id}")
 async def delete_task(task_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.tasks.delete_one({"id": task_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    existing = await db.tasks.find_one(
+        {"id": task_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+    if not existing:
         raise HTTPException(status_code=404, detail="Task not found")
-    return {"message": "Task deleted"}
+    now = now_iso()
+    await db.tasks.update_one(
+        {"id": task_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {
+            "status_before_archive": existing.get("status"),
+            "status": "cancelada",
+            "is_deleted": True,
+            "archived_at": now,
+            "archived_by": user.get("id"),
+            "updated_at": now,
+        }},
+    )
+    return {"message": "Task archived", "archived": True, "task_id": task_id}
 
 # ============ MESSAGES (Mock WhatsApp) ============
 
@@ -1168,7 +1279,7 @@ async def invite_user(data: InviteInput, request: Request):
     if existing:
         raise HTTPException(status_code=400, detail="Email ja registrado")
 
-    valid_roles = ("admin", "vendedor", "sales_ops", "formulador", "qa", "lider_pd", "engenharia_produto", "sucesso_cliente", "gestor")
+    valid_roles = tuple(sorted(ROLES | set(LEGACY_ALIASES)))
     if data.role not in valid_roles:
         raise HTTPException(status_code=400, detail=f"Role invalida. Use: {', '.join(valid_roles)}")
 
@@ -1204,7 +1315,7 @@ async def update_user_role(user_id: str, data: RoleUpdate, request: Request):
     user = await get_current_user(request)
     if user["role"] != "admin":
         raise HTTPException(status_code=403, detail="Somente admins podem alterar roles")
-    valid_roles = ("admin", "vendedor", "sales_ops", "formulador", "qa", "lider_pd", "engenharia_produto", "sucesso_cliente", "gestor")
+    valid_roles = tuple(sorted(ROLES | set(LEGACY_ALIASES)))
     if data.role not in valid_roles:
         raise HTTPException(status_code=400, detail=f"Role invalida. Use: {', '.join(valid_roles)}")
     if user_id == user["id"]:
@@ -1248,10 +1359,18 @@ async def remove_user(user_id: str, request: Request):
     if user_id == user["id"]:
         raise HTTPException(status_code=400, detail="Nao pode remover a si mesmo")
 
-    result = await db.users.delete_one({"id": user_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    result = await db.users.update_one(
+        {"id": user_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {
+            "active": False,
+            "is_deleted": True,
+            "archived_at": now_iso(),
+            "archived_by": user.get("id"),
+        }},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Usuario nao encontrado")
-    return {"message": "Usuario removido"}
+    return {"message": "Usuario desativado e arquivado", "archived": True}
 
 # ============ FILE UPLOAD / DOWNLOAD ============
 
@@ -1943,7 +2062,10 @@ async def erp_overview(request: Request):
 @router.get("/users")
 async def list_users(request: Request):
     user = await get_current_user(request)
-    users = await db.users.find({"tenant_id": user["tenant_id"]}, {"_id": 0, "password_hash": 0}).to_list(100)
+    users = await db.users.find(
+        {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"_id": 0, "password_hash": 0},
+    ).to_list(100)
     return users
 
 # ============ SEED DEFAULT PIPELINE ============
@@ -2027,8 +2149,15 @@ async def seed_default_pipeline(tenant_id: str):
 # ============ ADMIN SEED ============
 
 async def seed_admin():
-    admin_email = os.environ.get("ADMIN_EMAIL", "admin@kuryos.com")
-    admin_password = os.environ.get("ADMIN_PASSWORD", "admin123")
+    admin_email = os.environ.get("ADMIN_EMAIL", "").strip()
+    admin_password = os.environ.get("ADMIN_PASSWORD", "")
+    role_password = os.environ.get("ROLE_USERS_PASSWORD", "")
+    if not admin_email or len(admin_password) < 12 or len(role_password) < 12:
+        raise RuntimeError(
+            "SEED_DEMO_USERS exige ADMIN_EMAIL, ADMIN_PASSWORD e ROLE_USERS_PASSWORD; "
+            "as senhas devem ter pelo menos 12 caracteres."
+        )
+    reset_passwords = os.environ.get("RESET_SEEDED_PASSWORDS", "false").lower() == "true"
 
     existing = await db.users.find_one({"email": admin_email})
     if existing is None:
@@ -2045,7 +2174,7 @@ async def seed_admin():
         logger.info(f"Seeded admin user: {admin_email}")
     else:
         tenant_id = existing["tenant_id"]
-        if not verify_password(admin_password, existing["password_hash"]):
+        if reset_passwords and not verify_password(admin_password, existing["password_hash"]):
             await db.users.update_one({"email": admin_email}, {"$set": {"password_hash": hash_password(admin_password)}})
             logger.info("Updated admin password")
 
@@ -2059,7 +2188,6 @@ async def seed_admin():
         ("engenharia@kuryos.com",          "Engenharia de Produto",  "engenharia_produto"),
         ("sucesso@kuryos.com",             "Sucesso do Cliente",     "sucesso_cliente"),
     ]
-    role_password = os.environ.get("ROLE_USERS_PASSWORD", "kuryos123")
     seeded_credentials = [(admin_email, admin_password, "admin", "Admin Kuryos")]
     for email, name, role in role_users:
         existing_user = await db.users.find_one({"email": email})
@@ -2078,13 +2206,18 @@ async def seed_admin():
             updates = {}
             if existing_user.get("role") != role:
                 updates["role"] = role
-            if not verify_password(role_password, existing_user["password_hash"]):
+            if reset_passwords and not verify_password(role_password, existing_user["password_hash"]):
                 updates["password_hash"] = hash_password(role_password)
             if updates:
                 await db.users.update_one({"email": email}, {"$set": updates})
         seeded_credentials.append((email, role_password, role, name))
 
-    # Write credentials
+    if os.environ.get("WRITE_TEST_CREDENTIALS", "false").lower() != "true":
+        return
+    if _IS_PRODUCTION:
+        raise RuntimeError("WRITE_TEST_CREDENTIALS nao pode ser usado em producao.")
+
+    # Optional local-only credentials file.
     _memory_dir = Path(os.environ.get("MEMORY_DIR", str(Path(__file__).parent / "memory")))
     _memory_dir.mkdir(exist_ok=True)
     creds_md = ["# Test Credentials\n", "All users belong to the same tenant (Kuryos Demo).\n"]
@@ -2105,11 +2238,37 @@ async def seed_admin():
     with open(_memory_dir / "test_credentials.md", "w", encoding="utf-8") as f:
         f.write("\n".join(creds_md))
 
+
+async def audit_known_default_passwords():
+    """Prevent persisted demo credentials from reaching a production runtime."""
+    known_defaults = ("admin123", "kuryos123")
+    users = await db.users.find(
+        {}, {"_id": 0, "email": 1, "password_hash": 1}
+    ).to_list(10000)
+    affected = []
+    for user in users:
+        password_hash = user.get("password_hash")
+        if not password_hash:
+            continue
+        if any(verify_password(password, password_hash) for password in known_defaults):
+            affected.append(user.get("email") or "usuario-sem-email")
+
+    if not affected:
+        return
+    message = (
+        "Credenciais legadas inseguras detectadas para: " + ", ".join(affected) +
+        ". Altere as senhas antes de publicar o ambiente."
+    )
+    if _IS_PRODUCTION:
+        raise RuntimeError(message)
+    logger.warning(message)
+
 # ============ STARTUP ============
 
 async def startup():
     await db.users.create_index("email", unique=True)
     await db.users.create_index("tenant_id")
+    await db.tenant_settings.create_index("tenant_id", unique=True)
     await db.cards.create_index([("tenant_id", 1), ("pipeline_id", 1)])
     await db.cards.create_index([("tenant_id", 1), ("stage_id", 1)])
     await db.stages.create_index("pipeline_id")
@@ -2190,7 +2349,7 @@ async def startup():
     # Initialize Expedição + Faturamento modules
     init_expedicao(db, get_current_user, new_id, now_iso)
     init_faturamento(db, get_current_user, new_id, now_iso)
-    init_pcp(db, get_current_user, new_id, now_iso)
+    init_pcp(db, get_current_user, new_id, now_iso, ws_manager.broadcast)
 
     # Initialize Orders module
     init_orders(db, get_current_user, new_id, now_iso, put_object, get_object)
@@ -2219,6 +2378,12 @@ async def startup():
     await db.ordens_compra.create_index([("tenant_id", 1), ("numero_oc", 1)], unique=True, sparse=True)
     # Contratos CGI
     await db.contratos.create_index([("tenant_id", 1), ("kickoff_id", 1)])
+    await db.contratos.create_index(
+        [("tenant_id", 1), ("kickoff_id", 1), ("version", 1)],
+        unique=True,
+        partialFilterExpression={"ativo": True},
+        name="uniq_contrato_ativo_kickoff_versao",
+    )
     await db.contratos.create_index([("tenant_id", 1), ("projeto_id", 1), ("status", 1)])
     await db.contratos.create_index([("tenant_id", 1), ("client_id", 1)])
     await db.contratos.create_index([("tenant_id", 1), ("numero_contrato", 1)], unique=True, sparse=True)
@@ -2320,6 +2485,7 @@ async def startup():
     await db.crm_alerts.create_index([("tenant_id", 1), ("tipo", 1)])
     await db.crm_column_configs.create_index([("tenant_id", 1), ("crm_type", 1)])
     await db.crm_field_configs.create_index([("tenant_id", 1), ("column_id", 1)])
+    await db.crm_reconciliation_runs.create_index([("tenant_id", 1), ("executed_at", -1)])
     await db.pd_stability_studies.create_index([("tenant_id", 1), ("pd_card_id", 1)], unique=True)
     await db.pd_stability_studies.create_index([("tenant_id", 1), ("status", 1)])
     await db.pd_stability_readings.create_index([("tenant_id", 1), ("study_id", 1), ("condition_code", 1), ("day_offset", 1)], unique=True)
@@ -2340,7 +2506,15 @@ async def startup():
     asyncio.create_task(run_workflow_notification_scheduler())
     asyncio.create_task(run_stability_scheduler())
     
-    await seed_admin()
+    if os.environ.get("SEED_DEMO_USERS", "false").lower() == "true":
+        await seed_admin()
+    else:
+        logger.info("Seed automatico de usuarios desativado (SEED_DEMO_USERS=false)")
+    await audit_known_default_passwords()
+    tenants = await db.tenants.find({}, {"_id": 0, "id": 1}).to_list(10000)
+    for tenant in tenants:
+        if tenant.get("id"):
+            await ensure_tenant_operational_feature_defaults(tenant["id"])
     logger.info("CRM Kuryos API started")
 
 async def shutdown():
@@ -2440,13 +2614,9 @@ frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 cors_origins_env = os.environ.get("CORS_ORIGINS", "").strip()
 
 if cors_origins_env == "*":
-    # Allow all origins (use regex because allow_credentials=True is incompatible with allow_origins=["*"])
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origin_regex=".*",
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+    raise RuntimeError(
+        "CORS_ORIGINS='*' foi bloqueado porque a API usa cookies/credenciais. "
+        "Informe uma lista explicita de origens permitidas."
     )
 elif cors_origins_env:
     # Explicit comma-separated allowlist from env

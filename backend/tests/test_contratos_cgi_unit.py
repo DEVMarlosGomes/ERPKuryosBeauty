@@ -37,6 +37,10 @@ class FakeCollection:
                     doc[key] = value
         return SimpleNamespace(matched_count=matched, modified_count=matched)
 
+    async def insert_one(self, doc):
+        self.docs.append(dict(doc))
+        return SimpleNamespace(inserted_id=doc.get("id"))
+
     def _matches(self, doc, query):
         for key, value in query.items():
             if isinstance(value, dict) and "$ne" in value:
@@ -53,6 +57,49 @@ class FakeCollection:
         if projection and all(value == 0 for value in projection.values()):
             return {key: value for key, value in doc.items() if key not in projection}
         return dict(doc)
+
+
+def test_gerar_contrato_resolve_cliente_id_e_reutiliza_mesma_versao(monkeypatch):
+    async def fake_get_current_user(_request):
+        return {"id": "user-1", "name": "Admin", "tenant_id": "tenant-1", "role": "admin"}
+
+    async def fake_number(_tenant_id):
+        return "CGI-2026-0001"
+
+    async def fake_audit_log(**_kwargs):
+        return None
+
+    monkeypatch.setattr(contratos_routes, "get_current_user", fake_get_current_user)
+    monkeypatch.setattr(contratos_routes, "_generate_contrato_number", fake_number)
+    monkeypatch.setattr(contratos_routes, "_build_pdf", lambda *_args: b"%PDF")
+    monkeypatch.setattr(contratos_routes, "audit_log", fake_audit_log)
+    monkeypatch.setattr(contratos_routes, "new_id", lambda: "contrato-1")
+    monkeypatch.setattr(contratos_routes, "now_iso", lambda: "2026-09-23T10:00:00+00:00")
+
+    contracts = FakeCollection([])
+    contratos_routes.db = SimpleNamespace(
+        kickoffs=FakeCollection([{
+            "id": "kickoff-1", "tenant_id": "tenant-1", "status": "aprovado",
+            "projeto_id": "project-1", "versao": "v1",
+        }]),
+        crm_projects=FakeCollection([{
+            "id": "project-1", "tenant_id": "tenant-1", "cliente_id": "client-1",
+        }]),
+        crm_clients=FakeCollection([{
+            "id": "client-1", "tenant_id": "tenant-1", "nome_empresa": "Cliente Correto",
+        }]),
+        contratos=contracts,
+    )
+
+    payload = contratos_routes.ContratoGerarInput(kickoff_id="kickoff-1", version=1)
+    first = asyncio.run(contratos_routes.gerar_contrato(payload, SimpleNamespace()))
+    second = asyncio.run(contratos_routes.gerar_contrato(payload, SimpleNamespace()))
+
+    assert first["client_id"] == "client-1"
+    assert first["cliente_id"] == "client-1"
+    assert first["ativo"] is True
+    assert second["reutilizado"] is True
+    assert len(contracts.docs) == 1
 
 
 def test_assinar_contrato_transiciona_por_api_oficial(monkeypatch):

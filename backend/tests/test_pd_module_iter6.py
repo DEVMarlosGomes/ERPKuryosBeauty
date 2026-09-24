@@ -5,7 +5,7 @@ Auth: Cookie-based (HttpOnly)
 """
 import pytest
 import requests
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, ROLE_USERS_PASSWORD, get_backend_url, skip_without_backend_url
 
 BASE_URL = get_backend_url()
 pytestmark = skip_without_backend_url(BASE_URL)
@@ -20,8 +20,8 @@ def make_session(email, password):
 @pytest.fixture(scope="module")
 def sess():
     """Formulador session (cookie-based)"""
-    s = make_session("formulador@kuryos.com", "kuryos123")
-    assert s, "Login failed for formulador@kuryos.com with kuryos123"
+    s = make_session("formulador@kuryos.com", ROLE_USERS_PASSWORD)
+    assert s, "Login failed for formulador@kuryos.com"
     return s
 
 @pytest.fixture(scope="module")
@@ -64,16 +64,16 @@ def in_progress_pd_id(sess):
 
 class TestAuth:
     def test_login_formulador(self):
-        r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": "formulador@kuryos.com", "password": "kuryos123"})
+        r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": "formulador@kuryos.com", "password": ROLE_USERS_PASSWORD})
         assert r.status_code == 200, f"Login failed: {r.text}"
         assert r.json().get("email") == "formulador@kuryos.com"
 
     def test_login_admin(self):
-        r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": "admin@kuryos.com", "password": "admin123"})
+        r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
         assert r.status_code == 200
 
     def test_formulador_wrong_password(self):
-        r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": "formulador@kuryos.com", "password": "admin123"})
+        r = requests.post(f"{BASE_URL}/api/auth/login", json={"email": "formulador@kuryos.com", "password": ADMIN_PASSWORD})
         assert r.status_code == 401
 
 

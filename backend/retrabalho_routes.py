@@ -17,12 +17,13 @@ Regras de Negócio:
   RN-RT-04: RT-3 exige devolucao_id (comprovante físico) antes de RNC
   RN-RT-05: Custo acumulado por pedido
 """
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 import logging
 
 from stock_ledger import append_lot_ledger_event
+from rbac import REWORK_WRITE_ROLES, require_roles
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,14 @@ def init_retrabalho(database, auth_func, id_func, iso_func):
     get_current_user = auth_func
     new_id_func = id_func
     now_iso_func = iso_func
+
+
+async def _enforce_retrabalho_write_rbac(request: Request):
+    if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        require_roles(await get_current_user(request), REWORK_WRITE_ROLES)
+
+
+retrabalho_router.dependencies.append(Depends(_enforce_retrabalho_write_rbac))
 
 
 async def create_retrabalho_indexes():
@@ -433,7 +442,21 @@ async def listar_devolucoes(request: Request, status: Optional[str] = None):
     query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
     if status:
         query["status"] = status
-    return await db.devolucoes_cliente.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    rows = await db.devolucoes_cliente.find(query, {"_id": 0}).sort("created_at", -1).to_list(500)
+    ids = [row["id"] for row in rows if row.get("id")]
+    notas = await db.faturamento_notas.find(
+        {"tenant_id": user["tenant_id"], "devolucao_cliente_id": {"$in": ids}}, {"_id": 0}
+    ).to_list(1000) if ids else []
+    notas_por_devolucao = {nota.get("devolucao_cliente_id"): nota for nota in notas}
+    for row in rows:
+        nota = notas_por_devolucao.get(row.get("id"))
+        if nota:
+            row["nf_reexpedicao"] = {
+                "id": nota.get("id"), "numero_interno": nota.get("numero_interno"),
+                "numero_nfe": nota.get("numero_nfe"), "chave_acesso": nota.get("chave_acesso"),
+                "status": nota.get("status"), "fiscal_status": nota.get("fiscal_status"),
+            }
+    return rows
 
 
 @retrabalho_router.post("/devolucoes", status_code=201)

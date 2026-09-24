@@ -4,6 +4,7 @@ import { formatApiError } from "@/lib/formatError";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +25,8 @@ import {
 // ===== STATUS CONFIGS =====
 const NF_STATUS_CONFIG = {
     rascunho:  { label: "Rascunho",  cls: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" },
+    processando: { label: "Processando SEFAZ", cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+    rejeitada: { label: "Rejeitada", cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
     emitida:   { label: "Emitida",   cls: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300" },
     cancelada: { label: "Cancelada", cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
@@ -102,7 +105,7 @@ export default function FaturamentoPage() {
     const [selectedNF, setSelectedNF] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
     const [showEmitir, setShowEmitir] = useState(false);
-    const [emitirForm, setEmitirForm] = useState({ numero_nfe: "", chave_acesso: "" });
+    const [emitirForm, setEmitirForm] = useState({ fiscal_payload: "{}" });
     const [showPagamento, setShowPagamento] = useState(false);
     const [pgtoForm, setPgtoForm] = useState({ status_pagamento: "pago", valor_pago: "", data_pagamento: "" });
     const [orders, setOrders] = useState([]);
@@ -259,21 +262,31 @@ export default function FaturamentoPage() {
         if (!selectedNF) return;
         setActionLoading(true);
         try {
-            const updated = await api.put(`/faturamento/notas/${selectedNF.id}`, {
-                status: "emitida",
-                numero_nfe: emitirForm.numero_nfe || null,
-                chave_acesso: emitirForm.chave_acesso || null,
-            });
-            toast.success("NF emitida");
+            const fiscalPayload = JSON.parse(emitirForm.fiscal_payload || "{}");
+            const updated = await api.post(`/faturamento/notas/${selectedNF.id}/transmitir`, { fiscal_payload: fiscalPayload });
+            toast.success(updated.data.status === "emitida" ? "NF-e autorizada pela SEFAZ" : "NF-e transmitida e em processamento");
             setShowEmitir(false);
             setSelectedNF(updated.data);
             loadNotas();
             loadDashboard();
         } catch (e) {
-            toast.error(formatApiError(e));
+            toast.error(e instanceof SyntaxError ? "JSON fiscal inválido." : formatApiError(e));
         } finally {
             setActionLoading(false);
         }
+    };
+
+    const handleSincronizarFiscal = async (nf) => {
+        setActionLoading(true);
+        try {
+            const updated = await api.post(`/faturamento/notas/${nf.id}/sincronizar-fiscal`);
+            setSelectedNF(current => current?.id === nf.id ? updated.data : current);
+            toast.success(updated.data.status === "emitida" ? "NF-e autorizada pela SEFAZ" : `Status fiscal: ${updated.data.fiscal_status}`);
+            loadNotas();
+            loadDashboard();
+        } catch (e) {
+            toast.error(formatApiError(e));
+        } finally { setActionLoading(false); }
     };
 
     const handleRegistrarPagamento = async () => {
@@ -519,11 +532,17 @@ export default function FaturamentoPage() {
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 shrink-0">
-                                                    {nf.status === "rascunho" && (
+                                                    {["rascunho", "rejeitada"].includes(nf.status) && (
                                                         <Button size="sm" variant="outline" className="h-8 text-xs"
                                                             disabled={actionLoading}
-                                                            onClick={e => { e.stopPropagation(); setSelectedNF(nf); setEmitirForm({ numero_nfe: "", chave_acesso: "" }); setShowEmitir(true); }}>
+                                                            onClick={e => { e.stopPropagation(); setSelectedNF(nf); setEmitirForm({ fiscal_payload: JSON.stringify(nf.fiscal_payload || {}, null, 2) }); setShowEmitir(true); }}>
                                                             Emitir NF
+                                                        </Button>
+                                                    )}
+                                                    {nf.status === "processando" && (
+                                                        <Button size="sm" variant="outline" className="h-8 text-xs" disabled={actionLoading}
+                                                            onClick={e => { e.stopPropagation(); handleSincronizarFiscal(nf); }}>
+                                                            <RefreshCw className="mr-1 h-3.5 w-3.5" />Consultar SEFAZ
                                                         </Button>
                                                     )}
                                                     {nf.status === "emitida" && ["aguardando", "pago_parcial"].includes(nf.status_pagamento) && (
@@ -783,10 +802,15 @@ export default function FaturamentoPage() {
                         </div>
                         <DialogFooter className="flex flex-wrap gap-2 justify-between">
                             <div className="flex gap-2 flex-wrap">
-                                {selectedNF.status === "rascunho" && (
+                                {["rascunho", "rejeitada"].includes(selectedNF.status) && (
                                     <Button size="sm"
-                                        onClick={() => { setEmitirForm({ numero_nfe: "", chave_acesso: "" }); setShowEmitir(true); }}>
-                                        Emitir NF
+                                        onClick={() => { setEmitirForm({ fiscal_payload: JSON.stringify(selectedNF.fiscal_payload || {}, null, 2) }); setShowEmitir(true); }}>
+                                        Transmitir NF-e
+                                    </Button>
+                                )}
+                                {selectedNF.status === "processando" && (
+                                    <Button size="sm" variant="outline" disabled={actionLoading} onClick={() => handleSincronizarFiscal(selectedNF)}>
+                                        <RefreshCw className="mr-1 h-4 w-4" />Consultar SEFAZ
                                     </Button>
                                 )}
                                 {selectedNF.status === "emitida" && ["aguardando", "pago_parcial"].includes(selectedNF.status_pagamento) && (
@@ -814,26 +838,25 @@ export default function FaturamentoPage() {
             {showEmitir && selectedNF && (
                 <Dialog open onOpenChange={() => setShowEmitir(false)}>
                     <DialogContent>
-                        <DialogHeader><DialogTitle>Emitir NF — {selectedNF.numero_interno}</DialogTitle></DialogHeader>
+                        <DialogHeader><DialogTitle>Transmitir NF-e — {selectedNF.numero_interno}</DialogTitle></DialogHeader>
                         <div className="space-y-3">
-                            <div>
-                                <Label>Número NF-e</Label>
-                                <Input value={emitirForm.numero_nfe}
-                                    onChange={e => setEmitirForm(f => ({ ...f, numero_nfe: e.target.value }))}
-                                    placeholder="000000000" className="mt-1 font-mono" />
+                            <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950/20 dark:text-amber-200">
+                                Número, chave e protocolo serão preenchidos somente após autorização fiscal. A NF não será marcada como emitida por digitação manual.
                             </div>
                             <div>
-                                <Label>Chave de Acesso (44 dígitos)</Label>
-                                <Input value={emitirForm.chave_acesso}
-                                    onChange={e => setEmitirForm(f => ({ ...f, chave_acesso: e.target.value }))}
-                                    placeholder="Opcional" className="mt-1 font-mono text-xs" />
+                                <Label>Payload fiscal NF-e 4.00</Label>
+                                <Textarea value={emitirForm.fiscal_payload}
+                                    onChange={e => setEmitirForm({ fiscal_payload: e.target.value })}
+                                    className="mt-1 min-h-64 font-mono text-xs"
+                                    placeholder='{"natureza_operacao":"Venda", "tipo_documento":1, "finalidade_emissao":1, "items":[]}' />
+                                <p className="mt-1 text-xs text-muted-foreground">A transmissão utiliza o provedor Focus NFe configurado no servidor.</p>
                             </div>
                         </div>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setShowEmitir(false)} disabled={actionLoading}>Cancelar</Button>
                             <Button onClick={handleEmitir} disabled={actionLoading}>
                                 {actionLoading ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Receipt className="h-4 w-4 mr-1" />}
-                                Confirmar Emissão
+                                Transmitir para SEFAZ
                             </Button>
                         </DialogFooter>
                     </DialogContent>

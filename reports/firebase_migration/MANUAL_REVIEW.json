@@ -1,0 +1,73 @@
+{
+  "status": "TARGET_RECONCILED_AWAITING_HUMAN_APPROVAL",
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "tenant_name": "Kuryos Demo",
+  "queues": {
+    "clients": {
+      "manual_review": 0,
+      "conflict": 0,
+      "insert_candidate": 56,
+      "match": 3
+    },
+    "suppliers": {
+      "manual_review": 0,
+      "conflict": 6,
+      "insert_candidate": 397,
+      "match": 0
+    },
+    "materials": {
+      "manual_review": 939,
+      "conflict": 0,
+      "insert_candidate": 0,
+      "match": 0
+    },
+    "skus": {
+      "manual_review": 392,
+      "conflict": 0,
+      "insert_candidate": 0,
+      "match": 0
+    },
+    "orders": {
+      "manual_review": 0,
+      "conflict": 0,
+      "insert_candidate": 453,
+      "match": 0
+    },
+    "ops": {
+      "manual_review": 1388,
+      "conflict": 0,
+      "insert_candidate": 0,
+      "match": 0
+    },
+    "addresses": {
+      "manual_review": 250,
+      "conflict": 0,
+      "insert_candidate": 0,
+      "match": 0
+    },
+    "lots": {
+      "manual_review": 39,
+      "conflict": 0,
+      "insert_candidate": 0,
+      "match": 0
+    }
+  },
+  "dependent_domains": {
+    "formulas": {
+      "count": 197,
+      "status": "PENDING_DEPENDENCY_REVIEW",
+      "reason": "Depende da reconciliacao e aprovacao dos materiais; itens nao resolvidos permanecem pendentes."
+    },
+    "bom": {
+      "count": 246,
+      "status": "PENDING_DEPENDENCY_REVIEW",
+      "reason": "Depende de produto pai, SKU e materiais aprovados; camadas bulk e embalagem nao serao misturadas."
+    }
+  },
+  "blockers": [
+    "Confirmacao humana dos conflitos e candidatos de cadastro.",
+    "Validacao fisica de estoque, lotes, enderecos e CQ/WMS.",
+    "Aprovacao separada para gerar transformacao e aplicar somente na homologacao."
+  ],
+  "writes_to_mongo_performed": []
+}

@@ -90,6 +90,9 @@ async def _ensure_unique_client_card(tenant_id: str, nome_empresa: str, cnpj: st
         existing = await db.crm_clients.find_one({**query, "cnpj_normalized": cnpj_norm}, {"_id": 0, "id": 1, "nome_empresa": 1})
         if existing:
             raise HTTPException(status_code=409, detail={"type": "duplicate_card", "entity": "cliente", "message": f"Cliente ja criado: {existing.get('nome_empresa')}.", "existing_id": existing.get("id")})
+        # Empresas homonimas com CNPJs distintos sao identidades validas e nao
+        # devem ser consolidadas apenas pelo nome fantasia.
+        return
     key = _dedupe_key(nome_empresa)
     if key:
         docs = await db.crm_clients.find(query, {"_id": 0, "id": 1, "nome_empresa": 1}).to_list(5000)
@@ -1909,21 +1912,29 @@ async def delete_client(client_id: str, request: Request):
             if variacao.get("pd_card_id"):
                 pd_card_ids.append(variacao["pd_card_id"])
 
+    now = _now_iso()
+    reason = "Arquivamento solicitado pela rota legada de exclusão"
+    archive_fields = _governance_archive_fields(user, reason, now)
     if pd_card_ids:
-        await db.pd_cards.delete_many({"id": {"$in": pd_card_ids}, "tenant_id": user["tenant_id"]})
+        await db.pd_cards.update_many({"id": {"$in": pd_card_ids}, "tenant_id": user["tenant_id"]}, {"$set": archive_fields})
     if sample_ids:
-        await db.crm_samples.delete_many({"id": {"$in": sample_ids}, "tenant_id": user["tenant_id"]})
+        await db.crm_samples.update_many({"id": {"$in": sample_ids}, "tenant_id": user["tenant_id"]}, {"$set": archive_fields})
     if project_ids:
-        await db.crm_projects.delete_many({"id": {"$in": project_ids}, "tenant_id": user["tenant_id"]})
+        await db.crm_projects.update_many({"id": {"$in": project_ids}, "tenant_id": user["tenant_id"]}, {"$set": archive_fields})
 
-    await db.crm_clients.delete_one({"id": client_id, "tenant_id": user["tenant_id"]})
+    await db.crm_clients.update_one({"id": client_id, "tenant_id": user["tenant_id"]}, {"$set": archive_fields})
 
-    logger.info(f"Deleted client {client_id} (projects={len(project_ids)}, samples={len(sample_ids)}, pd_cards={len(pd_card_ids)})")
+    await _audit_card_governance(
+        tenant_id=user["tenant_id"], user=user, action="crm_client_archived",
+        entity_type="crm_client", entity_id=client_id, reason=reason,
+    )
+    logger.info("Archived client %s and linked records", client_id)
     return {
-        "deleted_client": client_id,
-        "deleted_projects": len(project_ids),
-        "deleted_samples": len(sample_ids),
-        "deleted_pd_cards": len(pd_card_ids),
+        "archived_client": client_id,
+        "archived_projects": len(project_ids),
+        "archived_samples": len(sample_ids),
+        "archived_pd_cards": len(pd_card_ids),
+        "archived": True,
     }
 
 
@@ -2311,7 +2322,7 @@ async def list_projects(
     search: Optional[str] = None,
 ):
     user = await _get_current_user(request)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if cliente_id:
         query["cliente_id"] = cliente_id
     if stage:
@@ -2333,7 +2344,10 @@ async def list_projects(
 
 @crm_router.post("/projects/sync-approved")
 async def sync_approved_projects(request: Request):
-    """Repara projetos ja aprovados: SKUs, Kickoff e pedido automatico de P&D."""
+    """Repara Kickoff e pedido de projetos aprovados sem antecipar a geracao de SKU.
+
+    SKU e criado exclusivamente no fluxo de assinatura/reprocessamento do CGI.
+    """
     user = await _get_current_user(request)
     require_roles(user, ADMIN_ONLY)
 
@@ -2354,14 +2368,11 @@ async def sync_approved_projects(request: Request):
         project_detail = {
             "project_id": project.get("id"),
             "nome_projeto": project.get("nome_projeto"),
-            "skus_gerados": [],
             "kickoff": None,
             "orders": [],
+            "sku_status": "aguardando_assinatura_cgi",
         }
         try:
-            skus = await _generate_skus_for_project_approved_variations(project["id"], user)
-            project_detail["skus_gerados"] = skus
-
             kickoff = await create_kickoff_for_project(project["id"], user)
             project_detail["kickoff"] = {
                 "id": kickoff.get("id"),
@@ -2411,8 +2422,258 @@ async def sync_approved_projects(request: Request):
         "skipped": skipped,
         "errors": errors,
         "details": details,
-        "message": f"{synced} projeto(s) aprovado(s) sincronizados.",
+        "message": (
+            f"{synced} projeto(s) aprovado(s) sincronizados. "
+            "SKU permanece aguardando a assinatura do CGI."
+        ),
     }
+
+
+def build_crm_reconciliation_plan(
+    clients: List[dict], projects: List[dict], samples: List[dict]
+) -> Dict[str, Any]:
+    """Build an idempotent CRM1/CRM2 and historical approval repair plan."""
+    clients_by_id = {item.get("id"): item for item in clients if item.get("id")}
+    projects_by_client: Dict[str, List[dict]] = {}
+    for project in projects:
+        if project.get("cliente_id"):
+            projects_by_client.setdefault(project["cliente_id"], []).append(project)
+
+    stage_changes = []
+    negotiation_stages = {"cotacao", "orcamento_completo", "em_negociacao"}
+    for client_id, linked_projects in projects_by_client.items():
+        client = clients_by_id.get(client_id)
+        if not client:
+            continue
+        project_stages = {project.get("stage") for project in linked_projects}
+        target = None
+        reason = None
+        relevant_stages = negotiation_stages
+        if "pedido_aprovado" in project_stages:
+            target = "cliente_fechado"
+            reason = "projeto_pedido_aprovado"
+            relevant_stages = {"pedido_aprovado"}
+        elif (
+            project_stages.intersection(negotiation_stages)
+            and client.get("stage") in {"prospeccao", "qualificado", "projeto_em_discussao"}
+        ):
+            target = "negociacao"
+            reason = "projeto_em_negociacao"
+        if target and client.get("stage") != target:
+            stage_changes.append({
+                "client_id": client_id,
+                "client_name": client.get("nome_empresa", ""),
+                "from_stage": client.get("stage"),
+                "to_stage": target,
+                "reason": reason,
+                "project_ids": [
+                    project.get("id") for project in linked_projects
+                    if project.get("stage") in relevant_stages
+                ],
+            })
+
+    approval_repairs = []
+    for sample in samples:
+        if sample.get("stage") != "aprovada":
+            continue
+        approved_variations = [
+            variation for variation in (sample.get("variacoes") or [])
+            if variation.get("resultado") == "aprovada" or variation.get("status") == "aprovada"
+        ]
+        if not approved_variations:
+            continue
+        variation_ids = [
+            variation.get("id") for variation in approved_variations
+            if not (
+                variation.get("aprovacao_pd") is True
+                and variation.get("aprovacao_interna") is True
+                and variation.get("aprovacao_externa") is True
+                and variation.get("aprovacao_comercial") is True
+            )
+        ]
+        sample_complete = all(sample.get(field) is True for field in (
+            "aprovacao_pd", "aprovacao_interna", "aprovacao_externa", "aprovacao_comercial"
+        ))
+        if variation_ids or not sample_complete:
+            approval_repairs.append({
+                "sample_id": sample.get("id"),
+                "project_id": sample.get("projeto_id"),
+                "variation_ids": [item for item in variation_ids if item],
+                "approved_variation_ids": [item.get("id") for item in approved_variations if item.get("id")],
+            })
+
+    duplicate_groups: Dict[str, List[dict]] = {}
+    for client in clients:
+        key = _dedupe_key(client.get("nome_empresa"))
+        if key:
+            duplicate_groups.setdefault(key, []).append(client)
+    homonyms = []
+    duplicate_candidates = []
+    for key, group in duplicate_groups.items():
+        if len(group) < 2:
+            continue
+        normalized_cnpjs = [
+            normalize_cnpj(item.get("cnpj_normalized") or item.get("cnpj") or "")
+            for item in group
+        ]
+        nonempty = [value for value in normalized_cnpjs if value]
+        record = {
+            "normalized_name": key,
+            "client_ids": [item.get("id") for item in group],
+            "cnpjs": normalized_cnpjs,
+        }
+        if len(nonempty) == len(group) and len(set(nonempty)) == len(group):
+            record["already_marked"] = all(
+                ((item.get("deduplicacao_nome") or {}).get("status") == "homonimo_confirmado")
+                for item in group
+            )
+            homonyms.append(record)
+        else:
+            duplicate_candidates.append(record)
+
+    return {
+        "client_stage_changes": stage_changes,
+        "approval_repairs": approval_repairs,
+        "homonyms": homonyms,
+        "duplicate_candidates": duplicate_candidates,
+    }
+
+
+async def _load_crm_reconciliation_plan(tenant_id: str) -> Dict[str, Any]:
+    clients, projects, samples = await asyncio.gather(
+        db.crm_clients.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(10000),
+        db.crm_projects.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(10000),
+        db.crm_samples.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(10000),
+    )
+    return build_crm_reconciliation_plan(clients, projects, samples)
+
+
+@crm_router.get("/reconciliation/preview")
+async def preview_crm_reconciliation(request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, ADMIN_ONLY)
+    plan = await _load_crm_reconciliation_plan(user["tenant_id"])
+    plan["summary"] = {
+        "client_stage_changes": len(plan["client_stage_changes"]),
+        "approval_repairs": len(plan["approval_repairs"]),
+        "homonyms_to_mark": sum(not item["already_marked"] for item in plan["homonyms"]),
+        "duplicate_candidates_requiring_review": len(plan["duplicate_candidates"]),
+    }
+    return plan
+
+
+@crm_router.post("/reconciliation/apply")
+async def apply_crm_reconciliation(request: Request):
+    user = await _get_current_user(request)
+    require_roles(user, ADMIN_ONLY)
+    tenant_id = user["tenant_id"]
+    plan = await _load_crm_reconciliation_plan(tenant_id)
+    now = _now_iso()
+    affected_client_ids = {
+        item["client_id"] for item in plan["client_stage_changes"]
+    }
+    for group in plan["homonyms"]:
+        if not group["already_marked"]:
+            affected_client_ids.update(group["client_ids"])
+    affected_sample_ids = {item["sample_id"] for item in plan["approval_repairs"]}
+    rollback_clients = await db.crm_clients.find(
+        {"tenant_id": tenant_id, "id": {"$in": list(affected_client_ids)}}, {"_id": 0}
+    ).to_list(10000) if affected_client_ids else []
+    rollback_samples = await db.crm_samples.find(
+        {"tenant_id": tenant_id, "id": {"$in": list(affected_sample_ids)}}, {"_id": 0}
+    ).to_list(10000) if affected_sample_ids else []
+
+    for change in plan["client_stage_changes"]:
+        await db.crm_clients.update_one(
+            {"id": change["client_id"], "tenant_id": tenant_id, "stage": change["from_stage"]},
+            {
+                "$set": {
+                    "stage": change["to_stage"],
+                    "updated_at": now,
+                    "reconciliado_crm_em": now,
+                },
+                "$push": {"historico_movimentacoes": {
+                    "de": change["from_stage"],
+                    "para": change["to_stage"],
+                    "data": now,
+                    "usuario": user.get("name", ""),
+                    "usuario_id": user.get("id", ""),
+                    "origem": "reconciliacao_crm1_crm2",
+                    "automatico": True,
+                    "motivo": change["reason"],
+                }},
+            },
+        )
+
+    for repair in plan["approval_repairs"]:
+        sample = await db.crm_samples.find_one(
+            {"id": repair["sample_id"], "tenant_id": tenant_id}, {"_id": 0}
+        )
+        if not sample:
+            continue
+        approved_ids = set(repair["approved_variation_ids"])
+        variations = []
+        for variation in sample.get("variacoes") or []:
+            updated = dict(variation)
+            if updated.get("id") in approved_ids:
+                updated.update({
+                    "aprovacao_pd": True,
+                    "aprovacao_interna": True,
+                    "aprovacao_externa": True,
+                    "aprovacao_comercial": True,
+                    "saneamento_aprovacao_historica_em": now,
+                })
+            variations.append(updated)
+        await db.crm_samples.update_one(
+            {"id": repair["sample_id"], "tenant_id": tenant_id},
+            {"$set": {
+                "variacoes": variations,
+                "aprovacao_pd": True,
+                "aprovacao_interna": True,
+                "aprovacao_externa": True,
+                "aprovacao_comercial": True,
+                "saneamento_aprovacao_historica_em": now,
+                "updated_at": now,
+            }},
+        )
+
+    for group in plan["homonyms"]:
+        if group["already_marked"]:
+            continue
+        for client_id in group["client_ids"]:
+            await db.crm_clients.update_one(
+                {"id": client_id, "tenant_id": tenant_id},
+                {"$set": {"deduplicacao_nome": {
+                    "status": "homonimo_confirmado",
+                    "nome_normalizado": group["normalized_name"],
+                    "client_ids_comparados": group["client_ids"],
+                    "cnpjs_comparados": group["cnpjs"],
+                    "reconciliado_em": now,
+                    "reconciliado_por": user.get("id", ""),
+                }}},
+            )
+
+    result = {
+        "id": _new_id(),
+        "tenant_id": tenant_id,
+        "executed_at": now,
+        "executed_by": user.get("id", ""),
+        "executed_by_name": user.get("name", ""),
+        "client_stage_changes": len(plan["client_stage_changes"]),
+        "approval_repairs": len(plan["approval_repairs"]),
+        "homonym_groups_marked": sum(not item["already_marked"] for item in plan["homonyms"]),
+        "duplicate_candidates_requiring_review": plan["duplicate_candidates"],
+    }
+    run_document = {
+        **result,
+        "rollback_snapshot": {
+            "crm_clients": rollback_clients,
+            "crm_samples": rollback_samples,
+        },
+    }
+    await db.crm_reconciliation_runs.insert_one(run_document)
+    result["remaining"] = await _load_crm_reconciliation_plan(tenant_id)
+    return result
 
 
 @crm_router.get("/projects/{project_id}")
@@ -2690,26 +2951,37 @@ async def delete_project(project_id: str, request: Request):
             if v.get("pd_card_id"):
                 pd_card_ids.append(v["pd_card_id"])
 
-    # Apagar pd_cards vinculados
+    now = _now_iso()
+    reason = "Arquivamento solicitado pela rota legada de exclusão"
+    archive_fields = _governance_archive_fields(user, reason, now)
+    # Arquivar cards P&D vinculados
     if pd_card_ids:
-        await db.pd_cards.delete_many(
-            {"id": {"$in": pd_card_ids}, "tenant_id": user["tenant_id"]}
+        await db.pd_cards.update_many(
+            {"id": {"$in": pd_card_ids}, "tenant_id": user["tenant_id"]},
+            {"$set": archive_fields},
         )
     # Apagar samples
     if sample_ids:
-        await db.crm_samples.delete_many(
-            {"id": {"$in": sample_ids}, "tenant_id": user["tenant_id"]}
+        await db.crm_samples.update_many(
+            {"id": {"$in": sample_ids}, "tenant_id": user["tenant_id"]},
+            {"$set": archive_fields},
         )
     # Apagar projeto
-    await db.crm_projects.delete_one(
-        {"id": project_id, "tenant_id": user["tenant_id"]}
+    await db.crm_projects.update_one(
+        {"id": project_id, "tenant_id": user["tenant_id"]},
+        {"$set": archive_fields},
     )
 
-    logger.info(f"Deleted project {project_id} (samples={len(sample_ids)}, pd_cards={len(pd_card_ids)})")
+    await _audit_card_governance(
+        tenant_id=user["tenant_id"], user=user, action="crm_project_archived",
+        entity_type="crm_project", entity_id=project_id, reason=reason,
+    )
+    logger.info("Archived project %s and linked records", project_id)
     return {
-        "deleted_project": project_id,
-        "deleted_samples": len(sample_ids),
-        "deleted_pd_cards": len(pd_card_ids),
+        "archived_project": project_id,
+        "archived_samples": len(sample_ids),
+        "archived_pd_cards": len(pd_card_ids),
+        "archived": True,
     }
 
 
@@ -3618,7 +3890,7 @@ async def list_samples(
     search: Optional[str] = None,
 ):
     user = await _get_current_user(request)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if projeto_id:
         query["projeto_id"] = projeto_id
     if cliente_id:
@@ -3637,6 +3909,11 @@ async def list_samples(
         ]
 
     samples = await db.crm_samples.find(query, {"_id": 0}).sort("created_at", -1).to_list(5000)
+    for sample in samples:
+        sample["variacoes"] = [
+            variacao for variacao in (sample.get("variacoes") or [])
+            if not variacao.get("is_deleted")
+        ]
     return samples
 
 
@@ -3645,7 +3922,7 @@ async def sync_missing_pd_cards(request: Request, projeto_id: Optional[str] = No
     """Cria cards P&D faltantes para variações de amostras já existentes."""
     user = await _get_current_user(request)
     require_roles(user, ADMIN_ONLY)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if projeto_id:
         query["projeto_id"] = projeto_id
 
@@ -3699,6 +3976,10 @@ async def get_sample(sample_id: str, request: Request):
     )
     if not sample:
         raise HTTPException(status_code=404, detail="Amostra não encontrada")
+    sample["variacoes"] = [
+        variacao for variacao in (sample.get("variacoes") or [])
+        if not variacao.get("is_deleted")
+    ]
     return sample
 
 
@@ -4355,7 +4636,9 @@ async def _refresh_sample_project_approval_summary(sample_id: str, user: dict) -
             {"$set": {
                 "stage": "aprovada",
                 "aprovacao_interna": True,
+                "aprovacao_pd": True,
                 "aprovacao_externa": True,
+                "aprovacao_comercial": True,
                 "amostra_aprovada_em": now,
                 "updated_at": now,
             }},
@@ -4467,6 +4750,7 @@ async def resultado_cliente(
     if canonical_resultado == "aprovada":
         set_ops["variacoes.$.resultado"] = "aprovada"
         set_ops["variacoes.$.aprovacao_externa"] = True
+        set_ops["variacoes.$.aprovacao_comercial"] = True
         set_ops["variacoes.$.aprovado_cliente_em"] = now
     if canonical_resultado == "arquivado":
         set_ops["variacoes.$.resultado"] = "arquivado"
@@ -5168,18 +5452,26 @@ async def delete_sample(sample_id: str, request: Request):
     # Coletar pd_cards vinculados
     pd_card_ids = [v["pd_card_id"] for v in (sample.get("variacoes") or []) if v.get("pd_card_id")]
 
+    now = _now_iso()
+    reason = "Arquivamento solicitado pela rota legada de exclusão"
+    archive_fields = _governance_archive_fields(user, reason, now)
     if pd_card_ids:
-        await db.pd_cards.delete_many(
-            {"id": {"$in": pd_card_ids}, "tenant_id": user["tenant_id"]}
+        await db.pd_cards.update_many(
+            {"id": {"$in": pd_card_ids}, "tenant_id": user["tenant_id"]},
+            {"$set": archive_fields},
         )
-    await db.crm_samples.delete_one(
-        {"id": sample_id, "tenant_id": user["tenant_id"]}
+    await db.crm_samples.update_one(
+        {"id": sample_id, "tenant_id": user["tenant_id"]}, {"$set": archive_fields}
     )
-
-    logger.info(f"Deleted sample {sample_id} with {len(pd_card_ids)} pd_cards")
+    await _audit_card_governance(
+        tenant_id=user["tenant_id"], user=user, action="crm_sample_archived",
+        entity_type="crm_sample", entity_id=sample_id, reason=reason,
+    )
+    logger.info("Archived sample %s with %s linked P&D cards", sample_id, len(pd_card_ids))
     return {
-        "deleted_sample": sample_id,
-        "deleted_pd_cards": len(pd_card_ids),
+        "archived_sample": sample_id,
+        "archived_pd_cards": len(pd_card_ids),
+        "archived": True,
     }
 
 
@@ -5212,31 +5504,28 @@ async def delete_variacao(sample_id: str, variacao_id: str, request: Request):
             detail="Não é possível excluir a última variação. Exclua a amostra inteira."
         )
 
-    # Remover pd_card vinculado
+    now = _now_iso()
+    reason = "Arquivamento solicitado pela rota legada de exclusão"
+    archive_fields = _governance_archive_fields(user, reason, now)
+    # Arquivar pd_card vinculado
     if variacao.get("pd_card_id"):
-        await db.pd_cards.delete_one(
-            {"id": variacao["pd_card_id"], "tenant_id": user["tenant_id"]}
+        await db.pd_cards.update_one(
+            {"id": variacao["pd_card_id"], "tenant_id": user["tenant_id"]},
+            {"$set": archive_fields},
         )
 
-    # Remover variação do array
+    update_fields = {f"variacoes.$.{key}": value for key, value in archive_fields.items()}
     await db.crm_samples.update_one(
-        {"id": sample_id, "tenant_id": user["tenant_id"]},
-        {
-            "$pull": {"variacoes": {"id": variacao_id}},
-            "$set": {"updated_at": _now_iso()}
-        }
+        {"id": sample_id, "tenant_id": user["tenant_id"], "variacoes.id": variacao_id},
+        {"$set": update_fields},
+    )
+    await _audit_card_governance(
+        tenant_id=user["tenant_id"], user=user, action="crm_variacao_archived",
+        entity_type="crm_variacao", entity_id=variacao_id, reason=reason,
     )
 
-    # Recalcular tem_variacoes
-    updated = await db.crm_samples.find_one({"id": sample_id}, {"_id": 0})
-    tem_variacoes = len(updated.get("variacoes") or []) > 1
-    await db.crm_samples.update_one(
-        {"id": sample_id},
-        {"$set": {"tem_variacoes": tem_variacoes}}
-    )
-
-    logger.info(f"Deleted variação {variacao_id} from sample {sample_id}")
-    return {"deleted_variacao": variacao_id, "sample_id": sample_id}
+    logger.info("Archived variation %s from sample %s", variacao_id, sample_id)
+    return {"archived_variacao": variacao_id, "sample_id": sample_id, "archived": True}
 
 
 @crm_router.post("/samples/{sample_id}/variacoes")
@@ -5445,7 +5734,48 @@ async def _check_sku_dependency_chain(
     return cat3
 
 
-async def _create_sku_from_sample(sample: dict, user: dict) -> dict:
+def _cgi_governance_fields(contract: dict) -> dict:
+    return {
+        "origem_contratual_status": "cgi_assinado",
+        "cgi_contrato_id": contract.get("id"),
+        "cgi_numero": contract.get("numero_contrato") or contract.get("numero"),
+        "cgi_assinado_em": contract.get("signed_at") or (contract.get("assinatura") or {}).get("assinado_em"),
+        "legado_sem_cgi": False,
+        "bloqueado_por_cgi": False,
+    }
+
+
+async def _find_signed_cgi_for_project(project_id: str, tenant_id: str) -> Optional[dict]:
+    """Resolve o CGI assinado diretamente ou pelo Kickoff do projeto."""
+    contract = await db.contratos.find_one(
+        {
+            "tenant_id": tenant_id,
+            "projeto_id": project_id,
+            "status": {"$in": ["assinado", "vigente"]},
+        },
+        {"_id": 0, "pdf_data": 0},
+    )
+    if contract:
+        return contract
+
+    kickoffs = await db.kickoffs.find(
+        {"tenant_id": tenant_id, "projeto_id": project_id},
+        {"_id": 0, "id": 1},
+    ).to_list(100)
+    kickoff_ids = [item.get("id") for item in kickoffs if item.get("id")]
+    if not kickoff_ids:
+        return None
+    return await db.contratos.find_one(
+        {
+            "tenant_id": tenant_id,
+            "kickoff_id": {"$in": kickoff_ids},
+            "status": {"$in": ["assinado", "vigente"]},
+        },
+        {"_id": 0, "pdf_data": 0},
+    )
+
+
+async def _create_sku_from_sample(sample: dict, user: dict, *, cgi_contract: dict) -> dict:
     """
     Auto-create SKU entity when a sample is approved.
     Uses new format [CAT3]-[CLI4]-[SEQ4] (R11). Validates R25 chain first.
@@ -5502,6 +5832,7 @@ async def _create_sku_from_sample(sample: dict, user: dict) -> dict:
         "pd_concluido": True,
         "pd_concluido_em": now,
         "pd_concluido_origem": "fluxo_comercial_aprovado",
+        **_cgi_governance_fields(cgi_contract),
         "descontinuado_motivo": None,
         "descontinuado_em": None,
         "descontinuado_por": None,
@@ -5537,7 +5868,14 @@ async def _create_sku_from_sample(sample: dict, user: dict) -> dict:
     return sku
 
 
-async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict, *, fasttrack_variacao: bool = False) -> dict:
+async def _create_sku_from_variacao_v2(
+    sample: dict,
+    variacao: dict,
+    user: dict,
+    *,
+    cgi_contract: dict,
+    fasttrack_variacao: bool = False,
+) -> dict:
     """
     Geração de SKU no ponto real onde o cliente aprova (POST .../resultado-cliente) —
     formato novo [CAT3]-[CLI4]-[SEQ4] (R11), valida a cadeia R25 completa (agora
@@ -5570,6 +5908,7 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
             "pd_concluido_em": _now_iso(),
             "pd_concluido_origem": "fluxo_comercial_aprovado",
             "updated_at": _now_iso(),
+            **_cgi_governance_fields(cgi_contract),
         }
         await db.skus.update_one(
             {"id": existing_sku["id"], "tenant_id": tenant_id},
@@ -5637,6 +5976,7 @@ async def _create_sku_from_variacao_v2(sample: dict, variacao: dict, user: dict,
         "pd_concluido": True,
         "pd_concluido_em": now,
         "pd_concluido_origem": "fluxo_comercial_aprovado",
+        **_cgi_governance_fields(cgi_contract),
         "descontinuado_motivo": None,
         "descontinuado_em": None,
         "descontinuado_por": None,
@@ -5714,6 +6054,12 @@ async def _generate_skus_for_project_approved_variations(project_id: str, user: 
     _create_sku_from_variacao_v2 reaproveita SKU existente por variacao.
     """
     tenant_id = user["tenant_id"]
+    cgi_contract = await _find_signed_cgi_for_project(project_id, tenant_id)
+    if not cgi_contract:
+        raise HTTPException(
+            status_code=409,
+            detail="SKU bloqueado: o projeto ainda nao possui CGI assinado ou vigente.",
+        )
     samples = await db.crm_samples.find(
         {"tenant_id": tenant_id, "projeto_id": project_id},
         {"_id": 0},
@@ -5726,7 +6072,12 @@ async def _generate_skus_for_project_approved_variations(project_id: str, user: 
         for variacao in variations:
             if variacao.get("status") != "aprovada" and variacao.get("resultado") != "aprovada":
                 continue
-            sku = await _create_sku_from_variacao_v2(sample, variacao, user)
+            sku = await _create_sku_from_variacao_v2(
+                sample,
+                variacao,
+                user,
+                cgi_contract=cgi_contract,
+            )
             results.append({
                 "amostra_id": sample.get("id"),
                 "variacao_id": variacao.get("id"),
@@ -5736,7 +6087,7 @@ async def _generate_skus_for_project_approved_variations(project_id: str, user: 
                 generated_for_sample = True
 
         if not variations and sample.get("stage") == "aprovada":
-            sku = await _create_sku_from_sample(sample, user)
+            sku = await _create_sku_from_sample(sample, user, cgi_contract=cgi_contract)
             results.append({
                 "amostra_id": sample.get("id"),
                 "variacao_id": None,
@@ -6128,7 +6479,7 @@ async def list_pd_cards(
     """Listar cards do Pipeline P&D"""
     user = await _get_current_user(request)
     require_roles(user, PD_READ | COMERCIAL_FULL)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     
     if status:
         query["status_pd"] = status
@@ -6442,32 +6793,23 @@ async def delete_pd_card(card_id: str, request: Request):
     if not card:
         raise HTTPException(status_code=404, detail="Card não encontrado")
 
-    if card.get("amostra_id") and card.get("amostra_variacao_id"):
-        await db.crm_samples.update_one(
-            {
-                "id": card["amostra_id"],
-                "tenant_id": user["tenant_id"],
-                "variacoes.id": card["amostra_variacao_id"],
-            },
-            {
-                "$unset": {
-                    "variacoes.$.pd_card_id": "",
-                    "variacoes.$.pd_request_id": "",
-                    "variacoes.$.status_pd_raw": "",
-                    "variacoes.$.status_pd_label": "",
-                    "variacoes.$.ultima_atualizacao_pd": "",
-                }
-            },
-        )
-
+    now = _now_iso()
+    reason = "Arquivamento solicitado pela rota legada de exclusão"
+    archive_fields = _governance_archive_fields(user, reason, now)
     if card.get("pd_request_id") and card.get("is_internal_research"):
         await db.pd_requests.update_one(
             {"id": card["pd_request_id"], "tenant_id": user["tenant_id"]},
-            {"$set": {"is_deleted": True, "deleted_at": _now_iso(), "deleted_by": user["id"]}},
+            {"$set": archive_fields},
         )
 
-    await db.pd_cards.delete_one({"id": card_id, "tenant_id": user["tenant_id"]})
-    return {"deleted_card": card_id}
+    await db.pd_cards.update_one(
+        {"id": card_id, "tenant_id": user["tenant_id"]}, {"$set": archive_fields}
+    )
+    await _audit_card_governance(
+        tenant_id=user["tenant_id"], user=user, action="pd_card_archived",
+        entity_type="pd_card", entity_id=card_id, reason=reason,
+    )
+    return {"archived_card": card_id, "archived": True}
 
 @crm_router.put("/pd/cards/{card_id}")
 async def update_pd_card(card_id: str, data: PDCardUpdate, request: Request):

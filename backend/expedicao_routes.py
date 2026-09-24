@@ -6,12 +6,13 @@ Fluxo:
   3. Despacho confirmado → status expedido → SAIDA_EXPEDICAO no WMS
   4. Entrega confirmada → status entregue
 """
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
 from cq_routes import cq_verificar_liberacao_palete, cq_verificar_lote_aprovado
 from stock_ledger import baixar_saldo_lote_expedicao, estornar_saida_expedicao
+from rbac import SHIPPING_WRITE_ROLES, require_roles
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,14 @@ def init_expedicao(database, auth_func, id_func, iso_func):
     get_current_user = auth_func
     new_id_func = id_func
     now_iso_func = iso_func
+
+
+async def _enforce_expedicao_write_rbac(request: Request):
+    if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        require_roles(await get_current_user(request), SHIPPING_WRITE_ROLES)
+
+
+expedicao_router.dependencies.append(Depends(_enforce_expedicao_write_rbac))
 
 
 def _new_id():

@@ -34,6 +34,7 @@ Invariantes:
   — CNPJ: dígito verificador obrigatório (→ 422 se inválido)
 """
 import io
+import logging
 import re
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
@@ -50,6 +51,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from rbac import require_roles
 from workflow_engine import audit_log, next_sequence, create_workflow_task
 
+logger = logging.getLogger(__name__)
 
 compras_router = APIRouter(prefix="/api/compras")
 
@@ -287,7 +289,7 @@ async def list_ocs(
 ):
     user = await get_current_user(request)
     require_roles(user, COMPRAS_READ_ROLES)
-    query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    query: Dict[str, Any] = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if status:
         query["status"] = status
     if kickoff_id:
@@ -376,18 +378,31 @@ async def delete_oc(oc_id: str, request: Request):
             status_code=400,
             detail="Apenas Ordens de Compra em rascunho ou canceladas podem ser excluidas.",
         )
-    await db.ordens_compra.delete_one({"id": oc_id, "tenant_id": user["tenant_id"]})
+    now = now_iso()
+    archive_fields = {
+        "is_deleted": True,
+        "status": "cancelada",
+        "status_before_archive": existing.get("status"),
+        "archived_at": now,
+        "archived_by": user.get("id"),
+        "archived_by_name": user.get("name", ""),
+        "updated_at": now,
+    }
+    await db.ordens_compra.update_one(
+        {"id": oc_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": archive_fields},
+    )
     await audit_log(
         tenant_id=user["tenant_id"],
         user_id=user["id"],
         user_name=user.get("name", ""),
-        action="oc_deleted",
+        action="oc_archived",
         entity_type="ordem_compra",
         entity_id=oc_id,
         before=existing,
-        after=None,
+        after=archive_fields,
     )
-    return {"deleted": True}
+    return {"archived": True, "id": oc_id, "message": "Ordem de Compra arquivada; histórico preservado"}
 
 
 # ══════════════════════════════════════════════════════════════════════════════

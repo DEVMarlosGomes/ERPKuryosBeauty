@@ -3,7 +3,7 @@ Estoque Routes - Módulo de Controle de Estoque (4 setores + Kardex imutável)
 Setores: MANIPULACAO (MP FORMULACAO), ROTULAGEM (MP ROTULO), LOGISTICA (MP EMBALAGEM), FABRICA (LotePA)
 """
 
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
@@ -16,6 +16,7 @@ from stock_ledger import (
     saldo_quantidade_disponivel,
     saldo_quantidade_reservada,
 )
+from rbac import INVENTORY_WRITE_ROLES, require_roles
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,14 @@ def init_estoque(database, get_user_fn, new_id_fn, now_iso_fn):
     _new_id = new_id_fn
     _now_iso = now_iso_fn
     logger.info("Estoque module initialized")
+
+
+async def _enforce_estoque_write_rbac(request: Request):
+    if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        require_roles(await _get_current_user(request), INVENTORY_WRITE_ROLES)
+
+
+estoque_router.dependencies.append(Depends(_enforce_estoque_write_rbac))
 
 
 async def create_estoque_indexes():
@@ -328,7 +337,7 @@ async def _log_movimento(
 
 async def _get_item_or_404(item_id: str, tenant_id: str) -> dict:
     item = await db.estoque_items.find_one(
-        {"id": item_id, "tenant_id": tenant_id}, {"_id": 0}
+        {"id": item_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}}, {"_id": 0}
     )
     if not item:
         raise HTTPException(status_code=404, detail="Item de estoque não encontrado")
@@ -650,7 +659,7 @@ async def list_items(
     posicao_cq: Optional[str] = None,
 ):
     user = await _get_current_user(request)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if setor:
         query["setor"] = setor
     if tipo_item:
@@ -693,9 +702,15 @@ async def update_item(item_id: str, data: EstoqueItemUpdate, request: Request):
 
 @estoque_router.delete("/items/{item_id}")
 async def delete_item(item_id: str, request: Request):
-    """Deleta item apenas se quantidade_atual = 0 (integridade do kardex)"""
+    """Arquiva item zerado preservando cadastro e kardex para auditoria."""
     user = await _get_current_user(request)
-    item = await _get_item_or_404(item_id, user["tenant_id"])
+    item = await db.estoque_items.find_one(
+        {"id": item_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+    if not item:
+        raise HTTPException(status_code=404, detail="Item de estoque não encontrado")
+    if item.get("is_deleted"):
+        return {"archived": item_id, "message": "Item já estava arquivado"}
 
     if item.get("quantidade_atual", 0) > 0:
         raise HTTPException(
@@ -703,10 +718,20 @@ async def delete_item(item_id: str, request: Request):
             detail=f"Não é possível excluir: saldo = {item['quantidade_atual']} {item.get('unidade', '')}. Zere o saldo antes."
         )
 
-    await db.estoque_items.delete_one({"id": item_id, "tenant_id": user["tenant_id"]})
-    # Movimentos são preservados (kardex imutável)
-    logger.info(f"Deleted estoque_item {item_id}")
-    return {"deleted": item_id}
+    now = _now_iso()
+    await db.estoque_items.update_one(
+        {"id": item_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {
+            "is_deleted": True,
+            "status": "arquivado",
+            "archived_at": now,
+            "archived_by": user.get("id"),
+            "archived_by_name": user.get("name", ""),
+            "updated_at": now,
+        }},
+    )
+    logger.info("Archived estoque_item %s; kardex preservado", item_id)
+    return {"archived": item_id, "message": "Item arquivado; kardex preservado"}
 
 
 @estoque_router.patch("/items/{item_id}/posicao")
@@ -2141,7 +2166,9 @@ async def estoque_dashboard(request: Request):
     user = await _get_current_user(request)
     t_id = user["tenant_id"]
 
-    items_all = await db.estoque_items.find({"tenant_id": t_id}, {"_id": 0}).to_list(10000)
+    items_all = await db.estoque_items.find(
+        {"tenant_id": t_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(10000)
 
     by_setor = {}
     low_stock = []
@@ -2229,7 +2256,7 @@ async def alertas_obsolescencia(request: Request, dias: int = 90):
         {"tenant_id": t_id, "created_at": {"$gte": cutoff}}
     )
     items = await db.estoque_items.find(
-        {"tenant_id": t_id, "quantidade_atual": {"$gt": 0}},
+        {"tenant_id": t_id, "quantidade_atual": {"$gt": 0}, "is_deleted": {"$ne": True}},
         {"_id": 0}
     ).to_list(10000)
     obsoletos = [i for i in items if i["id"] not in itens_ativos_ids]
@@ -2248,6 +2275,7 @@ async def fifo_sugestao(request: Request, nome: str, setor: Optional[str] = None
         "nome": {"$regex": nome, "$options": "i"},
         "quantidade_atual": {"$gt": 0},
         "posicao_cq": "aprovado",
+        "is_deleted": {"$ne": True},
     }
     if setor:
         query["setor"] = setor

@@ -109,7 +109,7 @@ class FakeCollection:
         return doc
 
 
-def test_variacao_aprovada_gera_sku_sem_cgi_e_sem_duplicar(monkeypatch):
+def test_variacao_aprovada_gera_sku_so_com_cgi_e_sem_duplicar(monkeypatch):
     seq = {"id": 0, "sku": 0}
 
     def new_id():
@@ -170,6 +170,14 @@ def test_variacao_aprovada_gera_sku_sem_cgi_e_sem_duplicar(monkeypatch):
             }],
         }]),
         skus=FakeCollection([]),
+        kickoffs=FakeCollection([]),
+        contratos=FakeCollection([{
+            "id": "cgi-1",
+            "tenant_id": "t1",
+            "projeto_id": "proj-1",
+            "status": "assinado",
+            "signed_at": "2026-08-20T09:00:00",
+        }]),
     )
 
     user = {"id": "u1", "name": "Admin", "tenant_id": "t1"}
@@ -181,3 +189,20 @@ def test_variacao_aprovada_gera_sku_sem_cgi_e_sem_duplicar(monkeypatch):
     assert len(crm_routes.db.skus.docs) == 1
     assert seq["sku"] == 1
     assert crm_routes.db.skus.docs[0]["produto_pai_id"] == "pai-1"
+    assert crm_routes.db.skus.docs[0]["origem_contratual_status"] == "cgi_assinado"
+    assert crm_routes.db.skus.docs[0]["cgi_contrato_id"] == "cgi-1"
+
+
+def test_geracao_de_sku_bloqueia_projeto_sem_cgi_assinado():
+    crm_routes.db = SimpleNamespace(
+        contratos=FakeCollection([]),
+        kickoffs=FakeCollection([]),
+    )
+    user = {"id": "u1", "name": "Admin", "tenant_id": "t1"}
+
+    try:
+        asyncio.run(crm_routes._generate_skus_for_project_approved_variations("proj-1", user))
+        assert False, "deveria bloquear sem CGI"
+    except crm_routes.HTTPException as exc:
+        assert exc.status_code == 409
+        assert "CGI assinado" in exc.detail

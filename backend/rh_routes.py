@@ -115,9 +115,10 @@ async def _current_user_and_admin(request: Request):
 @rh_router.get("/dashboard")
 async def rh_dashboard(user: dict = Depends(_current_user_and_admin)):
     tenant_id = _tenant(user)
-    colaboradores = await db.rh_colaboradores.find({"tenant_id": tenant_id}).to_list(1000)
-    avaliacoes = await db.rh_avaliacoes.find({"tenant_id": tenant_id}).sort("created_at", -1).to_list(300)
-    ferias = await db.rh_ferias.find({"tenant_id": tenant_id}).sort("created_at", -1).to_list(300)
+    active = {"tenant_id": tenant_id, "is_deleted": {"$ne": True}}
+    colaboradores = await db.rh_colaboradores.find(active).to_list(1000)
+    avaliacoes = await db.rh_avaliacoes.find(active).sort("created_at", -1).to_list(300)
+    ferias = await db.rh_ferias.find(active).sort("created_at", -1).to_list(300)
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=30)
     ativos = [c for c in colaboradores if c.get("status", "Ativo") == "Ativo"]
@@ -157,7 +158,7 @@ async def rh_dashboard(user: dict = Depends(_current_user_and_admin)):
 
 @rh_router.get("/cargos")
 async def list_cargos(user: dict = Depends(_current_user_and_admin)):
-    return [_clean(c) for c in await db.rh_cargos.find({"tenant_id": _tenant(user)}).sort("nome", 1).to_list(500)]
+    return [_clean(c) for c in await db.rh_cargos.find({"tenant_id": _tenant(user), "is_deleted": {"$ne": True}}).sort("nome", 1).to_list(500)]
 
 
 @rh_router.post("/cargos")
@@ -180,13 +181,18 @@ async def update_cargo(cargo_id: str, payload: CargoPayload, user: dict = Depend
 
 @rh_router.delete("/cargos/{cargo_id}")
 async def delete_cargo(cargo_id: str, user: dict = Depends(_current_user_and_admin)):
-    await db.rh_cargos.delete_one({"tenant_id": _tenant(user), "id": cargo_id})
-    return {"ok": True}
+    result = await db.rh_cargos.update_one(
+        {"tenant_id": _tenant(user), "id": cargo_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "ativo": False, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if not result.matched_count:
+        raise HTTPException(404, "Cargo nao encontrado.")
+    return {"ok": True, "archived": True}
 
 
 @rh_router.get("/colaboradores")
 async def list_colaboradores(user: dict = Depends(_current_user_and_admin)):
-    return [_clean(c) for c in await db.rh_colaboradores.find({"tenant_id": _tenant(user)}).sort("nome", 1).to_list(1000)]
+    return [_clean(c) for c in await db.rh_colaboradores.find({"tenant_id": _tenant(user), "is_deleted": {"$ne": True}}).sort("nome", 1).to_list(1000)]
 
 
 @rh_router.post("/colaboradores")
@@ -221,13 +227,18 @@ async def desligar_colaborador(colaborador_id: str, user: dict = Depends(_curren
 
 @rh_router.delete("/colaboradores/{colaborador_id}")
 async def delete_colaborador(colaborador_id: str, user: dict = Depends(_current_user_and_admin)):
-    await db.rh_colaboradores.delete_one({"tenant_id": _tenant(user), "id": colaborador_id})
-    return {"ok": True}
+    result = await db.rh_colaboradores.update_one(
+        {"tenant_id": _tenant(user), "id": colaborador_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "status": "Desligado", "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if not result.matched_count:
+        raise HTTPException(404, "Colaborador nao encontrado.")
+    return {"ok": True, "archived": True}
 
 
 @rh_router.get("/avaliacoes")
 async def list_avaliacoes(user: dict = Depends(_current_user_and_admin)):
-    return [_clean(a) for a in await db.rh_avaliacoes.find({"tenant_id": _tenant(user)}).sort("created_at", -1).to_list(1000)]
+    return [_clean(a) for a in await db.rh_avaliacoes.find({"tenant_id": _tenant(user), "is_deleted": {"$ne": True}}).sort("created_at", -1).to_list(1000)]
 
 
 @rh_router.post("/avaliacoes")
@@ -253,13 +264,18 @@ async def update_avaliacao(avaliacao_id: str, payload: AvaliacaoPayload, user: d
 
 @rh_router.delete("/avaliacoes/{avaliacao_id}")
 async def delete_avaliacao(avaliacao_id: str, user: dict = Depends(_current_user_and_admin)):
-    await db.rh_avaliacoes.delete_one({"tenant_id": _tenant(user), "id": avaliacao_id})
-    return {"ok": True}
+    result = await db.rh_avaliacoes.update_one(
+        {"tenant_id": _tenant(user), "id": avaliacao_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if not result.matched_count:
+        raise HTTPException(404, "Avaliacao nao encontrada.")
+    return {"ok": True, "archived": True}
 
 
 @rh_router.get("/ferias")
 async def list_ferias(user: dict = Depends(_current_user_and_admin)):
-    return [_clean(f) for f in await db.rh_ferias.find({"tenant_id": _tenant(user)}).sort("created_at", -1).to_list(1000)]
+    return [_clean(f) for f in await db.rh_ferias.find({"tenant_id": _tenant(user), "is_deleted": {"$ne": True}}).sort("created_at", -1).to_list(1000)]
 
 
 @rh_router.post("/ferias")
@@ -297,5 +313,10 @@ async def decide_ferias(ferias_id: str, acao: str, user: dict = Depends(_current
 
 @rh_router.delete("/ferias/{ferias_id}")
 async def delete_ferias(ferias_id: str, user: dict = Depends(_current_user_and_admin)):
-    await db.rh_ferias.delete_one({"tenant_id": _tenant(user), "id": ferias_id})
-    return {"ok": True}
+    result = await db.rh_ferias.update_one(
+        {"tenant_id": _tenant(user), "id": ferias_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "status": "Cancelada", "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if not result.matched_count:
+        raise HTTPException(404, "Solicitacao de ferias nao encontrada.")
+    return {"ok": True, "archived": True}

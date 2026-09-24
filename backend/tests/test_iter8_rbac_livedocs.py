@@ -8,19 +8,19 @@ Auth uses HttpOnly cookies (access_token). We use requests.Session per role.
 """
 import pytest
 import requests
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, ROLE_USERS_PASSWORD, get_backend_url, skip_without_backend_url
 
 BASE_URL = get_backend_url()
 pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 
 CREDS = {
-    "admin":      ("admin@kuryos.com", "admin123"),
-    "vendedor":   ("vendedor@kuryos.com", "kuryos123"),
-    "salesops":   ("salesops@kuryos.com", "kuryos123"),
-    "formulador": ("formulador@kuryos.com", "kuryos123"),
-    "qa":         ("qa@kuryos.com", "kuryos123"),
-    "liderpd":    ("liderpd@kuryos.com", "kuryos123"),
+    "admin":      (ADMIN_EMAIL, ADMIN_PASSWORD),
+    "vendedor":   ("vendedor@kuryos.com", ROLE_USERS_PASSWORD),
+    "salesops":   ("salesops@kuryos.com", ROLE_USERS_PASSWORD),
+    "formulador": ("formulador@kuryos.com", ROLE_USERS_PASSWORD),
+    "qa":         ("qa@kuryos.com", ROLE_USERS_PASSWORD),
+    "liderpd":    ("liderpd@kuryos.com", ROLE_USERS_PASSWORD),
 }
 
 

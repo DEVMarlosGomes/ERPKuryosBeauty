@@ -1,0 +1,4082 @@
+{
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "entries": [
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0005__SASCDM01",
+      "legacy_number": "0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0005__SASCDM02",
+      "legacy_number": "0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0005__SASCES01",
+      "legacy_number": "0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0005__SASCES02",
+      "legacy_number": "0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0006__MRARBS05",
+      "legacy_number": "0006",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPGLBS01",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPGLBS02",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPGLBS03",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPHNPC01",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPMTBS01",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPMTBS02",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0007__DPMTBS03",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS06",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS07",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS08",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS09",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS10",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS11",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0008__MRARBS12",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__BODY_SPLASH_LEAO_DO_DESERTO_BOURBON_200ml",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__MRARBS06",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__MRARBS08",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__MRARBS09",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__MRARBS10",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__MRARBS11",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0011__MRARBS12",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0012__MRARBS05",
+      "legacy_number": "0012",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0014__MRARBS01",
+      "legacy_number": "0014",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0014__MRARBS02",
+      "legacy_number": "0014",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0014__MRARBS04",
+      "legacy_number": "0014",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0015__MRFX0001",
+      "legacy_number": "0015",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0016__PRF-MENE-0001",
+      "legacy_number": "0016",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0001",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0003",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0004",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0005",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0006",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0007",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0008",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0009",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0010",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0011",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0012",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0013",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0014",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0015",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0016",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0017",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0018",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0019",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0020",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0021",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0022",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0023",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0025",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0026",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0027",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0028",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0029",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0030",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0031",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0032",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0033",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0034",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0017__PRF-AFEE-0035",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0018__PRF-ROSA-0001",
+      "legacy_number": "0018",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0018__PRF-ROSA-0002",
+      "legacy_number": "0018",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0018__PRF-ROSA-0003",
+      "legacy_number": "0018",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0018__PRF-ROSA-0004",
+      "legacy_number": "0018",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0018__PRF-ROSA-0005",
+      "legacy_number": "0018",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0019__GLMKAM01",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0019__GLMKAM02",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0019__GLMKAM03",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0019__GLMKAM04",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0019__GLMKAM05",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0019__GLMKAM06",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0020__KUBPBA01",
+      "legacy_number": "0020",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0020__KUBPBA01_-_2",
+      "legacy_number": "0020",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0021__KUBPBA02",
+      "legacy_number": "0021",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0022__BBSJBS03-2",
+      "legacy_number": "0022",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0022__BBSJBS05-2",
+      "legacy_number": "0022",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0001",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0002",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0003",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0004",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0005",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0006",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "0023__HDR-MISS-0007",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_06__MRARBS01",
+      "legacy_number": "01_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_07__MRARBS02",
+      "legacy_number": "01_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_07__MRARBS03",
+      "legacy_number": "01_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_07__MRARBS04",
+      "legacy_number": "01_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_08__BFBBBS01",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_08__BFBBBS02",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_08__BFBBBS03",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_08__BFBBBS04",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_08__BFBBBS05",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "01_08__BFBBBS06",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "02_06__MRARBS05",
+      "legacy_number": "02_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "02_07__DPHNBS01",
+      "legacy_number": "02_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "02_07__DPHNBS02",
+      "legacy_number": "02_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "02_07__DPHNPC01",
+      "legacy_number": "02_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_06__KUBPBA01_-_2",
+      "legacy_number": "03_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_06__KUBPBA02",
+      "legacy_number": "03_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARBS01",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARBS02",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARBS03",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARBS04",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARBS05",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARBS06",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARGB01",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARGB03",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARGB04",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARGB05",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARGB06",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARHD01",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARHD02",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARHD03",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARHD04",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARHD05",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBARHD06",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBCHEC01",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBCHEC02",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBCHEC03",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBCHGC01",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBCHGC02",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "03_07__IBCHGC03",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "04_07__KUBPBA01_-_2",
+      "legacy_number": "04_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "04_07__KUBPBA02",
+      "legacy_number": "04_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__BODY_SPLASH_OUD_NIGHT_200ML",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBBS0002",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBBS0003",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBBS0005",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBBS0006",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBHD0002",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBMF0002",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "05__FBOC0002",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "11__BODY_SPLASH_LEAO_DO_DESERTO_BOURBON_200ml",
+      "legacy_number": "11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "20__BASE_PARA_BODY_SPLASH_NEUTRO_1L",
+      "legacy_number": "20",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "25__MRBR0001",
+      "legacy_number": "25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__AGU-SEUN-0001",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__BSP-SEUN-0001",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__ESF-SEUN-0001",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__ESP-SEUN-0001",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__HID-SEUN-0001",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__SRM-SEUN-0001",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "26__SRM-SEUN-0002",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "27__HDR-MISS-0008",
+      "legacy_number": "27",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "29__BASE_PARA_PERFUME_FINA_BASE_PREMIUM_1LT",
+      "legacy_number": "29",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "30__MRARBS07",
+      "legacy_number": "30",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "30__MRARBS12",
+      "legacy_number": "30",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "31__FBMF0002",
+      "legacy_number": "31",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS01",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS02",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS03",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS04",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS05",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS06",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS07",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABBS08",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD01",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD02",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD03",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD04",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD05",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD06",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD07",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMABHD08",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS01",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS02",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS03",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS04",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS05",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS06",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS07",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCBS08",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD01",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD02",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD03",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD04",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD05",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD06",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD07",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "AMEERATI_01__AMNCHD08",
+      "legacy_number": "AMEERATI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRE_06-11__GLMKAM07",
+      "legacy_number": "ANDRE 06/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRE_14-01-26__GLMKAM02",
+      "legacy_number": "ANDRE 14/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRE_14-01-26__GLMKAM03",
+      "legacy_number": "ANDRE 14/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRE_14-01-26__GLMKAM04",
+      "legacy_number": "ANDRE 14/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRE_14-01-26__GLMKAM05",
+      "legacy_number": "ANDRE 14/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRE_14-01-26__GLMKAM06",
+      "legacy_number": "ANDRE 14/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "ANDRÉ_15-09__MAOEOL02",
+      "legacy_number": "ANDRÉ 15/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS01",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS01-2",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS02",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS02-2",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS03",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS03-2",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS04-2",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJBS05-2",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJPF01",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJPF02",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "BRIA_01__BBSJPF03",
+      "legacy_number": "BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Bases_-_Multi_Lojas__KUBPBA01",
+      "legacy_number": "Bases - Multi Lojas",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Bases_-_Multi_Lojas__KUBPBA02",
+      "legacy_number": "Bases - Multi Lojas",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CAMIE_04-03__CMBS0001",
+      "legacy_number": "CAMIE 04/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CAMIE_04-03__CMGL0001",
+      "legacy_number": "CAMIE 04/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CAMIE_04-03__CMOC0001",
+      "legacy_number": "CAMIE 04/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CIDA_02-25__KUBPBA01",
+      "legacy_number": "CIDA 02.25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CIDA_02-25__KUBPBA02",
+      "legacy_number": "CIDA 02.25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CIDA_02-25__KUBPBA02_-_2",
+      "legacy_number": "CIDA 02.25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CIDA_11-11__KUBPBA01",
+      "legacy_number": "CIDA 11/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CIDA_11-11__KUBPBA01_-_2",
+      "legacy_number": "CIDA 11/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "CIDA_11-11__KUBPBA02",
+      "legacy_number": "CIDA 11/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "COMPLEMENTO_PEDIDO_01-25__FBPF0001",
+      "legacy_number": "COMPLEMENTO PEDIDO 01/25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "COMPLEMENTO_PEDIDO_01-25__FBPF0002",
+      "legacy_number": "COMPLEMENTO PEDIDO 01/25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Curaderm__CRPMCR01",
+      "legacy_number": "Curaderm",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLBS01",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLBS02",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLBS03",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLES02",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLHD01",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLHD02",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPGLHD03",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTBS01",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTBS02",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTBS03",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTES01",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTES02",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTES03",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTHD01",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTHD02",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "DAPOP_-_Pedido_360_mil__DPMTHD03",
+      "legacy_number": "DAPOP - Pedido 360 mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_03-02-26__MRBR0001",
+      "legacy_number": "FABIANO 03/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_03-02-26__MRFX0001",
+      "legacy_number": "FABIANO 03/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_06-02-26__WKBM0001",
+      "legacy_number": "FABIANO 06/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_06-11__MRARBS02",
+      "legacy_number": "FABIANO 06/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS06",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS07",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS08",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS09",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS10",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS11",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_09-12__MRARBS12",
+      "legacy_number": "FABIANO 09/12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_19-11__MRARBS02",
+      "legacy_number": "FABIANO 19/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_19-11__MRARBS03",
+      "legacy_number": "FABIANO 19/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_19-11__MRARHD01",
+      "legacy_number": "FABIANO 19/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_19-11__MRARHD02",
+      "legacy_number": "FABIANO 19/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_19-11__MRARHD03",
+      "legacy_number": "FABIANO 19/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_19-11__MRARHD04",
+      "legacy_number": "FABIANO 19/11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_20-01-26__MRARBS01",
+      "legacy_number": "FABIANO 20/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_22-01-26__WKBS0001",
+      "legacy_number": "FABIANO 22/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_22-01-26__WKBS0002",
+      "legacy_number": "FABIANO 22/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_22-01-26__WKBS0003",
+      "legacy_number": "FABIANO 22/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_22-01-26__WKBS0004",
+      "legacy_number": "FABIANO 22/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_22-01-26__WKBS0005",
+      "legacy_number": "FABIANO 22/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FABIANO_22-01-26__WKBS0006",
+      "legacy_number": "FABIANO 22/01/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FILATO_02-26__FBPF0001",
+      "legacy_number": "FILATO 02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "FILATO_02-26__FBPF0002",
+      "legacy_number": "FILATO 02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Fabiano_20-10__MRARBS01",
+      "legacy_number": "Fabiano 20/10",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Fabiano_22-09__MRARBS02",
+      "legacy_number": "Fabiano 22/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Fabiano_22-09__MRARBS03",
+      "legacy_number": "Fabiano 22/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Fabiano_22-09__MRARBS04",
+      "legacy_number": "Fabiano 22/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GLOW_-_Água_Micelar__GLMKAM01",
+      "legacy_number": "GLOW - Água Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GLOW_-_Água_Micelar__GLMKAM02",
+      "legacy_number": "GLOW - Água Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GLOW_-_Água_Micelar__GLMKAM03",
+      "legacy_number": "GLOW - Água Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GLOW_-_Água_Micelar__GLMKAM04",
+      "legacy_number": "GLOW - Água Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GLOW_-_Água_Micelar__GLMKAM05",
+      "legacy_number": "GLOW - Água Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GLOW_-_Água_Micelar__GLMKAM06",
+      "legacy_number": "GLOW - Água Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash__GZLBBS01",
+      "legacy_number": "GOTA ZEN - Body Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash__GZLBBS02",
+      "legacy_number": "GOTA ZEN - Body Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash__GZLBBS03",
+      "legacy_number": "GOTA ZEN - Body Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash__GZLBBS04",
+      "legacy_number": "GOTA ZEN - Body Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash__GZLBBS05",
+      "legacy_number": "GOTA ZEN - Body Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash__GZLBBS06",
+      "legacy_number": "GOTA ZEN - Body Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0001",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0002",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0003",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0004",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0005",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0006",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0007",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__HBHD0008",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "HABIBI_01__PERFUME_CAPILAR_CELESTIA_57ml",
+      "legacy_number": "HABIBI 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MAHMUD_23-10__MRARBS05",
+      "legacy_number": "MAHMUD 23/10",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MARIO_09-02-26__GZLBBS01",
+      "legacy_number": "MARIO 09/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MARIO_09-02-26__GZLBBS02",
+      "legacy_number": "MARIO 09/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MARIO_09-02-26__GZLBBS03",
+      "legacy_number": "MARIO 09/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MARIO_09-02-26__GZLBBS04",
+      "legacy_number": "MARIO 09/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MARIO_09-02-26__GZLBBS05",
+      "legacy_number": "MARIO 09/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "MARIO_09-02-26__GZLBBS06",
+      "legacy_number": "MARIO 09/02/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Miss_Rôse_-_Body_Splash_1-0__MRARBS01",
+      "legacy_number": "Miss Rôse - Body Splash 1.0",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Miss_Rôse_-_Body_Splash_1-0__MRARBS02",
+      "legacy_number": "Miss Rôse - Body Splash 1.0",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Miss_Rôse_-_Body_Splash_1-0__MRARBS03",
+      "legacy_number": "Miss Rôse - Body Splash 1.0",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Miss_Rôse_-_Body_Splash_1-0__MRARBS04",
+      "legacy_number": "Miss Rôse - Body Splash 1.0",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Miss_Rôse_-_Hidratante__MRARHD01",
+      "legacy_number": "Miss Rôse - Hidratante",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Miss_Rôse_-_Hidratante__MRARHD02",
+      "legacy_number": "Miss Rôse - Hidratante",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFM01",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFM03",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFM13",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFW02",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFW10",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFW18",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Moutier_01-09__MOPFFW19",
+      "legacy_number": "Moutier 01/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0001__PRF-BIOF-0002",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0001__PRF-BIOF-0003",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0001__PRF-BIOF-0004",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0001__PRF-BIOF-0005",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0001__PRF-BIOF-0006",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0001__PRF-BIOF-0007",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0002__MRARBS03",
+      "legacy_number": "PED-0002",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0002__MRARBS04",
+      "legacy_number": "PED-0002",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0003__MRARBS01",
+      "legacy_number": "PED-0003",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0003__MRARBS02",
+      "legacy_number": "PED-0003",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0003__MRARBS04",
+      "legacy_number": "PED-0003",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0004__MRARHD01",
+      "legacy_number": "PED-0004",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0004__MRARHD02",
+      "legacy_number": "PED-0004",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0004__MRARHD03",
+      "legacy_number": "PED-0004",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0004__MRARHD04",
+      "legacy_number": "PED-0004",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0005__MRFX0001",
+      "legacy_number": "PED-0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0006__MRBR0001",
+      "legacy_number": "PED-0006",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0007__WKBS0002",
+      "legacy_number": "PED-0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0007__WKBS0005",
+      "legacy_number": "PED-0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0007__WKBS0006",
+      "legacy_number": "PED-0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PED-0008__MRARBS07",
+      "legacy_number": "PED-0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PROG_01_25-03-26__MRARBS01",
+      "legacy_number": "PROG 01 25/03/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PROG_01_25-03-26__MRARBS03",
+      "legacy_number": "PROG 01 25/03/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "PROG_01_25-03-26__MRARBS04",
+      "legacy_number": "PROG 01 25/03/26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM01",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM02",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM03",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM04",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM05",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM06",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM07",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM08",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM09",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM10",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM11",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM12",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFM13",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW01",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW02",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW03",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW04",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW05",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW06",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW07",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW08",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW09",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Perfumes_Moutier__MOPFFW10",
+      "legacy_number": "Perfumes Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS06",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS07",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS08",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS09",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS10",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS11",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_23-03__MRARBS12",
+      "legacy_number": "REPOSICAO 23/03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_BRIA_01__BBPF0004",
+      "legacy_number": "REPOSICAO BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_BRIA_01__BBSJBS01-2",
+      "legacy_number": "REPOSICAO BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_BRIA_01__BBSJBS02-2",
+      "legacy_number": "REPOSICAO BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_BRIA_01__BBSJBS03-2",
+      "legacy_number": "REPOSICAO BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_BRIA_01__BBSJBS04-2",
+      "legacy_number": "REPOSICAO BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "REPOSICAO_BRIA_01__BBSJBS05-2",
+      "legacy_number": "REPOSICAO BRIA 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "RETRABALHO__RETRAB03",
+      "legacy_number": "RETRABALHO",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "RETRABALHO__RETRAB06",
+      "legacy_number": "RETRABALHO",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SAFIRA_674__SASCDM01",
+      "legacy_number": "SAFIRA 674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SAFIRA_674__SASCDM02",
+      "legacy_number": "SAFIRA 674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SAFIRA_674__SASCES01",
+      "legacy_number": "SAFIRA 674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SAFIRA_674__SASCES02",
+      "legacy_number": "SAFIRA 674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SAFIRA_674__SASCGF01",
+      "legacy_number": "SAFIRA 674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SAFIRA_674__SASCGF02",
+      "legacy_number": "SAFIRA 674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SMAYKEL_01__DYPFPF01",
+      "legacy_number": "SMAYKEL 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SMAYKEL_01__DYPFPF02",
+      "legacy_number": "SMAYKEL 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SMAYKEL_01__DYPFPF03",
+      "legacy_number": "SMAYKEL 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "SMAYKEL_01__DYPFPF04",
+      "legacy_number": "SMAYKEL 01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Sassa_26-09__KUBPBA01",
+      "legacy_number": "Sassa 26/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos",
+      "legacy_id": "Sassa_26-09__KUBPBA01_-_2",
+      "legacy_number": "Sassa 26/09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "25",
+      "legacy_number": "25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "26",
+      "legacy_number": "26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "27",
+      "legacy_number": "27",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "30",
+      "legacy_number": "30",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "31",
+      "legacy_number": "31",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "05",
+      "legacy_number": "05",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0005",
+      "legacy_number": "0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0006",
+      "legacy_number": "0006",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0007",
+      "legacy_number": "0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0008",
+      "legacy_number": "0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0011",
+      "legacy_number": "0011",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0012",
+      "legacy_number": "0012",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0014",
+      "legacy_number": "0014",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0015",
+      "legacy_number": "0015",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0016",
+      "legacy_number": "0016",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0017",
+      "legacy_number": "0017",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0018",
+      "legacy_number": "0018",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0019",
+      "legacy_number": "0019",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0020",
+      "legacy_number": "0020",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0021",
+      "legacy_number": "0021",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0022",
+      "legacy_number": "0022",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "0023",
+      "legacy_number": "0023",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "01_06",
+      "legacy_number": "01_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "01_07",
+      "legacy_number": "01_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "01_08",
+      "legacy_number": "01_08",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "02_06",
+      "legacy_number": "02_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "02_07",
+      "legacy_number": "02_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "03_06",
+      "legacy_number": "03_06",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "03_07",
+      "legacy_number": "03_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "04_07",
+      "legacy_number": "04_07",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "AMEERATI_01",
+      "legacy_number": "AMEERATI_01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "ANDRE_06-11",
+      "legacy_number": "ANDRE_06-11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "ANDRE_14-01-26",
+      "legacy_number": "ANDRE_14-01-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "ANDRÉ_15-09",
+      "legacy_number": "ANDRÉ_15-09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "BRIA_01",
+      "legacy_number": "BRIA_01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Bases_-_Multi_Lojas",
+      "legacy_number": "Bases_-_Multi_Lojas",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "CAMIE_04-03",
+      "legacy_number": "CAMIE_04-03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "CIDA_02-25",
+      "legacy_number": "CIDA_02-25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "CIDA_11-11",
+      "legacy_number": "CIDA_11-11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "COMPLEMENTO_PEDIDO_01-25",
+      "legacy_number": "COMPLEMENTO_PEDIDO_01-25",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Curaderm",
+      "legacy_number": "Curaderm",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "DAPOP_-_Pedido_360_mil",
+      "legacy_number": "DAPOP_-_Pedido_360_mil",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_03-02-26",
+      "legacy_number": "FABIANO_03-02-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_06-02-26",
+      "legacy_number": "FABIANO_06-02-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_06-11",
+      "legacy_number": "FABIANO_06-11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_09-12",
+      "legacy_number": "FABIANO_09-12",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_19-11",
+      "legacy_number": "FABIANO_19-11",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_20-01-26",
+      "legacy_number": "FABIANO_20-01-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FABIANO_22-01-26",
+      "legacy_number": "FABIANO_22-01-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "FILATO_02-26",
+      "legacy_number": "FILATO_02-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Fabiano_20-10",
+      "legacy_number": "Fabiano_20-10",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Fabiano_22-09",
+      "legacy_number": "Fabiano_22-09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "GLOW_-_Água_Micelar",
+      "legacy_number": "GLOW_-_Água_Micelar",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "GOTA_ZEN_-_Body_Slash",
+      "legacy_number": "GOTA_ZEN_-_Body_Slash",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "HABIBI_01",
+      "legacy_number": "HABIBI_01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "MAHMUD_23-10",
+      "legacy_number": "MAHMUD_23-10",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "MARIO_09-02-26",
+      "legacy_number": "MARIO_09-02-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Miss_Rôse_-_Body_Splash_1-0",
+      "legacy_number": "Miss_Rôse_-_Body_Splash_1-0",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Miss_Rôse_-_Hidratante",
+      "legacy_number": "Miss_Rôse_-_Hidratante",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Moutier_01-09",
+      "legacy_number": "Moutier_01-09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0001",
+      "legacy_number": "PED-0001",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0002",
+      "legacy_number": "PED-0002",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0003",
+      "legacy_number": "PED-0003",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0004",
+      "legacy_number": "PED-0004",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0005",
+      "legacy_number": "PED-0005",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0006",
+      "legacy_number": "PED-0006",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0007",
+      "legacy_number": "PED-0007",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PED-0008",
+      "legacy_number": "PED-0008",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "PROG_01_25-03-26",
+      "legacy_number": "PROG_01_25-03-26",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Perfumes_Moutier",
+      "legacy_number": "Perfumes_Moutier",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "REPOSICAO_23-03",
+      "legacy_number": "REPOSICAO_23-03",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "REPOSICAO_BRIA_01",
+      "legacy_number": "REPOSICAO_BRIA_01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "RETRABALHO",
+      "legacy_number": "RETRABALHO",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "SAFIRA_674",
+      "legacy_number": "SAFIRA_674",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "SMAYKEL_01",
+      "legacy_number": "SMAYKEL_01",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    },
+    {
+      "source_node": "pedidos_comerciais",
+      "legacy_id": "Sassa_26-09",
+      "legacy_number": "Sassa_26-09",
+      "current_order_id": null,
+      "classification": "INSERT_CANDIDATE",
+      "matched_values": [],
+      "reason": "Nenhum pedido alvo corresponde; depende de cliente, SKU e CGI reconciliados."
+    }
+  ]
+}

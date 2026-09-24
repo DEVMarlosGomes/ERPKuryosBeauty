@@ -323,13 +323,28 @@ async def _sync_request_status_to_pipeline(
         )
 
     if updated_card.get("amostra_variacao_id"):
+        linked_sample = await db.crm_samples.find_one(
+            {"id": updated_card.get("amostra_id"), "tenant_id": tenant_id},
+            {"_id": 0},
+        )
+        linked_variation = next(
+            (
+                item for item in ((linked_sample or {}).get("variacoes") or [])
+                if item.get("id") == updated_card["amostra_variacao_id"]
+            ),
+            {},
+        )
+        commercial_approved = bool(
+            linked_variation.get("aprovacao_externa")
+            and linked_variation.get("resultado") == "aprovada"
+        )
         crm_status = PD_KANBAN_TO_CRM_STATUS.get(kanban_status)
         set_ops = {
             "variacoes.$.status_pd_raw": kanban_status,
             "variacoes.$.status_pd_label": PD_KANBAN_LABELS.get(kanban_status, kanban_status),
             "updated_at": now,
         }
-        if crm_status:
+        if crm_status and not (kanban_status == "aprovado" and not commercial_approved):
             set_ops["variacoes.$.status"] = crm_status
         if kanban_status == "aguardando_aprovacao":
             set_ops["variacoes.$.aprovacao_interna"] = True
@@ -337,10 +352,12 @@ async def _sync_request_status_to_pipeline(
             set_ops["data_envio"] = now
             set_ops["aprovacao_interna"] = True
         elif kanban_status == "aprovado":
-            set_ops["variacoes.$.resultado"] = "aprovada"
             set_ops["variacoes.$.aprovacao_interna"] = True
-            set_ops["variacoes.$.aprovacao_externa"] = True
-            set_ops["variacoes.$.aprovado_cliente_em"] = now
+            set_ops["variacoes.$.aprovacao_pd"] = True
+            set_ops["variacoes.$.aprovado_pd_em"] = now
+            if commercial_approved:
+                set_ops["variacoes.$.resultado"] = "aprovada"
+                set_ops["variacoes.$.status"] = "aprovada"
         elif kanban_status == "retrabalho_interno":
             set_ops["variacoes.$.aprovacao_externa"] = False
 
@@ -1551,7 +1568,7 @@ async def create_pd_request(data: PDRequestCreate, request: Request):
 async def list_pd_requests(request: Request, status: Optional[str] = None):
     user = await get_current_user(request)
     require_roles(user, PD_READ)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if status:
         query["status"] = status
     
@@ -1691,25 +1708,51 @@ async def restore_pd_request(req_id: str, data: GovernanceRestoreRequest, reques
 async def delete_pd_request(req_id: str, request: Request):
     user = await get_current_user(request)
     require_roles(user, PD_WRITE)
-    result = await db.pd_requests.delete_one({"id": req_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    tenant_id = user["tenant_id"]
+    pd_req = await db.pd_requests.find_one(
+        {"id": req_id, "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not pd_req:
         raise HTTPException(status_code=404, detail="Solicitação não encontrada")
-    # Clean up related data
-    dev = await db.pd_developments.find_one({"pd_request_id": req_id}, {"_id": 0})
-    if dev:
-        dev_id = dev["id"]
-        formula_ids = [f["id"] for f in await db.pd_formulas.find({"development_id": dev_id}, {"id": 1, "_id": 0}).to_list(100)]
-        if formula_ids:
-            await db.pd_formula_items.delete_many({"formula_id": {"$in": formula_ids}})
-        await db.pd_formulas.delete_many({"development_id": dev_id})
-        await db.pd_tests.delete_many({"development_id": dev_id})
-        await db.pd_samples.delete_many({"development_id": dev_id})
-        await db.pd_approvals.delete_many({"development_id": dev_id})
-        await db.pd_costs.delete_many({"development_id": dev_id})
-        await db.pd_documents.delete_many({"development_id": dev_id})
-        await db.pd_developments.delete_one({"id": dev_id})
-    await db.pd_request_status_history.delete_many({"pd_request_id": req_id})
-    return {"message": "Solicitação removida"}
+    if pd_req.get("is_deleted"):
+        return {"message": "Solicitação já estava arquivada", "request_id": req_id, "archived": True}
+    if pd_req.get("status") in PD_GOVERNANCE_BLOCKED_STATUSES:
+        raise HTTPException(
+            status_code=409,
+            detail="Solicitação P&D aprovada/concluída não pode ser arquivada; mantenha o registro operacional.",
+        )
+
+    now = now_iso()
+    reason = "Arquivamento solicitado pela rota legada de exclusão"
+    fields = _governance_archive_fields(user, reason, now)
+    await db.pd_requests.update_one(
+        {"id": req_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}},
+        {"$set": fields},
+    )
+    await db.pd_cards.update_many(
+        {"pd_request_id": req_id, "tenant_id": tenant_id}, {"$set": fields}
+    )
+    await db.pd_request_status_history.insert_one({
+        "id": new_id(),
+        "tenant_id": tenant_id,
+        "pd_request_id": req_id,
+        "from_status": pd_req.get("status"),
+        "to_status": pd_req.get("status"),
+        "action": "archived",
+        "changed_by": user.get("id"),
+        "changed_by_name": user.get("name", ""),
+        "comment": reason,
+        "created_at": now,
+    })
+    await _audit_card_governance(
+        tenant_id=tenant_id,
+        user=user,
+        action="pd_request_archived",
+        entity_type="pd_request",
+        entity_id=req_id,
+        reason=reason,
+    )
+    return {"message": "Solicitação arquivada; histórico preservado", "request_id": req_id, "archived": True}
 
 # ============ STATUS TRANSITIONS ============
 
@@ -1967,6 +2010,7 @@ async def _sync_linked_variacao_from_pd_approval(pd_req: dict, user: dict, new_s
             "variacoes.$.status_pd_raw": "aprovado",
             "variacoes.$.status_pd_label": "Amostra aprovada" if commercial_approved else "Aprovado pelo P&D",
             "variacoes.$.aprovacao_pd": True,
+            "variacoes.$.aprovacao_comercial": commercial_approved,
             "variacoes.$.aprovado_pd_em": now,
             "variacoes.$.enviado_comercial_em": variacao.get("enviado_comercial_em") or now,
             "data_envio": sample.get("data_envio") or now,
@@ -3024,8 +3068,11 @@ async def delete_formula_item(item_id: str, request: Request):
     existing = await db.pd_formula_items.find_one({"id": item_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Item nao encontrado")
-    result = await db.pd_formula_items.delete_one({"id": item_id})
-    if result.deleted_count == 0:
+    result = await db.pd_formula_items.update_one(
+        {"id": item_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Item não encontrado")
     formula = await db.pd_formulas.find_one({"id": existing["formula_id"]}, {"_id": 0})
     if formula:
@@ -3051,7 +3098,9 @@ async def delete_formula_item(item_id: str, request: Request):
 @pd_router.get("/formulas/{formula_id}/items")
 async def list_formula_items(formula_id: str, request: Request):
     user = await get_current_user(request)
-    items = await db.pd_formula_items.find({"formula_id": formula_id}, {"_id": 0}).to_list(200)
+    items = await db.pd_formula_items.find(
+        {"formula_id": formula_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(200)
     return items
 
 # ============ FORMULA COST REPORT ============
@@ -3127,7 +3176,9 @@ async def create_test(dev_id: str, data: TestCreate, request: Request):
 @pd_router.get("/developments/{dev_id}/tests")
 async def list_tests(dev_id: str, request: Request):
     user = await get_current_user(request)
-    tests = await db.pd_tests.find({"development_id": dev_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    tests = await db.pd_tests.find(
+        {"development_id": dev_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
     return tests
 
 @pd_router.put("/tests/{test_id}")
@@ -3153,8 +3204,11 @@ async def update_test(test_id: str, data: TestUpdate, request: Request):
 @pd_router.delete("/tests/{test_id}")
 async def delete_test(test_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.pd_tests.delete_one({"id": test_id})
-    if result.deleted_count == 0:
+    result = await db.pd_tests.update_one(
+        {"id": test_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Teste não encontrado")
     return {"message": "Teste removido"}
 
@@ -4333,7 +4387,7 @@ async def list_sample_batches(dev_id: str, request: Request):
     if not dev:
         raise HTTPException(status_code=404, detail="Desenvolvimento não encontrado")
     batches = await db.pd_sample_batches.find(
-        {"development_id": dev_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+        {"development_id": dev_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}, {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     return [_serialize_sample_batch(batch) for batch in batches]
 
@@ -4405,11 +4459,12 @@ async def delete_sample_batch(dev_id: str, batch_id: str, request: Request):
     )
     if not existing:
         raise HTTPException(status_code=404, detail="Lote não encontrado")
-    await db.pd_sample_batches.delete_one({"id": batch_id})
+    archived = {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}
+    await db.pd_sample_batches.update_one({"id": batch_id}, {"$set": archived})
     await audit_log(tenant_id=user["tenant_id"], user_id=user["id"], user_name=user.get("name", ""),
-                    action="deleted", entity_type="pd_sample_batches", entity_id=batch_id,
-                    before={"nome": existing.get("nome")})
-    return {"ok": True}
+                    action="archived", entity_type="pd_sample_batches", entity_id=batch_id,
+                    before={"nome": existing.get("nome")}, after=archived)
+    return {"ok": True, "archived": True}
 
 # ============ DOCUMENTS ============
 
@@ -4438,14 +4493,19 @@ async def add_document(dev_id: str, data: DocumentCreate, request: Request):
 @pd_router.get("/developments/{dev_id}/documents")
 async def list_documents(dev_id: str, request: Request):
     user = await get_current_user(request)
-    docs = await db.pd_documents.find({"development_id": dev_id}, {"_id": 0}).sort("uploaded_at", -1).to_list(100)
+    docs = await db.pd_documents.find(
+        {"development_id": dev_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).sort("uploaded_at", -1).to_list(100)
     return docs
 
 @pd_router.delete("/documents/{doc_id}")
 async def delete_document(doc_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.pd_documents.delete_one({"id": doc_id})
-    if result.deleted_count == 0:
+    result = await db.pd_documents.update_one(
+        {"id": doc_id, "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Documento não encontrado")
     return {"message": "Documento removido"}
 
@@ -5824,7 +5884,7 @@ async def create_catalog_item(data: CatalogItemCreate, request: Request):
 @pd_router.get("/catalog")
 async def list_catalog(request: Request, q: Optional[str] = None, categoria: Optional[str] = None):
     user = await get_current_user(request)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if q:
         query["$or"] = [
             {"nome": {"$regex": q, "$options": "i"}},
@@ -5913,12 +5973,13 @@ async def update_catalog_item(item_id: str, data: CatalogItemUpdate, request: Re
 @pd_router.delete("/catalog/{item_id}")
 async def delete_catalog_item(item_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.pd_catalog.delete_one({"id": item_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    result = await db.pd_catalog.update_one(
+        {"id": item_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Ingrediente não encontrado")
-    # Do not delete formula items referring to catalog - just unset catalog_id
-    await db.pd_formula_items.update_many({"catalog_id": item_id}, {"$set": {"catalog_id": None}})
-    return {"message": "Ingrediente removido do banco de custos"}
+    return {"message": "Ingrediente arquivado no banco de custos", "archived": True}
 
 @pd_router.get("/catalog/{item_id}/price-history")
 async def catalog_price_history(item_id: str, request: Request):
@@ -6177,7 +6238,7 @@ async def create_stock_item(data: StockItemCreate, request: Request):
 @pd_router.get("/stock")
 async def list_stock(request: Request, categoria: Optional[str] = None, q: Optional[str] = None, low_stock: bool = False):
     user = await get_current_user(request)
-    query = {"tenant_id": user["tenant_id"]}
+    query = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if categoria:
         query["categoria"] = categoria
     if q:
@@ -6195,7 +6256,9 @@ async def list_stock(request: Request, categoria: Optional[str] = None, q: Optio
 async def stock_alerts(request: Request):
     """Items below minimum stock or expiring soon"""
     user = await get_current_user(request)
-    items = await db.pd_stock_items.find({"tenant_id": user["tenant_id"]}, {"_id": 0}).to_list(5000)
+    items = await db.pd_stock_items.find(
+        {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(5000)
     low_stock = []
     expiring = []
     now_dt = datetime.now(timezone.utc)
@@ -6323,11 +6386,18 @@ async def update_stock_item(item_id: str, data: StockItemUpdate, request: Reques
 @pd_router.delete("/stock/{item_id}")
 async def delete_stock_item(item_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.pd_stock_items.delete_one({"id": item_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    existing = await db.pd_stock_items.find_one(
+        {"id": item_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+    if not existing:
         raise HTTPException(status_code=404, detail="Item não encontrado")
-    await db.pd_stock_movements.delete_many({"stock_item_id": item_id})
-    return {"message": "Item removido"}
+    if float(existing.get("quantidade_atual") or 0) != 0:
+        raise HTTPException(status_code=409, detail="Zere o saldo antes de arquivar o item; movimentos serão preservados.")
+    await db.pd_stock_items.update_one(
+        {"id": item_id, "tenant_id": user["tenant_id"]},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    return {"message": "Item arquivado; movimentos preservados", "archived": True}
 
 @pd_router.post("/stock/{item_id}/movements")
 async def create_stock_movement(item_id: str, data: StockMovementCreate, request: Request):
@@ -6424,15 +6494,18 @@ async def create_update(req_id: str, data: UpdateCreate, request: Request):
 async def list_updates(req_id: str, request: Request):
     user = await get_current_user(request)
     updates = await db.pd_updates.find(
-        {"pd_request_id": req_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+        {"pd_request_id": req_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}, {"_id": 0}
     ).sort("created_at", -1).to_list(500)
     return updates
 
 @pd_router.delete("/updates/{up_id}")
 async def delete_update(up_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.pd_updates.delete_one({"id": up_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    result = await db.pd_updates.update_one(
+        {"id": up_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Atualização não encontrada")
     return {"message": "Atualização removida"}
 
@@ -6484,7 +6557,7 @@ async def create_pending(req_id: str, data: PendingItemCreate, request: Request)
 @pd_router.get("/requests/{req_id}/pending")
 async def list_pending(req_id: str, request: Request, status: Optional[str] = None):
     user = await get_current_user(request)
-    query = {"pd_request_id": req_id, "tenant_id": user["tenant_id"]}
+    query = {"pd_request_id": req_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if status:
         query["status"] = status
     items = await db.pd_pending_items.find(query, {"_id": 0}).sort("created_at", -1).to_list(200)
@@ -6540,8 +6613,11 @@ async def update_pending(p_id: str, data: PendingItemUpdate, request: Request):
 @pd_router.delete("/pending/{p_id}")
 async def delete_pending(p_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.pd_pending_items.delete_one({"id": p_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    result = await db.pd_pending_items.update_one(
+        {"id": p_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Pendência não encontrada")
     return {"message": "Pendência removida"}
 
@@ -6848,7 +6924,7 @@ async def _next_pd_material_code(tenant_id: str, tipo2: str) -> str:
 
 
 async def _upsert_compras_fornecedor_from_homologacao(tenant_id: str, supplier: Dict[str, Any], user: Optional[dict] = None) -> Optional[dict]:
-    if not supplier or not getattr(db, "compras_fornecedores", None):
+    if not supplier or getattr(db, "compras_fornecedores", None) is None:
         return None
 
     now = now_iso()
@@ -6963,7 +7039,7 @@ async def _resolve_compras_fornecedor_for_mp(tenant_id: str, mp: Dict[str, Any],
             if synced:
                 return synced.get("id", ""), synced.get("razao_social") or synced.get("nome_fantasia") or mp.get("fornecedor_nome", "")
 
-    if mp.get("fornecedor_nome") and getattr(db, "compras_fornecedores", None):
+    if mp.get("fornecedor_nome") and getattr(db, "compras_fornecedores", None) is not None:
         fornecedor = await db.compras_fornecedores.find_one(
             {
                 "tenant_id": tenant_id,
@@ -7018,7 +7094,7 @@ async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any
             {"nome": mp.get("nome", "")},
         ],
     }
-    material = await db.materiais.find_one(material_query, {"_id": 0}) if getattr(db, "materiais", None) else None
+    material = await db.materiais.find_one(material_query, {"_id": 0}) if getattr(db, "materiais", None) is not None else None
     fornecedores = list((material or {}).get("fornecedores") or [])
     if fornecedor_entry:
         fornecedores = [
@@ -7053,7 +7129,7 @@ async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any
     }
 
     material_id = (material or {}).get("id")
-    if getattr(db, "materiais", None):
+    if getattr(db, "materiais", None) is not None:
         if material:
             await db.materiais.update_one({"tenant_id": tenant_id, "id": material_id}, {"$set": material_updates})
         else:
@@ -7072,7 +7148,7 @@ async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any
 
     compras_item = None
     compras_item_id = ""
-    if getattr(db, "compras_itens", None):
+    if getattr(db, "compras_itens", None) is not None:
         compras_categoria = _pd_mp_categoria_compras(mp)
         item_query = {
             "tenant_id": tenant_id,
@@ -7120,7 +7196,7 @@ async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any
                 **item_updates,
             })
 
-    if getattr(db, "pd_catalog", None):
+    if getattr(db, "pd_catalog", None) is not None:
         catalog_query = {
             "tenant_id": tenant_id,
             "$or": [
@@ -7159,7 +7235,7 @@ async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any
             await db.compras_itens.update_one(
                 {"tenant_id": tenant_id, "id": compras_item_id},
                 {"$set": {"pd_catalog_id": catalog_existing["id"]}},
-            ) if compras_item_id and getattr(db, "compras_itens", None) else None
+            ) if compras_item_id and getattr(db, "compras_itens", None) is not None else None
         else:
             catalog_id = new_id()
             await db.pd_catalog.insert_one({
@@ -7169,7 +7245,7 @@ async def _upsert_material_from_homologacao_mp(tenant_id: str, mp: Dict[str, Any
                 "created_at": now,
                 **catalog_updates,
             })
-            if compras_item_id and getattr(db, "compras_itens", None):
+            if compras_item_id and getattr(db, "compras_itens", None) is not None:
                 await db.compras_itens.update_one(
                     {"tenant_id": tenant_id, "id": compras_item_id},
                     {"$set": {"pd_catalog_id": catalog_id}},
@@ -7225,7 +7301,7 @@ async def create_fornecedor(data: FornecedorHomologacao, request: Request):
 @pd_router.get("/homologacao/fornecedores")
 async def list_fornecedores(request: Request, status: Optional[str] = None, search: Optional[str] = None):
     user = await get_current_user(request)
-    q = {"tenant_id": user["tenant_id"]}
+    q = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if status:
         q["status"] = status
     if search:
@@ -7312,8 +7388,11 @@ async def delete_fornecedor(f_id: str, request: Request):
     mp_count = await db.homologacao_mps.count_documents({"fornecedor_id": f_id, "tenant_id": user["tenant_id"]})
     if mp_count > 0:
         raise HTTPException(status_code=400, detail=f"Fornecedor tem {mp_count} MP(s) vinculada(s). Remova as MPs primeiro.")
-    await db.homologacao_fornecedores.delete_one({"id": f_id, "tenant_id": user["tenant_id"]})
-    return {"deleted": f_id}
+    await db.homologacao_fornecedores.update_one(
+        {"id": f_id, "tenant_id": user["tenant_id"]},
+        {"$set": {"is_deleted": True, "status": "arquivado", "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    return {"archived": f_id}
 
 
 # ----- MPs -----
@@ -7371,7 +7450,7 @@ async def list_mps(
     search: Optional[str] = None,
 ):
     user = await get_current_user(request)
-    q = {"tenant_id": user["tenant_id"]}
+    q = {"tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}
     if status:
         q["status"] = status
     if tipo_mp:
@@ -7509,9 +7588,9 @@ async def homologar_mp(mp_id: str, data: HomologarRequest, request: Request):
         catalog_updates["moeda"] = "BRL"
     if updated_mp.get("fornecedor_nome"):
         catalog_updates["fornecedor"] = updated_mp.get("fornecedor_nome", "")
-    if getattr(db, "pd_catalog", None) and hasattr(db.pd_catalog, "update_many"):
+    if getattr(db, "pd_catalog", None) is not None and hasattr(db.pd_catalog, "update_many"):
         await db.pd_catalog.update_many(catalog_query, {"$set": catalog_updates})
-    if getattr(db, "pd_stock_items", None) and hasattr(db.pd_stock_items, "update_many"):
+    if getattr(db, "pd_stock_items", None) is not None and hasattr(db.pd_stock_items, "update_many"):
         await db.pd_stock_items.update_many(
             {
                 "tenant_id": user["tenant_id"],
@@ -7609,12 +7688,17 @@ async def reativar_mp(mp_id: str, data: SuspenderRequest, request: Request):
 async def delete_mp(mp_id: str, request: Request):
     user = await get_current_user(request)
     # Bloquear se tem item de estoque vinculado
-    stock_collection = getattr(db, "pd_stock_items", None) or getattr(db, "estoque_items", None)
+    stock_collection = getattr(db, "pd_stock_items", None)
+    if stock_collection is None:
+        stock_collection = getattr(db, "estoque_items", None)
     est_count = await stock_collection.count_documents({"mp_id": mp_id, "tenant_id": user["tenant_id"]}) if stock_collection else 0
     if est_count > 0:
         raise HTTPException(status_code=400, detail=f"MP tem {est_count} item(ns) no estoque. Remova do estoque antes.")
-    await db.homologacao_mps.delete_one({"id": mp_id, "tenant_id": user["tenant_id"]})
-    return {"deleted": mp_id}
+    await db.homologacao_mps.update_one(
+        {"id": mp_id, "tenant_id": user["tenant_id"]},
+        {"$set": {"is_deleted": True, "status": "arquivado", "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    return {"archived": mp_id}
 
 
 @pd_router.get("/homologacao/dashboard")
@@ -7718,7 +7802,7 @@ async def get_formula_cost_versions(formula_id: str, request: Request):
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
     versions = await db.formula_cost_versions.find(
-        {"formula_id": formula_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+        {"formula_id": formula_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}}, {"_id": 0}
     ).sort("created_at", -1).to_list(100)
     return _formula_cost_view(versions, user)
 
@@ -7840,8 +7924,11 @@ async def update_formula_phase(phase_id: str, data: ProcedurePhaseUpdate, reques
 async def delete_formula_phase(phase_id: str, request: Request):
     user = await get_current_user(request)
     require_roles(user, PD_WRITE)
-    result = await db.formula_procedure_phases.delete_one({"id": phase_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    result = await db.formula_procedure_phases.update_one(
+        {"id": phase_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
+    )
+    if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Fase não encontrada")
     return {"message": "Fase removida"}
 

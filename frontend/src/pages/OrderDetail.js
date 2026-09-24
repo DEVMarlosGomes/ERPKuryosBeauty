@@ -17,7 +17,7 @@ import { CurrencyInput, fmtCurrency } from "@/components/ui/CurrencyInput";
 import { useAuth } from "@/contexts/AuthContext";
 
 const TIPOS_SERVICO = [
-  { value: "producao",    label: "Produção",    desc: "Primeiro pedido — amostra aprovada, gera novo SKU" },
+  { value: "producao",    label: "Produção",    desc: "Primeiro pedido — SKU já liberado pela assinatura do CGI" },
   { value: "reposicao",  label: "Reposição",   desc: "SKU existente, sem nova amostra, fluxo simplificado" },
   { value: "retrabalho", label: "Retrabalho",  desc: "Reprocessamento de lote com não conformidade" },
 ];

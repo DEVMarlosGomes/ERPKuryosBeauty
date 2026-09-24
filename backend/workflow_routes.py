@@ -18,6 +18,7 @@ from fastapi import APIRouter, HTTPException, Request, Query
 from pydantic import BaseModel
 from typing import List, Optional
 import logging
+import os
 
 from workflow_engine import (
     audit_log,
@@ -266,23 +267,38 @@ async def decide_workflow_task(task_id: str, data: TaskDecisionInput, request: R
 async def delete_task(task_id: str, request: Request):
     user = await _get_current_user(request)
     if user.get("role") not in ("admin", "gestor", "lider_pd", "sales_ops"):
-        raise HTTPException(status_code=403, detail="Apenas admin/lider_pd/sales_ops podem excluir tarefas")
+        raise HTTPException(status_code=403, detail="Apenas admin/lider_pd/sales_ops podem arquivar tarefas")
     existing = await db.workflow_tasks.find_one(
         {"id": task_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
     )
     if not existing:
         raise HTTPException(status_code=404, detail="Tarefa não encontrada")
-    await db.workflow_tasks.delete_one({"id": task_id, "tenant_id": user["tenant_id"]})
+    if existing.get("is_deleted"):
+        return {"message": "Tarefa já estava arquivada", "task_id": task_id, "archived": True}
+    now = _now_iso()
+    await db.workflow_tasks.update_one(
+        {"id": task_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"$set": {
+            "status_before_archive": existing.get("status"),
+            "status": "cancelada",
+            "is_deleted": True,
+            "archived_at": now,
+            "archived_by": user.get("id"),
+            "archived_by_name": user.get("name", ""),
+            "updated_at": now,
+        }},
+    )
     await audit_log(
         tenant_id=user["tenant_id"],
         user_id=user["id"],
         user_name=user.get("name", ""),
-        action="task_deleted",
+        action="task_archived",
         entity_type="workflow_task",
         entity_id=task_id,
         before=existing,
+        after={"status": "cancelada", "is_deleted": True, "archived_at": now},
     )
-    return {"message": "Tarefa removida"}
+    return {"message": "Tarefa arquivada; histórico preservado", "task_id": task_id, "archived": True}
 
 
 # ======================================================================
@@ -396,6 +412,13 @@ async def reset_operational_data(request: Request):
         raise HTTPException(status_code=403, detail="Somente admin pode resetar dados")
 
     tid = user["tenant_id"]
+    reset_enabled = os.environ.get("ALLOW_DESTRUCTIVE_TEST_RESET", "").strip().lower() == "true"
+    confirmation = request.headers.get("X-Confirm-Tenant-Reset", "").strip()
+    if not reset_enabled:
+        raise HTTPException(status_code=403, detail="Reset destrutivo desabilitado neste ambiente")
+    if confirmation != tid:
+        raise HTTPException(status_code=400, detail="Confirme o tenant no cabecalho X-Confirm-Tenant-Reset")
+
     deletions = {}
     collections = [
         "crm_clients", "crm_projects", "crm_samples", "skus",

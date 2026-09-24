@@ -97,6 +97,28 @@ def _user():
     return {"id": "user-1", "tenant_id": "tenant-1", "name": "PCP", "role": "pcp"}
 
 
+def test_kickoff_bom_pendente_bloqueia_emissao_de_op():
+    orders_routes.db = SimpleNamespace(kickoffs=FakeCollection([{
+        "id": "ko-1", "tenant_id": "tenant-1", "mrp_status": "bloqueado_cadastro_bom",
+        "mrp_pendencias_bom": 3,
+    }]))
+
+    with pytest.raises(HTTPException) as exc:
+        asyncio.run(orders_routes._require_kickoff_bom_ready({"kickoff_id": "ko-1"}, "tenant-1"))
+
+    assert exc.value.status_code == 409
+    assert exc.value.detail["pendencias_bom"] == 3
+
+
+def test_kickoff_bom_liberado_permite_emissao_de_op():
+    orders_routes.db = SimpleNamespace(kickoffs=FakeCollection([{
+        "id": "ko-1", "tenant_id": "tenant-1", "mrp_status": "liberado",
+        "mrp_pendencias_bom": 0,
+    }]))
+
+    assert asyncio.run(orders_routes._require_kickoff_bom_ready({"kickoff_id": "ko-1"}, "tenant-1")) is None
+
+
 async def _fake_get_current_user(_request):
     return _user()
 
@@ -409,6 +431,20 @@ def test_wms_picking_suggestion_uses_fefo_and_filters_blocked_stock(monkeypatch)
     assert embalagem["required_quantity"] == 10
     assert [line["saldo_lote_id"] for line in embalagem["separacoes"]] == ["saldo-embalagem"]
     assert suggestion["summary"]["materials_with_shortage"] == 0
+
+
+def test_material_de_cliente_so_pode_abastecer_op_do_mesmo_pedido():
+    saldo_cliente = {
+        "origem_cliente": True,
+        "consumo_restrito": True,
+        "pedido_id_exclusivo": "pedido-1",
+    }
+    assert orders_routes._saldo_can_supply_op(saldo_cliente, {"pedido_id": "pedido-1"}) is True
+    assert orders_routes._saldo_can_supply_op(saldo_cliente, {"pedido_id": "pedido-2"}) is False
+    assert orders_routes._saldo_can_supply_op(saldo_cliente, {}) is False
+    assert orders_routes._saldo_can_supply_op(
+        {"origem_cliente": False, "consumo_restrito": False}, {"pedido_id": "pedido-2"}
+    ) is True
 
 
 def test_confirm_wms_picking_is_idempotent_and_does_not_decrement_stock(monkeypatch):

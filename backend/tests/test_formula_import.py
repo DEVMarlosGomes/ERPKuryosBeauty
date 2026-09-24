@@ -6,7 +6,7 @@ transicionado pra IN_PROGRESS para obter um development_id).
 """
 import pytest
 import requests
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, get_backend_url, skip_without_backend_url
 
 BASE_URL = get_backend_url()
 pytestmark = skip_without_backend_url(BASE_URL)
@@ -15,7 +15,7 @@ pytestmark = skip_without_backend_url(BASE_URL)
 @pytest.fixture(scope="module")
 def admin_session():
     s = requests.Session()
-    r = s.post(f"{BASE_URL}/api/auth/login", json={"email": "admin@kuryos.com", "password": "admin123"})
+    r = s.post(f"{BASE_URL}/api/auth/login", json={"email": ADMIN_EMAIL, "password": ADMIN_PASSWORD})
     assert r.status_code == 200, f"Login failed: {r.text}"
     return s
 

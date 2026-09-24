@@ -6,12 +6,15 @@ Fluxo:
   3. Gerar Duplicatas → Contas a Receber com parcelas por condição de pagamento
   4. Acompanhar pagamento das duplicatas: aberta → paga | vencida | protestada
 """
-from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any
+import os
+import httpx
 import logging
 import re
 from datetime import datetime, timedelta, date
+from rbac import BILLING_WRITE_ROLES, require_roles
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +34,14 @@ def init_faturamento(database, auth_func, id_func, iso_func):
     now_iso_func = iso_func
 
 
+async def _enforce_faturamento_write_rbac(request: Request):
+    if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        require_roles(await get_current_user(request), BILLING_WRITE_ROLES)
+
+
+faturamento_router.dependencies.append(Depends(_enforce_faturamento_write_rbac))
+
+
 def _new_id():
     return new_id_func()
 
@@ -39,12 +50,14 @@ def _now():
     return now_iso_func()
 
 
-NF_STATUSES = ["rascunho", "emitida", "cancelada"]
+NF_STATUSES = ["rascunho", "processando", "rejeitada", "emitida", "cancelada"]
 PGTO_STATUSES = ["aguardando", "pago_parcial", "pago", "vencido"]
 DUP_STATUSES = ["aberta", "paga", "vencida", "protestada", "cancelada"]
 
 NF_TRANSITIONS = {
-    "rascunho": ["emitida", "cancelada"],
+    "rascunho": ["cancelada"],
+    "processando": [],
+    "rejeitada": ["cancelada"],
     "emitida":  ["cancelada"],
     "cancelada": [],
 }
@@ -123,6 +136,78 @@ async def _assert_expedicao_pronta_para_nf(tid: str, exp_id: Optional[str]) -> O
     return exp
 
 
+def _focus_config() -> tuple[str, str, str]:
+    token = os.environ.get("FOCUS_NFE_TOKEN", "").strip()
+    environment = os.environ.get("FOCUS_NFE_ENV", "homologacao").strip().lower()
+    base_url = "https://api.focusnfe.com.br" if environment == "producao" else "https://homologacao.focusnfe.com.br"
+    if not token:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error": "provedor_fiscal_nao_configurado",
+                "message": "Configure FOCUS_NFE_TOKEN e FOCUS_NFE_ENV. A NF permaneceu em rascunho.",
+            },
+        )
+    return token, environment, base_url
+
+
+def _focus_reference(nf: dict) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", f"KURYOS{nf['id']}")[:60]
+
+
+async def _focus_call(method: str, path: str, *, payload: Optional[dict] = None, params: Optional[dict] = None) -> dict:
+    token, _environment, base_url = _focus_config()
+    try:
+        async with httpx.AsyncClient(timeout=45, auth=(token, "")) as client:
+            response = await client.request(method, f"{base_url}{path}", json=payload, params=params)
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=502, detail=f"Falha de conexão com o provedor fiscal: {exc}")
+    try:
+        body = response.json()
+    except ValueError:
+        body = {"mensagem": response.text[:1000]}
+    if response.status_code not in {200, 201, 202}:
+        raise HTTPException(
+            status_code=422 if response.status_code < 500 else 502,
+            detail={"error": "provedor_fiscal_rejeitou_requisicao", "http_status": response.status_code, "response": body},
+        )
+    return body
+
+
+async def _persist_focus_result(nf: dict, result: dict, user: dict, environment: str) -> dict:
+    raw_status = str(result.get("status") or result.get("status_sefaz") or "processando_autorizacao").lower()
+    authorized = raw_status in {"autorizado", "autorizada", "100"} or bool(result.get("chave_nfe"))
+    rejected = any(token in raw_status for token in ("erro", "rejeitad", "cancelad"))
+    status = "emitida" if authorized else "rejeitada" if rejected else "processando"
+    now = _now()
+    updates = {
+        "status": status,
+        "fiscal_status": "autorizada" if authorized else "rejeitada" if rejected else "processando",
+        "fiscal_provider": "focus_nfe",
+        "fiscal_environment": environment,
+        "fiscal_reference": _focus_reference(nf),
+        "fiscal_response": result,
+        "updated_at": now,
+    }
+    if authorized:
+        updates.update({
+            "numero_nfe": str(result.get("numero") or result.get("numero_nfe") or ""),
+            "chave_acesso": result.get("chave_nfe") or result.get("chave_acesso"),
+            "protocolo_autorizacao": result.get("protocolo") or result.get("protocolo_autorizacao"),
+            "danfe_url": result.get("caminho_danfe") or result.get("url_danfe"),
+            "xml_url": result.get("caminho_xml_nota_fiscal") or result.get("caminho_xml"),
+            "fiscal_authorized_at": now,
+        })
+    historico = list(nf.get("historico") or [])
+    if status != nf.get("status"):
+        historico.append({"de": nf.get("status"), "para": status, "por": user.get("name", ""), "em": now, "origem": "focus_nfe"})
+        updates["historico"] = historico
+    await db.faturamento_notas.update_one(
+        {"id": nf["id"], "tenant_id": user["tenant_id"]}, {"$set": updates}
+    )
+    return await db.faturamento_notas.find_one({"id": nf["id"], "tenant_id": user["tenant_id"]}, {"_id": 0})
+
+
 # ===== NF MODELS =====
 class NFCreate(BaseModel):
     order_id: Optional[str] = None
@@ -141,6 +226,7 @@ class NFCreate(BaseModel):
     data_emissao: Optional[str] = None
     data_vencimento: Optional[str] = None
     observacoes: str = ""
+    fiscal_payload: Dict[str, Any] = Field(default_factory=dict)
 
 
 class NFUpdate(BaseModel):
@@ -157,6 +243,10 @@ class NFUpdate(BaseModel):
     valor_pago: Optional[float] = None
     data_pagamento: Optional[str] = None
     observacoes: Optional[str] = None
+
+
+class NFTransmitRequest(BaseModel):
+    fiscal_payload: Dict[str, Any] = Field(default_factory=dict)
 
 
 # ===== DUPLICATA MODELS =====
@@ -277,6 +367,9 @@ async def create_nota(data: NFCreate, request: Request):
         "duplicatas_geradas": False,
         "total_parcelas": 0,
         "observacoes": data.observacoes,
+        "fiscal_payload": data.fiscal_payload,
+        "fiscal_provider": None,
+        "fiscal_status": "nao_transmitida",
         "historico": [{"de": None, "para": "rascunho", "por": user["name"], "em": now}],
         "created_by": user["id"],
         "created_by_name": user["name"],
@@ -296,6 +389,45 @@ async def create_nota(data: NFCreate, request: Request):
     return nf
 
 
+@faturamento_router.post("/notas/{nf_id}/transmitir")
+async def transmitir_nfe(nf_id: str, data: NFTransmitRequest, request: Request):
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    nf = await db.faturamento_notas.find_one({"id": nf_id, "tenant_id": tid}, {"_id": 0})
+    if not nf:
+        raise HTTPException(status_code=404, detail="NF não encontrada")
+    if nf.get("status") == "emitida":
+        return nf
+    await _assert_expedicao_pronta_para_nf(tid, nf.get("exp_id"))
+    token, environment, _base_url = _focus_config()
+    del token
+    payload = data.fiscal_payload or nf.get("fiscal_payload") or {}
+    required = [field for field in ("natureza_operacao", "data_emissao", "tipo_documento", "finalidade_emissao", "items") if not payload.get(field)]
+    if required:
+        raise HTTPException(
+            status_code=422,
+            detail={"error": "dados_fiscais_incompletos", "campos": required,
+                    "message": "Complete os dados fiscais antes de transmitir para a SEFAZ."},
+        )
+    reference = _focus_reference(nf)
+    result = await _focus_call("POST", "/v2/nfe", payload=payload, params={"ref": reference})
+    await db.faturamento_notas.update_one(
+        {"id": nf_id, "tenant_id": tid}, {"$set": {"fiscal_payload": payload, "fiscal_reference": reference}}
+    )
+    return await _persist_focus_result(nf, result, user, environment)
+
+
+@faturamento_router.post("/notas/{nf_id}/sincronizar-fiscal")
+async def sincronizar_nfe(nf_id: str, request: Request):
+    user = await get_current_user(request)
+    nf = await db.faturamento_notas.find_one({"id": nf_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    if not nf:
+        raise HTTPException(status_code=404, detail="NF não encontrada")
+    _token, environment, _base_url = _focus_config()
+    result = await _focus_call("GET", f"/v2/nfe/{nf.get('fiscal_reference') or _focus_reference(nf)}", params={"completa": 1})
+    return await _persist_focus_result(nf, result, user, environment)
+
+
 @faturamento_router.put("/notas/{nf_id}")
 async def update_nota(nf_id: str, data: NFUpdate, request: Request):
     user = await get_current_user(request)
@@ -312,14 +444,20 @@ async def update_nota(nf_id: str, data: NFUpdate, request: Request):
         novo_status = payload["status"]
         if novo_status not in NF_STATUSES:
             raise HTTPException(status_code=400, detail=f"Status inválido: {novo_status}")
+        if novo_status in {"emitida", "processando", "rejeitada"}:
+            raise HTTPException(
+                status_code=422,
+                detail={
+                    "error": "status_fiscal_controlado_pelo_provedor",
+                    "message": "Use a transmissão fiscal. Uma NF-e só fica emitida após autorização do provedor/SEFAZ.",
+                },
+            )
         allowed = NF_TRANSITIONS.get(nf["status"], [])
         if novo_status not in allowed:
             raise HTTPException(
                 status_code=422,
                 detail=f"Transição {nf['status']} → {novo_status} não permitida"
             )
-        if novo_status == "emitida":
-            await _assert_expedicao_pronta_para_nf(user["tenant_id"], nf.get("exp_id"))
         historico.append({"de": nf["status"], "para": novo_status, "por": user["name"], "em": now})
         updates["status"] = novo_status
         updates["historico"] = historico
@@ -330,7 +468,13 @@ async def update_nota(nf_id: str, data: NFUpdate, request: Request):
             raise HTTPException(status_code=400, detail=f"Status de pagamento inválido: {sp}")
         updates["status_pagamento"] = sp
 
-    for field in ("numero_nfe", "chave_acesso", "valor_total", "valor_frete", "valor_impostos",
+    if "numero_nfe" in payload or "chave_acesso" in payload:
+        raise HTTPException(
+            status_code=422,
+            detail="Número e chave da NF-e são preenchidos somente pelo retorno fiscal autorizado.",
+        )
+
+    for field in ("valor_total", "valor_frete", "valor_impostos",
                   "forma_pagamento", "condicao_pagamento", "data_vencimento",
                   "valor_pago", "data_pagamento", "observacoes"):
         if field in payload and payload[field] is not None:

@@ -545,7 +545,7 @@ export default function CRM2Page() {
         }
         try {
             const { data } = await api.post("/crm/projects/sync-approved");
-            toast.success(data?.message || "Projetos aprovados sincronizados.");
+            toast.success(data?.message || "Kickoffs e pedidos aprovados sincronizados. SKU continua aguardando o CGI.");
             if (data?.errors?.length) {
                 toast.warning(`${data.errors.length} projeto(s) ficaram pendentes. Confira os pre-requisitos.`);
             }
@@ -620,7 +620,7 @@ export default function CRM2Page() {
                 <div className="flex items-center gap-2">
                     {isAdmin && (
                         <Button variant="outline" onClick={handleSyncApprovedProjects}>
-                            <RefreshCw className="h-4 w-4 mr-2" /> Sincronizar Aprovados
+                            <RefreshCw className="h-4 w-4 mr-2" /> Sincronizar fluxo
                         </Button>
                     )}
                     <Button variant="outline" onClick={() => setShowDirectOrder(true)}>

@@ -13,6 +13,11 @@ from pathlib import Path
 import pytest
 
 
+ADMIN_EMAIL = os.environ.get("TEST_ADMIN_EMAIL", "admin@kuryos.com")
+ADMIN_PASSWORD = os.environ.get("TEST_ADMIN_PASSWORD", "Kuryos-Test-Admin-2026!")
+ROLE_USERS_PASSWORD = os.environ.get("TEST_ROLE_USERS_PASSWORD", "Kuryos-Test-Roles-2026!")
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
@@ -26,14 +31,17 @@ def _read_backend_url_from_env_file(path: Path) -> str:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        if key.strip() == "REACT_APP_BACKEND_URL":
+        if key.strip() in {"VITE_BACKEND_URL", "REACT_APP_BACKEND_URL"}:
             return value.strip().strip('"').strip("'").rstrip("/")
     return ""
 
 
 def get_backend_url() -> str:
-    """Return REACT_APP_BACKEND_URL from env or known .env locations."""
-    env_url = os.environ.get("REACT_APP_BACKEND_URL", "").strip().rstrip("/")
+    """Return the API URL from env or known frontend .env locations."""
+    env_url = (
+        os.environ.get("VITE_BACKEND_URL", "")
+        or os.environ.get("REACT_APP_BACKEND_URL", "")
+    ).strip().rstrip("/")
     if env_url:
         return env_url
 
@@ -59,7 +67,7 @@ def get_backend_url() -> str:
 
 
 NO_BACKEND_URL_REASON = (
-    "integration test skipped: set REACT_APP_BACKEND_URL or create frontend/.env"
+    "integration test skipped: set VITE_BACKEND_URL or create frontend/.env"
 )
 
 

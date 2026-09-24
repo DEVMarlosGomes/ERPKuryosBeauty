@@ -493,7 +493,12 @@ Crie um arquivo `.env` dentro da pasta do backend.
 MONGO_URL=mongodb://127.0.0.1:27017
 DB_NAME=kuryos_crm
 JWT_SECRET=adicione-uma-chave-segura
+# NF-e via Focus NFe. Comece sempre em homologacao.
+FOCUS_NFE_ENV=homologacao
+FOCUS_NFE_TOKEN=token-da-empresa-no-provedor
 ```
+
+Sem `FOCUS_NFE_TOKEN`, o sistema mantém a nota em rascunho e bloqueia a falsa emissão manual. Use `FOCUS_NFE_ENV=producao` somente depois da homologação fiscal, cadastro do emitente e validação do certificado no provedor.
 
 > Nunca publique arquivos `.env`, chaves privadas, senhas, tokens ou credenciais de serviços externos.
 
@@ -530,13 +535,13 @@ http://localhost:8000/docs
 ```bash
 cd frontend
 
-yarn install
+npm install
 ```
 
 Crie um arquivo `.env` dentro da pasta do frontend.
 
 ```env
-REACT_APP_BACKEND_URL=http://localhost:8000
+VITE_BACKEND_URL=http://localhost:8000
 ```
 
 ---
@@ -544,7 +549,7 @@ REACT_APP_BACKEND_URL=http://localhost:8000
 ## 6. Executar o Frontend
 
 ```bash
-yarn start
+npm start
 ```
 
 A aplicação ficará disponível em:
@@ -557,11 +562,22 @@ http://localhost:3000
 
 # 🧪 Testes
 
-Para executar todos os testes:
+Para executar a suíte unitária:
 
 ```bash
-pytest
+python -m pytest backend/tests -q
 ```
+
+Para executar a homologação HTTP obrigatória no Windows, com API e banco de
+teste isolados iniciados e encerrados automaticamente:
+
+```powershell
+.\scripts\run_backend_tests.ps1
+```
+
+O reset destrutivo usado pela suíte HTTP só é liberado no processo de teste e
+exige a confirmação do tenant autenticado. Ele permanece bloqueado nos demais
+ambientes.
 
 Para executar um módulo específico:
 

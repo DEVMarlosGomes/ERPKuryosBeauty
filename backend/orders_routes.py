@@ -4,7 +4,7 @@ Orders Module (Pedidos) - Production Order management
 - Generates "Ordem de Produção" PDF (Kuryos layout)
 - Visible to all roles
 """
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from pymongo.errors import DuplicateKeyError
@@ -37,7 +37,12 @@ from cq_routes import (
     cq_verificar_assepsia_envase,
     cq_verificar_setup_linha,
 )
-from rbac import require_roles
+from rbac import (
+    ADMIN_ONLY,
+    PCP_PLANNING_WRITE_ROLES,
+    PRODUCTION_EXECUTION_WRITE_ROLES,
+    require_roles,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -360,8 +365,8 @@ class PAConferenceCreate(BaseModel):
 
 
 OP_STATUSES = ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp", "concluida", "cancelada"]
-PCP_CONFIRM_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
-PCP_PLANNING_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
+PCP_CONFIRM_ROLES = PRODUCTION_EXECUTION_WRITE_ROLES | {"sales_ops"}
+PCP_PLANNING_ROLES = PCP_PLANNING_WRITE_ROLES
 PCP_QUANTITY_PLANNING_FLAG = "pcp_quantity_planning_v2"
 PCP_MATERIAL_PICKING_FLAG = "pcp_material_picking_v2"
 COMMERCIAL_PARTIAL_FULFILLMENT_FLAG = "commercial_partial_fulfillment_v2"
@@ -1039,9 +1044,16 @@ async def auto_create_order_on_pd_approval(pd_request_id: str, user: Dict[str, A
 
 # ============ ROUTES ============
 @orders_router.get("")
-async def list_orders(request: Request, status: Optional[str] = None, q: Optional[str] = None):
+async def list_orders(
+    request: Request,
+    status: Optional[str] = None,
+    q: Optional[str] = None,
+    include_archived: bool = False,
+):
     user = await get_current_user(request)
     query: Dict[str, Any] = {"tenant_id": user["tenant_id"]}
+    if not include_archived:
+        query["is_deleted"] = {"$ne": True}
     if status:
         query["status"] = status
     if q:
@@ -1060,6 +1072,7 @@ async def generated_orders_status(request: Request):
     user = await get_current_user(request)
     query = {
         "tenant_id": user["tenant_id"],
+        "is_deleted": {"$ne": True},
         "$or": [
             {"origem": "gerador"},
             {"gerador_origem": {"$exists": True, "$nin": ["", None]}},
@@ -1083,7 +1096,10 @@ async def get_order_fulfillment_summary(order_id: str, request: Request):
     user = await get_current_user(request)
     tenant_id = user["tenant_id"]
     await _require_feature_flag(tenant_id, COMMERCIAL_PARTIAL_FULFILLMENT_FLAG)
-    order = await db.orders.find_one({"id": order_id, "tenant_id": tenant_id}, {"_id": 0})
+    order = await db.orders.find_one(
+        {"id": order_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}},
+        {"_id": 0},
+    )
     if not order:
         raise HTTPException(status_code=404, detail="Pedido nao encontrado")
     return await _build_order_fulfillment_summary(order, tenant_id)
@@ -1092,7 +1108,10 @@ async def get_order_fulfillment_summary(order_id: str, request: Request):
 @orders_router.get("/{order_id}")
 async def get_order(order_id: str, request: Request):
     user = await get_current_user(request)
-    order = await db.orders.find_one({"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0})
+    order = await db.orders.find_one(
+        {"id": order_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {"_id": 0},
+    )
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     return order
@@ -1103,7 +1122,7 @@ async def get_reorder_draft(client_card_id: str, request: Request):
     """Return a pre-populated draft order based on the most recent order for a CRM client card."""
     user = await get_current_user(request)
     last_order = await db.orders.find_one(
-        {"client_card_id": client_card_id, "tenant_id": user["tenant_id"]},
+        {"client_card_id": client_card_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
         {"_id": 0},
         sort=[("created_at", -1)],
     )
@@ -1687,10 +1706,44 @@ async def rejeitar_comercial(order_id: str, request: Request):
 @orders_router.delete("/{order_id}")
 async def delete_order(order_id: str, request: Request):
     user = await get_current_user(request)
-    result = await db.orders.delete_one({"id": order_id, "tenant_id": user["tenant_id"]})
-    if result.deleted_count == 0:
+    require_roles(user, ADMIN_ONLY)
+    order = await db.orders.find_one(
+        {"id": order_id, "tenant_id": user["tenant_id"]}, {"_id": 0}
+    )
+    if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
-    return {"message": "Pedido removido"}
+    if order.get("is_deleted"):
+        return {"message": "Pedido já estava arquivado", "order_id": order_id, "archived": True}
+
+    now = now_iso()
+    previous_status = order.get("status")
+    archived_status = previous_status if previous_status == "concluido" else "cancelado"
+    history = {
+        "de": previous_status,
+        "para": archived_status,
+        "acao": "pedido_arquivado",
+        "por": user.get("name", ""),
+        "por_id": user.get("id"),
+        "em": now,
+    }
+    result = await db.orders.update_one(
+        {"id": order_id, "tenant_id": user["tenant_id"], "is_deleted": {"$ne": True}},
+        {
+            "$set": {
+                "status": archived_status,
+                "is_deleted": True,
+                "archived_at": now,
+                "archived_by": user.get("id"),
+                "archived_by_name": user.get("name", ""),
+                "status_before_archive": previous_status,
+                "updated_at": now,
+            },
+            "$push": {"historico": history},
+        },
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=409, detail="Pedido foi alterado durante o arquivamento")
+    return {"message": "Pedido arquivado; histórico preservado", "order_id": order_id, "archived": True}
 
 
 # ============ CGI SIGN (RN-PI-01) ============
@@ -2323,6 +2376,13 @@ def _saldo_matches_requirement(saldo: Dict[str, Any], requirement: Dict[str, Any
     return bool(wanted.intersection(available))
 
 
+def _saldo_can_supply_op(saldo: Dict[str, Any], op: Dict[str, Any]) -> bool:
+    if not saldo.get("origem_cliente") and not saldo.get("consumo_restrito"):
+        return True
+    exclusive_order = saldo.get("pedido_id_exclusivo")
+    return bool(exclusive_order and exclusive_order == op.get("pedido_id"))
+
+
 async def _load_pickable_saldos(tenant_id: str) -> Dict[str, Any]:
     saldos = await db.estoque_saldos_lote.find({"tenant_id": tenant_id}, {"_id": 0}).to_list(50000)
     endereco_ids = {saldo.get("endereco_id") for saldo in saldos if saldo.get("endereco_id")}
@@ -2344,13 +2404,14 @@ def _suggest_fefo_for_requirements(
     requirements: List[Dict[str, Any]],
     saldos: List[Dict[str, Any]],
     endereco_map: Dict[str, Dict[str, Any]],
+    op: Dict[str, Any],
 ) -> List[Dict[str, Any]]:
     sugestoes: List[Dict[str, Any]] = []
     for requirement in requirements:
         remaining = _as_float(requirement.get("required_quantity"))
         matches = [
             saldo for saldo in saldos
-            if _saldo_matches_requirement(saldo, requirement)
+            if _saldo_matches_requirement(saldo, requirement) and _saldo_can_supply_op(saldo, op)
         ]
         matches.sort(key=lambda saldo: (
             _validade_sort_key(saldo.get("validade")),
@@ -2395,7 +2456,9 @@ def _suggest_fefo_for_requirements(
 async def _build_wms_picking_suggestion(op: Dict[str, Any], tenant_id: str) -> Dict[str, Any]:
     required = await _build_op_material_requirements(op, tenant_id)
     stock = await _load_pickable_saldos(tenant_id)
-    sugestoes = _suggest_fefo_for_requirements(required["requirements"], stock["saldos"], stock["enderecos"])
+    sugestoes = _suggest_fefo_for_requirements(
+        required["requirements"], stock["saldos"], stock["enderecos"], op
+    )
     total_faltas = round(sum(_as_float(item.get("shortage_quantity")) for item in sugestoes), 6)
     return {
         "op_id": op["id"],
@@ -2674,6 +2737,30 @@ def _technical_review_blocks_operation(op: Dict[str, Any]) -> List[str]:
     return list(tecnico.get("bloqueios") or []) if not tecnico.get("apto_operacao") else []
 
 
+async def _require_kickoff_bom_ready(order: Dict[str, Any], tenant_id: str) -> None:
+    """Do not emit an OP while the Kickoff BOM still depends on Cadastros."""
+    kickoff_id = order.get("kickoff_id")
+    if not kickoff_id:
+        return
+    kickoff = await db.kickoffs.find_one(
+        {"id": kickoff_id, "tenant_id": tenant_id},
+        {"_id": 0, "mrp_status": 1, "mrp_pendencias_bom": 1, "cadastro_bom": 1},
+    )
+    if not kickoff:
+        raise HTTPException(status_code=409, detail="Kickoff vinculado ao pedido nao foi encontrado.")
+    cadastro_bom = kickoff.get("cadastro_bom") or {}
+    pending = int(kickoff.get("mrp_pendencias_bom") or cadastro_bom.get("pendentes") or 0)
+    if kickoff.get("mrp_status") == "bloqueado_cadastro_bom" or pending > 0:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "message": "OP bloqueada: conclua os cadastros e anexos pendentes do BOM antes do MRP/producao.",
+                "kickoff_id": kickoff_id,
+                "pendencias_bom": pending,
+            },
+        )
+
+
 @orders_router.post("/{order_id}/create-op")
 async def create_op_from_order(order_id: str, request: Request):
     """Convert a confirmed PI into an Ordem de Produção."""
@@ -2688,6 +2775,7 @@ async def create_op_from_order(order_id: str, request: Request):
         if existing_op:
             return existing_op
 
+    await _require_kickoff_bom_ready(order, user["tenant_id"])
     tecnico = await _build_op_technical_snapshot(order, user["tenant_id"])
     if tecnico["revisao_obrigatoria"] and tecnico["bloqueios"]:
         raise HTTPException(
@@ -2716,6 +2804,8 @@ async def create_op_from_order(order_id: str, request: Request):
         "tenant_id": user["tenant_id"],
         "numero_op": numero_op,
         "pedido_id": order_id,
+        "kickoff_id": order.get("kickoff_id"),
+        "projeto_id": order.get("projeto_id"),
         "numero_pedido": order.get("numero_pedido", ""),
         "cliente_nome": order.get("cliente", {}).get("nome") or order.get("cliente", {}).get("razao_social", ""),
         "project_name": order.get("project_name", ""),
@@ -2858,6 +2948,7 @@ async def create_op_from_pcp_allocation(
         raise HTTPException(status_code=404, detail="Pedido nao encontrado")
     if order.get("status") not in {"confirmado", "em_producao"}:
         raise HTTPException(status_code=422, detail="OP v2 so pode ser gerada a partir de pedido Confirmado ou Em Producao.")
+    await _require_kickoff_bom_ready(order, tenant_id)
 
     allocation = await db.pcp_allocations.find_one(
         {"id": allocation_id, "tenant_id": tenant_id, "sales_order_id": order_id},
@@ -2910,6 +3001,8 @@ async def create_op_from_pcp_allocation(
         "tenant_id": tenant_id,
         "numero_op": numero_op,
         "pedido_id": order_id,
+        "kickoff_id": order.get("kickoff_id"),
+        "projeto_id": order.get("projeto_id"),
         "numero_pedido": order.get("numero_pedido", ""),
         "sales_order_item_id": allocation["sales_order_item_id"],
         "allocation_id": allocation_id,
@@ -3061,6 +3154,7 @@ async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Reque
         "auto_created": False,
         "origem": "reproducao",
     }
+    await _require_kickoff_bom_ready(new_order, user["tenant_id"])
     tecnico = await _build_op_technical_snapshot(new_order, user["tenant_id"])
     if tecnico["revisao_obrigatoria"] and tecnico["bloqueios"]:
         raise HTTPException(
@@ -3093,6 +3187,8 @@ async def reproduzir_pedido(order_id: str, data: ReproduzirInput, request: Reque
         "tenant_id": user["tenant_id"],
         "numero_op": numero_op,
         "pedido_id": new_order["id"],
+        "kickoff_id": new_order.get("kickoff_id"),
+        "projeto_id": new_order.get("projeto_id"),
         "numero_pedido": numero,
         "cliente_nome": new_order["cliente"].get("nome") or new_order["cliente"].get("razao_social", ""),
         "project_name": new_order.get("project_name", ""),
@@ -3556,7 +3652,12 @@ async def export_order_pdf(order_id: str, request: Request):
 
 
 # ============ OPS ROUTER ============
-ops_router = APIRouter(prefix="/api/ops")
+async def _enforce_ops_write_rbac(request: Request):
+    if request.method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        require_roles(await get_current_user(request), PRODUCTION_EXECUTION_WRITE_ROLES | PCP_PLANNING_WRITE_ROLES)
+
+
+ops_router = APIRouter(prefix="/api/ops", dependencies=[Depends(_enforce_ops_write_rbac)])
 
 
 @ops_router.get("")

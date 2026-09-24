@@ -7,8 +7,8 @@ Feature: Estoque Projetado sem dupla contagem.
 
 Pré-requisitos:
   - Servidor rodando em BASE_URL
-  - Admin criado pelo seed: admin@kuryos.com / admin123
-  - Role 'qa'  : qa@kuryos.com       / kuryos123
+  - Admin e senha definidos por TEST_ADMIN_EMAIL / TEST_ADMIN_PASSWORD
+  - Usuários de perfil usam TEST_ROLE_USERS_PASSWORD
   - Role 'compras' não existe por padrão — admin age como compras nestes testes
 
 Execução:
@@ -17,7 +17,7 @@ Execução:
 
 import pytest
 import requests
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, ROLE_USERS_PASSWORD, get_backend_url, skip_without_backend_url
 
 # ---------------------------------------------------------------------------
 # Config
@@ -45,12 +45,12 @@ def _login(email: str, password: str) -> requests.Session:
 
 @pytest.fixture(scope="session")
 def admin():
-    return _login("admin@kuryos.com", "admin123")
+    return _login(ADMIN_EMAIL, ADMIN_PASSWORD)
 
 
 @pytest.fixture(scope="session")
 def qa():
-    return _login("qa@kuryos.com", "kuryos123")
+    return _login("qa@kuryos.com", ROLE_USERS_PASSWORD)
 
 
 # ---------------------------------------------------------------------------

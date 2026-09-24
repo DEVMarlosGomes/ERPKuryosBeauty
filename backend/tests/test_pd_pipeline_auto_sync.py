@@ -84,6 +84,37 @@ class TrackingCollection:
         return {key: value for key, value in doc.items() if key != "_id"}
 
 
+def test_request_pipeline_approval_never_invents_commercial_approval(monkeypatch):
+    fake_db = SimpleNamespace(
+        pd_cards=TrackingCollection([{
+            "id": "card-1", "tenant_id": "tenant-1", "pd_request_id": "req-1",
+            "status_pd": "aguardando_aprovacao", "amostra_id": "sample-1", "amostra_variacao_id": "var-1",
+        }]),
+        crm_samples=TrackingCollection([{
+            "id": "sample-1", "tenant_id": "tenant-1",
+            "variacoes": [{
+                "id": "var-1", "status": "enviada", "resultado": "",
+                "aprovacao_externa": False,
+            }],
+        }]),
+    )
+    pd_routes.db = fake_db
+    pd_routes._broadcast_event = None
+    monkeypatch.setattr(pd_routes, "now_iso_func", lambda: "2026-09-23T12:00:00+00:00")
+
+    asyncio.run(pd_routes._sync_request_status_to_pipeline(
+        req_id="req-1", tenant_id="tenant-1", new_status="APPROVED",
+        user={"id": "pd-1", "name": "P&D", "tenant_id": "tenant-1"},
+    ))
+
+    sample_set = fake_db.crm_samples.update_calls[-1][1]["$set"]
+    assert sample_set["variacoes.$.aprovacao_pd"] is True
+    assert "variacoes.$.aprovacao_externa" not in sample_set
+    assert "variacoes.$.aprovacao_comercial" not in sample_set
+    assert "variacoes.$.resultado" not in sample_set
+    assert "variacoes.$.status" not in sample_set
+
+
 def test_bootstrap_syncs_card_and_sample_to_development(monkeypatch):
     sample_doc = {
         "id": "sample-1",

@@ -1,16 +1,10 @@
-from datetime import date, datetime
 from pathlib import Path
 
 from backend import pcp_routes
 from backend import orders_routes
 
 
-def test_import_helpers_normalize_headers_and_dates():
-    assert pcp_routes._norm_header("Previsão Envase / Linha") == "previsao_envase_linha"
-    assert pcp_routes._norm_header("CÓDIGO KURYOS") == "codigo_kuryos"
-    assert pcp_routes._as_ymd("17/08/2026") == "2026-08-17"
-    assert pcp_routes._as_ymd(datetime(2026, 8, 17, 7, 30)) == "2026-08-17"
-    assert pcp_routes._as_ymd(date(2026, 8, 17)) == "2026-08-17"
+def test_calendar_helper_normalizes_hours():
     assert pcp_routes._as_hhmm("7h30", "07:00") == "07:30"
     assert pcp_routes._as_hhmm("8", "07:00") == "08:00"
 

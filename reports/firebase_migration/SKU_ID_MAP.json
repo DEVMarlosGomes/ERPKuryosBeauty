@@ -1,0 +1,3926 @@
+{
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "entries": [
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS01",
+      "legacy_sku": "AMABBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS02",
+      "legacy_sku": "AMABBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS03",
+      "legacy_sku": "AMABBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS04",
+      "legacy_sku": "AMABBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS05",
+      "legacy_sku": "AMABBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS06",
+      "legacy_sku": "AMABBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS07",
+      "legacy_sku": "AMABBS07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABBS08",
+      "legacy_sku": "AMABBS08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD01",
+      "legacy_sku": "AMABHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD02",
+      "legacy_sku": "AMABHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD03",
+      "legacy_sku": "AMABHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD04",
+      "legacy_sku": "AMABHD04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD05",
+      "legacy_sku": "AMABHD05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD06",
+      "legacy_sku": "AMABHD06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD07",
+      "legacy_sku": "AMABHD07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMABHD08",
+      "legacy_sku": "AMABHD08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS01",
+      "legacy_sku": "AMCLBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS02",
+      "legacy_sku": "AMCLBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS03",
+      "legacy_sku": "AMCLBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS04",
+      "legacy_sku": "AMCLBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS05",
+      "legacy_sku": "AMCLBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS06",
+      "legacy_sku": "AMCLBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS07",
+      "legacy_sku": "AMCLBS07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLBS08",
+      "legacy_sku": "AMCLBS08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD01",
+      "legacy_sku": "AMCLHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD02",
+      "legacy_sku": "AMCLHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD03",
+      "legacy_sku": "AMCLHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD04",
+      "legacy_sku": "AMCLHD04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD05",
+      "legacy_sku": "AMCLHD05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD06",
+      "legacy_sku": "AMCLHD06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD07",
+      "legacy_sku": "AMCLHD07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMCLHD08",
+      "legacy_sku": "AMCLHD08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS01",
+      "legacy_sku": "AMNCBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS02",
+      "legacy_sku": "AMNCBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS03",
+      "legacy_sku": "AMNCBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS04",
+      "legacy_sku": "AMNCBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS05",
+      "legacy_sku": "AMNCBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS06",
+      "legacy_sku": "AMNCBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS07",
+      "legacy_sku": "AMNCBS07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCBS08",
+      "legacy_sku": "AMNCBS08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD01",
+      "legacy_sku": "AMNCHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD02",
+      "legacy_sku": "AMNCHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD03",
+      "legacy_sku": "AMNCHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD04",
+      "legacy_sku": "AMNCHD04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD05",
+      "legacy_sku": "AMNCHD05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD06",
+      "legacy_sku": "AMNCHD06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD07",
+      "legacy_sku": "AMNCHD07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "AMNCHD08",
+      "legacy_sku": "AMNCHD08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBPF0004",
+      "legacy_sku": "BBPF0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS01",
+      "legacy_sku": "BBSJBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS01-2",
+      "legacy_sku": "BBSJBS01-2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS02",
+      "legacy_sku": "BBSJBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS02-2",
+      "legacy_sku": "BBSJBS02-2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS03",
+      "legacy_sku": "BBSJBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS03-2",
+      "legacy_sku": "BBSJBS03-2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS04-2",
+      "legacy_sku": "BBSJBS04-2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJBS05-2",
+      "legacy_sku": "BBSJBS05-2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJPF01",
+      "legacy_sku": "BBSJPF01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJPF02",
+      "legacy_sku": "BBSJPF02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BBSJPF03",
+      "legacy_sku": "BBSJPF03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BFBBBS01",
+      "legacy_sku": "BFBBBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BFBBBS02",
+      "legacy_sku": "BFBBBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BFBBBS03",
+      "legacy_sku": "BFBBBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BFBBBS04",
+      "legacy_sku": "BFBBBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BFBBBS05",
+      "legacy_sku": "BFBBBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BFBBBS06",
+      "legacy_sku": "BFBBBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDBR01",
+      "legacy_sku": "BMKDBR01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDBR02",
+      "legacy_sku": "BMKDBR02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDBR03",
+      "legacy_sku": "BMKDBR03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDBR04",
+      "legacy_sku": "BMKDBR04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDHD01",
+      "legacy_sku": "BMKDHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDHD02",
+      "legacy_sku": "BMKDHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDHD03",
+      "legacy_sku": "BMKDHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDHD04",
+      "legacy_sku": "BMKDHD04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDPF01",
+      "legacy_sku": "BMKDPF01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDPF02",
+      "legacy_sku": "BMKDPF02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDPF03",
+      "legacy_sku": "BMKDPF03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BMKDPF04",
+      "legacy_sku": "BMKDPF04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BSPL-SEUN-0001",
+      "legacy_sku": "BSPL-SEUN-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "BSPL-SEUN-0002",
+      "legacy_sku": "BSPL-SEUN-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "CMBS0001",
+      "legacy_sku": "CMBS0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "CMGL0001",
+      "legacy_sku": "CMGL0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "CMOC0001",
+      "legacy_sku": "CMOC0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "CRPMCR01",
+      "legacy_sku": "CRPMCR01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DESODORANTE-ROLLON-ALGODÃO",
+      "legacy_sku": "DESODORANTE-ROLLON-ALGODÃO",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DESODORANTE-ROLLON-LAVANDA",
+      "legacy_sku": "DESODORANTE-ROLLON-LAVANDA",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLBS01",
+      "legacy_sku": "DPGLBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLBS02",
+      "legacy_sku": "DPGLBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLBS03",
+      "legacy_sku": "DPGLBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLES01",
+      "legacy_sku": "DPGLES01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLES02",
+      "legacy_sku": "DPGLES02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLES03",
+      "legacy_sku": "DPGLES03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLHD01",
+      "legacy_sku": "DPGLHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLHD02",
+      "legacy_sku": "DPGLHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPGLHD03",
+      "legacy_sku": "DPGLHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPHNBS01",
+      "legacy_sku": "DPHNBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPHNBS02",
+      "legacy_sku": "DPHNBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPHNPC01",
+      "legacy_sku": "DPHNPC01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPHNSR01",
+      "legacy_sku": "DPHNSR01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTBS01",
+      "legacy_sku": "DPMTBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTBS02",
+      "legacy_sku": "DPMTBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTBS03",
+      "legacy_sku": "DPMTBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTES01",
+      "legacy_sku": "DPMTES01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTES02",
+      "legacy_sku": "DPMTES02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTES03",
+      "legacy_sku": "DPMTES03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTHD01",
+      "legacy_sku": "DPMTHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTHD02",
+      "legacy_sku": "DPMTHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPMTHD03",
+      "legacy_sku": "DPMTHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPSWHD01",
+      "legacy_sku": "DPSWHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DPSWHD02",
+      "legacy_sku": "DPSWHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DYPFPF01",
+      "legacy_sku": "DYPFPF01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DYPFPF02",
+      "legacy_sku": "DYPFPF02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DYPFPF03",
+      "legacy_sku": "DYPFPF03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "DYPFPF04",
+      "legacy_sku": "DYPFPF04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "ESF-SEUN-0001",
+      "legacy_sku": "ESF-SEUN-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "ESP-SEUN-0001",
+      "legacy_sku": "ESP-SEUN-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "ESP-SEUN-0003",
+      "legacy_sku": "ESP-SEUN-0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBBS0001",
+      "legacy_sku": "FBBS0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBBS0002",
+      "legacy_sku": "FBBS0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBBS0003",
+      "legacy_sku": "FBBS0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBBS0004",
+      "legacy_sku": "FBBS0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBBS0005",
+      "legacy_sku": "FBBS0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBBS0006",
+      "legacy_sku": "FBBS0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBHD0001",
+      "legacy_sku": "FBHD0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBHD0002",
+      "legacy_sku": "FBHD0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBMF0001",
+      "legacy_sku": "FBMF0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBMF0002",
+      "legacy_sku": "FBMF0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBOC0001",
+      "legacy_sku": "FBOC0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBOC0002",
+      "legacy_sku": "FBOC0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBPF0001",
+      "legacy_sku": "FBPF0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FBPF0002",
+      "legacy_sku": "FBPF0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "FIRMADOR-200ML",
+      "legacy_sku": "FIRMADOR-200ML",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GEL-BRILHO-AMARELO",
+      "legacy_sku": "GEL-BRILHO-AMARELO",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GEL-BRILHO-ROSA",
+      "legacy_sku": "GEL-BRILHO-ROSA",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GEL-BRILHO-ROXO",
+      "legacy_sku": "GEL-BRILHO-ROXO",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GEL-BRILHO-VERMELHO",
+      "legacy_sku": "GEL-BRILHO-VERMELHO",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM01",
+      "legacy_sku": "GLMKAM01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM02",
+      "legacy_sku": "GLMKAM02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM03",
+      "legacy_sku": "GLMKAM03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM04",
+      "legacy_sku": "GLMKAM04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM05",
+      "legacy_sku": "GLMKAM05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM06",
+      "legacy_sku": "GLMKAM06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GLMKAM07",
+      "legacy_sku": "GLMKAM07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GZLBBS01",
+      "legacy_sku": "GZLBBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GZLBBS02",
+      "legacy_sku": "GZLBBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GZLBBS03",
+      "legacy_sku": "GZLBBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GZLBBS04",
+      "legacy_sku": "GZLBBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GZLBBS05",
+      "legacy_sku": "GZLBBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "GZLBBS06",
+      "legacy_sku": "GZLBBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0001",
+      "legacy_sku": "HBHD0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0002",
+      "legacy_sku": "HBHD0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0003",
+      "legacy_sku": "HBHD0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0004",
+      "legacy_sku": "HBHD0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0005",
+      "legacy_sku": "HBHD0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0006",
+      "legacy_sku": "HBHD0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0007",
+      "legacy_sku": "HBHD0007",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBHD0008",
+      "legacy_sku": "HBHD0008",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HBPC0001",
+      "legacy_sku": "HBPC0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0001",
+      "legacy_sku": "HDR-MISS-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0002",
+      "legacy_sku": "HDR-MISS-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0003",
+      "legacy_sku": "HDR-MISS-0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0004",
+      "legacy_sku": "HDR-MISS-0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0005",
+      "legacy_sku": "HDR-MISS-0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0006",
+      "legacy_sku": "HDR-MISS-0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0007",
+      "legacy_sku": "HDR-MISS-0007",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HDR-MISS-0008",
+      "legacy_sku": "HDR-MISS-0008",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "HIDRATANTE-FACIAL-50G",
+      "legacy_sku": "HIDRATANTE-FACIAL-50G",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARBS01",
+      "legacy_sku": "IBARBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARBS02",
+      "legacy_sku": "IBARBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARBS03",
+      "legacy_sku": "IBARBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARBS04",
+      "legacy_sku": "IBARBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARBS05",
+      "legacy_sku": "IBARBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARBS06",
+      "legacy_sku": "IBARBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGB01",
+      "legacy_sku": "IBARGB01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGB02",
+      "legacy_sku": "IBARGB02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGB03",
+      "legacy_sku": "IBARGB03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGB04",
+      "legacy_sku": "IBARGB04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGB05",
+      "legacy_sku": "IBARGB05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGB06",
+      "legacy_sku": "IBARGB06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGE01",
+      "legacy_sku": "IBARGE01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGE02",
+      "legacy_sku": "IBARGE02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGE03",
+      "legacy_sku": "IBARGE03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGE04",
+      "legacy_sku": "IBARGE04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGE05",
+      "legacy_sku": "IBARGE05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARGE06",
+      "legacy_sku": "IBARGE06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARHD01",
+      "legacy_sku": "IBARHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARHD02",
+      "legacy_sku": "IBARHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARHD03",
+      "legacy_sku": "IBARHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARHD04",
+      "legacy_sku": "IBARHD04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARHD05",
+      "legacy_sku": "IBARHD05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBARHD06",
+      "legacy_sku": "IBARHD06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBCHEC01",
+      "legacy_sku": "IBCHEC01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBCHEC02",
+      "legacy_sku": "IBCHEC02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBCHEC03",
+      "legacy_sku": "IBCHEC03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBCHGC01",
+      "legacy_sku": "IBCHGC01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBCHGC02",
+      "legacy_sku": "IBCHGC02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IBCHGC03",
+      "legacy_sku": "IBCHGC03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IMEDIATT-LISS-PASSO-1",
+      "legacy_sku": "IMEDIATT-LISS-PASSO-1",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "IMEDIATT-LISS-PASSO-2",
+      "legacy_sku": "IMEDIATT-LISS-PASSO-2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "KUBPBA01",
+      "legacy_sku": "KUBPBA01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "KUBPBA01-2",
+      "legacy_sku": "KUBPBA01 - 2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "KUBPBA01_-_2",
+      "legacy_sku": "KUBPBA01 - 2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "KUBPBA02",
+      "legacy_sku": "KUBPBA02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "KUBPBA02-2",
+      "legacy_sku": "KUBPBA02 - 2",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGCN01",
+      "legacy_sku": "LNHGCN01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGCN02",
+      "legacy_sku": "LNHGCN02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGCN03",
+      "legacy_sku": "LNHGCN03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGFN01",
+      "legacy_sku": "LNHGFN01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGFN02",
+      "legacy_sku": "LNHGFN02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGFN03",
+      "legacy_sku": "LNHGFN03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGMS01",
+      "legacy_sku": "LNHGMS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGMS02",
+      "legacy_sku": "LNHGMS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGMS03",
+      "legacy_sku": "LNHGMS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGSH01",
+      "legacy_sku": "LNHGSH01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGSH02",
+      "legacy_sku": "LNHGSH02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNHGSH03",
+      "legacy_sku": "LNHGSH03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS01",
+      "legacy_sku": "LNINBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS02",
+      "legacy_sku": "LNINBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS03",
+      "legacy_sku": "LNINBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS04",
+      "legacy_sku": "LNINBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS05",
+      "legacy_sku": "LNINBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS06",
+      "legacy_sku": "LNINBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "LNINBS07",
+      "legacy_sku": "LNINBS07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MAOEOL01",
+      "legacy_sku": "MAOEOL01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MAOEOL02",
+      "legacy_sku": "MAOEOL02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM01",
+      "legacy_sku": "MOPFFM01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM02",
+      "legacy_sku": "MOPFFM02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM03",
+      "legacy_sku": "MOPFFM03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM04",
+      "legacy_sku": "MOPFFM04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM05",
+      "legacy_sku": "MOPFFM05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM06",
+      "legacy_sku": "MOPFFM06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM07",
+      "legacy_sku": "MOPFFM07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM08",
+      "legacy_sku": "MOPFFM08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM09",
+      "legacy_sku": "MOPFFM09",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM10",
+      "legacy_sku": "MOPFFM10",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM11",
+      "legacy_sku": "MOPFFM11",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM12",
+      "legacy_sku": "MOPFFM12",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM13",
+      "legacy_sku": "MOPFFM13",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM14",
+      "legacy_sku": "MOPFFM14",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM15",
+      "legacy_sku": "MOPFFM15",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM16",
+      "legacy_sku": "MOPFFM16",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM17",
+      "legacy_sku": "MOPFFM17",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM18",
+      "legacy_sku": "MOPFFM18",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM19",
+      "legacy_sku": "MOPFFM19",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFM20",
+      "legacy_sku": "MOPFFM20",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW01",
+      "legacy_sku": "MOPFFW01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW02",
+      "legacy_sku": "MOPFFW02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW03",
+      "legacy_sku": "MOPFFW03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW04",
+      "legacy_sku": "MOPFFW04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW05",
+      "legacy_sku": "MOPFFW05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW06",
+      "legacy_sku": "MOPFFW06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW07",
+      "legacy_sku": "MOPFFW07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW08",
+      "legacy_sku": "MOPFFW08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW09",
+      "legacy_sku": "MOPFFW09",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW10",
+      "legacy_sku": "MOPFFW10",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW11",
+      "legacy_sku": "MOPFFW11",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW12",
+      "legacy_sku": "MOPFFW12",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW13",
+      "legacy_sku": "MOPFFW13",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW14",
+      "legacy_sku": "MOPFFW14",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW15",
+      "legacy_sku": "MOPFFW15",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW16",
+      "legacy_sku": "MOPFFW16",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW17",
+      "legacy_sku": "MOPFFW17",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW18",
+      "legacy_sku": "MOPFFW18",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW19",
+      "legacy_sku": "MOPFFW19",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MOPFFW20",
+      "legacy_sku": "MOPFFW20",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS01",
+      "legacy_sku": "MRARBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS02",
+      "legacy_sku": "MRARBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS03",
+      "legacy_sku": "MRARBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS04",
+      "legacy_sku": "MRARBS04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS05",
+      "legacy_sku": "MRARBS05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS06",
+      "legacy_sku": "MRARBS06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS07",
+      "legacy_sku": "MRARBS07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS08",
+      "legacy_sku": "MRARBS08",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS09",
+      "legacy_sku": "MRARBS09",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS10",
+      "legacy_sku": "MRARBS10",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS11",
+      "legacy_sku": "MRARBS11",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARBS12",
+      "legacy_sku": "MRARBS12",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARES01",
+      "legacy_sku": "MRARES01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARES02",
+      "legacy_sku": "MRARES02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARHD01",
+      "legacy_sku": "MRARHD01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARHD02",
+      "legacy_sku": "MRARHD02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARHD03",
+      "legacy_sku": "MRARHD03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRARHD04",
+      "legacy_sku": "MRARHD04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRBR0001",
+      "legacy_sku": "MRBR0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "MRFX0001",
+      "legacy_sku": "MRFX0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDECR01",
+      "legacy_sku": "PEDECR01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDECR02",
+      "legacy_sku": "PEDECR02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDECR03",
+      "legacy_sku": "PEDECR03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDECR04",
+      "legacy_sku": "PEDECR04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDECR05",
+      "legacy_sku": "PEDECR05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDERL01",
+      "legacy_sku": "PEDERL01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDERL02",
+      "legacy_sku": "PEDERL02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDERL03",
+      "legacy_sku": "PEDERL03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDERL04",
+      "legacy_sku": "PEDERL04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEDERL05",
+      "legacy_sku": "PEDERL05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEL-SEUN-0001",
+      "legacy_sku": "PEL-SEUN-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PEL-SEUN-0002",
+      "legacy_sku": "PEL-SEUN-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0001",
+      "legacy_sku": "PRF-AFEE-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0002",
+      "legacy_sku": "PRF-AFEE-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0003",
+      "legacy_sku": "PRF-AFEE-0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0004",
+      "legacy_sku": "PRF-AFEE-0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0005",
+      "legacy_sku": "PRF-AFEE-0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0006",
+      "legacy_sku": "PRF-AFEE-0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0007",
+      "legacy_sku": "PRF-AFEE-0007",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0008",
+      "legacy_sku": "PRF-AFEE-0008",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0009",
+      "legacy_sku": "PRF-AFEE-0009",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0010",
+      "legacy_sku": "PRF-AFEE-0010",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0011",
+      "legacy_sku": "PRF-AFEE-0011",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0012",
+      "legacy_sku": "PRF-AFEE-0012",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0013",
+      "legacy_sku": "PRF-AFEE-0013",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0014",
+      "legacy_sku": "PRF-AFEE-0014",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0015",
+      "legacy_sku": "PRF-AFEE-0015",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0016",
+      "legacy_sku": "PRF-AFEE-0016",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0017",
+      "legacy_sku": "PRF-AFEE-0017",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0018",
+      "legacy_sku": "PRF-AFEE-0018",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0019",
+      "legacy_sku": "PRF-AFEE-0019",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0020",
+      "legacy_sku": "PRF-AFEE-0020",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0021",
+      "legacy_sku": "PRF-AFEE-0021",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0022",
+      "legacy_sku": "PRF-AFEE-0022",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0023",
+      "legacy_sku": "PRF-AFEE-0023",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0024",
+      "legacy_sku": "PRF-AFEE-0024",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0025",
+      "legacy_sku": "PRF-AFEE-0025",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0026",
+      "legacy_sku": "PRF-AFEE-0026",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0027",
+      "legacy_sku": "PRF-AFEE-0027",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0028",
+      "legacy_sku": "PRF-AFEE-0028",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0029",
+      "legacy_sku": "PRF-AFEE-0029",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0030",
+      "legacy_sku": "PRF-AFEE-0030",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0031",
+      "legacy_sku": "PRF-AFEE-0031",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0032",
+      "legacy_sku": "PRF-AFEE-0032",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0033",
+      "legacy_sku": "PRF-AFEE-0033",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0034",
+      "legacy_sku": "PRF-AFEE-0034",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-AFEE-0035",
+      "legacy_sku": "PRF-AFEE-0035",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0001",
+      "legacy_sku": "PRF-BIOF-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0002",
+      "legacy_sku": "PRF-BIOF-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0003",
+      "legacy_sku": "PRF-BIOF-0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0004",
+      "legacy_sku": "PRF-BIOF-0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0005",
+      "legacy_sku": "PRF-BIOF-0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0006",
+      "legacy_sku": "PRF-BIOF-0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-BIOF-0007",
+      "legacy_sku": "PRF-BIOF-0007",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-MENE-0001",
+      "legacy_sku": "PRF-MENE-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-PROP-0001",
+      "legacy_sku": "PRF-PROP-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-ROSA-0001",
+      "legacy_sku": "PRF-ROSA-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-ROSA-0002",
+      "legacy_sku": "PRF-ROSA-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-ROSA-0003",
+      "legacy_sku": "PRF-ROSA-0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-ROSA-0004",
+      "legacy_sku": "PRF-ROSA-0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-ROSA-0005",
+      "legacy_sku": "PRF-ROSA-0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0001",
+      "legacy_sku": "PRF-VELL-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0002",
+      "legacy_sku": "PRF-VELL-0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0003",
+      "legacy_sku": "PRF-VELL-0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0004",
+      "legacy_sku": "PRF-VELL-0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0005",
+      "legacy_sku": "PRF-VELL-0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0006",
+      "legacy_sku": "PRF-VELL-0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0007",
+      "legacy_sku": "PRF-VELL-0007",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0008",
+      "legacy_sku": "PRF-VELL-0008",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0009",
+      "legacy_sku": "PRF-VELL-0009",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "PRF-VELL-0010",
+      "legacy_sku": "PRF-VELL-0010",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB01",
+      "legacy_sku": "RETRAB01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB02",
+      "legacy_sku": "RETRAB02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB03",
+      "legacy_sku": "RETRAB03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB04",
+      "legacy_sku": "RETRAB04",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB05",
+      "legacy_sku": "RETRAB05",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB06",
+      "legacy_sku": "RETRAB06",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "RETRAB07",
+      "legacy_sku": "RETRAB07",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SAGLBS01",
+      "legacy_sku": "SAGLBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SAGLBS02",
+      "legacy_sku": "SAGLBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SAGLBS03",
+      "legacy_sku": "SAGLBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SAMTBS01",
+      "legacy_sku": "SAMTBS01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SAMTBS02",
+      "legacy_sku": "SAMTBS02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SAMTBS03",
+      "legacy_sku": "SAMTBS03",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SASCDM01",
+      "legacy_sku": "SASCDM01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SASCDM02",
+      "legacy_sku": "SASCDM02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SASCES01",
+      "legacy_sku": "SASCES01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SASCES02",
+      "legacy_sku": "SASCES02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SASCGF01",
+      "legacy_sku": "SASCGF01",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SASCGF02",
+      "legacy_sku": "SASCGF02",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SRM-SENR-0001",
+      "legacy_sku": "SRM-SENR-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "SRM-SEUN-0001",
+      "legacy_sku": "SRM-SEUN-0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "USO-PROP-0001",
+      "legacy_sku": "USO-PROP-0001 ",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBM0001",
+      "legacy_sku": "WKBM0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBS0001",
+      "legacy_sku": "WKBS0001",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBS0002",
+      "legacy_sku": "WKBS0002",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBS0003",
+      "legacy_sku": "WKBS0003",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBS0004",
+      "legacy_sku": "WKBS0004",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBS0005",
+      "legacy_sku": "WKBS0005",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "produtos",
+      "legacy_id": "WKBS0006",
+      "legacy_sku": "WKBS0006",
+      "firebase_alias_value": null,
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "AGBE-SEUN-0001",
+      "legacy_sku": "AGBE-SEUN-0001",
+      "firebase_alias_value": "PEL-SEUN-0002",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "AGUA-DE-BELEZA-100ML",
+      "legacy_sku": "AGUA-DE-BELEZA-100ML",
+      "firebase_alias_value": "PEL-SEUN-0002",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "BODY-SPLASH-SOLAR-GLOW-MIST-150ML",
+      "legacy_sku": "BODY-SPLASH-SOLAR-GLOW-MIST-150ML",
+      "firebase_alias_value": "BSPL-SEUN-0002",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "BSP-SEUN-0001",
+      "legacy_sku": "BSP-SEUN-0001",
+      "firebase_alias_value": "BSPL-SEUN-0001",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "BSPL-SEUN-0001",
+      "legacy_sku": "BSPL-SEUN-0001",
+      "firebase_alias_value": "BSPL-SEUN-0002",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "ESPUMA-DE-LIMPEZA-FACIAL-100ML",
+      "legacy_sku": "ESPUMA-DE-LIMPEZA-FACIAL-100ML",
+      "firebase_alias_value": "ESP-SEUN-0003",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    },
+    {
+      "source_node": "sku_historico",
+      "legacy_id": "PEL-SEUN-0003",
+      "legacy_sku": "PEL-SEUN-0003",
+      "firebase_alias_value": "ESP-SEUN-0003",
+      "current_sku_id": null,
+      "current_codigo": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "SKU historico ausente; geracao automatica proibida."
+    }
+  ],
+  "automatic_generation_allowed": false
+}
