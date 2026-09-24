@@ -6,7 +6,7 @@ Auth: cookie-based session (POST /api/auth/login sets cookies).
 import pytest
 import requests
 import uuid
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, ROLE_USERS_PASSWORD, get_backend_url, skip_without_backend_url
 
 BASE_URL = get_backend_url()
 pytestmark = skip_without_backend_url(BASE_URL)
@@ -30,17 +30,17 @@ def _login(email, password):
 
 @pytest.fixture(scope="session")
 def admin():
-    return _login("admin@kuryos.com", "admin123")
+    return _login(ADMIN_EMAIL, ADMIN_PASSWORD)
 
 
 @pytest.fixture(scope="session")
 def vendedor():
-    return _login("vendedor@kuryos.com", "kuryos123")
+    return _login("vendedor@kuryos.com", ROLE_USERS_PASSWORD)
 
 
 @pytest.fixture(scope="session")
 def formulador():
-    return _login("formulador@kuryos.com", "kuryos123")
+    return _login("formulador@kuryos.com", ROLE_USERS_PASSWORD)
 
 
 # ===== List & RBAC =====

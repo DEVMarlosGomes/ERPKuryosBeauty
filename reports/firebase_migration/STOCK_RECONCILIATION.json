@@ -1,0 +1,3590 @@
+{
+  "source_of_opening_balance": "physical_lots_plus_cq_wms_plus_physical_cutoff",
+  "estoque_saldoAtual_allowed_as_opening": false,
+  "legacy_movements_replayed": false,
+  "aggregate_stock_records": 95,
+  "physical_lot_candidates": 39,
+  "negative_legacy_stock": [
+    {
+      "legacy_id": "EP-00005",
+      "material_code": "EP-00005",
+      "saldoAtual": -4290.0
+    },
+    {
+      "legacy_id": "EP-00007",
+      "material_code": "EP-00007",
+      "saldoAtual": -4380.0
+    },
+    {
+      "legacy_id": "EP-00009",
+      "material_code": "EP-00009",
+      "saldoAtual": -6422.0
+    },
+    {
+      "legacy_id": "EP-00012",
+      "material_code": "EP-00012",
+      "saldoAtual": -16419.0
+    },
+    {
+      "legacy_id": "EP-00014",
+      "material_code": "EP-00014",
+      "saldoAtual": -10934.0
+    },
+    {
+      "legacy_id": "EP-00049",
+      "material_code": "EP-00049",
+      "saldoAtual": -495.0
+    },
+    {
+      "legacy_id": "EP-00051",
+      "material_code": "EP-00051",
+      "saldoAtual": -5496.0
+    },
+    {
+      "legacy_id": "EP-00053",
+      "material_code": "EP-00053",
+      "saldoAtual": -9475.0
+    },
+    {
+      "legacy_id": "EP-00054",
+      "material_code": "EP-00054",
+      "saldoAtual": -13058.0
+    },
+    {
+      "legacy_id": "EP-00055",
+      "material_code": "EP-00055",
+      "saldoAtual": -14514.0
+    },
+    {
+      "legacy_id": "EP-00069",
+      "material_code": "EP-00069",
+      "saldoAtual": -16517.0
+    },
+    {
+      "legacy_id": "EP-00080",
+      "material_code": "EP-00080",
+      "saldoAtual": -5496.0
+    },
+    {
+      "legacy_id": "EP-00081",
+      "material_code": "EP-00081",
+      "saldoAtual": -14514.0
+    },
+    {
+      "legacy_id": "EP-00082",
+      "material_code": "EP-00082",
+      "saldoAtual": -9475.0
+    },
+    {
+      "legacy_id": "EP-00092",
+      "material_code": "EP-00092",
+      "saldoAtual": -16517.0
+    },
+    {
+      "legacy_id": "EP-00099",
+      "material_code": "EP-00099",
+      "saldoAtual": -4290.0
+    },
+    {
+      "legacy_id": "EP-00101",
+      "material_code": "EP-00101",
+      "saldoAtual": -6422.0
+    },
+    {
+      "legacy_id": "EP-00103",
+      "material_code": "EP-00103",
+      "saldoAtual": -495.0
+    },
+    {
+      "legacy_id": "EP-00106",
+      "material_code": "EP-00106",
+      "saldoAtual": -1344.0
+    },
+    {
+      "legacy_id": "EP-00117",
+      "material_code": "EP-00117",
+      "saldoAtual": -13058.0
+    },
+    {
+      "legacy_id": "EP-00127",
+      "material_code": "EP-00127",
+      "saldoAtual": -10934.0
+    },
+    {
+      "legacy_id": "EP-00153",
+      "material_code": "EP-00153",
+      "saldoAtual": -4380.0
+    },
+    {
+      "legacy_id": "EP-00156",
+      "material_code": "EP-00156",
+      "saldoAtual": -16419.0
+    },
+    {
+      "legacy_id": "EP-00174",
+      "material_code": "EP-00174",
+      "saldoAtual": -1344.0
+    },
+    {
+      "legacy_id": "EP-00189",
+      "material_code": "EP-00189",
+      "saldoAtual": -1.0
+    },
+    {
+      "legacy_id": "ES-00010",
+      "material_code": "ES-00010",
+      "saldoAtual": -6422.0
+    },
+    {
+      "legacy_id": "ES-00018",
+      "material_code": "ES-00018",
+      "saldoAtual": -4290.0
+    },
+    {
+      "legacy_id": "ES-00128",
+      "material_code": "ES-00128",
+      "saldoAtual": -10934.0
+    },
+    {
+      "legacy_id": "ES-00140",
+      "material_code": "ES-00140",
+      "saldoAtual": -16419.0
+    },
+    {
+      "legacy_id": "ES-00147",
+      "material_code": "ES-00147",
+      "saldoAtual": -6422.0
+    },
+    {
+      "legacy_id": "ES-00157",
+      "material_code": "ES-00157",
+      "saldoAtual": -4380.0
+    },
+    {
+      "legacy_id": "ES-00160",
+      "material_code": "ES-00160",
+      "saldoAtual": -4290.0
+    },
+    {
+      "legacy_id": "ES-00315",
+      "material_code": "ES-00315",
+      "saldoAtual": -1344.0
+    },
+    {
+      "legacy_id": "ET-00003",
+      "material_code": "ET-00003",
+      "saldoAtual": -136.676
+    },
+    {
+      "legacy_id": "ET-00012",
+      "material_code": "ET-00012",
+      "saldoAtual": -2231.798
+    },
+    {
+      "legacy_id": "ET-00018",
+      "material_code": "ET-00018",
+      "saldoAtual": -133.79
+    },
+    {
+      "legacy_id": "ET-00032",
+      "material_code": "ET-00032",
+      "saldoAtual": -370.056
+    },
+    {
+      "legacy_id": "ET-00033",
+      "material_code": "ET-00033",
+      "saldoAtual": -89.373
+    },
+    {
+      "legacy_id": "ET-00047",
+      "material_code": "ET-00047",
+      "saldoAtual": -4380.0
+    },
+    {
+      "legacy_id": "ET-00051",
+      "material_code": "ET-00051",
+      "saldoAtual": -136.676
+    },
+    {
+      "legacy_id": "ET-00055",
+      "material_code": "ET-00055",
+      "saldoAtual": -495.0
+    },
+    {
+      "legacy_id": "ET-00067",
+      "material_code": "ET-00067",
+      "saldoAtual": -0.063
+    },
+    {
+      "legacy_id": "MPGR-00082",
+      "material_code": "MPGR-00082",
+      "saldoAtual": -0.003
+    },
+    {
+      "legacy_id": "MPGR-00127",
+      "material_code": "MPGR-00127",
+      "saldoAtual": -583.422
+    }
+  ],
+  "ambiguous_sign_movements": [
+    {
+      "material_code": "GLMKAM03",
+      "legacy_id": "-P22osIa42TLAaLoBp41",
+      "tipo": "qualidade",
+      "qtd": 0.0,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00005",
+      "legacy_id": "-P1B4XHzGwmYpJTtHBcd",
+      "tipo": "consumo_producao",
+      "qtd": 11.018,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P10PvBpxM34MeXWHraL",
+      "tipo": "consumo_producao",
+      "qtd": 0.46,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P11aEhiLKg_vsrP2KZ8",
+      "tipo": "consumo_producao",
+      "qtd": 0.101,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P15PlYLAn1tTeOlT6hK",
+      "tipo": "consumo_producao",
+      "qtd": 0.46,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P15Szf_H_BNMFN7dksY",
+      "tipo": "consumo_producao",
+      "qtd": 0.476,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P15e_KrD2A_H6LDlwfG",
+      "tipo": "consumo_producao",
+      "qtd": 0.148,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P16Ve1PNaQxpILztGDd",
+      "tipo": "consumo_producao",
+      "qtd": 0.304,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P16k7KqHDXok85Oq_mM",
+      "tipo": "consumo_producao",
+      "qtd": 0.16,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P1AYPvBNi_P9FujVI1f",
+      "tipo": "consumo_producao",
+      "qtd": 0.304,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00086",
+      "legacy_id": "-P1AqHXAmrprNfOzBrO6",
+      "tipo": "consumo_producao",
+      "qtd": 0.14,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00136",
+      "legacy_id": "-P0bnDVcsXiKjSn1grsu",
+      "tipo": "consumo_producao",
+      "qtd": 0.172,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00136",
+      "legacy_id": "-P0ccxHRpnqkFEXmYhS_",
+      "tipo": "consumo_producao",
+      "qtd": 0.096,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00136",
+      "legacy_id": "-P0cv6ou6JD-kPHfPw91",
+      "tipo": "consumo_producao",
+      "qtd": 0.117,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00136",
+      "legacy_id": "-P0gXt18jXfL2CwD7o0F",
+      "tipo": "consumo_producao",
+      "qtd": 0.345,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00136",
+      "legacy_id": "-P0hjSZT_nV5MfPH-yD8",
+      "tipo": "consumo_producao",
+      "qtd": 0.365,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00142",
+      "legacy_id": "-P16k779jbqR5RDydJlP",
+      "tipo": "consumo_producao",
+      "qtd": 1.325,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00142",
+      "legacy_id": "-P1A2uHq2a6VfIHKiL5Y",
+      "tipo": "consumo_producao",
+      "qtd": 0.806,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPES-00142",
+      "legacy_id": "-P1AYYO6SWKNKZoxsPid",
+      "tipo": "consumo_producao",
+      "qtd": 1.068,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00003",
+      "legacy_id": "-P1B4XKXMmiXUcHiOmMv",
+      "tipo": "consumo_producao",
+      "qtd": 36.476,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00005",
+      "legacy_id": "-P16k77EFjqOyTWVEf9x",
+      "tipo": "consumo_producao",
+      "qtd": 5.52,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00005",
+      "legacy_id": "-P1A2uHuM4fHv4p0X8Y8",
+      "tipo": "consumo_producao",
+      "qtd": 3.36,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00005",
+      "legacy_id": "-P1AYYOABuK89TNomvEy",
+      "tipo": "consumo_producao",
+      "qtd": 4.45,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P0bnDYtImbznD1cDwuS",
+      "tipo": "consumo_producao",
+      "qtd": 2.574,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P0ccxJXq6P3FlRcDJDO",
+      "tipo": "consumo_producao",
+      "qtd": 1.443,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P0cv6oypiJGZ-hsNQH9",
+      "tipo": "consumo_producao",
+      "qtd": 1.755,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P0gXt1OtefyndqrgZEq",
+      "tipo": "consumo_producao",
+      "qtd": 5.172,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P0hjSZ_MvrRVUKjZogi",
+      "tipo": "consumo_producao",
+      "qtd": 5.482,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P10PvEoktI5wECWoHko",
+      "tipo": "consumo_producao",
+      "qtd": 6.903,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P11aEhl0vngCKLg-bfl",
+      "tipo": "consumo_producao",
+      "qtd": 1.521,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P15PlYQYwqfZrAJ1wMR",
+      "tipo": "consumo_producao",
+      "qtd": 6.903,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P15SzfgORHl1t_KdqPQ",
+      "tipo": "consumo_producao",
+      "qtd": 7.137,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P15e_LSBQ9086laGCQg",
+      "tipo": "consumo_producao",
+      "qtd": 2.223,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P16Ve1gBKbauUP6iEjN",
+      "tipo": "consumo_producao",
+      "qtd": 4.563,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P16k7L2KoLltUHA2dMY",
+      "tipo": "consumo_producao",
+      "qtd": 2.399,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P1AYPvEQzcnBvFpKpdL",
+      "tipo": "consumo_producao",
+      "qtd": 4.563,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00008",
+      "legacy_id": "-P1AqHXBEnDRcXtzRju1",
+      "tipo": "consumo_producao",
+      "qtd": 2.106,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P0bnDZ5Lq4LmoRByEKA",
+      "tipo": "consumo_producao",
+      "qtd": 0.343,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P0ccxJ_1uV3SG4WNyne",
+      "tipo": "consumo_producao",
+      "qtd": 0.192,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P0cv6p-Kh2uITYxll4B",
+      "tipo": "consumo_producao",
+      "qtd": 0.234,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P0gXt3FN93q5e4rr7pH",
+      "tipo": "consumo_producao",
+      "qtd": 0.69,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P0hjSZaVZG9gn74w6C8",
+      "tipo": "consumo_producao",
+      "qtd": 0.731,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P10PvEpSKgSmdaW3iz1",
+      "tipo": "consumo_producao",
+      "qtd": 0.92,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P11aEi0-SJLu3WQeaoB",
+      "tipo": "consumo_producao",
+      "qtd": 0.203,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P15PlYSZ2f-voXMMn1i",
+      "tipo": "consumo_producao",
+      "qtd": 0.92,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P15Szg5GG2im3bq3CBk",
+      "tipo": "consumo_producao",
+      "qtd": 0.952,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P15e_LTv8sOjPr5JRU1",
+      "tipo": "consumo_producao",
+      "qtd": 0.296,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P16Ve1nPG4992n0peNX",
+      "tipo": "consumo_producao",
+      "qtd": 0.608,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P16k7A30HVCZFt9m2YY",
+      "tipo": "consumo_producao",
+      "qtd": 0.221,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P16k7L3LWBiP2aJnZng",
+      "tipo": "consumo_producao",
+      "qtd": 0.32,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P1A2uJwuceJGCIe9nC5",
+      "tipo": "consumo_producao",
+      "qtd": 0.134,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P1AYPvFPCQisqFp8r5F",
+      "tipo": "consumo_producao",
+      "qtd": 0.608,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P1AYYOQT8WRhyJ_ABon",
+      "tipo": "consumo_producao",
+      "qtd": 0.178,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00012",
+      "legacy_id": "-P1AqHYCcUxg3n-vUfQ3",
+      "tipo": "consumo_producao",
+      "qtd": 0.281,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00050",
+      "legacy_id": "-P16k77l9T7yp-XnCEym",
+      "tipo": "consumo_producao",
+      "qtd": 0.662,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00050",
+      "legacy_id": "-P1A2uJxmsJvclSGKLP7",
+      "tipo": "consumo_producao",
+      "qtd": 0.403,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00050",
+      "legacy_id": "-P1AYYOQT8WRhyJ_ABoo",
+      "tipo": "consumo_producao",
+      "qtd": 0.534,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P0bnDYn6AC0cbSDhXR6",
+      "tipo": "consumo_producao",
+      "qtd": 0.515,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P0ccxHS4zKZZX46NfdW",
+      "tipo": "consumo_producao",
+      "qtd": 0.289,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P0cv6owOmGdNQ-fLoEP",
+      "tipo": "consumo_producao",
+      "qtd": 0.351,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P0gXt1IArIcc3Q3iqwJ",
+      "tipo": "consumo_producao",
+      "qtd": 1.034,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P0hjSZXqo6gsmBsD5Jw",
+      "tipo": "consumo_producao",
+      "qtd": 1.096,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P10PvEmqo0WJyBrBFHF",
+      "tipo": "consumo_producao",
+      "qtd": 1.381,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P11aEhjYIIOHqGXB2UD",
+      "tipo": "consumo_producao",
+      "qtd": 0.304,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P15PlYNPTLxDra0Avc-",
+      "tipo": "consumo_producao",
+      "qtd": 1.381,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P15SzfePl9-6jwz2eB3",
+      "tipo": "consumo_producao",
+      "qtd": 1.427,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P15e_KxPADZeQqjqHeq",
+      "tipo": "consumo_producao",
+      "qtd": 0.445,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P16Ve1_dNKAqWHPMWCI",
+      "tipo": "consumo_producao",
+      "qtd": 0.913,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P16k79wCiOysT2ZP9mj",
+      "tipo": "consumo_producao",
+      "qtd": 0.331,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P16k7KqHDXok85Oq_mN",
+      "tipo": "consumo_producao",
+      "qtd": 0.48,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P1A2uHsvYzJBZYuf38l",
+      "tipo": "consumo_producao",
+      "qtd": 0.202,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P1AYPvCbZQG_ULiVfQ0",
+      "tipo": "consumo_producao",
+      "qtd": 0.913,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P1AYYO7EWgXbJtwqkpJ",
+      "tipo": "consumo_producao",
+      "qtd": 0.267,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P1AqHXAmrprNfOzBrO7",
+      "tipo": "consumo_producao",
+      "qtd": 0.421,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00066",
+      "legacy_id": "-P1B4XKcjajR_o5Iomnm",
+      "tipo": "consumo_producao",
+      "qtd": 0.058,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P0bnDZ8q83u_ajkestL",
+      "tipo": "consumo_producao",
+      "qtd": 0.034,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P0ccxJdE1SUzfGslp8p",
+      "tipo": "consumo_producao",
+      "qtd": 0.019,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P0cv6p5tmr-_b9gL7qP",
+      "tipo": "consumo_producao",
+      "qtd": 0.023,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P0gXt3KwaW-mofVSNJv",
+      "tipo": "consumo_producao",
+      "qtd": 0.069,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P0hjSZnsuLdJPn1UqiY",
+      "tipo": "consumo_producao",
+      "qtd": 0.073,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P10PvEq1CAlb3QtfQ2w",
+      "tipo": "consumo_producao",
+      "qtd": 0.184,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P11aEiX1rE6C3Y7ZYhO",
+      "tipo": "consumo_producao",
+      "qtd": 0.041,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P15PlYVtK8D2ZnrHI4B",
+      "tipo": "consumo_producao",
+      "qtd": 0.184,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P15SzgvCtoz-QX66Owi",
+      "tipo": "consumo_producao",
+      "qtd": 0.19,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P15e_LWU2W_jsuBbR_X",
+      "tipo": "consumo_producao",
+      "qtd": 0.059,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P16Ve227uLI2OaCftcV",
+      "tipo": "consumo_producao",
+      "qtd": 0.122,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P16k7L4PMsZyYupBArd",
+      "tipo": "consumo_producao",
+      "qtd": 0.064,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P1AYPvI6QTgfA5iuI4-",
+      "tipo": "consumo_producao",
+      "qtd": 0.122,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00098",
+      "legacy_id": "-P1AqHYJeLiHB9ST0xCP",
+      "tipo": "consumo_producao",
+      "qtd": 0.056,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P0bnDYr_PEiQsz133SE",
+      "tipo": "consumo_producao",
+      "qtd": 5.148,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P0ccxHVErJf-si7ZUZi",
+      "tipo": "consumo_producao",
+      "qtd": 2.886,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P0cv6oxll3mqVubmals",
+      "tipo": "consumo_producao",
+      "qtd": 3.51,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P0gXt1LeMnHZitADz_h",
+      "tipo": "consumo_producao",
+      "qtd": 10.345,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P0hjSZZ0lVgH7ryNxPB",
+      "tipo": "consumo_producao",
+      "qtd": 10.964,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P10PvEnB6VrCI7F_DuS",
+      "tipo": "consumo_producao",
+      "qtd": 13.806,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P11aEhknEFBPhFrqIw4",
+      "tipo": "consumo_producao",
+      "qtd": 3.042,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P15PlYOBEH1ZjFWxVdb",
+      "tipo": "consumo_producao",
+      "qtd": 13.806,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P15SzfePl9-6jwz2eB4",
+      "tipo": "consumo_producao",
+      "qtd": 14.274,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P15e_KxPADZeQqjqHer",
+      "tipo": "consumo_producao",
+      "qtd": 4.446,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P16Ve1ayH3c5HcI8NuS",
+      "tipo": "consumo_producao",
+      "qtd": 9.126,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P16k7Kv8i47V-9gEx44",
+      "tipo": "consumo_producao",
+      "qtd": 4.797,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P1AYPvDA_NsWAtYY8cW",
+      "tipo": "consumo_producao",
+      "qtd": 9.126,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00100",
+      "legacy_id": "-P1AqHXAmrprNfOzBrO8",
+      "tipo": "consumo_producao",
+      "qtd": 4.212,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00112",
+      "legacy_id": "-P16k77MNWQSLYlDVSyG",
+      "tipo": "consumo_producao",
+      "qtd": 0.221,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00112",
+      "legacy_id": "-P1A2uJrVb24au8ieVjU",
+      "tipo": "consumo_producao",
+      "qtd": 0.134,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00112",
+      "legacy_id": "-P1AYYOLEugoqh7LqNa6",
+      "tipo": "consumo_producao",
+      "qtd": 0.178,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00116",
+      "legacy_id": "-P16k777mEdUZLTc_sfR",
+      "tipo": "consumo_producao",
+      "qtd": 19.872,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00116",
+      "legacy_id": "-P1A2uHp4mpDPddEOZBm",
+      "tipo": "consumo_producao",
+      "qtd": 12.096,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00116",
+      "legacy_id": "-P1AYYO2xKXWghOW2cEG",
+      "tipo": "consumo_producao",
+      "qtd": 16.02,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00129",
+      "legacy_id": "-P16k7A0mdjSayoPqj1D",
+      "tipo": "consumo_producao",
+      "qtd": 0.221,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00129",
+      "legacy_id": "-P1A2uHwVJCN1zPplhss",
+      "tipo": "consumo_producao",
+      "qtd": 0.134,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00129",
+      "legacy_id": "-P1AYYOITp8_MHavw4rk",
+      "tipo": "consumo_producao",
+      "qtd": 0.178,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P0bnDVbngKFWEV4XGn7",
+      "tipo": "consumo_producao",
+      "qtd": 334.208,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P0ccxHPREUW0s3SPa0z",
+      "tipo": "consumo_producao",
+      "qtd": 187.359,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P0cv6osFVggjtTIWH8t",
+      "tipo": "consumo_producao",
+      "qtd": 227.869,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P0gXt17uA3uQXJBAVAE",
+      "tipo": "consumo_producao",
+      "qtd": 671.581,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P0hjSZR0ZGk_4QW2PWS",
+      "tipo": "consumo_producao",
+      "qtd": 711.775,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P10PvEkhYJT6Skxr5Sy",
+      "tipo": "consumo_producao",
+      "qtd": 896.286,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P11aEhh01jmX0kRwRjF",
+      "tipo": "consumo_producao",
+      "qtd": 197.487,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P15PlYJ4NhUoFGrSRhx",
+      "tipo": "consumo_producao",
+      "qtd": 896.286,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P15SzfZeg_rz3kx7z2r",
+      "tipo": "consumo_producao",
+      "qtd": 926.668,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P15e_Kqly8yzTeQJYt0",
+      "tipo": "consumo_producao",
+      "qtd": 288.634,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P16Ve1KcZAroDcmh6Iz",
+      "tipo": "consumo_producao",
+      "qtd": 592.46,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P16k79nAC28ivH_9mbx",
+      "tipo": "consumo_producao",
+      "qtd": 192.427,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P16k7KoLXb6Wa2YYjkv",
+      "tipo": "consumo_producao",
+      "qtd": 311.421,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P1A2uHmNlJJ0dVm62qQ",
+      "tipo": "consumo_producao",
+      "qtd": 117.13,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P1AYPvAAhJEBFrNVU9F",
+      "tipo": "consumo_producao",
+      "qtd": 592.46,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P1AYYO0CVXXJQjRzC_q",
+      "tipo": "consumo_producao",
+      "qtd": 155.127,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P1AqHX9e1ScvV6EcPKt",
+      "tipo": "consumo_producao",
+      "qtd": 273.443,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00132",
+      "legacy_id": "-P1B4XKWMnvi_61VaJJ4",
+      "tipo": "consumo_producao",
+      "qtd": 10.438,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P0bnDZ6L2C-FMEtDAAT",
+      "tipo": "consumo_producao",
+      "qtd": 0.172,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P0ccxJaERrvWnnVG7rT",
+      "tipo": "consumo_producao",
+      "qtd": 0.096,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P0cv6p-Kh2uITYxll4C",
+      "tipo": "consumo_producao",
+      "qtd": 0.117,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P0gXt3HeusFF4NXR7ZM",
+      "tipo": "consumo_producao",
+      "qtd": 0.345,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P0hjSZeB7XVEyvKK9bA",
+      "tipo": "consumo_producao",
+      "qtd": 0.365,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P10PvEq1CAlb3QtfQ2v",
+      "tipo": "consumo_producao",
+      "qtd": 0.46,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P11aEiV-RIo79Bm4lSi",
+      "tipo": "consumo_producao",
+      "qtd": 0.101,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P15PlYUvoMGV07JyWk3",
+      "tipo": "consumo_producao",
+      "qtd": 0.46,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P15SzguUUQ9AjswJz2I",
+      "tipo": "consumo_producao",
+      "qtd": 0.476,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P15e_LTv8sOjPr5JRU2",
+      "tipo": "consumo_producao",
+      "qtd": 0.148,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P16Ve1x81JfI9zRNyEQ",
+      "tipo": "consumo_producao",
+      "qtd": 0.304,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P16k7L3LWBiP2aJnZnh",
+      "tipo": "consumo_producao",
+      "qtd": 0.16,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P1AYPvFPCQisqFp8r5G",
+      "tipo": "consumo_producao",
+      "qtd": 0.304,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00136",
+      "legacy_id": "-P1AqHYIsRnuCFvAnHdF",
+      "tipo": "consumo_producao",
+      "qtd": 0.14,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00139",
+      "legacy_id": "-P0bnDZ77soZDYtVFWmB",
+      "tipo": "consumo_producao",
+      "qtd": 0.034,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00139",
+      "legacy_id": "-P0ccxJcDoYEoQZJMWOP",
+      "tipo": "consumo_producao",
+      "qtd": 0.019,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00139",
+      "legacy_id": "-P0cv6p5tmr-_b9gL7qO",
+      "tipo": "consumo_producao",
+      "qtd": 0.023,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00139",
+      "legacy_id": "-P0gXt3JfP6-QVZu2NF_",
+      "tipo": "consumo_producao",
+      "qtd": 0.069,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "MPGR-00139",
+      "legacy_id": "-P0hjSZm6DeYedHHMC2x",
+      "tipo": "consumo_producao",
+      "qtd": 0.073,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    },
+    {
+      "material_code": "PRF-AFEE-0014",
+      "legacy_id": "-P22l80qJu6ekuvJeRwO",
+      "tipo": "qualidade",
+      "qtd": 0.0,
+      "reason": "Sinal nao representa delta contabil com seguranca; manter apenas como historia."
+    }
+  ],
+  "orphan_references": [
+    {
+      "node": "formulas",
+      "legacy_id": "AGBE-SEUN-0001__v1",
+      "field": "codProduto",
+      "value": "AGBE-SEUN-0001"
+    },
+    {
+      "node": "formulas",
+      "legacy_id": "AGUA-DE-BELEZA-100ML__v1",
+      "field": "codProduto",
+      "value": "AGUA-DE-BELEZA-100ML"
+    },
+    {
+      "node": "formulas",
+      "legacy_id": "KUBPBA01-2__v1",
+      "field": "codProduto",
+      "value": "KUBPBA01-2"
+    },
+    {
+      "node": "formulas",
+      "legacy_id": "KUBPBA02-2__v1",
+      "field": "codProduto",
+      "value": "KUBPBA02-2"
+    },
+    {
+      "node": "formulas",
+      "legacy_id": "USO-PROP-0001__v1",
+      "field": "codProduto",
+      "value": "USO-PROP-0001"
+    },
+    {
+      "node": "bom",
+      "legacy_id": "AGBE-SEUN-0001__v1",
+      "field": "codProduto",
+      "value": "AGBE-SEUN-0001"
+    },
+    {
+      "node": "bom",
+      "legacy_id": "BSP-SEUN-0001__v1",
+      "field": "codProduto",
+      "value": "BSP-SEUN-0001"
+    },
+    {
+      "node": "bom",
+      "legacy_id": "KUBPBA01-2__v1",
+      "field": "codProduto",
+      "value": "KUBPBA01-2"
+    },
+    {
+      "node": "bom",
+      "legacy_id": "KUBPBA02-2__v1",
+      "field": "codProduto",
+      "value": "KUBPBA02-2"
+    },
+    {
+      "node": "bom",
+      "legacy_id": "USO-PROP-0001__v1",
+      "field": "codProduto",
+      "value": "USO-PROP-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25024-02",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25027-01",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25030-01",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25051-13",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25051-14",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25051-15",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25051-16",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25106-01",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25106-02",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25120-01",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25120-02",
+      "field": "sku",
+      "value": "-"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25224-01",
+      "field": "skuPedidoKey",
+      "value": "01_07__MRARBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25224-02",
+      "field": "skuPedidoKey",
+      "value": "01_07__MRARBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25237-01",
+      "field": "skuPedidoKey",
+      "value": "01_06__MRARBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25237-02",
+      "field": "skuPedidoKey",
+      "value": "01_06__MRARBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25237-03",
+      "field": "skuPedidoKey",
+      "value": "01_06__MRARBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25237-04",
+      "field": "skuPedidoKey",
+      "value": "01_06__MRARBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25237-05",
+      "field": "skuPedidoKey",
+      "value": "01_06__MRARBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25237-06",
+      "field": "skuPedidoKey",
+      "value": "01_06__MRARBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "25297-04",
+      "field": "skuPedidoKey",
+      "value": "KURYOS__RETRAB05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26051-06",
+      "field": "sku",
+      "value": "IMEDIATT LISS PASSO 2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26054-07",
+      "field": "sku",
+      "value": "IMEDIATT LISS PASSO 1"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26140-02",
+      "field": "sku",
+      "value": "bbpf0004"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26140-02",
+      "field": "skuPedidoKey",
+      "value": "REPOSICAO_BRIA_01__bbpf0004"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26160-04",
+      "field": "skuPedidoKey",
+      "value": "7__DPHNPC01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26176-09",
+      "field": "skuPedidoKey",
+      "value": "FABIANO_22-01-26__FBBS0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26177-05",
+      "field": "skuPedidoKey",
+      "value": "FABIANO_22-01-26__FBBS0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26204-01",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS12"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26204-02",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS12"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26205-02",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26210-05",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26211-01",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0021"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26212-01",
+      "field": "skuPedidoKey",
+      "value": "-0017__PRF-AFEE-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26212-02",
+      "field": "skuPedidoKey",
+      "value": "-0017__PRF-AFEE-0021"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26212-03",
+      "field": "skuPedidoKey",
+      "value": "-0017__PRF-AFEE-0021"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26212-04",
+      "field": "skuPedidoKey",
+      "value": "-0017__PRF-AFEE-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26212-05",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26212-06",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0015"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26215-01",
+      "field": "skuPedidoKey",
+      "value": "22__BBSJBS05-2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26215-02",
+      "field": "skuPedidoKey",
+      "value": "22__BBSJBS05-2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26216-01",
+      "field": "skuPedidoKey",
+      "value": "22__BBSJBS03-2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26216-02",
+      "field": "skuPedidoKey",
+      "value": "22__BBSJBS03-2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26216-03",
+      "field": "skuPedidoKey",
+      "value": "22__BBSJBS03-2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26217-07",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0016"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26219-06",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0018"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26219-07",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0025"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26222-01",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0029"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26223-01",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26223-02",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26223-03",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26223-04",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26223-05",
+      "field": "sku",
+      "value": "BSP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26223-06",
+      "field": "sku",
+      "value": "BSP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26224-01",
+      "field": "skuPedidoKey",
+      "value": "21__KUBPBA02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26224-02",
+      "field": "skuPedidoKey",
+      "value": "21__KUBPBA02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26224-03",
+      "field": "skuPedidoKey",
+      "value": "21__KUBPBA02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26225-02",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0028"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26225-03",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0017"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26226-01",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0033"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26226-02",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS09"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26226-03",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0030"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26229-01",
+      "field": "sku",
+      "value": "BSP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26229-01",
+      "field": "skuPedidoKey",
+      "value": "19__BSP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26229-02",
+      "field": "skuPedidoKey",
+      "value": "14__MRARBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26229-03",
+      "field": "skuPedidoKey",
+      "value": "14__MRARBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-01",
+      "field": "skuPedidoKey",
+      "value": "7__DPHNPC01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-02",
+      "field": "skuPedidoKey",
+      "value": "7__DPHNPC01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-03",
+      "field": "skuPedidoKey",
+      "value": "7__DPHNPC01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-04",
+      "field": "skuPedidoKey",
+      "value": "7__PRF-AFEE-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-05",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-06",
+      "field": "sku",
+      "value": "BSP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26230-07",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26231-01",
+      "field": "skuPedidoKey",
+      "value": "14__MRARBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26231-02",
+      "field": "skuPedidoKey",
+      "value": "14__MRARBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26231-03",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26231-04",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26231-05",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26231-06",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-01",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-02",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-03",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-04",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-05",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-06",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-07",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-08",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM06"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-09",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26232-10",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0016"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26233-03",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS10"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26236-01",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0028"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26236-02",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0018"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26236-03",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0027"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26236-04",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26236-05",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-01",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-02",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-03",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-04",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-05",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-06",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-07",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-08",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-09",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-10",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-11",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-12",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-13",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-14",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-15",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-16",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-17",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26237-18",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0019"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-01",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0007"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-02",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0005"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-03",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0005"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-05",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-06",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-07",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-08",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-09",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0026"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26238-10",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0025"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26239-01",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26239-02",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM04"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26239-03",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM04"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26239-04",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM04"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26240-01",
+      "field": "skuPedidoKey",
+      "value": "19__ESP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26240-02",
+      "field": "skuPedidoKey",
+      "value": "19__ESF-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26240-03",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26240-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-01",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-02",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0021"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-03",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0030"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-05",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-06",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0004"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26243-07",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-01",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-02",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-03",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-05",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-06",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0003"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-07",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0004"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-08",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0005"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-09",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0006"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-10",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0007"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-12",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0029"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-13",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0017"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-14",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0032"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-15",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM04"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-16",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM04"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26244-17",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM04"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26245-01",
+      "field": "skuPedidoKey",
+      "value": "0__USO-PROP-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26245-03",
+      "field": "sku",
+      "value": "BSP-SEUN-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-01",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-02",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-03",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-05",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-06",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-07",
+      "field": "skuPedidoKey",
+      "value": "22__BBSJBS05-2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-08",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0012"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-09",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-10",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-11",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-12",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-13",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-14",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26246-15",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-01",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-02",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-03",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-04",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-05",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-06",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26247-07",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0015"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-01",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-02",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-03",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-05",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-06",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0002"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-07",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-08",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-09",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-10",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-11",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-12",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-13",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-14",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0033"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-15",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0014"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26251-16",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0027"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26252-01",
+      "field": "skuPedidoKey",
+      "value": "28__BFBBBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26252-02",
+      "field": "skuPedidoKey",
+      "value": "28__BFBBBS02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26252-03",
+      "field": "skuPedidoKey",
+      "value": "28__BFBBBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26252-04",
+      "field": "skuPedidoKey",
+      "value": "28__BFBBBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26253-01",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0023"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26253-02",
+      "field": "skuPedidoKey",
+      "value": "0__KUBPBA02"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26253-03",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0025"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26253-04",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0018"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26253-05",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26253-06",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0026"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26254-01",
+      "field": "skuPedidoKey",
+      "value": "12__MRARBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26254-02",
+      "field": "skuPedidoKey",
+      "value": "28__BFBBBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26254-03",
+      "field": "skuPedidoKey",
+      "value": "28__BFBBBS05"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26254-04",
+      "field": "skuPedidoKey",
+      "value": "20__PRF-PROP-0001"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-01",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-02",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-03",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-04",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-05",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-06",
+      "field": "skuPedidoKey",
+      "value": "19__GLMKAM03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-13",
+      "field": "skuPedidoKey",
+      "value": "14__MRARBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-14",
+      "field": "skuPedidoKey",
+      "value": "14__MRARBS01"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-21",
+      "field": "skuPedidoKey",
+      "value": "20__KUBPBA01_-_2"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26257-22",
+      "field": "skuPedidoKey",
+      "value": "17__PRF-AFEE-0031"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26258-01",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26258-02",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26258-03",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26258-04",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26258-05",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26258-06",
+      "field": "skuPedidoKey",
+      "value": "7__DPGLBS03"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26260-01",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS07"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26261-01",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS07"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26261-02",
+      "field": "skuPedidoKey",
+      "value": "11__MRARBS07"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26264-01",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26264-02",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26264-03",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0008"
+    },
+    {
+      "node": "ops",
+      "legacy_id": "26264-04",
+      "field": "skuPedidoKey",
+      "value": "23__HDR-MISS-0008"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_164a7cb1143f6cc3",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_20787120f8bf7c9f",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_224158ad7e51f128",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_2bea58270622ff95",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_4e3b7f760681b3fe",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_69a6f662e4536fde",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_72c0c6eda1e08bc1",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_7a3c30fa65efed75",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_92bce041948e5814",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_d2f827aadc78ea78",
+      "field": "material",
+      "value": "GLMKAM01"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_3a3a862f304fdbc3",
+      "field": "material",
+      "value": "GLMKAM02"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_dd0e263e58e69d3f",
+      "field": "material",
+      "value": "GLMKAM02"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26257-03_p1",
+      "field": "material",
+      "value": "GLMKAM03"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26257-03_p2",
+      "field": "material",
+      "value": "GLMKAM03"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_0cab5e4bbcd9971d",
+      "field": "material",
+      "value": "GLMKAM04"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_293e59ba0e9a1941",
+      "field": "material",
+      "value": "GLMKAM04"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_3a6f57edbc250036",
+      "field": "material",
+      "value": "GLMKAM04"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_96630a984ff2ed73",
+      "field": "material",
+      "value": "GLMKAM04"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_13db2e14c2657829",
+      "field": "material",
+      "value": "HDR-MISS-0002"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_a1d566faef9b0551",
+      "field": "material",
+      "value": "HDR-MISS-0003"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_466c8a1986bf8426",
+      "field": "material",
+      "value": "HDR-MISS-0005"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_ac88c498cbbca14e",
+      "field": "material",
+      "value": "HDR-MISS-0008"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26257-17_p1",
+      "field": "material",
+      "value": "MRARBS04"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26257-17_p2",
+      "field": "material",
+      "value": "MRARBS04"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26253-05_p1",
+      "field": "material",
+      "value": "PRF-AFEE-0008"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26251-15_p1",
+      "field": "material",
+      "value": "PRF-AFEE-0014"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "pa_26253-04_p1",
+      "field": "material",
+      "value": "PRF-AFEE-0018"
+    },
+    {
+      "node": "estoque_lotes",
+      "legacy_id": "LEG_66a54ebe684a068b",
+      "field": "material",
+      "value": "PRF-AFEE-0025"
+    }
+  ],
+  "suspect_dates": [
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_-",
+      "field": "criadoEm",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_-",
+      "field": "data",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_-",
+      "field": "itens.LEG_3a89f1c2b0270fbf.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_-",
+      "field": "itens.LEG_73e2f5dff6d10732.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-05",
+      "field": "itens.LEG_011399341472ea2e.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-05",
+      "field": "itens.LEG_8257ff88c4253a00.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-05",
+      "field": "itens.LEG_91465399a7fb7198.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-05",
+      "field": "itens.LEG_dedb4a27647e836c.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-05",
+      "field": "itens.LEG_dedb4a27647e836c_1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-09",
+      "field": "itens.LEG_8428837a97428fca.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-09",
+      "field": "itens.LEG_94d9c57a0f124711.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-09",
+      "field": "itens.LEG_ee3de20f2cc27fb2.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-13",
+      "field": "itens.LEG_17f4e354bfec254d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_177e01eee0ef3f97.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_97a146c4664985e4.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_b226a546cf2f83da.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_d0d350bb7372797d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_d0d350bb7372797d_1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_e01c4031d57989ba.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-14",
+      "field": "itens.LEG_faab50fb36c5cb8a.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-15",
+      "field": "itens.LEG_3b3983790fa5fa9d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-15",
+      "field": "itens.LEG_3db500f6170d8780.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-15",
+      "field": "itens.LEG_97dcafc282032699.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-05-19",
+      "field": "itens.LEG_3dbe4ea4dd69ee5b.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-06-18",
+      "field": "itens.LEG_0058a3f0fbb90c7d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-06-18",
+      "field": "itens.LEG_0f150c95abdf9aac.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-06-18",
+      "field": "itens.LEG_b0580f3320d92bc6.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-07-07",
+      "field": "itens.LEG_df5d5a301952c226.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-07-08",
+      "field": "itens.LEG_3f7d45216bb148f4.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-07-14",
+      "field": "itens.LEG_761437b2ae03163c.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_0_2025-07-22",
+      "field": "itens.LEG_ed7d267167c5be75.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_1_2025-07-01",
+      "field": "itens.LEG_520b1af972a18cf0.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_1_2025-09-11",
+      "field": "itens.LEG_9325d263b274021f.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_212_2025-04-25",
+      "field": "itens.LEG_1dcf255f62a8c4ca.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_212_2025-04-25",
+      "field": "itens.LEG_2fc0112fb1a3d816.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_213_2025-05-05",
+      "field": "itens.LEG_b3f16ac9b2034d01.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_213_2025-05-05",
+      "field": "itens.LEG_bd2239f560085feb.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_214_2025-05-05",
+      "field": "itens.LEG_c60ce75d18a30a51.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_215_2025-05-05",
+      "field": "itens.LEG_6c6ab579145ce6bf.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_216_2025-05-05",
+      "field": "itens.LEG_cb16f6d135ad2dd2.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_0581ff62ed239947.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_06d18ff78a741ff7.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_230f51c09b3a5082.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_68903a7b8e51da33.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_68903a7b8e51da33_1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_68903a7b8e51da33_2.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_241_2025-06-18",
+      "field": "itens.LEG_84e07ad6d04650ef.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_0364d82504b06175.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_0d3b3ae1b3d30e69.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_42668234a85f3d3a.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_808939c55d3b5b85.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_a6198183173407ba.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_dea6bb3313ff55bd.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_faa82820492a0c49.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_faa82820492a0c49_1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_242_2025-06-25",
+      "field": "itens.LEG_faa82820492a0c49_2.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_0cc229a1b128c186.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_2f4aef79720f6462.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_d333aa2f6a782ea8.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_e8e8bd22ebc16413.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_e9502c5f2b40e44d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_f2a38b33da125094.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_f3e40fda2fce30bb.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_f611072fa0c61a52.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_f6b7ae0fb19f8b99.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_fb010d90792ba710.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_fb010d90792ba710_1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_243_2025-07-02",
+      "field": "itens.LEG_fb010d90792ba710_2.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_244_2025-07-11",
+      "field": "itens.LEG_28b30483a9885971.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_244_2025-07-11",
+      "field": "itens.LEG_a3ead723113bf4c0.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_269_SEMDATA",
+      "field": "itens.LEG_4e3db9ee200cf085.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_403_2025-05-08",
+      "field": "itens.LEG_80987adc29a5762d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_421_2025-06-16",
+      "field": "itens.LEG_71154044007cce6e.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_421_2025-06-16",
+      "field": "itens.LEG_7ab0f004aaa006ce.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_422_2025-06-16",
+      "field": "itens.LEG_cc5678b8ecea7069.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_423_2025-06-16",
+      "field": "itens.LEG_09cd120fe4a48750.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_424_2025-06-23",
+      "field": "itens.LEG_522a5502fa6cf8d6.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_424_2025-06-23",
+      "field": "itens.LEG_682c8cc149876b7f.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_425_2025-06-25",
+      "field": "itens.LEG_01286068bc93c42d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_425_2025-06-25",
+      "field": "itens.LEG_abdb5dee014419b1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_426_2025-06-25",
+      "field": "itens.LEG_908366690d38d43d.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_426_2025-06-25",
+      "field": "itens.LEG_e17bced1d9b2a4cf.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_428_2025-07-22",
+      "field": "itens.LEG_e838d7faf66bcc36.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_429_2025-07-22",
+      "field": "itens.LEG_359ad23d05853a48.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_433_2025-07-21",
+      "field": "itens.LEG_6abbdbce48099a88.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_433_2025-07-21",
+      "field": "itens.LEG_8dce42176c62be70.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_434_2025-07-21",
+      "field": "itens.LEG_c45be8d19e92bc51.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_435_2025-07-23",
+      "field": "itens.LEG_595dd0d49fa81eef.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_435_2025-07-23",
+      "field": "itens.LEG_74cbef593b660bfe.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_436_2025-07-23",
+      "field": "itens.LEG_7ce455aed4c9369b.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_437_2025-07-25",
+      "field": "itens.LEG_efd12e4b7c1aaa27.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_437_2025-07-25",
+      "field": "itens.LEG_efd12e4b7c1aaa27_1.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_437_2025-07-25",
+      "field": "itens.LEG_efd12e4b7c1aaa27_2.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_437_2025-07-25",
+      "field": "itens.LEG_efd12e4b7c1aaa27_3.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_437_2025-07-25",
+      "field": "itens.LEG_efd12e4b7c1aaa27_4.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_437_2025-07-25",
+      "field": "itens.LEG_efd12e4b7c1aaa27_5.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_450_2025-08-13",
+      "field": "itens.LEG_4d98f87e7ace1fe4.dataFabricacao",
+      "value": "-",
+      "reason": "data_sem_ano_reconhecivel"
+    },
+    {
+      "node": "expedicoes_comerciais",
+      "legacy_id": "LEG_NF_530_SEMDATA",
+      "field": "itens.LEG_589b828e112a7a77.dataFabricacao",
+      "value": "1900-02-05",
+      "reason": "ano_fora_da_janela_2000_2035"
+    }
+  ],
+  "classification": "MANUAL_REVIEW",
+  "reason": "Estoque permanece bloqueado ate corte fisico e validacao CQ/WMS; saldoAtual e movimentos legados nao serao aplicados.",
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "target_evaluation_complete": true,
+  "target_snapshot": {
+    "wms_enderecos": 0,
+    "estoque_saldos_lote": 0,
+    "estoque_movimentos_lote": 0,
+    "wms_paletes": 0,
+    "cq_status_lote": 1
+  }
+}

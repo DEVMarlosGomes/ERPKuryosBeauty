@@ -1169,7 +1169,12 @@ async def trigger_tasks_for_transition(
 
 async def list_tasks_for_entity(tenant_id: str, entity_type: str, entity_id: str) -> List[dict]:
     return await db.workflow_tasks.find(
-        {"tenant_id": tenant_id, "entity_type": entity_type, "entity_id": entity_id},
+        {
+            "tenant_id": tenant_id,
+            "entity_type": entity_type,
+            "entity_id": entity_id,
+            "is_deleted": {"$ne": True},
+        },
         {"_id": 0},
     ).sort("created_at", -1).to_list(500)
 
@@ -1185,7 +1190,7 @@ async def list_tasks_filtered(
     due_within_days: Optional[int] = None,
     task_type: Optional[str] = None,
 ) -> List[dict]:
-    query: Dict[str, Any] = {"tenant_id": tenant_id}
+    query: Dict[str, Any] = {"tenant_id": tenant_id, "is_deleted": {"$ne": True}}
     if status:
         query["status"] = status
     if responsible_id:

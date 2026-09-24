@@ -6,21 +6,21 @@ Auth uses HttpOnly cookies; we use requests.Session per user.
 """
 import pytest
 import requests
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, ROLE_USERS_PASSWORD, get_backend_url, skip_without_backend_url
 
 BASE_URL = get_backend_url()
 pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 
 USERS = {
-    "admin":             ("admin@kuryos.com",       "admin123"),
-    "vendedor":          ("vendedor@kuryos.com",    "kuryos123"),
-    "sales_ops":         ("salesops@kuryos.com",    "kuryos123"),
-    "formulador":        ("formulador@kuryos.com",  "kuryos123"),
-    "qa":                ("qa@kuryos.com",          "kuryos123"),
-    "lider_pd":          ("liderpd@kuryos.com",     "kuryos123"),
-    "engenharia_produto":("engenharia@kuryos.com",  "kuryos123"),
-    "sucesso_cliente":   ("sucesso@kuryos.com",     "kuryos123"),
+    "admin":             (ADMIN_EMAIL,              ADMIN_PASSWORD),
+    "vendedor":          ("vendedor@kuryos.com",    ROLE_USERS_PASSWORD),
+    "sales_ops":         ("salesops@kuryos.com",    ROLE_USERS_PASSWORD),
+    "formulador":        ("formulador@kuryos.com",  ROLE_USERS_PASSWORD),
+    "qa":                ("qa@kuryos.com",          ROLE_USERS_PASSWORD),
+    "lider_pd":          ("liderpd@kuryos.com",     ROLE_USERS_PASSWORD),
+    "engenharia_produto":("engenharia@kuryos.com",  ROLE_USERS_PASSWORD),
+    "sucesso_cliente":   ("sucesso@kuryos.com",     ROLE_USERS_PASSWORD),
 }
 
 
@@ -28,6 +28,9 @@ def login(email: str, password: str) -> requests.Session:
     s = requests.Session()
     r = s.post(f"{API}/auth/login", json={"email": email, "password": password}, timeout=15)
     assert r.status_code == 200, f"login failed for {email}: {r.status_code} {r.text}"
+    me = s.get(f"{API}/auth/me", timeout=15)
+    assert me.status_code == 200, f"auth/me failed for {email}: {me.status_code} {me.text}"
+    s.headers["X-Confirm-Tenant-Reset"] = me.json()["tenant_id"]
     return s
 
 
@@ -65,7 +68,10 @@ def test_login_each_seeded_role(role, creds):
 
 @pytest.fixture(scope="module", autouse=True)
 def _reset(admin):
-    r = admin.post(f"{API}/workflow/admin/reset-data", timeout=20)
+    r = admin.post(
+        f"{API}/workflow/admin/reset-data",
+        timeout=20,
+    )
     assert r.status_code == 200, r.text
     yield
 

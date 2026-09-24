@@ -20,7 +20,7 @@ import sys
 # Env vars devem ser definidas ANTES de importar server.py
 os.environ.setdefault("DB_NAME", "kuryos_cq_test")
 os.environ.setdefault("MONGO_URL", "mongodb://127.0.0.1:27017")
-os.environ.setdefault("JWT_SECRET", "cq-test-jwt-secret-not-for-prod")
+os.environ.setdefault("JWT_SECRET", "cq-test-jwt-secret-not-for-production-only")
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "backend"))
 

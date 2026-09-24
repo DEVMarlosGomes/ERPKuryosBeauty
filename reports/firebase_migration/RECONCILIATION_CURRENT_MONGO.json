@@ -1,0 +1,142 @@
+{
+  "status": "COMPLETED_READ_ONLY_AWAITING_HUMAN_APPROVAL",
+  "generated_at": "2026-09-24T13:56:15.829341+00:00",
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "mongo": {
+    "uri": "REDACTED",
+    "db_name": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+    "mode": "READ_ONLY"
+  },
+  "allowed_operations_used": [
+    "find",
+    "count",
+    "list_indexes"
+  ],
+  "write_operations_performed": [],
+  "classifications": {
+    "MATCH": 3,
+    "INSERT_CANDIDATE": 906,
+    "MERGE_CANDIDATE": 0,
+    "CONFLICT": 6,
+    "MANUAL_REVIEW": 3008,
+    "SKIP": 0,
+    "target_evaluation_complete": true
+  },
+  "target_collection_counts": {
+    "crm_clients": 15,
+    "compras_fornecedores": 0,
+    "materiais": 0,
+    "fragrancias": 0,
+    "skus": 0,
+    "orders": 16,
+    "ops": 1,
+    "wms_enderecos": 0,
+    "estoque_saldos_lote": 0,
+    "produtos_pai": 0,
+    "bom_items": 0,
+    "estoque_movimentos_lote": 0,
+    "wms_paletes": 0,
+    "cq_status_lote": 1
+  },
+  "target_index_names": {
+    "crm_clients": [
+      "_id_",
+      "tenant_id_1_stage_1",
+      "tenant_id_1",
+      "tenant_id_1_cnpj_normalized_1",
+      "tenant_id_1_cli4_1"
+    ],
+    "compras_fornecedores": [
+      "_id_",
+      "tenant_id_1",
+      "tenant_id_1_created_at_-1",
+      "tenant_id_1_cnpj_normalizado_1",
+      "tenant_id_1_status_cadastro_1",
+      "tenant_id_1_homologacao.status_1",
+      "tenant_id_1_codigo_interno_1"
+    ],
+    "materiais": [
+      "_id_",
+      "tenant_id_1_codigo_interno_1",
+      "tenant_id_1_tipo2_1_status_1",
+      "tenant_id_1_nome_text",
+      "tenant_id_1_fornecedores.codigo_fornecedor_1",
+      "tenant_id_1_categoria_mp_id_1",
+      "tenant_id_1_ncm_1"
+    ],
+    "fragrancias": [
+      "_id_",
+      "tenant_id_1_inspiracao_text",
+      "tenant_id_1_status_1",
+      "tenant_id_1_fornecedores.codigo_fornecedor_1",
+      "tenant_id_1_codigo_interno_1"
+    ],
+    "skus": [
+      "_id_",
+      "tenant_id_1_codigo_interno_1",
+      "uniq_active_sku_sample_variation",
+      "tenant_id_1_status_1",
+      "tenant_id_1_cliente_id_1"
+    ],
+    "orders": [
+      "_id_",
+      "tenant_id_1_created_at_-1",
+      "tenant_id_1_status_1",
+      "tenant_id_1_pd_request_id_1"
+    ],
+    "ops": [
+      "_id_"
+    ],
+    "wms_enderecos": [
+      "_id_",
+      "tenant_id_1_codigo_1",
+      "tenant_id_1_setor_1_status_1"
+    ],
+    "estoque_saldos_lote": [
+      "_id_",
+      "tenant_id_1_item_id_1_lote_1_endereco_id_1",
+      "tenant_id_1_endereco_id_1_quantidade_1",
+      "tenant_id_1_wms_quarantine_physical_1_status_1"
+    ],
+    "produtos_pai": [
+      "_id_",
+      "tenant_id_1_id_1",
+      "tenant_id_1_cliente_id_1"
+    ],
+    "bom_items": [
+      "_id_",
+      "tenant_id_1_produto_pai_id_1_camada_1",
+      "tenant_id_1_sku_id_1_camada_1"
+    ],
+    "estoque_movimentos_lote": [
+      "_id_",
+      "tenant_id_1_idempotency_key_1",
+      "tenant_id_1_created_at_-1",
+      "tenant_id_1_saldo_lote_id_1_created_at_-1",
+      "tenant_id_1_op_id_1_natureza_1_created_at_-1"
+    ],
+    "wms_paletes": [
+      "_id_",
+      "tenant_id_1_recebimento_id_1",
+      "tenant_id_1_etiqueta_codigo_1"
+    ],
+    "cq_status_lote": [
+      "_id_",
+      "tenant_id_1_created_at_-1",
+      "tenant_id_1_lote_id_1",
+      "tenant_id_1"
+    ]
+  },
+  "maps": {
+    "clients": "CLIENT_ID_MAP.json",
+    "suppliers": "SUPPLIER_ID_MAP.json",
+    "materials": "MATERIAL_ID_MAP.json",
+    "skus": "SKU_ID_MAP.json",
+    "orders": "ORDER_ID_MAP.json",
+    "ops": "OP_ID_MAP.json",
+    "addresses": "ADDRESS_ID_MAP.json",
+    "lots": "LOT_ID_MAP.json"
+  },
+  "next_gate": "Human review is required before transformation generation or homologation apply."
+}

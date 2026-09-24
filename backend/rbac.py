@@ -20,6 +20,11 @@ ROLES = {
     "engenharia_produto",   # Operacional: kickoff, BOM/embalagem, EPA.
     "sucesso_cliente",      # Pos-venda: clientes fechados, recompra/cross-sell.
     "compras",              # Compras: recebe custos v1 do P&D, define custos finais (v2).
+    "logistica",            # Recebimento, estoque/WMS e expedicao.
+    "estoque",              # Operacao e inventario de estoque/WMS.
+    "pcp",                  # Planejamento e controle da producao.
+    "producao",             # Apontamentos, perdas e retrabalho fabril.
+    "faturamento",          # Notas fiscais e contas a receber.
 }
 
 # Legacy role aliases -> canonical roles (for backwards compatibility)
@@ -40,6 +45,16 @@ HOMOLOGACAO_APPROVE = {"admin", "lider_pd", "qa"}
 DOC_REVIEWERS = {"admin", "lider_pd", "qa", "engenharia_produto", "formulador"}
 ADMIN_ONLY = {"admin"}
 COMPRAS_FULL = {"admin", "compras"}             # acesso total ao modulo de custos comerciais
+
+# Operational write scopes. Read access remains governed by authentication and
+# the module-specific UI; every stock/financial state mutation uses one of these.
+RECEIVING_WRITE_ROLES = {"admin", "logistica", "compras"}
+INVENTORY_WRITE_ROLES = {"admin", "logistica", "estoque", "pcp", "qa"}
+SHIPPING_WRITE_ROLES = {"admin", "logistica"}
+BILLING_WRITE_ROLES = {"admin", "faturamento"}
+REWORK_WRITE_ROLES = {"admin", "producao", "qa", "pcp", "logistica"}
+PCP_PLANNING_WRITE_ROLES = {"admin", "pcp", "lider_pd", "engenharia_produto", "sales_ops"}
+PRODUCTION_EXECUTION_WRITE_ROLES = {"admin", "pcp", "producao", "lider_pd", "engenharia_produto"}
 
 
 def normalize_role(role: str) -> str:

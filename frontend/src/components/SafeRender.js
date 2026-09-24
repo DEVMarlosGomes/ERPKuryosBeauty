@@ -25,7 +25,7 @@ export const SafeRender = ({ value, fallback = null }) => {
   }
 
   // Objetos - mostrar como JSON formatado em dev
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     return (
       <pre className="text-xs bg-muted p-2 rounded overflow-auto max-h-32">
         {JSON.stringify(value, null, 2)}

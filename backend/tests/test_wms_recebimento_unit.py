@@ -62,6 +62,29 @@ class FakeCollection:
             return SimpleNamespace(modified_count=1, upserted_id=doc.get("id"))
         return SimpleNamespace(modified_count=0)
 
+    async def update_many(self, query, update):
+        modified = 0
+        for idx, doc in enumerate(self.docs):
+            if self._matches(doc, query):
+                self.docs[idx] = self._apply_update(doc, update)
+                modified += 1
+        return SimpleNamespace(modified_count=modified)
+
+    async def delete_many(self, query):
+        before = len(self.docs)
+        self.docs = [doc for doc in self.docs if not self._matches(doc, query)]
+        return SimpleNamespace(deleted_count=before - len(self.docs))
+
+    async def replace_one(self, query, replacement, upsert=False):
+        for idx, doc in enumerate(self.docs):
+            if self._matches(doc, query):
+                self.docs[idx] = dict(replacement)
+                return SimpleNamespace(modified_count=1)
+        if upsert:
+            self.docs.append(dict(replacement))
+            return SimpleNamespace(modified_count=0, upserted_id=replacement.get("id"))
+        return SimpleNamespace(modified_count=0)
+
     async def count_documents(self, query):
         return len([doc for doc in self.docs if self._matches(doc, query)])
 
@@ -125,6 +148,11 @@ class FakeCollection:
             else:
                 arr.append(value)
         return doc
+
+
+class FailingInsertCollection(FakeCollection):
+    async def insert_one(self, doc):
+        raise RuntimeError("falha injetada entre gravacoes")
 
 
 def _install_estoque():
@@ -801,6 +829,168 @@ def test_recebimento_lote_interno_e_idempotency_key_preservam_efeitos_unicos():
     assert len(recebimento_routes.db.recebimentos.docs) == 1
     assert len(recebimento_routes.db.estoque_movimentos.docs) == 1
     assert len(recebimento_routes.db.cq_registros_analise.docs) == 1
+
+
+def _install_customer_material_receiving_db():
+    _install_recebimento()
+    recebimento_routes.db = SimpleNamespace(
+        recebimento_sla_config=FakeCollection([]),
+        ops=FakeCollection([]),
+        orders=FakeCollection([{
+            "id": "pedido-cliente-1", "tenant_id": "t1", "cliente_id": "cliente-1", "status": "aprovado",
+        }]),
+        compras_pos=FakeCollection([]),
+        estoque_items=FakeCollection([]),
+        estoque_movimentos=FakeCollection([]),
+        estoque_movimentos_lote=FakeCollection([]),
+        cq_registros_analise=FakeCollection([]),
+        recebimentos=FakeCollection([]),
+        recebimento_estornos=FakeCollection([]),
+        wms_enderecos=FakeCollection([{
+            "id": "end-cliente", "tenant_id": "t1", "codigo": "CLI-A-01", "setor": "LOGISTICA", "status": "livre",
+        }]),
+        estoque_saldos_lote=FakeCollection([]),
+        wms_paletes=FakeCollection([]),
+        recebimento_agendamentos=FakeCollection([]),
+        audit_logs=FakeCollection([]),
+    )
+    return recebimento_routes.db
+
+
+def _customer_material_payload(pedido_id="pedido-cliente-1"):
+    return recebimento_routes.RecebimentoCreate(
+        fornecedor_nome="Cliente A",
+        numero_nf="NF-CLI-1",
+        data_nf="2026-08-20",
+        items=[recebimento_routes.RecebimentoItem(
+            nome="Frasco exclusivo", codigo="FR-CLI", tipo_mp="EMBALAGEM",
+            quantidade=60, unidade="un", lote="L-CLI-1", origem_cliente=True,
+            pedido_id=pedido_id, endereco_id="end-cliente", endereco_codigo="CLI-A-01",
+        )],
+    )
+
+
+def test_material_do_cliente_exige_pedido_valido_antes_de_movimentar_estoque():
+    db = _install_customer_material_receiving_db()
+
+    try:
+        asyncio.run(recebimento_routes.create_entrada(
+            _customer_material_payload(pedido_id="pedido-inexistente"), request=SimpleNamespace()
+        ))
+        raised = None
+    except HTTPException as exc:
+        raised = exc
+
+    assert raised is not None
+    assert raised.status_code == 404
+    assert db.estoque_items.docs == []
+    assert db.estoque_movimentos.docs == []
+    assert db.recebimentos.docs == []
+
+
+def test_material_do_cliente_fica_segregado_e_pode_ser_devolvido_com_idempotencia():
+    db = _install_customer_material_receiving_db()
+    entrada = asyncio.run(recebimento_routes.create_entrada(
+        _customer_material_payload(), request=SimpleNamespace()
+    ))
+
+    for document in (
+        entrada["items"][0], db.estoque_items.docs[0], db.estoque_saldos_lote.docs[0], db.wms_paletes.docs[0]
+    ):
+        assert document["proprietario_tipo"] == "cliente"
+        assert document["proprietario_cliente_id"] == "cliente-1"
+        assert document["pedido_id_exclusivo"] == "pedido-cliente-1"
+        assert document["consumo_restrito"] is True
+    assert db.estoque_movimentos_lote.docs[0]["metadata"]["pedido_id_exclusivo"] == "pedido-cliente-1"
+
+    payload = recebimento_routes.RecebimentoEstornoInput(
+        tipo="devolucao_cliente", motivo="saldo nao utilizado", idempotency_key="dev-cli-1",
+        items=[recebimento_routes.RecebimentoEstornoItem(
+            estoque_item_id=entrada["items"][0]["estoque_item_id"], quantidade=20,
+        )],
+    )
+    estorno = asyncio.run(recebimento_routes._estornar_recebimento_core(
+        entrada, payload, {"id": "u1", "tenant_id": "t1", "name": "Admin"}, "estorno-1"
+    ))
+    replay = asyncio.run(recebimento_routes._estornar_recebimento_core(
+        entrada, payload, {"id": "u1", "tenant_id": "t1", "name": "Admin"}, "estorno-outro"
+    ))
+
+    assert estorno["items"][0]["quantidade"] == 20
+    assert replay["id"] == "estorno-1"
+    assert replay["idempotent_replay"] is True
+    assert db.estoque_saldos_lote.docs[0]["quantidade"] == 40
+    assert db.estoque_items.docs[0]["quantidade_atual"] == 40
+    assert db.recebimentos.docs[0]["status"] == "parcialmente_estornado"
+    assert db.wms_paletes.docs[0]["status"] == "parcialmente_estornado"
+    assert len([m for m in db.estoque_movimentos.docs if m["tipo"] == "ESTORNO_RECEBIMENTO"]) == 1
+
+    current = db.recebimentos.docs[0]
+    final = asyncio.run(recebimento_routes._estornar_recebimento_core(
+        current,
+        recebimento_routes.RecebimentoEstornoInput(
+            tipo="devolucao_cliente", motivo="devolver sobra", idempotency_key="dev-cli-2"
+        ),
+        {"id": "u1", "tenant_id": "t1", "name": "Admin"},
+        "estorno-2",
+    ))
+    assert final["items"][0]["quantidade"] == 40
+    assert db.estoque_saldos_lote.docs[0]["quantidade"] == 0
+    assert db.estoque_items.docs[0]["quantidade_atual"] == 0
+    assert db.recebimentos.docs[0]["status"] == "devolvido_cliente"
+    assert db.wms_paletes.docs[0]["status"] == "devolvido"
+
+
+def test_recebimento_standalone_compensa_todos_os_efeitos_se_documento_principal_falhar():
+    db = _install_customer_material_receiving_db()
+    db.recebimentos = FailingInsertCollection([])
+
+    try:
+        asyncio.run(recebimento_routes.create_entrada(_customer_material_payload(), request=SimpleNamespace()))
+        raised = None
+    except RuntimeError as exc:
+        raised = exc
+
+    assert raised is not None
+    assert db.estoque_items.docs == []
+    assert db.estoque_saldos_lote.docs == []
+    assert db.estoque_movimentos.docs == []
+    assert db.estoque_movimentos_lote.docs == []
+    assert db.cq_registros_analise.docs == []
+    assert db.wms_paletes.docs == []
+    assert db.wms_enderecos.docs[0]["status"] == "livre"
+    assert db.audit_logs.docs[0]["action"] == "recebimento_compensado_por_falha"
+
+
+def test_estorno_standalone_restaura_estado_se_falhar_depois_da_baixa():
+    db = _install_customer_material_receiving_db()
+    entrada = asyncio.run(recebimento_routes.create_entrada(
+        _customer_material_payload(), request=SimpleNamespace()
+    ))
+    db.recebimento_estornos = FailingInsertCollection([])
+
+    payload = recebimento_routes.RecebimentoEstornoInput(
+        tipo="devolucao_cliente", motivo="teste de rollback", idempotency_key="dev-falha-1",
+        items=[recebimento_routes.RecebimentoEstornoItem(
+            estoque_item_id=entrada["items"][0]["estoque_item_id"], quantidade=20,
+        )],
+    )
+    try:
+        asyncio.run(recebimento_routes.estornar_entrada(
+            entrada["id"], payload, request=SimpleNamespace()
+        ))
+        raised = None
+    except RuntimeError as exc:
+        raised = exc
+
+    assert raised is not None
+    assert db.estoque_items.docs[0]["quantidade_atual"] == 60
+    assert db.estoque_saldos_lote.docs[0]["quantidade"] == 60
+    assert db.recebimentos.docs[0]["status"] == "quarentena"
+    assert db.wms_paletes.docs[0]["status"] == "quarentena"
+    assert len(db.estoque_movimentos.docs) == 1
+    assert len(db.estoque_movimentos_lote.docs) == 1
+    assert db.audit_logs.docs[-1]["action"] == "estorno_recebimento_compensado_por_falha"
 
 
 def test_agendamento_calendario_filtra_coleta_entrega_e_status():

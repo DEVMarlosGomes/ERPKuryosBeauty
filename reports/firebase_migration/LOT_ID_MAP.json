@@ -1,0 +1,318 @@
+{
+  "source_node": "estoque_lotes",
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "entries": [
+    {
+      "legacy_parent_material_code": "EP-00036",
+      "legacy_id": "AK-2026-000577",
+      "legacy_lot": "AK-2026-000577",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "EP-00037",
+      "legacy_id": "AK-2026-000578",
+      "legacy_lot": "AK-2026-000578",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "EP-00188",
+      "legacy_id": "AK-2026-000586",
+      "legacy_lot": "AK-2026-000586",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "ES-00319",
+      "legacy_id": "AK-2026-000576",
+      "legacy_lot": "AK-2026-000576",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_164a7cb1143f6cc3",
+      "legacy_lot": "26247/02",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_20787120f8bf7c9f",
+      "legacy_lot": "26247/03",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_224158ad7e51f128",
+      "legacy_lot": "26247/01",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_2bea58270622ff95",
+      "legacy_lot": "26247/02",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_4e3b7f760681b3fe",
+      "legacy_lot": "26247/01",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_69a6f662e4536fde",
+      "legacy_lot": "26247/05",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_72c0c6eda1e08bc1",
+      "legacy_lot": "26247/04",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_7a3c30fa65efed75",
+      "legacy_lot": "26247/05",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_92bce041948e5814",
+      "legacy_lot": "26247/03",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM01",
+      "legacy_id": "LEG_d2f827aadc78ea78",
+      "legacy_lot": "26247/04",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM02",
+      "legacy_id": "LEG_3a3a862f304fdbc3",
+      "legacy_lot": "26251/08",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM02",
+      "legacy_id": "LEG_dd0e263e58e69d3f",
+      "legacy_lot": "26251/08",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM03",
+      "legacy_id": "pa_26257-03_p1",
+      "legacy_lot": "26257/03",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM03",
+      "legacy_id": "pa_26257-03_p2",
+      "legacy_lot": "26257/03",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM04",
+      "legacy_id": "LEG_0cab5e4bbcd9971d",
+      "legacy_lot": "26244/17",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM04",
+      "legacy_id": "LEG_293e59ba0e9a1941",
+      "legacy_lot": "26244/17",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM04",
+      "legacy_id": "LEG_3a6f57edbc250036",
+      "legacy_lot": "26244/16",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "GLMKAM04",
+      "legacy_id": "LEG_96630a984ff2ed73",
+      "legacy_lot": "26244/16",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "HDR-MISS-0002",
+      "legacy_id": "LEG_13db2e14c2657829",
+      "legacy_lot": "26244/03",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "HDR-MISS-0003",
+      "legacy_id": "LEG_a1d566faef9b0551",
+      "legacy_lot": "26244/06",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "HDR-MISS-0005",
+      "legacy_id": "LEG_466c8a1986bf8426",
+      "legacy_lot": "26244/08",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "HDR-MISS-0008",
+      "legacy_id": "LEG_ac88c498cbbca14e",
+      "legacy_lot": "26244/11",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPES-00014",
+      "legacy_id": "AK-2026-000583",
+      "legacy_lot": "AK-2026-000583",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPES-00015",
+      "legacy_id": "AK-2026-000582",
+      "legacy_lot": "AK-2026-000582",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPES-00058",
+      "legacy_id": "AK-2026-000584",
+      "legacy_lot": "AK-2026-000584",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPES-00072",
+      "legacy_id": "AK-2026-000581",
+      "legacy_lot": "AK-2026-000581",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPES-00172",
+      "legacy_id": "AK-2026-000580",
+      "legacy_lot": "AK-2026-000580",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPGR-00002",
+      "legacy_id": "AK-2026-000585",
+      "legacy_lot": "AK-2026-000585",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MPGR-00086",
+      "legacy_id": "AK-2026-000579",
+      "legacy_lot": "AK-2026-000579",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MRARBS04",
+      "legacy_id": "pa_26257-17_p1",
+      "legacy_lot": "26257/17",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "MRARBS04",
+      "legacy_id": "pa_26257-17_p2",
+      "legacy_lot": "26257/17",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "PRF-AFEE-0008",
+      "legacy_id": "pa_26253-05_p1",
+      "legacy_lot": "26253/05",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "PRF-AFEE-0014",
+      "legacy_id": "pa_26251-15_p1",
+      "legacy_lot": "26251/15",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "PRF-AFEE-0018",
+      "legacy_id": "pa_26253-04_p1",
+      "legacy_lot": "26253/04",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    },
+    {
+      "legacy_parent_material_code": "PRF-AFEE-0025",
+      "legacy_id": "LEG_66a54ebe684a068b",
+      "legacy_lot": "26253/03",
+      "current_lot_balance_id": null,
+      "classification": "MANUAL_REVIEW",
+      "reason": "Lote exige material, endereco, CQ/WMS e corte fisico reconciliados; saldo agregado nao sera usado."
+    }
+  ]
+}

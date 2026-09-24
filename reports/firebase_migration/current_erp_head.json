@@ -1,0 +1,17 @@
+{
+  "captured_at": "2026-09-24T08:46:06.3898808-03:00",
+  "branch": "feature/pcp-delta-only-2026-09",
+  "head": "1b1ca49add9fd59fd1798deb2ad82f0a22f55d6b",
+  "commit_at": "2026-09-23T09:48:05-03:00",
+  "commit_subject": "auditoria&tombamento",
+  "working_tree": {
+    "dirty": true,
+    "entries": 98,
+    "modified": 58,
+    "deleted": 3,
+    "untracked": 37,
+    "assessment": "Alteracoes preexistentes e conhecidas da sessao. A migracao nao modificara codigo funcional; os relatorios usam o workspace atual sobre este HEAD e registram a ressalva."
+  },
+  "schema_source": "workspace_current_over_head",
+  "production_mongo_writes_allowed": false
+}

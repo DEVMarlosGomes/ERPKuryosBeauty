@@ -5,14 +5,12 @@ rework, P&D stage gating with CQ approval, and role-based audit access.
 """
 import pytest
 import requests
-from integration_helpers import get_backend_url, skip_without_backend_url
+from integration_helpers import ADMIN_EMAIL, ADMIN_PASSWORD, get_backend_url, skip_without_backend_url
 
 BASE_URL = get_backend_url()
 pytestmark = skip_without_backend_url(BASE_URL)
 API = f"{BASE_URL}/api"
 
-ADMIN_EMAIL = "admin@kuryos.com"
-ADMIN_PASSWORD = "admin123"
 
 
 # ---------- fixtures ----------
@@ -31,13 +29,17 @@ def admin_client():
     # Verify with /me
     me = s.get(f"{API}/auth/me")
     assert me.status_code == 200, f"auth/me failed: {me.status_code} {me.text}"
+    s.headers.update({"X-Confirm-Tenant-Reset": me.json()["tenant_id"]})
     return s
 
 
 @pytest.fixture(scope="session")
 def reset_state(admin_client):
     """Wipe operational data once per run to keep tests deterministic."""
-    r = admin_client.post(f"{API}/workflow/admin/reset-data", timeout=30)
+    r = admin_client.post(
+        f"{API}/workflow/admin/reset-data",
+        timeout=30,
+    )
     assert r.status_code == 200, f"reset failed: {r.status_code} {r.text}"
     return r.json()
 

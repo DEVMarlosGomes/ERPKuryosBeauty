@@ -1202,7 +1202,7 @@ function ProductDialog({ open, onOpenChange, sku, onSaved }) {
 
   const save = async () => {
     if (!isEditing) {
-      toast.info("Novo SKU deve nascer do P&D concluido/aprovado. Esta tela replica o cadastro e evita produto sem ficha tecnica.");
+      toast.info("Novo SKU nasce somente após a assinatura do CGI. Esta tela replica o cadastro e evita produto sem ficha técnica.");
       onOpenChange(false);
       return;
     }

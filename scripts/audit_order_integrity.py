@@ -64,9 +64,9 @@ async def run_audit(db, tenant_id: str = "", limit: int = 10000) -> Dict[str, An
             code = item.get("codigo_kuryos")
             if sku_id and sku_id not in sku_ids:
                 findings.append({"type": "order_item_sku_id_missing", "order_id": order.get("id"), "item": item})
-            if code and code not in {"A definir", "NA", "N/A"} and code not in sku_codes:
+            if code and code not in {"A definir", "NA", "N/A"} and code not in sku_codes and not item.get("cadastro_pendente"):
                 findings.append({"type": "order_item_sku_code_missing", "order_id": order.get("id"), "item": item})
-            if not sku_id and str(code or "").strip().lower() in {"", "a definir", "na", "n/a"} and not order.get("cadastro_pendente"):
+            if not sku_id and str(code or "").strip().lower() in {"", "a definir", "na", "n/a"} and not item.get("cadastro_pendente"):
                 findings.append({"type": "manual_item_without_cadastro_pendente_flag", "order_id": order.get("id"), "item": item})
 
         if order.get("status") in {"confirmado", "em_producao", "concluido"} and order.get("cgi_status") != "assinado":
@@ -76,7 +76,14 @@ async def run_audit(db, tenant_id: str = "", limit: int = 10000) -> Dict[str, An
 
     for key, docs in by_fingerprint.items():
         if len(docs) > 1:
-            findings.append({"type": "duplicate_active_order_fingerprint", "tenant_id": key[0], "fingerprint": key[1], "orders": [_safe(doc) for doc in docs]})
+            review_marked = all(doc.get("duplicidade_status") == "pendente_revisao" for doc in docs)
+            findings.append({
+                "type": "duplicate_active_order_fingerprint_pending_review" if review_marked else "duplicate_active_order_fingerprint",
+                "tenant_id": key[0],
+                "fingerprint": key[1],
+                "review_marked": review_marked,
+                "orders": [_safe(doc) for doc in docs],
+            })
 
     return {
         "script": "audit_order_integrity",

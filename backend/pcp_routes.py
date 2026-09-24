@@ -6,13 +6,20 @@ Fluxo:
   3. Slot em_execucao -> concluido   (envia OP para confirmacao PCP)
   4. Qualquer ativo → cancelado
 """
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, date, timedelta, timezone
+import asyncio
 import logging
 import re
+from pymongo.errors import OperationFailure
 from workflow_engine import next_lote_per_day, format_lote_numero
+from rbac import (
+    PCP_PLANNING_WRITE_ROLES,
+    PRODUCTION_EXECUTION_WRITE_ROLES,
+    require_roles,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +29,31 @@ db = None
 get_current_user = None
 new_id_func = None
 now_iso_func = None
+_broadcast_event = None
+_schedule_locks: Dict[str, asyncio.Lock] = {}
 
 
-def init_pcp(database, auth_func, id_func, iso_func):
-    global db, get_current_user, new_id_func, now_iso_func
+def init_pcp(database, auth_func, id_func, iso_func, broadcast_event_fn=None):
+    global db, get_current_user, new_id_func, now_iso_func, _broadcast_event
     db = database
     get_current_user = auth_func
     new_id_func = id_func
     now_iso_func = iso_func
+    _broadcast_event = broadcast_event_fn
+
+
+async def _enforce_pcp_write_rbac(request: Request):
+    if request.method.upper() not in {"POST", "PUT", "PATCH", "DELETE"}:
+        return
+    roles = (
+        PRODUCTION_EXECUTION_WRITE_ROLES
+        if "/timeline-events" in request.url.path
+        else PCP_PLANNING_WRITE_ROLES
+    )
+    require_roles(await get_current_user(request), roles)
+
+
+pcp_router.dependencies.append(Depends(_enforce_pcp_write_rbac))
 
 
 def _new_id():
@@ -134,43 +158,6 @@ def _text_matches(row: Dict[str, Any], q: Optional[str]) -> bool:
         "op_numero", "pedido_numero", "produto", "sku", "cliente_nome", "linha", "lote", "colaborador"
     )).lower()
     return needle in haystack
-
-
-def _norm_header(value: Any) -> str:
-    text = str(value or "").strip().lower()
-    replacements = {
-        "ç": "c", "ã": "a", "á": "a", "à": "a", "â": "a",
-        "é": "e", "ê": "e", "í": "i", "ó": "o", "ô": "o",
-        "õ": "o", "ú": "u",
-    }
-    for src, dst in replacements.items():
-        text = text.replace(src, dst)
-    return re.sub(r"[^a-z0-9]+", "_", text).strip("_")
-
-
-def _row_value(row: Dict[str, Any], *names: str) -> Any:
-    for name in names:
-        key = _norm_header(name)
-        if row.get(key) not in (None, ""):
-            return row.get(key)
-    return None
-
-
-def _as_ymd(value: Any, fallback: Optional[str] = None) -> str:
-    if isinstance(value, datetime):
-        return value.date().isoformat()
-    if isinstance(value, date):
-        return value.isoformat()
-    text = str(value or "").strip()
-    if not text:
-        return fallback or datetime.now().date().isoformat()
-    if re.match(r"^\d{4}-\d{2}-\d{2}", text):
-        return text[:10]
-    m = re.match(r"^(\d{1,2})/(\d{1,2})/(\d{4})$", text)
-    if m:
-        d, mo, y = m.groups()
-        return f"{y}-{int(mo):02d}-{int(d):02d}"
-    return fallback or datetime.now().date().isoformat()
 
 
 def _as_hhmm(value: Any, fallback: str) -> str:
@@ -749,7 +736,48 @@ def _build_schedule_cascade(
     return moves
 
 
-async def recalculate_live_schedule_for_op(
+def _mongo_transaction_unavailable(exc: OperationFailure) -> bool:
+    return exc.code in {20, 263, 303} or "Transaction numbers are only allowed" in str(exc)
+
+
+async def _apply_schedule_cascade(tenant_id: str, changes: List[Dict[str, Any]]) -> None:
+    """Apply the complete cascade in one transaction or restore every slot on standalone Mongo."""
+    if not changes:
+        return
+    snapshots = [change["snapshot"] for change in changes]
+
+    async def apply(session=None):
+        for change in changes:
+            kwargs = {"session": session} if session is not None else {}
+            await db.pcp_programacao.update_one(
+                {"id": change["snapshot"]["id"], "tenant_id": tenant_id},
+                {"$set": change["updates"]},
+                **kwargs,
+            )
+
+    mongo_client = getattr(db, "client", None)
+    if mongo_client and hasattr(mongo_client, "start_session"):
+        try:
+            async with await mongo_client.start_session() as session:
+                async with session.start_transaction():
+                    await apply(session)
+            return
+        except OperationFailure as exc:
+            if not _mongo_transaction_unavailable(exc):
+                raise
+            logger.warning("Mongo sem transacao; cascata PCP usara compensacao")
+
+    try:
+        await apply()
+    except Exception:
+        for snapshot in snapshots:
+            await db.pcp_programacao.replace_one(
+                {"id": snapshot["id"], "tenant_id": tenant_id}, snapshot, upsert=True
+            )
+        raise
+
+
+async def _recalculate_live_schedule_for_op_core(
     op_id: str,
     tenant_id: str,
     actor_name: str = "Sistema PCP",
@@ -806,9 +834,7 @@ async def recalculate_live_schedule_for_op(
         current_updates["status"] = target_status
         current_updates["historico"] = historico_atual
     current_updates.update(_shifted_slot_fields(prediction["start"], prediction["predicted_end"]))
-    await db.pcp_programacao.update_one(
-        {"id": current["id"], "tenant_id": tenant_id}, {"$set": current_updates}
-    )
+    changes = [{"snapshot": current, "updates": current_updates}]
 
     same_line = [row for row in slots if row.get("linha_id") == current.get("linha_id")]
     moves = _build_schedule_cascade(current, same_line, prediction)
@@ -833,9 +859,9 @@ async def recalculate_live_schedule_for_op(
             "recalculado_em": now_iso,
             "updated_at": now_iso,
         })
-        await db.pcp_programacao.update_one(
-            {"id": slot["id"], "tenant_id": tenant_id}, {"$set": updates}
-        )
+        changes.append({"snapshot": slot, "updates": updates})
+
+    await _apply_schedule_cascade(tenant_id, changes)
 
     return {
         "op_id": op_id,
@@ -847,6 +873,17 @@ async def recalculate_live_schedule_for_op(
         "percentual_concluido": prediction["percentage"],
         "reprogramados": len(moves),
     }
+
+
+async def recalculate_live_schedule_for_op(
+    op_id: str,
+    tenant_id: str,
+    actor_name: str = "Sistema PCP",
+    now_value: Optional[str] = None,
+) -> Dict[str, Any]:
+    lock = _schedule_locks.setdefault(tenant_id, asyncio.Lock())
+    async with lock:
+        return await _recalculate_live_schedule_for_op_core(op_id, tenant_id, actor_name, now_value)
 
 
 def _day_closing_reconciliation(ops: List[Dict[str, Any]], data_ref: str) -> List[Dict[str, Any]]:
@@ -1111,103 +1148,6 @@ async def _ensure_calendar_for_line(user: Dict[str, Any], linha_id: str, data_re
     await db.pcp_calendario.insert_one(cal)
 
 
-async def _resolve_linha(user: Dict[str, Any], row: Dict[str, Any], index: int) -> Dict[str, Any]:
-    await _ensure_default_linhas(user)
-    tid = user["tenant_id"]
-    raw = str(_row_value(row, "linha", "linha_producao", "linha_envase", "posto") or "").strip()
-    linhas = await db.pcp_linhas.find({"tenant_id": tid, "status": "ativa"}, {"_id": 0}).sort("nome", 1).to_list(100)
-    if raw:
-        raw_norm = _norm_header(raw)
-        for linha in linhas:
-            if raw_norm in {_norm_header(linha.get("nome")), _norm_header(linha.get("codigo"))}:
-                return linha
-    if not linhas:
-        raise HTTPException(status_code=400, detail="Nenhuma linha ativa cadastrada.")
-    return linhas[index % len(linhas)]
-
-
-async def _resolve_op_for_import(user: Dict[str, Any], row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    tid = user["tenant_id"]
-    op_numero = str(_row_value(row, "op", "op_lote", "ordem", "ordem_producao") or "").strip()
-    pedido = str(_row_value(row, "pedido", "pedido_comercial", "pedido_cliente") or "").strip()
-    sku = str(_row_value(row, "sku", "codigo", "codigo_kuryos") or "").strip()
-    produto = str(_row_value(row, "produto", "produto_item", "descricao", "item") or "").strip()
-    queries: List[Dict[str, Any]] = []
-    if op_numero:
-        queries.append({"tenant_id": tid, "numero_op": {"$regex": re.escape(op_numero), "$options": "i"}})
-    if pedido:
-        queries.append({"tenant_id": tid, "numero_pedido": {"$regex": re.escape(pedido), "$options": "i"}})
-    if sku:
-        queries.append({"tenant_id": tid, "items.codigo_kuryos": {"$regex": re.escape(sku), "$options": "i"}})
-    if produto:
-        queries.append({"tenant_id": tid, "items.item": {"$regex": re.escape(produto), "$options": "i"}})
-    for query in queries:
-        op = await db.ops.find_one(query, {"_id": 0})
-        if op and op.get("status") in {"aberta", "em_processo", "pausada"}:
-            return op
-    return None
-
-
-async def _insert_slot_for_op(user: Dict[str, Any], op: Dict[str, Any], linha: Dict[str, Any], row: Dict[str, Any], index: int) -> Dict[str, Any]:
-    tid = user["tenant_id"]
-    data_ref = _as_ymd(_row_value(row, "data", "data_inicio", "dia"), datetime.now().date().isoformat())
-    await _ensure_calendar_for_line(user, linha["id"], data_ref)
-    existing = await db.pcp_programacao.find_one(
-        {"tenant_id": tid, "op_id": op["id"], "data": data_ref, "status": {"$nin": ["cancelado"]}},
-        {"_id": 0, "id": 1, "numero_prog": 1},
-    )
-    if existing:
-        return {"skipped": True, "reason": "OP já programada na data", "slot": existing}
-
-    op_items = op.get("items", [])
-    first_item = op_items[0] if op_items else {}
-    planned_default = max(float(first_item.get("qtd_planejada") or 0) - float(first_item.get("qtd_produzida") or 0), 0)
-    qtd = _as_float(_row_value(row, "qtd", "quantidade", "total_lote_op", "meta", "programado"), planned_default or 1.0)
-    now = _now()
-    numero_prog = await _next_prog_numero(tid)
-    slot = {
-        "id": _new_id(),
-        "tenant_id": tid,
-        "numero_prog": numero_prog,
-        "op_id": op["id"],
-        "op_numero": op.get("numero_op", ""),
-        "pedido_id": op.get("pedido_id", ""),
-        "pedido_numero": op.get("numero_pedido", ""),
-        "cliente_nome": op.get("cliente_nome", ""),
-        "produto_nome": first_item.get("item", "") or op.get("project_name", ""),
-        "sku": first_item.get("codigo_kuryos", ""),
-        "linha_id": linha["id"],
-        "linha_nome": linha["nome"],
-        "linha_tipo": linha.get("tipo", "geral"),
-        "data": data_ref,
-        "hora_inicio": _as_hhmm(_row_value(row, "hora_inicio", "inicio"), "07:00"),
-        "hora_fim": _as_hhmm(_row_value(row, "hora_fim", "fim"), "17:00"),
-        "tipo": "producao",
-        "setup_tempo_min": None,
-        "setup_tipo": None,
-        "lote_id": None,
-        "data_inicio": data_ref,
-        "data_fim": data_ref,
-        "turno": "integral",
-        "qtd_planejada": qtd,
-        "qtd_produzida": 0.0,
-        "status": "planejado",
-        "historico": [{"de": None, "para": "planejado", "por": user["name"], "em": now, "origem": "importacao"}],
-        "observacoes": f"Importado da planilha semanal. Linha {index + 1}.",
-        "created_by": user["id"],
-        "created_by_name": user["name"],
-        "created_at": now,
-        "updated_at": now,
-    }
-    await db.pcp_programacao.insert_one(slot)
-    await db.ops.update_one(
-        {"id": op["id"], "tenant_id": tid},
-        {"$set": {"pcp_slot_id": slot["id"], "pcp_numero": numero_prog, "linha_id": linha["id"], "linha_nome": linha["nome"], "updated_at": now}},
-    )
-    slot.pop("_id", None)
-    return {"skipped": False, "slot": slot}
-
-
 # ========== LINHAS ==========
 @pcp_router.get("/linhas")
 async def list_linhas(request: Request, status: Optional[str] = None):
@@ -1340,79 +1280,20 @@ async def recalcular_programacao_tempo_real(data: ProgramacaoTempoRealRequest, r
         results.append(await recalculate_live_schedule_for_op(
             op_id, tid, user.get("name") or "Sistema PCP", data.now
         ))
-    return {
+    response = {
         "recalculado_em": data.now or _now(),
         "ops_processadas": len(results),
         "slots_reprogramados": sum(int(row.get("reprogramados") or 0) for row in results),
         "resultados": results,
     }
+    if _broadcast_event:
+        await _broadcast_event(tid, "pcp_programacao_atualizada", response)
+    return response
 
 
 @pcp_router.post("/importar-programacao")
 async def importar_programacao(request: Request):
     raise HTTPException(status_code=410, detail="Importacao semanal removida. Use o calendario dinamico do PCP.")
-    user = await get_current_user(request)
-    filename = (file.filename or "").lower()
-    if not filename.endswith((".xlsx", ".xlsm")):
-        raise HTTPException(status_code=400, detail="Envie uma planilha .xlsx ou .xlsm.")
-
-    try:
-        from openpyxl import load_workbook
-        content = await file.read()
-        wb = load_workbook(io.BytesIO(content), data_only=True)
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail=f"Não foi possível ler a planilha: {exc}")
-
-    sheet = None
-    for ws in wb.worksheets:
-        title = _norm_header(ws.title)
-        if "previsao" in title and "envase" in title:
-            sheet = ws
-            break
-    sheet = sheet or wb.active
-
-    header_row = None
-    headers: List[str] = []
-    for idx, row in enumerate(sheet.iter_rows(min_row=1, max_row=min(sheet.max_row, 20), values_only=True), start=1):
-        normalized = [_norm_header(cell) for cell in row]
-        if any(h in normalized for h in ("op", "op_lote", "produto", "produto_item", "pedido_comercial", "sku")):
-            header_row = idx
-            headers = normalized
-            break
-    if not header_row:
-        raise HTTPException(status_code=400, detail="Cabeçalho não encontrado. Use colunas como OP, Produto, Pedido, SKU, Linha, Data, Qtd.")
-
-    imported = []
-    skipped = []
-    errors = []
-    for row_idx, values in enumerate(sheet.iter_rows(min_row=header_row + 1, values_only=True), start=header_row + 1):
-        row = {headers[i]: values[i] for i in range(min(len(headers), len(values))) if headers[i]}
-        if not any(value not in (None, "") for value in row.values()):
-            continue
-        try:
-            op = await _resolve_op_for_import(user, row)
-            if not op:
-                skipped.append({"linha": row_idx, "motivo": "OP/pedido/SKU não encontrado ou não ativo"})
-                continue
-            linha = await _resolve_linha(user, row, len(imported))
-            result = await _insert_slot_for_op(user, op, linha, row, row_idx)
-            if result["skipped"]:
-                skipped.append({"linha": row_idx, "motivo": result["reason"], "slot": result["slot"]})
-            else:
-                imported.append(result["slot"])
-        except Exception as exc:
-            errors.append({"linha": row_idx, "motivo": str(exc)})
-
-    return {
-        "arquivo": file.filename,
-        "aba": sheet.title,
-        "importados": len(imported),
-        "ignorados": len(skipped),
-        "erros": len(errors),
-        "slots": imported,
-        "skipped": skipped[:100],
-        "errors": errors[:100],
-    }
 
 
 @pcp_router.get("/programacao/{slot_id}")
@@ -1943,6 +1824,11 @@ async def create_pcp_timeline_event(op_id: str, data: PCPTimelineEventCreate, re
     }
     await db.production_order_events.insert_one(event)
     event.pop("_id", None)
+    schedule = await recalculate_live_schedule_for_op(op_id, tid, user.get("name") or "PCP", now)
+    if _broadcast_event:
+        await _broadcast_event(tid, "pcp_programacao_atualizada", {
+            "origem": "apontamento", "event": event, "resultado": schedule, "recalculado_em": now,
+        })
     return event
 
 

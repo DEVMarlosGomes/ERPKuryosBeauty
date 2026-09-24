@@ -178,6 +178,52 @@ def test_validate_client_payload_allows_minimal_lead_on_initial_create():
     assert validated["contatos_adicionais"] == []
 
 
+def test_sync_approved_repairs_flow_without_generating_sku(monkeypatch):
+    import kickoff_routes
+    import orders_routes
+
+    fake_db = FakeDB()
+    fake_db.crm_projects.docs = [{
+        "id": "project-1",
+        "tenant_id": "tenant-1",
+        "nome_projeto": "Projeto aprovado",
+        "stage": "pedido_aprovado",
+    }]
+    fake_db.pd_requests = FakeCollection()
+    crm_routes.db = fake_db
+
+    async def fake_get_current_user(_request):
+        return {
+            "id": "user-1",
+            "name": "Admin",
+            "tenant_id": "tenant-1",
+            "role": "admin",
+        }
+
+    async def fake_create_kickoff(project_id, _user):
+        assert project_id == "project-1"
+        return {"id": "kickoff-1", "numero_kickoff": "K-001", "status": "rascunho"}
+
+    async def fake_create_order(_pd_request_id, _user):
+        raise AssertionError("Nao deveria haver solicitacao P&D aprovada neste teste")
+
+    async def fail_if_sku_generator_is_called(*_args, **_kwargs):
+        raise AssertionError("Sincronizar fluxo nao pode gerar SKU antes da assinatura do CGI")
+
+    monkeypatch.setattr(crm_routes, "_get_current_user", fake_get_current_user)
+    monkeypatch.setattr(crm_routes, "_generate_skus_for_project_approved_variations", fail_if_sku_generator_is_called)
+    monkeypatch.setattr(kickoff_routes, "create_kickoff_for_project", fake_create_kickoff)
+    monkeypatch.setattr(orders_routes, "auto_create_order_on_pd_approval", fake_create_order)
+
+    result = asyncio.run(crm_routes.sync_approved_projects(SimpleNamespace()))
+
+    assert result["synced"] == 1
+    assert result["errors"] == []
+    assert result["details"][0]["kickoff"]["id"] == "kickoff-1"
+    assert result["details"][0]["sku_status"] == "aguardando_assinatura_cgi"
+    assert "skus_gerados" not in result["details"][0]
+
+
 def test_move_project_supports_crm2_quote_and_complete_budget_stages(monkeypatch):
     import compras_routes
 

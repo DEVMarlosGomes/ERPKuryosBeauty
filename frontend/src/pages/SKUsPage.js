@@ -292,7 +292,7 @@ export default function SKUsPage() {
           <div className="text-center py-20">
             <PackageCheck className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground font-medium">Nenhum SKU encontrado.</p>
-            <p className="text-sm text-muted-foreground mt-1">SKUs são gerados automaticamente ao aprovar amostras no CRM 3.</p>
+            <p className="text-sm text-muted-foreground mt-1">SKUs são gerados somente após a assinatura do CGI.</p>
           </div>
         ) : (
           <div className="border rounded-xl overflow-hidden">

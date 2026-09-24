@@ -15,7 +15,7 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-    Package, Plus, Search, Trash2, Loader2, AlertTriangle, Zap, Link, ClipboardCheck, MapPinned, QrCode, Printer,
+    Package, Plus, Search, Trash2, Loader2, AlertTriangle, Zap, Link, ClipboardCheck, MapPinned, QrCode, Printer, RotateCcw,
 } from "lucide-react";
 
 const TIPO_MP_OPTIONS = [
@@ -28,6 +28,10 @@ const STATUS_CONFIG = {
     quarentena: { label: "Quarentena CQ", cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
     liberado:   { label: "Liberado",       cls: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300" },
     reprovado:  { label: "Reprovado",      cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+    parcialmente_estornado: { label: "Estorno parcial", cls: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300" },
+    estornado: { label: "Estornado", cls: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300" },
+    devolvido_fornecedor: { label: "Devolvido ao fornecedor", cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+    devolvido_cliente: { label: "Devolvido ao cliente", cls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
 
 const CHECKLIST_TEMPLATE = [
@@ -57,6 +61,8 @@ function emptyItem() {
         lote: "",
         validade: "",
         urgente: false,
+        origem_cliente: false,
+        pedido_id: "",
         po_item_id: "",
         mp_id: "",
         endereco_id: "",
@@ -98,6 +104,10 @@ export default function RecebimentoPage() {
     const [loadingSugestao, setLoadingSugestao] = useState(false);
     const [checkingUrgente, setCheckingUrgente] = useState({});
     const [enderecos, setEnderecos] = useState([]);
+    const [pedidos, setPedidos] = useState([]);
+    const [showEstorno, setShowEstorno] = useState(false);
+    const [estornoForm, setEstornoForm] = useState({ tipo: "cancelamento", motivo: "", items: {}, idempotency_key: "" });
+    const [estornando, setEstornando] = useState(false);
 
     const loadEntradas = useCallback(async () => {
         setLoading(true);
@@ -135,8 +145,16 @@ export default function RecebimentoPage() {
         } catch { /* optional */ }
     }, []);
 
+    const loadPedidos = useCallback(async () => {
+        try {
+            const { data } = await api.get("/orders");
+            const lista = Array.isArray(data) ? data : (data.orders || data.pedidos || []);
+            setPedidos(lista.filter(pedido => pedido.cliente_id && pedido.status !== "cancelado"));
+        } catch { /* optional */ }
+    }, []);
+
     useEffect(() => { loadEntradas(); }, [loadEntradas]);
-    useEffect(() => { loadFornecedores(); loadPOs(); loadEnderecos(); }, [loadFornecedores, loadPOs, loadEnderecos]);
+    useEffect(() => { loadFornecedores(); loadPOs(); loadEnderecos(); loadPedidos(); }, [loadFornecedores, loadPOs, loadEnderecos, loadPedidos]);
 
     const openForm = () => {
         setForm(emptyForm());
@@ -263,6 +281,10 @@ export default function RecebimentoPage() {
         if (!form.data_nf) { toast.error("Informe a data da NF"); return; }
         const itemsValidos = form.items.filter(i => i.nome.trim() && Number(i.quantidade) > 0);
         if (itemsValidos.length === 0) { toast.error("Adicione ao menos 1 item válido (nome + quantidade)"); return; }
+        if (itemsValidos.some(item => item.origem_cliente && !item.pedido_id)) {
+            toast.error("Vincule cada material fornecido pelo cliente ao pedido exclusivo.");
+            return;
+        }
 
         setSaving(true);
         try {
@@ -282,6 +304,8 @@ export default function RecebimentoPage() {
                     unidade: i.unidade || "kg",
                     lote: i.lote.trim(),
                     validade: i.validade || null,
+                    origem_cliente: Boolean(i.origem_cliente),
+                    pedido_id: i.origem_cliente ? (i.pedido_id || null) : null,
                     po_item_id: i.po_item_id || null,
                     mp_id: i.mp_id || null,
                     endereco_id: i.endereco_id || null,
@@ -332,6 +356,55 @@ export default function RecebimentoPage() {
             toast.success(`Etiqueta ${data.etiqueta_codigo || palete.etiqueta_codigo || palete.id} marcada como impressa.`);
         } catch (error) {
             toast.error(formatApiError(error, "Nao foi possivel marcar a etiqueta como impressa."));
+        }
+    };
+
+    const openEstorno = () => {
+        const items = {};
+        (selectedEntrada?.items || []).forEach(item => {
+            const restante = Math.max(0, Number(item.quantidade || 0) - Number(item.quantidade_estornada || 0));
+            if (restante > 0) items[item.estoque_item_id] = restante;
+        });
+        const somenteCliente = (selectedEntrada?.items || []).length > 0
+            && (selectedEntrada.items || []).every(item => item.origem_cliente);
+        setEstornoForm({
+            tipo: somenteCliente ? "devolucao_cliente" : "cancelamento",
+            motivo: "",
+            items,
+            idempotency_key: window.crypto?.randomUUID?.() || `${selectedEntrada.id}-${Date.now()}`,
+        });
+        setShowEstorno(true);
+    };
+
+    const handleEstorno = async () => {
+        if (!estornoForm.motivo.trim()) {
+            toast.error("Informe o motivo do estorno ou da devolucao.");
+            return;
+        }
+        const items = Object.entries(estornoForm.items)
+            .map(([estoque_item_id, quantidade]) => ({ estoque_item_id, quantidade: Number(quantidade) }))
+            .filter(item => item.quantidade > 0);
+        if (!items.length) {
+            toast.error("Informe a quantidade de ao menos um item.");
+            return;
+        }
+        setEstornando(true);
+        try {
+            await api.post(`/recebimento/entradas/${selectedEntrada.id}/estornar`, {
+                tipo: estornoForm.tipo,
+                motivo: estornoForm.motivo.trim(),
+                idempotency_key: estornoForm.idempotency_key,
+                items,
+            });
+            const { data: atualizado } = await api.get(`/recebimento/entradas/${selectedEntrada.id}`);
+            setSelectedEntrada(atualizado);
+            setShowEstorno(false);
+            await loadEntradas();
+            toast.success("Estorno registrado e saldos compensados com sucesso.");
+        } catch (error) {
+            toast.error(formatApiError(error, "Nao foi possivel concluir o estorno."));
+        } finally {
+            setEstornando(false);
         }
     };
 
@@ -471,6 +544,9 @@ export default function RecebimentoPage() {
                                                 {item.lote && <span>Lote: {item.lote}</span>}
                                                 {item.validade && <span>Validade: {formatDate(item.validade)}</span>}
                                                 {item.po_item_id && <span>Item PO: {item.po_item_id}</span>}
+                                                {item.origem_cliente && (
+                                                    <span className="font-medium text-blue-600">Material do cliente - Pedido {item.pedido_id}</span>
+                                                )}
                                                 {(item.endereco_codigo || item.endereco_id) && (
                                                     <span>Endereco: {item.endereco_codigo || item.endereco_id}</span>
                                                 )}
@@ -541,11 +617,86 @@ export default function RecebimentoPage() {
                             )}
                         </div>
                         <DialogFooter>
+                            {!['estornado', 'devolvido_fornecedor', 'devolvido_cliente'].includes(selectedEntrada.status) && (
+                                <Button variant="destructive" onClick={openEstorno}>
+                                    <RotateCcw className="mr-1 h-4 w-4" /> Estornar / devolver
+                                </Button>
+                            )}
                             <Button variant="outline" onClick={() => setSelectedEntrada(null)}>Fechar</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
             )}
+
+            <Dialog open={showEstorno} onOpenChange={setShowEstorno}>
+                <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Estornar recebimento NF {selectedEntrada?.numero_nf}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        <div>
+                            <Label>Operacao compensatoria</Label>
+                            <Select value={estornoForm.tipo} onValueChange={tipo => setEstornoForm(prev => ({ ...prev, tipo }))}>
+                                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="correcao">Correcao de quantidade/lote</SelectItem>
+                                    <SelectItem value="cancelamento">Cancelamento da entrada</SelectItem>
+                                    <SelectItem value="devolucao_fornecedor">Devolucao ao fornecedor</SelectItem>
+                                    <SelectItem value="devolucao_cliente">Devolucao ao cliente</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Quantidades a estornar</Label>
+                            {(selectedEntrada?.items || []).map(item => {
+                                const restante = Math.max(0, Number(item.quantidade || 0) - Number(item.quantidade_estornada || 0));
+                                return (
+                                    <div key={item.estoque_item_id} className="grid grid-cols-[1fr_130px] items-center gap-3 rounded-md border p-3">
+                                        <div>
+                                            <p className="text-sm font-medium">{item.nome}</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                Disponivel desta entrada: {restante} {item.unidade}
+                                                {item.origem_cliente ? " - material do cliente" : ""}
+                                            </p>
+                                        </div>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            max={restante}
+                                            step="any"
+                                            disabled={restante <= 0}
+                                            value={estornoForm.items[item.estoque_item_id] ?? ""}
+                                            onChange={event => setEstornoForm(prev => ({
+                                                ...prev,
+                                                items: { ...prev.items, [item.estoque_item_id]: event.target.value },
+                                            }))}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        <div>
+                            <Label>Motivo obrigatorio</Label>
+                            <Input
+                                className="mt-1"
+                                value={estornoForm.motivo}
+                                onChange={event => setEstornoForm(prev => ({ ...prev, motivo: event.target.value }))}
+                                placeholder="Ex.: quantidade informada incorretamente ou devolucao integral"
+                            />
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            O recebimento original sera preservado. O sistema criara movimentos inversos no estoque e no ledger para manter a auditoria.
+                        </p>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowEstorno(false)} disabled={estornando}>Cancelar</Button>
+                        <Button variant="destructive" onClick={handleEstorno} disabled={estornando}>
+                            {estornando && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
+                            Confirmar operacao
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* New entry form dialog */}
             <Dialog open={showForm} onOpenChange={v => { if (!v) setShowForm(false); }}>
@@ -794,6 +945,41 @@ export default function RecebimentoPage() {
                                                     onChange={e => setItem(idx, "validade", e.target.value)}
                                                     className="mt-0.5 h-8 text-sm"
                                                 />
+                                            </div>
+                                            <div className="grid gap-2 rounded-md border bg-muted/20 p-3 md:col-span-2 md:grid-cols-2">
+                                                <div>
+                                                    <Label className="text-xs">Propriedade do material</Label>
+                                                    <Select
+                                                        value={item.origem_cliente ? "cliente" : "kuryos"}
+                                                        onValueChange={value => {
+                                                            setItem(idx, "origem_cliente", value === "cliente");
+                                                            if (value !== "cliente") setItem(idx, "pedido_id", "");
+                                                        }}
+                                                    >
+                                                        <SelectTrigger className="mt-0.5 h-8 text-sm"><SelectValue /></SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="kuryos">Material Kuryos</SelectItem>
+                                                            <SelectItem value="cliente">Material fornecido pelo cliente</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                {item.origem_cliente && (
+                                                    <div>
+                                                        <Label className="text-xs">Pedido exclusivo *</Label>
+                                                        <Select value={item.pedido_id || "sem_pedido"} onValueChange={value => setItem(idx, "pedido_id", value === "sem_pedido" ? "" : value)}>
+                                                            <SelectTrigger className="mt-0.5 h-8 text-sm"><SelectValue placeholder="Vincular pedido" /></SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="sem_pedido">Selecione o pedido</SelectItem>
+                                                                {pedidos.map(pedido => (
+                                                                    <SelectItem key={pedido.id} value={pedido.id}>
+                                                                        {pedido.numero_pedido || pedido.id} - {pedido.cliente_nome || pedido.cliente?.nome || pedido.cliente_id}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <p className="mt-1 text-[10px] text-muted-foreground">O lote ficara bloqueado para consumo por outras OPs.</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 

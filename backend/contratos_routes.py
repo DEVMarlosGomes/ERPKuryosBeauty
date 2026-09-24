@@ -27,6 +27,7 @@ import io
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from pymongo.errors import DuplicateKeyError
 
 from reportlab.lib import colors as rl_colors
 from reportlab.lib.pagesizes import A4
@@ -95,6 +96,7 @@ class ContratanteOverride(BaseModel):
 
 class ContratoGerarInput(BaseModel):
     kickoff_id: str
+    version: int = Field(default=1, ge=1)
     contratante: Optional[ContratanteOverride] = None
     observacoes: Optional[str] = ""
 
@@ -556,14 +558,35 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
     require_roles(user, WRITE_ROLES)
     kickoff = await _get_kickoff_aprovado(data.kickoff_id, user["tenant_id"])
 
-    client = await _get_client(kickoff.get("projeto_id_client_id") or kickoff.get("client_id"), user["tenant_id"])
+    existing = await db.contratos.find_one(
+        {
+            "tenant_id": user["tenant_id"],
+            "kickoff_id": kickoff["id"],
+            "version": data.version,
+            "ativo": {"$ne": False},
+        },
+        {"_id": 0, "pdf_data": 0},
+    )
+    if existing:
+        return {**existing, "reutilizado": True}
+
+    project = None
+    client = await _get_client(
+        kickoff.get("cliente_id") or kickoff.get("projeto_id_client_id") or kickoff.get("client_id"),
+        user["tenant_id"],
+    )
     if not client and kickoff.get("projeto_id"):
         # Try via project
         project = await db.crm_projects.find_one(
             {"id": kickoff["projeto_id"], "tenant_id": user["tenant_id"]}, {"_id": 0}
         )
         if project:
-            client = await _get_client(project.get("client_id"), user["tenant_id"])
+            client = await _get_client(project.get("cliente_id") or project.get("client_id"), user["tenant_id"])
+    if not client:
+        raise HTTPException(
+            status_code=409,
+            detail="Cliente do projeto nao resolvido. Corrija o vinculo cliente_id antes de gerar o CGI.",
+        )
 
     bloco1 = kickoff.get("bloco1") or {}
     overrides = (data.contratante.dict() if data.contratante else {}) or {}
@@ -589,8 +612,9 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
         "kickoff_id": kickoff["id"],
         "numero_kickoff": kickoff.get("numero_kickoff"),
         "kickoff_versao": kickoff.get("versao"),
-        "projeto_id": kickoff.get("projeto_id"),
+        "projeto_id": kickoff.get("projeto_id") or (project or {}).get("id"),
         "client_id": (client or {}).get("id"),
+        "cliente_id": (client or {}).get("id"),
         "contratante": contratante,
         "fabricante": KURYOS_FABRICANTE,
         "observacoes": data.observacoes or "",
@@ -608,9 +632,24 @@ async def gerar_contrato(data: ContratoGerarInput, request: Request):
             "by_name": user.get("name", ""),
             "observacoes": "",
         }],
-        "version": 1,
+        "version": data.version,
+        "ativo": True,
     }
-    await db.contratos.insert_one(contrato_doc)
+    try:
+        await db.contratos.insert_one(contrato_doc)
+    except DuplicateKeyError:
+        concurrent = await db.contratos.find_one(
+            {
+                "tenant_id": user["tenant_id"],
+                "kickoff_id": kickoff["id"],
+                "version": data.version,
+                "ativo": True,
+            },
+            {"_id": 0, "pdf_data": 0},
+        )
+        if concurrent:
+            return {**concurrent, "reutilizado": True}
+        raise
 
     await audit_log(
         tenant_id=user["tenant_id"],

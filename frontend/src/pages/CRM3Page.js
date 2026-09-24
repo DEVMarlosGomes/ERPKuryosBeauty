@@ -290,16 +290,7 @@ export default function CRM3Page() {
             });
 
             if (form.resultado === "aprovada") {
-                const skuInfo = res.sku_created;
-                if (skuInfo?.blocked) {
-                    // SKU não foi gerado — mostrar motivo ao usuário
-                    const motivo = skuInfo.reason || "Pré-requisito não atendido";
-                    toast.warning(`Variação aprovada, mas SKU não foi gerado: ${motivo}`, { duration: 8000 });
-                } else if (skuInfo?.codigo_interno) {
-                    toast.success(`Variação aprovada! SKU gerado: ${skuInfo.codigo_interno}`);
-                } else {
-                    toast.success("Resultado do cliente registrado!");
-                }
+                toast.success("Aprovação do cliente registrada. O SKU será gerado somente após a assinatura do CGI.");
             } else {
                 toast.success("Resultado do cliente registrado!");
             }
@@ -621,12 +612,12 @@ export default function CRM3Page() {
                                                         </span>
                                                         <Lock className="h-2.5 w-2.5 text-muted-foreground/60 shrink-0" title="Status controlado pelo P&D" />
                                                     </div>
-                                                    {/* Alerta: aprovada mas sem SKU */}
+                                                    {/* Após a aprovação, o SKU aguarda a assinatura do CGI. */}
                                                     {variacao.status === "aprovada" && !variacao.sku_id && (
                                                         <div className="mt-1.5 flex items-center gap-1 rounded px-1.5 py-0.5 bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 w-fit"
-                                                             title="SKU não foi gerado na aprovação — verifique CLI4 do cliente, categoria ativa e status da amostra">
+                                                             title="SKU aguardando assinatura do CGI">
                                                             <AlertTriangle className="h-2.5 w-2.5 text-amber-600 shrink-0" />
-                                                            <span className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">SKU pendente</span>
+                                                            <span className="text-[10px] text-amber-700 dark:text-amber-400 font-medium">Aguardando CGI</span>
                                                         </div>
                                                     )}
                                                     {canPrintLabel && (

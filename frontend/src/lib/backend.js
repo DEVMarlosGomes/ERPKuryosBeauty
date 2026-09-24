@@ -1,4 +1,4 @@
-const envBackendUrl = process.env.REACT_APP_BACKEND_URL?.trim();
+const envBackendUrl = import.meta.env.VITE_BACKEND_URL?.trim();
 const STORAGE_KEY = "kuryos.backend_url";
 
 function normalizeUrl(url) {

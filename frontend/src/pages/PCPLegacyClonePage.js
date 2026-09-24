@@ -204,7 +204,7 @@ function SearchInput({ value, setValue, placeholder }) {
 function usePcpData(live = false) {
   const [loading, setLoading] = useState(true);
   const [lastSync, setLastSync] = useState(null);
-  const [liveConnected, setLiveConnected] = useState(true);
+  const [liveConnected, setLiveConnected] = useState(false);
   const [day, setDay] = useState(() => ymd(new Date()));
   const [historyRange, setHistoryRange] = useState({ inicio: addDays(ymd(new Date()), -29), fim: ymd(new Date()) });
   const [data, setData] = useState({ linhas: [], slots: [], ops: [], orders: [], skus: [], catalog: [], historico: { rows: [], kpis: {} } });
@@ -236,11 +236,10 @@ function usePcpData(live = false) {
 
   useEffect(() => { load(); }, [load]);
 
-  const refreshLive = useCallback(async (notify = false) => {
+  const loadLiveSnapshot = useCallback(async () => {
     const weekStart = startOfWeek(day);
     const weekEnd = addDays(weekStart, 6);
     try {
-      const recalculo = await api.post("/pcp/programacao/recalcular-tempo-real", {});
       const [slots, ops, historico] = await Promise.all([
         api.get("/pcp/programacao", { params: { data_inicio: weekStart, data_fim: weekEnd } }),
         api.get("/ops"),
@@ -248,24 +247,66 @@ function usePcpData(live = false) {
       ]);
       setData((current) => ({ ...current, slots: slots.data || [], ops: ops.data || [], historico: historico.data || { rows: [], kpis: {} } }));
       setLastSync(new Date());
-      setLiveConnected(true);
-      if (notify) toast.success(`${recalculo.data?.ops_processadas || 0} OP(s) recalculada(s) em tempo real.`);
-      return recalculo.data;
+      return true;
     } catch (err) {
-      setLiveConnected(false);
-      if (notify) toast.error(apiDetail(err, "Nao foi possivel sincronizar a programacao."));
-      return null;
+      return false;
     }
   }, [day, historyRange]);
 
+  const refreshLive = useCallback(async (notify = false) => {
+    try {
+      const recalculo = await api.post("/pcp/programacao/recalcular-tempo-real", {});
+      await loadLiveSnapshot();
+      if (notify) toast.success(`${recalculo.data?.ops_processadas || 0} OP(s) recalculada(s) em tempo real.`);
+      return recalculo.data;
+    } catch (err) {
+      if (notify) toast.error(apiDetail(err, "Nao foi possivel sincronizar a programacao."));
+      return null;
+    }
+  }, [loadLiveSnapshot]);
+
   useEffect(() => {
     if (!live) return undefined;
-    refreshLive(false);
-    const timer = window.setInterval(() => {
-      if (document.visibilityState === "visible") refreshLive(false);
-    }, 10000);
-    return () => window.clearInterval(timer);
-  }, [live, refreshLive]);
+    let socket;
+    let reconnectTimer;
+    let refreshTimer;
+    let pingTimer;
+    let stopped = false;
+
+    const connect = () => {
+      const apiUrl = new URL(api.defaults.baseURL, window.location.origin);
+      const protocol = apiUrl.protocol === "https:" ? "wss:" : "ws:";
+      socket = new WebSocket(`${protocol}//${apiUrl.host}${apiUrl.pathname}/ws`);
+      socket.onopen = () => {
+        setLiveConnected(true);
+        pingTimer = window.setInterval(() => {
+          if (socket?.readyState === WebSocket.OPEN) socket.send("ping");
+        }, 25000);
+      };
+      socket.onmessage = (message) => {
+        try {
+          const payload = JSON.parse(message.data);
+          if (payload.event !== "pcp_programacao_atualizada") return;
+          window.clearTimeout(refreshTimer);
+          refreshTimer = window.setTimeout(() => loadLiveSnapshot(), 150);
+        } catch { /* ignore malformed events */ }
+      };
+      socket.onclose = () => {
+        setLiveConnected(false);
+        window.clearInterval(pingTimer);
+        if (!stopped) reconnectTimer = window.setTimeout(connect, 3000);
+      };
+      socket.onerror = () => socket.close();
+    };
+    connect();
+    return () => {
+      stopped = true;
+      window.clearTimeout(reconnectTimer);
+      window.clearTimeout(refreshTimer);
+      window.clearInterval(pingTimer);
+      socket?.close();
+    };
+  }, [live, loadLiveSnapshot]);
 
   return { ...data, loading, day, setDay, historyRange, setHistoryRange, load, refreshLive, lastSync, liveConnected };
 }

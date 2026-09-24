@@ -1,6 +1,12 @@
 """Test script for new features: CRM P&D status enrichment + Formula items endpoint"""
 import sys, json, http.cookiejar, urllib.request, urllib.error
 
+# Este arquivo e um smoke test executavel, nao um modulo pytest. Evita chamadas
+# HTTP e SystemExit durante a coleta de `pytest` na raiz do repositorio.
+if __name__ != "__main__":
+    import pytest
+    pytest.skip("smoke test manual; execute com python test_new_features.py", allow_module_level=True)
+
 BASE = "http://127.0.0.1:8000/api"
 jar = http.cookiejar.CookieJar()
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))

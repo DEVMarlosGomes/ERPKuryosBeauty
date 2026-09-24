@@ -1,0 +1,70 @@
+{
+  "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+  "source_conflicts": {
+    "clients": [],
+    "suppliers": [
+      {
+        "legacy_id": "-P0bfyzLOBsj40OJhx9A",
+        "normalized_cnpj": "24587522000108",
+        "normalized_name": "PARAISO DAS ESSENCIAS COMERCIO LTDA",
+        "current_supplier_id": null,
+        "name_suggestion_target_ids": [],
+        "classification": "CONFLICT",
+        "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+      },
+      {
+        "legacy_id": "-P1-c_ITewxfO8v2OLeE",
+        "normalized_cnpj": "03858468000100",
+        "normalized_name": "SAFIRA COSMETICOS",
+        "current_supplier_id": null,
+        "name_suggestion_target_ids": [],
+        "classification": "CONFLICT",
+        "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+      },
+      {
+        "legacy_id": "-P15j3MJlS-iMbbQAo7_",
+        "normalized_cnpj": "52842517000121",
+        "normalized_name": "BIOFLORA INDUSTRIA E COMERCIO LTDA - EPP",
+        "current_supplier_id": null,
+        "name_suggestion_target_ids": [],
+        "classification": "CONFLICT",
+        "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+      },
+      {
+        "legacy_id": "-P1VAFtyw-tVSQGx4W4K",
+        "normalized_cnpj": "52842517000121",
+        "normalized_name": "BIOFLORA INDUSTRIA E COMERCIO LTDA - EPP",
+        "current_supplier_id": null,
+        "name_suggestion_target_ids": [],
+        "classification": "CONFLICT",
+        "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+      },
+      {
+        "legacy_id": "wm218",
+        "normalized_cnpj": "24587522000108",
+        "normalized_name": "LOJA PARAISO LTDA",
+        "current_supplier_id": null,
+        "name_suggestion_target_ids": [],
+        "classification": "CONFLICT",
+        "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+      },
+      {
+        "legacy_id": "wm277",
+        "normalized_cnpj": "03858468000100",
+        "normalized_name": "SSRR INDUSTRIAL E COMERCIAL DE COSMETICOS LTDA",
+        "current_supplier_id": null,
+        "name_suggestion_target_ids": [],
+        "classification": "CONFLICT",
+        "reason": "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+      }
+    ],
+    "materials": [],
+    "skus": [],
+    "orders": [],
+    "ops": [],
+    "addresses": [],
+    "lots": []
+  },
+  "target_conflicts_status": "EVALUATED_READ_ONLY",
+  "target_conflict_count": 6
+}
