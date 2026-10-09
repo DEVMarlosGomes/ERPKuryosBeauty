@@ -1737,6 +1737,289 @@ async def pcp_historico(
 
 
 # ========== DASHBOARD ==========
+def _legacy_line_number(value: Any) -> int:
+    match = re.search(r"(\d+)", str(value or ""))
+    return int(match.group(1)) if match else 0
+
+
+def _legacy_line_id(value: Any) -> str:
+    number = _legacy_line_number(value)
+    return f"legacy-linha-{number or 0}"
+
+
+def _legacy_number(value: Any) -> float:
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+async def _legacy_review_payload(collection: str, tenant_id: str, source_node: str, source_key: str):
+    document = await db[collection].find_one(
+        {"tenant_id": tenant_id, "source_node": source_node, "source_key": source_key},
+        {"_id": 0, "source_payload": 1},
+    )
+    return document.get("source_payload") if document else None
+
+
+@pcp_router.get("/legacy-dashboard-view")
+async def pcp_legacy_dashboard_view(request: Request, data: Optional[str] = None):
+    """Project the isolated Firebase snapshot into the PCP dashboard without replaying it.
+
+    This endpoint is deliberately read-only: it never promotes review documents to the
+    operational collections and every returned row is marked as legacy/read-only.
+    """
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    selected_date = _parse_date_ymd(data or _now()[:10], "data").isoformat()
+
+    registros, programacao, turno = await asyncio.gather(
+        _legacy_review_payload("legacy_source_archive_reviews", tid, "registros", selected_date),
+        _legacy_review_payload("legacy_supplemental_history_reviews", tid, "programacao", selected_date),
+        _legacy_review_payload("legacy_supplemental_history_reviews", tid, "turnosEncerrados", selected_date),
+    )
+    line_documents = await db.legacy_source_archive_reviews.find(
+        {"tenant_id": tid, "source_node": "estado_linhas"},
+        {"_id": 0, "source_key": 1, "source_payload": 1},
+    ).to_list(20)
+    stop_documents = await db.legacy_supplemental_history_reviews.find(
+        {"tenant_id": tid, "source_node": "paradas_historico"},
+        {"_id": 0, "source_key": 1, "source_payload": 1},
+    ).to_list(1000)
+
+    available_activity_dates = await db.legacy_source_archive_reviews.distinct(
+        "source_key", {"tenant_id": tid, "source_node": "registros"}
+    )
+    available_schedule_dates = await db.legacy_supplemental_history_reviews.distinct(
+        "source_key", {"tenant_id": tid, "source_node": "programacao"}
+    )
+    activity_dates = sorted(value for value in available_activity_dates if re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(value)))
+    schedule_dates = sorted(value for value in available_schedule_dates if re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(value)))
+
+    lines = []
+    state_slots = []
+    for document in sorted(line_documents, key=lambda item: _legacy_line_number(item.get("source_key"))):
+        payload = document.get("source_payload") or {}
+        number = _legacy_line_number(document.get("source_key"))
+        line_id = _legacy_line_id(document.get("source_key"))
+        line_name = f"Linha {number}" if number else str(document.get("source_key") or "Linha")
+        lines.append({
+            "id": line_id,
+            "nome": line_name,
+            "status": "ativa",
+            "legacy_read_only": True,
+        })
+        if payload.get("produto") or payload.get("opAtual") or payload.get("lote"):
+            state_slots.append({
+                "id": f"legacy-state-{line_id}",
+                "linha_id": line_id,
+                "linha_nome": line_name,
+                "op_numero": payload.get("opAtual") or payload.get("pedidoId") or "OP legada",
+                "pedido_numero": payload.get("pedidoId"),
+                "produto_nome": payload.get("produto") or "Produto",
+                "lote": payload.get("lote"),
+                "status": (
+                    "em_execucao" if str(payload.get("status") or "").lower() == "active"
+                    else "pausada" if str(payload.get("status") or "").lower() == "stopped"
+                    else "planejado"
+                ),
+                "qtd_planejada": 0,
+                "qtd_produzida": 0,
+                "legacy_read_only": True,
+            })
+
+    schedule_slots: Dict[str, Dict[str, Any]] = {}
+    station_names = {"env1": "Linha 1", "env2": "Linha 2", "env3": "Linha 3"}
+    for hour_key, stations in sorted((programacao or {}).items()):
+        if not isinstance(stations, dict):
+            continue
+        for station, raw in stations.items():
+            if not isinstance(raw, dict):
+                continue
+            line_name = station_names.get(str(station), str(station))
+            line_id = _legacy_line_id(line_name)
+            identity = "|".join((line_id, str(raw.get("pedidoKey") or ""), str(raw.get("sku") or ""), str(raw.get("produto") or "")))
+            slot = schedule_slots.setdefault(identity, {
+                "id": f"legacy-schedule-{selected_date}-{len(schedule_slots) + 1}",
+                "linha_id": line_id,
+                "linha_nome": line_name,
+                "data": selected_date,
+                "op_numero": raw.get("pedidoKey") or raw.get("sku") or "Programação legada",
+                "pedido_numero": raw.get("pedidoKey"),
+                "produto_nome": raw.get("produto") or "Produto",
+                "sku": raw.get("sku"),
+                "status": "planejado",
+                "hora_inicio": str(hour_key).replace("_", ":"),
+                "hora_fim": str(hour_key).replace("_", ":"),
+                "qtd_planejada": 0.0,
+                "qtd_produzida": 0.0,
+                "legacy_read_only": True,
+            })
+            slot["hora_fim"] = str(hour_key).replace("_", ":")
+            slot["qtd_planejada"] += _legacy_number(raw.get("mediaPorHora"))
+
+    rows = []
+    for source_key, raw in (registros or {}).items():
+        if not isinstance(raw, dict):
+            continue
+        quantity = _legacy_number(raw.get("quantidade") or raw.get("qtdIncrementoConfirmado"))
+        is_stop = bool(raw.get("parada"))
+        rows.append({
+            "id": f"legacy-registro-{selected_date}-{source_key}",
+            "tipo": "pausa" if is_stop else "apontamento",
+            "data": selected_date,
+            "hora": raw.get("hora") or str(raw.get("timestamp") or "")[11:16],
+            "op_numero": raw.get("op") or raw.get("pedidoId"),
+            "pedido_numero": raw.get("pedidoId"),
+            "produto": raw.get("produto") or "Produto",
+            "sku": raw.get("sku"),
+            "linha": raw.get("linha") or "Linha",
+            "qtd": 0 if is_stop else quantity,
+            "lote": raw.get("lote"),
+            "turno": raw.get("turno"),
+            "colaborador": raw.get("operador"),
+            "observacoes": raw.get("justificativaDivergencia") or raw.get("obs") or "",
+            "legacy_read_only": True,
+        })
+
+    for document in stop_documents:
+        raw = document.get("source_payload") or {}
+        timestamp = str(raw.get("inicio") or raw.get("timestamp") or "")
+        if timestamp[:10] != selected_date:
+            continue
+        rows.append({
+            "id": f"legacy-stop-{document.get('source_key')}",
+            "tipo": "pausa",
+            "data": selected_date,
+            "hora": timestamp[11:16],
+            "op_numero": raw.get("pedidoId"),
+            "pedido_numero": raw.get("pedidoId"),
+            "produto": raw.get("produto") or "Parada",
+            "linha": raw.get("linha") or "Linha",
+            "qtd": 0,
+            "lote": raw.get("lote"),
+            "observacoes": raw.get("motivo") or "Parada",
+            "duracao_min": _legacy_number(raw.get("duracao")),
+            "legacy_read_only": True,
+        })
+
+    rows.sort(key=lambda row: (str(row.get("data") or ""), str(row.get("hora") or "")), reverse=True)
+    produced = sum(_legacy_number(row.get("qtd")) for row in rows if row.get("tipo") == "apontamento")
+    selected_day = datetime.fromisoformat(selected_date).date()
+    week_start = selected_day - timedelta(days=selected_day.weekday())
+    week_end = week_start + timedelta(days=6)
+    weekly_documents = await db.legacy_source_archive_reviews.find(
+        {
+            "tenant_id": tid,
+            "source_node": "registros",
+            "source_key": {"$gte": week_start.isoformat(), "$lte": week_end.isoformat()},
+        },
+        {"_id": 0, "source_payload": 1},
+    ).to_list(10)
+    weekly_produced = 0.0
+    weekly_records = 0
+    for document in weekly_documents:
+        for raw in (document.get("source_payload") or {}).values():
+            if not isinstance(raw, dict) or raw.get("parada"):
+                continue
+            weekly_records += 1
+            weekly_produced += _legacy_number(raw.get("quantidade") or raw.get("qtdIncrementoConfirmado"))
+    return {
+        "legacy_read_only": True,
+        "operational_records_created": False,
+        "selected_date": selected_date,
+        "latest_activity_date": activity_dates[-1] if activity_dates else None,
+        "latest_schedule_date": schedule_dates[-1] if schedule_dates else None,
+        "lines": lines,
+        "line_state_slots": state_slots,
+        "schedule_slots": list(schedule_slots.values()),
+        "history": {
+            "rows": rows,
+            "kpis": {
+                "registros": len(rows),
+                "total_produzido": round(produced, 3),
+                "total_perdas": 0,
+                "pedidos_unicos": len({row.get("pedido_numero") for row in rows if row.get("pedido_numero")}),
+                "dias": 1 if rows else 0,
+            },
+        },
+        "week_kpis": {
+            "registros": weekly_records,
+            "total_produzido": round(weekly_produced, 3),
+        },
+        "closed_shifts": turno or {},
+        "source": "Firebase Current — snapshot homologação",
+    }
+
+
+@pcp_router.get("/legacy-active-ops")
+async def pcp_legacy_active_ops(request: Request):
+    """Return unresolved legacy OPs in the operational table shape, read-only."""
+    user = await get_current_user(request)
+    tid = user["tenant_id"]
+    documents = await db.legacy_op_reviews.find(
+        {"tenant_id": tid, "record_type": "production_order"},
+        {
+            "_id": 0,
+            "id": 1,
+            "source_key": 1,
+            "legacy_status": 1,
+            "source_payload": 1,
+            "target_sku_id": 1,
+            "target_sku_code": 1,
+            "activation_status": 1,
+            "production_blockers": 1,
+            "production_resolution": 1,
+            "workflow_task_id": 1,
+        },
+    ).to_list(5000)
+    rows = []
+    for document in documents:
+        if document.get("activation_status") == "promovido":
+            continue
+        raw = document.get("source_payload") or {}
+        status = str(raw.get("status") or document.get("legacy_status") or "Em revisão").strip()
+        normalized = status.lower()
+        if normalized.startswith("conclu") or normalized.startswith("cancel"):
+            continue
+        planned = _legacy_number(raw.get("qtdPlanejada") or raw.get("qtdTotal"))
+        produced = _legacy_number(raw.get("produzido"))
+        rows.append({
+            "id": document.get("id"),
+            "review_id": document.get("id"),
+            "numero_op": document.get("source_key"),
+            "numero_pedido": raw.get("skuPedidoKey") or raw.get("pedidoId"),
+            "cliente_nome": raw.get("cliente") or "Cliente não informado",
+            "project_name": raw.get("produto") or "Produto",
+            "linha_nome": raw.get("linha") or "-",
+            "data_programada": raw.get("dataInicioReal") or "-",
+            "status": status or "Em revisão",
+            "legacy_cliente_nome": raw.get("cliente") or "",
+            "target_sku_id": document.get("target_sku_id"),
+            "target_sku_code": document.get("target_sku_code") or raw.get("sku"),
+            "production_blockers": document.get("production_blockers") or [],
+            "production_resolution": document.get("production_resolution") or {},
+            "workflow_task_id": document.get("workflow_task_id"),
+            "lote": raw.get("lote"),
+            "items": [{
+                "item": raw.get("produto") or "Produto",
+                "codigo_kuryos": raw.get("sku"),
+                "lote": raw.get("lote"),
+                "qtd_planejada": planned,
+                "qtd_produzida": produced,
+            }],
+            "legacy_read_only": True,
+            "operational_record": False,
+        })
+    rows.sort(key=lambda row: (str(row.get("status") or ""), str(row.get("numero_op") or "")))
+    return {
+        "rows": rows,
+        "total": len(rows),
+        "legacy_read_only": True,
+        "operational_records_created": False,
+    }
+
+
 @pcp_router.get("/dashboard")
 async def pcp_dashboard(request: Request):
     user = await get_current_user(request)

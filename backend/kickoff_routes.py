@@ -7,6 +7,7 @@ import re
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from pymongo import ReturnDocument
 from reportlab.lib import colors as rl_colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
@@ -1308,13 +1309,9 @@ async def _sync_bom_registration_requests(kickoff: dict, user: dict) -> Dict[str
             "kickoff_id": kickoff["id"],
             "bom_chave": key,
         }
-        existing = await db.cadastro_bom_solicitacoes.find_one(request_key, {"_id": 0})
-        if existing:
-            request_doc = existing
-            reused += 1
-        else:
-            request_doc = {
-                "id": new_id(),
+        candidate_id = new_id()
+        candidate_doc = {
+                "id": candidate_id,
                 **request_key,
                 "numero_kickoff": kickoff.get("numero_kickoff", ""),
                 "projeto_id": kickoff.get("projeto_id"),
@@ -1341,10 +1338,18 @@ async def _sync_bom_registration_requests(kickoff: dict, user: dict) -> Dict[str
                 "created_by_name": user.get("name", ""),
                 "created_at": now,
                 "updated_at": now,
-            }
-            await db.cadastro_bom_solicitacoes.insert_one(request_doc)
-            request_doc.pop("_id", None)
+        }
+        request_doc = await db.cadastro_bom_solicitacoes.find_one_and_update(
+            request_key,
+            {"$setOnInsert": candidate_doc},
+            upsert=True,
+            return_document=ReturnDocument.AFTER,
+            projection={"_id": 0},
+        )
+        if request_doc.get("id") == candidate_id:
             created += 1
+        else:
+            reused += 1
 
         line.update({
             "cadastro_status": request_doc.get("status") or "pendente_cadastro",

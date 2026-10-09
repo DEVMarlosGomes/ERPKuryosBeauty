@@ -1,0 +1,106 @@
+{
+  "status": "DRY_RUN_VALID",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "approved_rule": "hr_legacy_review_no_account_creation_v1",
+  "policy": "ISOLATED_HR_REVIEW_NO_ACCOUNT_CREATION",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22"
+  },
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "preflight_sha256": "0ee4288a64a9337ee4b6a75440408ca2f66849641307e47cdfa2962f973e8a88",
+  "snapshot_sha256": "49848d4f9202de364ed0d4bf0905bd128e939f4ee9433e57060c2dbf4617210f",
+  "planned": {
+    "job_role": 3,
+    "legacy_user": 13
+  },
+  "operational_before": {
+    "users": 14,
+    "rh_cargos": 0,
+    "rh_colaboradores": 0,
+    "rh_avaliacoes": 0,
+    "rh_ferias": 0
+  },
+  "operations": [
+    {
+      "target_id": "70332fcd-c9b8-565f-b39d-ee701dd6ec7f",
+      "source_key": "-P1812jiro021RybM1WS",
+      "after_hash": "43a42a212443736a4489128c913d22a8eb237d07143b5808cfa68fea6a45b66d"
+    },
+    {
+      "target_id": "fc657ca4-6b99-5edd-b918-aa7074b638f7",
+      "source_key": "-P1816nkvRap3mvOCm7N",
+      "after_hash": "d97b6e8ba8217919cc85b701be067aeb248ae4f07f478186b5ee35dd2a6ef911"
+    },
+    {
+      "target_id": "e0e3ade3-8a32-566d-a2fe-6263fb07fda4",
+      "source_key": "-P181AHm0MUtwkGK1gSr",
+      "after_hash": "e4bbba3086766a04c4b7070870d6dc1042012268994851a7ec31c125fb29449e"
+    },
+    {
+      "target_id": "05e1fcb8-e9df-5e30-addf-e6894bcdfde8",
+      "source_key": "76QB4wXNxWcjAZKEAGWzoGHeGIB2",
+      "after_hash": "cdd2d09ad1034ecb4e8fcaffd4a7cdc29fe4680e9d6f9714e46aec93b6d47060"
+    },
+    {
+      "target_id": "8548ec56-2854-5f41-a9bf-3148687751f5",
+      "source_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "after_hash": "0a9d463d61435553ea714f6820a015ad88d79aabf2c2f6fdb67fefb0f22d0a82"
+    },
+    {
+      "target_id": "b3c53979-bef5-58bd-9e69-d1ce861dbdb1",
+      "source_key": "9hu8LoweLIeWZqdAQfeKLsqoIHj1",
+      "after_hash": "a872a1d6701f3c04228a17573e1a6437c509f5b0f472fdc0779dab7251661f71"
+    },
+    {
+      "target_id": "9fa306ee-9b8c-526d-94a9-f91465aac6d9",
+      "source_key": "AadKYuWDqEZlhBxNDRrQQC3yfw63",
+      "after_hash": "291ab9cb770b9a30a3fb6be3b3375fb4f57cd6233b44f9b9d818431eb6acbf7d"
+    },
+    {
+      "target_id": "228fc1f1-3639-5374-b763-2d88a81e6b1a",
+      "source_key": "HZSLrB5omiQ83nnEEAHhdkxpFok2",
+      "after_hash": "771f7b92ec8eecef55020ef5f793dba54e1cb8438f6f2340f8ad859e79c253cf"
+    },
+    {
+      "target_id": "21175445-1c53-5570-89dd-c211312d7e79",
+      "source_key": "I7n4ydAdI0aYDPiJZThx8yiVB8q2",
+      "after_hash": "1a1361a656cda793465a735190437a4a25a3b3729c675511b70cd94626417a15"
+    },
+    {
+      "target_id": "33a946bd-9624-53b1-b2ed-2054400c0d7c",
+      "source_key": "NG8bAfNoPzMYDjgzLe8fkguuqAB2",
+      "after_hash": "899afea6e02c18d63602ea70dbc03a2b54d99f2763041c4492298dd0bbab0a03"
+    },
+    {
+      "target_id": "dfd3b147-4444-5493-baa1-67713c4ec61c",
+      "source_key": "TWfr9HWY8pdZcX4IkzphXEfhJO62",
+      "after_hash": "0d8b69fc08f9c3ce4d2583ae9c2d38f6262b78552490159b048df472f7984463"
+    },
+    {
+      "target_id": "50f6f9b2-d911-5020-9d71-086e5fb86422",
+      "source_key": "bNEjC0vCpUTUfpskzxIX4CRksvl1",
+      "after_hash": "82f9abc1564113f60b82351fb5fa054d40d7eaae8d9e16ca876fcbac8adff3cb"
+    },
+    {
+      "target_id": "9a305670-6970-5724-9a7a-29bd1faf7b5f",
+      "source_key": "fHwKcDCiE2gwkueCpSwgdvZX3sW2",
+      "after_hash": "3175d97f703c8b850df5880052f50ccb2b39865d80ac54574946d6442eaff1b5"
+    },
+    {
+      "target_id": "f3e9cca5-5b44-527f-b889-323b2c23b655",
+      "source_key": "jOMHYxfSCvN5LsDNaykwnOIjK0I3",
+      "after_hash": "0ad9bcdf67a077bf9ce7c9750b64b8c83a5575e32631a694f6496fd4d2a651a1"
+    },
+    {
+      "target_id": "83d63a0e-dcb9-5ec5-92a1-4a22e067dcbd",
+      "source_key": "mGmxpnS4fkVGCHQjfZJMr72NJuE2",
+      "after_hash": "2b9e1cc4f25f663126ea16836365c85f13af6aea11ac2502ae9adc53292b696b"
+    },
+    {
+      "target_id": "7308700b-6adf-52ed-a63e-dfe37f2faf6c",
+      "source_key": "w2suzV2zFdPOGuuFv3NBbmz4FV32",
+      "after_hash": "96977d5741d0e485826d0befb4a031b93f7719a4a4c5fb36a56da75a14f685d2"
+    }
+  ]
+}

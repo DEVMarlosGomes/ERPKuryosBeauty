@@ -35,8 +35,8 @@
       "normalized_name": "CLARIANT",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P-zO-Avf3tTGrq6ahlu",
@@ -44,8 +44,8 @@
       "normalized_name": "DPS QUIMICA",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P-zOh96Yj-UXdoyT2fr",
@@ -53,8 +53,8 @@
       "normalized_name": "RUDNIK QUIMICA",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P-zPI5bmjN5ItO8MGKH",
@@ -62,8 +62,8 @@
       "normalized_name": "CEREALCOOL",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P-zRvuv6928vj0Fdsf2",
@@ -71,8 +71,8 @@
       "normalized_name": "BRENNTAG",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P0b1nxYofGBbHhJvESH",
@@ -80,8 +80,8 @@
       "normalized_name": "QUIMI FORMULA",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P0bZCihGlCp_wmPUliG",
@@ -161,8 +161,8 @@
       "normalized_name": "CORANTEC CORANTES NATURAIS",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P1-c_ITewxfO8v2OLeE",
@@ -179,8 +179,8 @@
       "normalized_name": "LUNAGREEN BIOATIVOS",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "-P15j3MJlS-iMbbQAo7_",
@@ -323,8 +323,8 @@
       "normalized_name": "JEAN - INSTALACOES ELETRICAS",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "wm105",
@@ -1466,8 +1466,8 @@
       "normalized_name": "LUCCA DE CAMILLIS LESTINGI",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "wm22",
@@ -1484,8 +1484,8 @@
       "normalized_name": "GUSTAVO VIZIOLI CALLEGARO",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "wm221",
@@ -1493,8 +1493,8 @@
       "normalized_name": "MARIO CALLEGARO",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "wm222",
@@ -1502,8 +1502,8 @@
       "normalized_name": "ANA PAULA VIZIOLI CALLEGARO",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "wm223",
@@ -1736,8 +1736,8 @@
       "normalized_name": "JOSE CARLOS DA SILVA",
       "current_supplier_id": null,
       "name_suggestion_target_ids": [],
-      "classification": "INSERT_CANDIDATE",
-      "reason": "Nenhum CNPJ alvo correspondente; nome e apenas sugestao de revisao."
+      "classification": "MANUAL_REVIEW",
+      "reason": "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
     },
     {
       "legacy_id": "wm248",

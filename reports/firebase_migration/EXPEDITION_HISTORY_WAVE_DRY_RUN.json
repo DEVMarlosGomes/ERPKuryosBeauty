@@ -1,0 +1,2057 @@
+{
+  "status": "DRY_RUN_VALID",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "approved_rule": "expedition_legacy_history_review_v1",
+  "policy": "ISOLATED_HISTORICAL_REVIEW",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22"
+  },
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "preflight_sha256": "db526e3ac31e7dd7faa1cc31ff723b22da4a9a5bab91d13a865d58620cef5785",
+  "snapshot_sha256": "b3781d9ab004d8516845022a0dbaf63d3f112dd57b9b4196f8767bf9f3fe636a",
+  "planned": 338,
+  "operational_before": {
+    "expedicao_ordens": 0,
+    "expedicao_transacoes": 0,
+    "orders": 16,
+    "ops": 1,
+    "estoque_saldos_lote": 0,
+    "inventory_ledger": 0,
+    "wms_paletes": 0,
+    "faturamento_notas": 0,
+    "faturamento_duplicatas": 0,
+    "devolucoes_cliente": 0,
+    "retrabalho_ordens": 0
+  },
+  "operations": [
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "96eafded-db1a-5a46-a4cd-f22bd5fd7d89",
+      "source_key": "LEG_AVULSA_010f0f555119b87c",
+      "after_hash": "7048a104914061a71fbfb902c6c094cf1f312c9c9f874cf5d1bc409b346037f1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c0c87c10-c8ad-5545-8960-a3d783ea975e",
+      "source_key": "LEG_AVULSA_09c7e57b667e84e2",
+      "after_hash": "bb3ac7e43f7defd24cd98c044ad882db2ebdb456ac5eee27d520db21ef250ed5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c072830a-e6a6-5041-8819-2f135daa7ca1",
+      "source_key": "LEG_AVULSA_19897311e0e42acf",
+      "after_hash": "3b68e1b377f2325d48656f5a8470b436523e6f6d10de86d721ded6d94e3de9a9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6a492a0e-38fc-5743-b2e9-c91e149bea16",
+      "source_key": "LEG_AVULSA_8e3552177fb011a5",
+      "after_hash": "ebbc31e10d26adc37811ebb7c2a14831cf91bf55bae93449387c067086985f48"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a3b6a9a5-7cc8-5d05-96de-19c2b688fe44",
+      "source_key": "LEG_AVULSA_9195b5cf6bc37b3a",
+      "after_hash": "01183d25faa87664bb77d9d298fdd00e60d63b9be821bd5771a9d476e1fbeaa7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5930ff61-7cd8-5868-87df-2ac144f1741a",
+      "source_key": "LEG_AVULSA_a7645b71c325d223",
+      "after_hash": "57f9760250b58c8b82d381d5bf7a3eef7c9f5c4a436d5d87a7d70bd64b1a9fc1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5ae76680-c5f3-5afb-9cab-f26fb3d11d67",
+      "source_key": "LEG_AVULSA_d9be29c96372ccb2",
+      "after_hash": "5a823229b109dca8d855bc990639de271fe368bbcfd579b125188020786c1783"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "122cfe2f-3cef-5365-8d1a-419f31cf8b75",
+      "source_key": "LEG_AVULSA_fb6c11bdc887997d",
+      "after_hash": "0af25b1296ce9cc0e34e7400a07c98c5a7a7d359f8f4139accc24bfd467d5a24"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "06fa74d7-a088-5783-8e30-4e18520de259",
+      "source_key": "LEG_NF_-_SEMDATA",
+      "after_hash": "cfe5841bb046c79474823d52e3a82d1b656d65bfd66ac87b7793c61eaa9e000c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "590f2705-8fc9-5966-8a49-d5bfa1d3c55e",
+      "source_key": "LEG_NF_0_-",
+      "after_hash": "c7b46f5d92c1e975b70a6baa6d303f245a05fb65f229d3703287fd57258f2b3d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "426c9db7-8f8d-504a-9e96-3dd6a646578d",
+      "source_key": "LEG_NF_0_2025-05-05",
+      "after_hash": "b09f86f9e1ad9af704650ef25397ad2dac6ff22ea2e716c741fac68bc793fab9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f8647154-8550-5262-aad8-ded8ec475b90",
+      "source_key": "LEG_NF_0_2025-05-09",
+      "after_hash": "bc72cf7d11d26a8dfc36ffe6000b9b00d61f15c47f1bfaa04148caf456d23d9a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f0e802fe-80c1-5198-baaa-1172d8b2f083",
+      "source_key": "LEG_NF_0_2025-05-13",
+      "after_hash": "94d298f2d9fb4294b74ef4d7226721dfc0437be0fe493f79fd09eb53d8a062e2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "41ca0551-a99e-5836-a585-502dca054c6f",
+      "source_key": "LEG_NF_0_2025-05-14",
+      "after_hash": "77b876fccad58700816881143bb8ac178a02cbb9d7939f8deff686a0444c48c1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "85931fa9-cdae-5603-a1cd-42c8f3e1093c",
+      "source_key": "LEG_NF_0_2025-05-15",
+      "after_hash": "979d243caa89feea4e57a1fe906e7a942dace628f5fcd36b0fa7852ba9ba0f87"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d6ba7368-6f67-50f0-a77b-6f8150bb771f",
+      "source_key": "LEG_NF_0_2025-05-19",
+      "after_hash": "3f93ec39c4621c7c10101905ac5d7d9e3395bbe2e4521e7798a58fe6cd97d0e3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f0bb2b0d-0240-5dcc-ae08-6706edcd836a",
+      "source_key": "LEG_NF_0_2025-06-18",
+      "after_hash": "53e2ae94e336de4ba7b34dc2033116af688ee6e0457f83b4a29082deb5c05fba"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8975e9b5-11da-50fe-91ea-d95bab7a4e9a",
+      "source_key": "LEG_NF_0_2025-07-07",
+      "after_hash": "6690b29b289db5e8750099bd596f480a36142136ef8d32bc72e6132f3358067e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "bf75b21b-c3b6-5c79-9b76-ebb0676d7737",
+      "source_key": "LEG_NF_0_2025-07-08",
+      "after_hash": "7f38921051fe0741ce22be557afc9ae7bfea07a1d36430d8018f0e1928986ab5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "84b2f693-7f6e-514a-9b01-ba9fa5334433",
+      "source_key": "LEG_NF_0_2025-07-14",
+      "after_hash": "ce9df74a4bb16fee18863f9d38c0697139bf570943d4f02cd31b1a565bc7aae8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4d1c1066-4e17-5331-bf45-ce71289bdeac",
+      "source_key": "LEG_NF_0_2025-07-22",
+      "after_hash": "eb767d70914bc0dd3aa9a13c8f6666962f52c9d39101839050b59c2a06ba3df3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "236ac4d2-cb47-5e0a-aa91-9fd6aa67c773",
+      "source_key": "LEG_NF_0_SEMDATA",
+      "after_hash": "6cfc3ed580d9b8418de9b1549d9f103737a7369e3e74df3f760345bfdc4b155f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b9bce579-e942-5d9d-899b-373c119ea061",
+      "source_key": "LEG_NF_1_2025-07-01",
+      "after_hash": "6883df2039a758caa177c21e0a6d63dc35b38c00f48206ede451df703004bfa0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2420aa33-c3e7-5004-aa8b-9dceb386122f",
+      "source_key": "LEG_NF_1_2025-09-11",
+      "after_hash": "bf3bdf31b733f0807df3caafe4b44f55ff3f1305d481aed6e2e4a22375fd800a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4843bdd4-15f6-5af7-bbf2-6353ac28db99",
+      "source_key": "LEG_NF_212_2025-04-25",
+      "after_hash": "9af1804bb7ac60883961fcabcf5bfe28ff51c74ec4b46ff19928cfb3d681a1e7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9dbfcc6c-d782-5269-a757-32d225092b60",
+      "source_key": "LEG_NF_213_2025-05-05",
+      "after_hash": "b47a7c74329024648497fcac47fda389dbd5a84167f8dfc0aae5c4f3e915cd6c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9571c9f1-4337-5c93-bca5-94ce92085964",
+      "source_key": "LEG_NF_214_2025-05-05",
+      "after_hash": "206878ab8fe80e449ed879955b63ebb725ec2fe53e51d495c06e579ad16a89eb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8782c1d8-b21d-5d10-9a26-7fed2bbd2381",
+      "source_key": "LEG_NF_215_2025-05-05",
+      "after_hash": "cd01e05c3d94474abac7749458030e530668655026de97994e67f9c2d3eb5d94"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "589bee65-48ca-5ad4-9e2f-6881a3ba5709",
+      "source_key": "LEG_NF_216_2025-05-05",
+      "after_hash": "da39e5ee2bb2467a7990cd9476a887093b2dca57a310c8bdb1724fb3143b7613"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e8804de0-0afc-51e6-bb97-f2d6e372239f",
+      "source_key": "LEG_NF_241_2025-06-18",
+      "after_hash": "1cb050d835209430139774da1ccd18415155a90d160febe3e00515ddfe92e1fb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5b7fb197-a703-5103-ab23-adfa87eb4a62",
+      "source_key": "LEG_NF_242_2025-06-25",
+      "after_hash": "f07871fff0ab40a7fbf401f4fe288fd4a3d528ca8bda10a9b876ea121f009003"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a32018fc-7eb4-5102-84ad-79e961291ad7",
+      "source_key": "LEG_NF_243_2025-07-02",
+      "after_hash": "dc82dcde9076284a7826e4346277962e7cd5d8ac5dfde3da7e93554c37aead56"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9918deec-986d-56e1-be24-db92101de05f",
+      "source_key": "LEG_NF_244_2025-07-11",
+      "after_hash": "d5ab6f74df6d2069ca02b37d09f7d4cc69cae953cb58ba9db2e07db219e9d27c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "37ecc163-9c01-5ae4-8e72-5c3396f5e04f",
+      "source_key": "LEG_NF_246_2025-08-08",
+      "after_hash": "38e6190657237d4d03044adc71817b7c24d8c8f87c80513ae467ff11f08a7072"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "bd350eca-abdd-57c4-9952-0fbc4aaa3f11",
+      "source_key": "LEG_NF_247_2025-08-08",
+      "after_hash": "727cc977ee334137034c81ab3946535bf591e8babd2aefa67d3172cca0130fa8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8345658a-e297-5673-aa40-c8be69088ef9",
+      "source_key": "LEG_NF_248_2025-08-22",
+      "after_hash": "943596111494b001698c77fc0fd0465a20e7ea9d1561461ec3eb791f29583432"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6ea2ea4b-650e-547e-99a4-f52133d93470",
+      "source_key": "LEG_NF_249_2025-08-26",
+      "after_hash": "6a3a88a295780f0fb9c4c10e5bf550b273c72beb6f312651750971c84dfcb33f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6a3f9783-1cab-5277-a546-08b303bdbafa",
+      "source_key": "LEG_NF_251_2025-08-26",
+      "after_hash": "0672bf51c9b977599a6af39816852cb8fffc544896a9da7850aaf4e341a3ebab"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e7028c96-abdb-5e57-bf9a-b1fdce097e12",
+      "source_key": "LEG_NF_258_SEMDATA",
+      "after_hash": "8b9f4159291282544fe41f29a35658833432e1a68c47110ea58516285c5f29c5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f4560746-0570-506b-b108-c4d73eb3a1bf",
+      "source_key": "LEG_NF_259_SEMDATA",
+      "after_hash": "98faa92fd74fa526449ffd7567ee4d7e2deaa6b0f023030e3ecb70c488e62c08"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f7884559-5418-5601-b1ee-aedab770de4f",
+      "source_key": "LEG_NF_261_2025-12-02",
+      "after_hash": "a91ee6736c35df3cb8ec193e82824f3ac14b23d3cce25ea504915e93ca01ece9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "816d8f83-bbaf-5149-b8e0-2602deff74d8",
+      "source_key": "LEG_NF_264_2025-12-05",
+      "after_hash": "07abdc2901d5c0347601835afa62c390df1e7a6388ece1116c6046f57da8d6bc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "23bd9118-b63b-5e75-be04-f8630edbd57a",
+      "source_key": "LEG_NF_264_SEMDATA",
+      "after_hash": "e8ff95b4f83ab8f4868e0b3c13ef56d983bac29fcc1e2a1179d978034d8c5bf1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "88ec4b9e-d2de-5ce5-b313-85ca27bc3335",
+      "source_key": "LEG_NF_267_2025-12-15",
+      "after_hash": "60e29549146b4727f3dfbcc4623257b905fc79691d8d21fddf16a5bc2314d09a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "67ed7a5c-b7c9-5ce3-b6c4-4e2d2e593107",
+      "source_key": "LEG_NF_269_SEMDATA",
+      "after_hash": "7aa89f7176f81f0c6849d08ec2bd340135ec3098c9c6b38e474b6f980b031f70"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2831355c-576f-51d9-840e-69cfaf907503",
+      "source_key": "LEG_NF_282_SEMDATA",
+      "after_hash": "7b98117f1b6c9b0307aa52f6005ffc8f030e75a0e91b5f31c6e5eb94aefbd5b0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "aa9acd3d-e9a6-5236-aed8-f5ff92c2770e",
+      "source_key": "LEG_NF_283_SEMDATA",
+      "after_hash": "eda2c0fb8ac035d15e4a7140ec9097d002334af686b38441de0c1c50052dde4e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9660f6c7-e217-522d-a875-fb8f77e66c7b",
+      "source_key": "LEG_NF_284_SEMDATA",
+      "after_hash": "b8f44c4c78f6eb7c4394f2bd7e021ae9212a9bd79e719810065ae74486c338e2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1244e4e6-95c0-5df6-9e13-76a4ea7472d5",
+      "source_key": "LEG_NF_311_SEMDATA",
+      "after_hash": "524e95e71d421d2deab9988aa0833d5ec5cae235870dd726c1d564c782b1e2f5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6ad74355-5f2d-5411-a3de-c910987ad987",
+      "source_key": "LEG_NF_313_SEMDATA",
+      "after_hash": "cd2ed29b8675da9a7a71ae51966664473be29fcbca3b88af5467de87cfc8ed1c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "66817d4f-0ab2-5d9c-8b8e-4c9fb47b3795",
+      "source_key": "LEG_NF_315_SEMDATA",
+      "after_hash": "745540d7d32761069873eee475e95651dc7921523787e8e8da13866c0dd19a78"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8c839d0e-485e-55d8-a590-49f61a9011a6",
+      "source_key": "LEG_NF_325_SEMDATA",
+      "after_hash": "1920c38413d2afb952551b5a956c30d3983e95f624da5cf1b780bccda23da50c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d39c8938-ea3b-50c2-9516-1c7b1768eeef",
+      "source_key": "LEG_NF_326_SEMDATA",
+      "after_hash": "e4ec35fc5554a969a4fb8d3a3f7cc606b1939b70a9e1283f23a01072c03e834b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1498bbf4-da9a-5276-8f75-4d98a579088b",
+      "source_key": "LEG_NF_328_SEMDATA",
+      "after_hash": "97c413339832b033996d20d91fe8ba884cd582663e99adee21f6fa4d339a2fe4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "252b788e-8594-5ae6-838e-57b6ec7d11d1",
+      "source_key": "LEG_NF_330_SEMDATA",
+      "after_hash": "bee6a001c71bdc909c3b20e777c75a5fc3ffc01257d946f00d27c0af317cf8c0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "3fe1d9c9-c102-50e3-be89-5668472ce5cf",
+      "source_key": "LEG_NF_331_SEMDATA",
+      "after_hash": "45694f4487aae78202ca42e3dd6d269c207ad30d399c4200899036cf908e8f5f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b0c4e1f6-05aa-55c6-b8e1-cdf0d6a92e2e",
+      "source_key": "LEG_NF_339_SEMDATA",
+      "after_hash": "d4a7f53c38eaa9cce887f83960e19501dc5d3ccb74971050188a9a3741ae986a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b89aab8e-9bce-57d3-9cc4-9d880b00919a",
+      "source_key": "LEG_NF_344_SEMDATA",
+      "after_hash": "e5b6d9d72d94bbdaeda4e1035e8497b8ef08851174abc6d7a4e97d5e724f9229"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "358d825a-131d-5b98-a30e-c7d8d59846e7",
+      "source_key": "LEG_NF_345_2026-05-19",
+      "after_hash": "9092b6d93ba932e295000b1ce792b15efab1fb91ebb63a6eeafa9f5d643932e4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "dfa5b071-0ee4-5dd3-9523-123a8648299b",
+      "source_key": "LEG_NF_345_SEMDATA",
+      "after_hash": "bfb74f54abd938c090453ba27260bdc81606a2a0393fca6db5e6f988c245655d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "dcaa7a72-96e4-59ef-b593-05bc59c980a9",
+      "source_key": "LEG_NF_347_SEMDATA",
+      "after_hash": "696b6953df17027012cd8ecb0ffe632f9f7d7188921f25b7a14541bf858075e4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0e391157-d3a6-50c7-9170-9bade7d140f6",
+      "source_key": "LEG_NF_351_SEMDATA",
+      "after_hash": "9b6ac362fe60bce6d25d1be58afbb1c5ee3dbd916aa9fb85c9fd027bd7268a4d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "dcb152be-c195-52c1-a82f-da3136340993",
+      "source_key": "LEG_NF_358_2026-07-16",
+      "after_hash": "31eb86309acbbcf6cf018637fedcd50f321adeb3cb972bf7a4492c3ae3c98256"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6b59565d-2557-5015-94cb-931d26b8921c",
+      "source_key": "LEG_NF_359_2026-07-20",
+      "after_hash": "4962923aadb0633028ad8c853e93da15915a3f075e7bf03730bab1a98517d677"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a05c5012-8c2e-51cf-8600-28e2a81900e2",
+      "source_key": "LEG_NF_360_2026-07-20",
+      "after_hash": "16007b6b68021d174ffb31b5b24c880cb35ad76ec0f4bc5799906a3856095ddf"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cc044ded-be79-5b4d-b75d-d082a99d0be6",
+      "source_key": "LEG_NF_361_2026-07-21",
+      "after_hash": "1baaa0198b1f762b4578728694f44177dc0da565738fcbd7d9c1084614775700"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "fdc5df90-95cf-517a-9585-00f57081244c",
+      "source_key": "LEG_NF_363_SEMDATA",
+      "after_hash": "4219dc8b5dec72fff042d05fb92c89204dc1d58ccca064463caf032a4146e93f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ec549e98-0fd0-589a-9e60-465451647697",
+      "source_key": "LEG_NF_364_SEMDATA",
+      "after_hash": "f545f86318ace0f497fbf343a8ad9f76c623f7f4fe2bbb98a819130d8be1779c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "dd531326-4d76-55db-b917-dba2a8d37291",
+      "source_key": "LEG_NF_367_2026-07-28",
+      "after_hash": "5940dbcfd4c54b6c9fca5e0b7e9784634554130bddc352033477dab0247aabf4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2939a818-28e4-594f-9c4c-cc3eafe66a05",
+      "source_key": "LEG_NF_368_2026-07-29",
+      "after_hash": "96344b54945dd4fb4d1ef3ffe808b82db4efed24b109a84da01fea13912fb347"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5df0992b-660c-5404-860c-cd4f4b35d563",
+      "source_key": "LEG_NF_368_SEMDATA",
+      "after_hash": "cf110fcceba01f33e348e64d987df83df438f3de803876d3f37b58cddeb4cedd"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c030b8c3-94ed-50f4-bee4-64de27580eb0",
+      "source_key": "LEG_NF_369_2026-08-03",
+      "after_hash": "3e427fdc06d19ae1554b40a995d5f3d5bb45999324108562ddb8b1c1584e84f0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "02aa5ffb-a956-525f-bec9-604cae7061f3",
+      "source_key": "LEG_NF_370_2026-08-03",
+      "after_hash": "011a184b9777bc8dce783668e5414b45cef0234dd9d56e8b1b8c92c7a6a5bc66"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "acdc3f71-47a9-5da5-af0a-07ab0337558d",
+      "source_key": "LEG_NF_371_2026-08-04",
+      "after_hash": "8e1540381b771e64949eb3c4029f7c3acba8458896c00e612c20ac5bc58dafe0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e212f7ab-3032-57a8-be15-3ff9a59ad02e",
+      "source_key": "LEG_NF_372_2026-08-06",
+      "after_hash": "3b38e8cb8c6858bd7eb1cf87db25138489f17c28702bb8c69d7440150ea20bb4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "412e7c01-5bb0-59a6-899f-21fd9d87df08",
+      "source_key": "LEG_NF_373_2026-07-29",
+      "after_hash": "59404428228c5bbaf1983b67215d994cafd1421524eff6f69960b0ec29e0c2a6"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d15848c4-8f44-5b3e-af34-e19661ccddda",
+      "source_key": "LEG_NF_373_2026-08-12",
+      "after_hash": "901078ef87e9d73cdc24d0c3b409c6065d8517ef7e32b4146d945349350dc9aa"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "93091d62-a5bb-51ce-9cc9-87da8f596e5e",
+      "source_key": "LEG_NF_374_2026-08-11",
+      "after_hash": "1e19749810ce9014a779838fd211768ef202cdd95048ca3747160a26aa58340f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "44f6104b-f517-5bca-ad8e-71638e6dd4c8",
+      "source_key": "LEG_NF_375_2026-08-11",
+      "after_hash": "d7681fb77200f60d97ae34021e75fa3f852cf10acb912be6d3c61ed057dd2a7b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c54385df-0c52-599d-b942-f31768aa93fc",
+      "source_key": "LEG_NF_376_2026-08-12",
+      "after_hash": "112ba66dd94bbfb6e9d2f53e92c58352528cd49e59460e9db882b5a5d5ecb4e3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "962d1461-fc11-5520-b016-3b6f2ceec456",
+      "source_key": "LEG_NF_378_2026-08-18",
+      "after_hash": "54f7d4900e3419a8434178bc330be253b442f9bb9da7d2b6aad3d5e6930eb0a5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5e99321d-e1f8-5c22-a78b-1900ca726ff7",
+      "source_key": "LEG_NF_378_SEMDATA",
+      "after_hash": "32663a018340fa52fa5d16384a98d0d11967af1494e272c95aa151a19ae0bee9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b7c28881-dd32-5945-ad4f-a32dcd369c3b",
+      "source_key": "LEG_NF_379_2026-08-14",
+      "after_hash": "c55de516f0eb965857f98d6e87d290e717b7813684bdeff1f1921c676350c79f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "32863eb6-2e8c-5552-8ea0-c3945ec41d05",
+      "source_key": "LEG_NF_380_2026-08-18",
+      "after_hash": "42795f109dcc47639e587e7e1cf3f406a2a9d0f015e00e7d1b541009684f3dc7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "39ac55ae-0762-50f7-bc2f-74b5d2266cfa",
+      "source_key": "LEG_NF_381_2026-08-17",
+      "after_hash": "e93be91dc4833fa3eb5cd5f22dd6a48b2d6c35579e9b749d956a724d3a78ef55"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ab733129-3873-5e5d-8c1d-52d59bd6c8ea",
+      "source_key": "LEG_NF_383_2026-08-18",
+      "after_hash": "738288672fa1d79b25d31951ac148976c77ebc4559000f43d3a75753092ecd2d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "271077ca-38b1-5d27-9aa3-55d598932d7a",
+      "source_key": "LEG_NF_386_2026-08-20",
+      "after_hash": "5cd9d3cc0e829db5c7959f205f2affa732f4ca905d4ce5b682123290eb6002c3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d4839ab3-e1e4-5dea-8798-7f52f5e2ffa1",
+      "source_key": "LEG_NF_387_2026-08-20",
+      "after_hash": "49cb363c4105353b32ff0a650a9daabb2b857fda8ad9e345e3e3689974bee4b4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "678b96a4-0f9b-560d-ad8b-3cd0ae166bfb",
+      "source_key": "LEG_NF_394_2026-08-19",
+      "after_hash": "e997a8011157a7d49fc2034f4b4876790611f3078333125a4aed588b3743d52d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2597f668-ad8c-59b8-a8d7-7ea45dad1971",
+      "source_key": "LEG_NF_395_2026-08-20",
+      "after_hash": "7dfc754ceece2e6fec3e5fb71543818e9cff62172265f083dff93b6778b5da54"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "957fc2b6-ab10-5c5e-9571-5cc441cbe312",
+      "source_key": "LEG_NF_396_2026-08-21",
+      "after_hash": "57478c78ae66df79732969bae792c149e3e86cc2700a96ab5a050dfe59dd82dd"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ed9e9b6d-694c-5c39-a149-b74b19902f58",
+      "source_key": "LEG_NF_397_2026-08-21",
+      "after_hash": "99bd96664721923a2ed62a03d33cdc36a8da6a8fe9018c90fd300e4b9a983ac8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "fb6007a2-890c-5ec3-9422-b8a08ec43964",
+      "source_key": "LEG_NF_398_2026-08-25",
+      "after_hash": "e172a79d190168f127ac5cb9d88b1cd62e3dd50f7444489332f145845e85a423"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f2b531cf-480d-5f2f-9541-22ef69500817",
+      "source_key": "LEG_NF_400_2026-08-27",
+      "after_hash": "ed2784850188e64a880e87bfd1b29c9e1632435ed736c250e3604e7ad1eb7981"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "907823c6-e2fe-5d53-8068-172bc983639b",
+      "source_key": "LEG_NF_403_2025-05-08",
+      "after_hash": "5b9e5c52c31469fb074bb0786b368f50ba9a6e12db532fc259757bd62a7b37f3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d500f9a4-59ec-5d50-b21d-f20f4f4b203e",
+      "source_key": "LEG_NF_415_2026-08-27",
+      "after_hash": "d3669958cd2882cca9e1597b67330b8487cefb9d3867c56bc67cc68cf4dc1de7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "54e4e53d-b50f-57df-b508-76fbf212a6cc",
+      "source_key": "LEG_NF_417_2026-08-28",
+      "after_hash": "bd261b5fe8a26e76aab8d2233d39278ab22f186d990a3a927095ee2c8a2e5b74"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d3ed6a81-814b-5f3c-bc61-a6039ea59cf0",
+      "source_key": "LEG_NF_418_2026-08-28",
+      "after_hash": "0d05235ec037d17f47e1671f51e37af0eeac7474a38acdfc27f0830e0702fc92"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "abe4d6b4-aa79-56ab-958a-2eb5eaa5f0a7",
+      "source_key": "LEG_NF_421_2025-06-16",
+      "after_hash": "e9517775a3094fe937a4ba22595a4459f84ade540a759db9e6b096ae96877d2f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0bfdca20-de4a-571f-9b81-1e1163287b6f",
+      "source_key": "LEG_NF_422_2025-06-16",
+      "after_hash": "76ce9dc8c414dac089507a4e0b5c06705c0dacdf7c85b679e82aa3ca4bc9e317"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6f457405-a3bc-5498-9a97-1bb24e14c8d6",
+      "source_key": "LEG_NF_422_SEMDATA",
+      "after_hash": "2ed902de1cbcdaf32bcf7a1075e33c4df78ccd4962dbe4a1fc76a53df8c57844"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ccac3ab8-0721-528b-804e-7afd2dfe43b4",
+      "source_key": "LEG_NF_423_2025-06-16",
+      "after_hash": "301c85ec1cd5e708bc46793fd581d6484ffeeb8bec651d81933f16f6a0cab423"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0cae694d-15dc-5bc9-a262-423320461e4b",
+      "source_key": "LEG_NF_423_SEMDATA",
+      "after_hash": "5556567d5d397e320a3dc585970bd5c30cee6dec80fdf295aa1daf148039d11b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "659318df-fcc5-57cc-b4c8-b88eb2e0458e",
+      "source_key": "LEG_NF_424_2025-06-23",
+      "after_hash": "e480d8db34c2eb69297e9e18b42256c9e178ed43050922b4a2b82db3454c95d1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "20f99f2c-05ee-5fb5-9166-bc23cd3d9fb8",
+      "source_key": "LEG_NF_424_2026-08-28",
+      "after_hash": "5cedaecb86b38843b3c8375a4ba51f31345d790c1fcdd715d06cc8af1aa121a4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "068665c7-7ae6-53e6-a6bd-6535632122a5",
+      "source_key": "LEG_NF_425_2025-06-25",
+      "after_hash": "b2badc605b125374d36639bfeab62823846fe2ee8aec6c7d3137399f05c5cb09"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d70620d0-ffd7-517c-9637-41d7d26ba42c",
+      "source_key": "LEG_NF_425_2026-09-03",
+      "after_hash": "b42127b370e0aeac1eb34152bec896e30dea06d51fea8bd371e2706a28e029cb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c325232a-f490-5c42-b011-59b4f80ddf32",
+      "source_key": "LEG_NF_426_2025-06-25",
+      "after_hash": "e4e097b40a2c22ee70b4304d6b5d550e247eb68bbacbd9e06454de628388c872"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "59289407-102a-53bf-90a1-1b6b8c75b8bc",
+      "source_key": "LEG_NF_426_2026-09-03",
+      "after_hash": "54e5aadd24f2888d7f00231ef9bca7d3e8e9b8f8ed29aff824eac9bcfe480ce5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9fb85e3e-e8d0-5d88-8668-c83c087228a4",
+      "source_key": "LEG_NF_427_2026-09-04",
+      "after_hash": "dff3517e4b40d747eb960509d282b1a6a4cf239e115b19a3a304c9b1a02f6e7d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "76792ca3-ef6e-58e5-b4eb-49f2f4fc8d56",
+      "source_key": "LEG_NF_428_2025-07-22",
+      "after_hash": "5977b0ec2207f2f331c77f6a689074a6b4b385c0c2a3cb743ad5e912297c50c6"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6b2f6d0f-89da-56e6-9d25-01ca54438b6c",
+      "source_key": "LEG_NF_428_2026-09-04",
+      "after_hash": "098497f45e293854c2045b93a938acc83f71e2b02a3c15fe60176fd845878f7c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ac1f30b8-e411-5801-9fc5-06b2dcb68c8d",
+      "source_key": "LEG_NF_429_2025-07-22",
+      "after_hash": "51453648f4795976a0bc52943352b566b8120d6e2a387dac9bcf584361cf1514"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "678fe91e-8369-5365-93d1-61aa5a0d2171",
+      "source_key": "LEG_NF_429_2026-09-08",
+      "after_hash": "511cf09d957ec5335d061fabdd75bf1360e06e2754ae855107fb41b17b2b7a22"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "de50e900-633c-5f95-9817-4b1d57471a55",
+      "source_key": "LEG_NF_430_2026-09-08",
+      "after_hash": "43130d7aae78c366d57e313002891894ded25c7eae6c246fbe47eccea89cad64"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e41098fa-31da-5fcc-ab28-23968bdd07e6",
+      "source_key": "LEG_NF_431_2026-09-04",
+      "after_hash": "24fabad8a981c4db019cb6239896485a13f1733ce500f7d923c9abbe2b4023f1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8fd9e407-cf1c-5f33-affc-628882e7de57",
+      "source_key": "LEG_NF_432_2026-09-10",
+      "after_hash": "48baf112f2b3b41d27f4a0e051aed2d62aa16d61fb0eb44dd9c53533b5efe0cf"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "36001297-e9e1-5e71-9407-2951fa6f6a38",
+      "source_key": "LEG_NF_433_2025-07-21",
+      "after_hash": "67d375415ccbeabc7873f5d8a08a5ecba9d543780a0d091b08fa1e0dd37dd1c2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cfb3e9ea-54c6-5eaf-bfe7-ac809c79b843",
+      "source_key": "LEG_NF_433_2026-09-11",
+      "after_hash": "6fe9f94a6e19d4f3006ce940f560bc97697372ddb9032708f09cb3ac4de6cb27"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "62f67b04-4690-5d50-bd85-1c742a5c71c5",
+      "source_key": "LEG_NF_434_2025-07-21",
+      "after_hash": "4c1098a8da71a4b8263d6f8d093f4d9ca78a194025520060a4bc531880fac9bc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ebb1bc44-0751-5749-98b2-093e504c190f",
+      "source_key": "LEG_NF_435_2025-07-23",
+      "after_hash": "f34765768296c212de73cf4f4430cab4d11eeb25ac04949e21cb85375f4a631b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "69e0a464-025b-5ce1-940c-97c643384a7a",
+      "source_key": "LEG_NF_436_2025-07-23",
+      "after_hash": "9c16d7ea59f53fed301c4d1ad074f72669ee0b94cf2edd98beef3f13191b4421"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "bf783ef1-2e2c-52d6-84b2-8746160b59a9",
+      "source_key": "LEG_NF_437_2025-07-25",
+      "after_hash": "79c30151c522dbef64f67f2ad96b91c78eda9bf6e4b2ea70345660cb2387a12b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "58cb894f-c057-5749-9634-a0491974b50c",
+      "source_key": "LEG_NF_438_2025-07-29",
+      "after_hash": "ca3d2efd829e8b8c08a05dbb3a550372352d78cb4bc9d879e462357845c1194c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6adc121d-69b5-548b-9b7c-7eff7f0345cd",
+      "source_key": "LEG_NF_439_2025-07-30",
+      "after_hash": "ec60525da2d3098041fb5837808c23a25743d33b6e54a5108fe50c1968281855"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ef6f50ee-c0e3-5300-9b22-cb321a16d521",
+      "source_key": "LEG_NF_440_2025-07-29",
+      "after_hash": "a49575ab86da3f3d55edc11f23f962cbc673af8c5a986286aa9535da59f519be"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "82bbff74-b2cb-53f0-8723-9113878e25f8",
+      "source_key": "LEG_NF_441_2025-08-01",
+      "after_hash": "0595275a845611f2cb701fa7ab564cf30074e446e291ca613a40cb6faa1082a9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "521ac83c-98b4-51d1-a992-997503a16761",
+      "source_key": "LEG_NF_442_2025-08-01",
+      "after_hash": "c33c50ee332c356453ea9cf90d6dcf068fcb7b72decc79f94b2bcb11de09651a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "35208f8f-145e-5357-96b3-3de70d489dd1",
+      "source_key": "LEG_NF_446_2025-08-06",
+      "after_hash": "b075b8365fc786b2375f82b1d59a608060be08d035cdfbe1fcbfc80778cd978b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0428b8d8-2590-5a95-8956-d473968e2324",
+      "source_key": "LEG_NF_447_2025-08-07",
+      "after_hash": "c946cd99c8988929d7f0aa8877bcbed5f92a60d167ef021746175d516a1a6b9d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0709408b-5d00-54fd-8d02-a051fa4f2c69",
+      "source_key": "LEG_NF_448_2025-08-11",
+      "after_hash": "bb6b390e68b6514b8ff50cb06b005d36185eaaafad3aa3635d3b90cc097658e6"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "40e5181a-a28b-541b-9d63-8661d905ec08",
+      "source_key": "LEG_NF_449_2025-08-14",
+      "after_hash": "af9e7b5ecc157197add944e55f6dc9c5716c78300afe335e4e9265b3f4a40835"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a11dacbe-c79e-5f84-82c5-9c6628849773",
+      "source_key": "LEG_NF_450_2025-08-13",
+      "after_hash": "8b0e0eafb8f0576bf0a9eb7374884394edd56dc4cc68b499d9fe5178d96c1fae"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1ac6d90c-cd8d-5d40-a2f1-b4e4663ff62d",
+      "source_key": "LEG_NF_451_2025-08-26",
+      "after_hash": "ce171da826ed0bf695abad50eadab2ef5a61d68e1cd6f0a001a393dc44f122d7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "459d288b-b36a-523e-b1db-1ba8a7cb7eda",
+      "source_key": "LEG_NF_452_2025-08-26",
+      "after_hash": "7f4d14121b81eb16cc119f239d68973cda2fc3f3ecf883ab5b6ba69cfe54e811"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d5d9a49f-6076-5ea3-bc3a-f9e10f04fa2a",
+      "source_key": "LEG_NF_453_2025-08-25",
+      "after_hash": "f02dda6ba1e78d2856ff41eab4e21f5f98b932f8bd3ae25228d51815189dad2c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cd69e703-af78-5738-abee-530e32bc9d75",
+      "source_key": "LEG_NF_454_SEMDATA",
+      "after_hash": "325f9aafa1e23852af546297a25f4505138eb7c8f999565edfc06679a7c375e8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5b6819d8-5ffc-5435-84e2-e8e68f92ebaf",
+      "source_key": "LEG_NF_455_2025-08-29",
+      "after_hash": "fb685697b5ef9e3688697a70afe668a3f32b9a62b13ea3a04e019eae62ec9764"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9b0e4ea3-430d-5cef-8b61-5d77c2e2ce34",
+      "source_key": "LEG_NF_456_SEMDATA",
+      "after_hash": "8213027384c0d17ef810c3d34f93f3fffceee70d6870765029e888b15430c2e2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "dea8ae62-1f78-5c59-a2e1-8298c732e651",
+      "source_key": "LEG_NF_460_2025-09-03",
+      "after_hash": "c75390635ad2a67e302ba081308cdebbfc3bde0c76b83d00987739b889f5f044"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "7b7243ae-3ecd-5978-af48-4bd56f848f53",
+      "source_key": "LEG_NF_461_SEMDATA",
+      "after_hash": "4ef154fd3260152512a4f2410df9afe7fbd0727216e14ade941cdcf3e86ce049"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2e43d045-b93c-54ef-badf-2827bcb749b1",
+      "source_key": "LEG_NF_468_SEMDATA",
+      "after_hash": "79f076011c805262c550009592314ab9f46d26e4fbdebcc2e4fd6246c8dec106"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f0c965a6-dc2a-58b8-b974-5eb6b9c6afe7",
+      "source_key": "LEG_NF_469_SEMDATA",
+      "after_hash": "2742ad3495492a347d592ecc8cdf9d034c5d59188234576ff8f8b21d502d273b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b1a6c0f9-1af2-57e0-8b49-70bbfb6bc26f",
+      "source_key": "LEG_NF_471_2025-09-17",
+      "after_hash": "8b162a9c9be2016e0b74a1b4d5f08dd3a3bbe847cfa869e06dc120ace5f08aeb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c556c167-2143-5f2b-b6b7-5dc5b003b88b",
+      "source_key": "LEG_NF_472_2025-09-22",
+      "after_hash": "22fd5a3cc5e1f66bee67dcc5e0f923517ac83d6c3fdb8cfdfc6692e0c46e50ab"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8bf46d83-ab69-54db-b166-5ab7fb220ab0",
+      "source_key": "LEG_NF_473_2025-09-23",
+      "after_hash": "cc4b8ece3b04e2113f0782a35d3876763aa372fb90b8c34f51354ed1be8c2b3d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "65e0fcc3-731a-58af-8b5c-d51103114411",
+      "source_key": "LEG_NF_474_2025-09-26",
+      "after_hash": "9ca1c21401496a85e71a7d07f7511d91aa44d8d181f28bd7933b46b4a78423a9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "3b4e970f-b49a-59f0-a93a-b0c177a1aa46",
+      "source_key": "LEG_NF_475_SEMDATA",
+      "after_hash": "d1ccc5f50bd124cca0747235c66582915355cc3cc3f44e98cb0fb31330aab497"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "194540ca-13ab-599e-a245-34263292adf6",
+      "source_key": "LEG_NF_477_SEMDATA",
+      "after_hash": "54aac4e33dc8556bb14ce86b44f6693ca401b94d4cfb3f161870562ce73f3e32"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "aa8fa847-22e3-5879-903e-7a9af7431d5e",
+      "source_key": "LEG_NF_478_SEMDATA",
+      "after_hash": "aa4ff49731530b5a0ffec5b629839dd778fa436c7e8a677c0c63af15245eb01f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8801430b-0dec-53f0-a03f-a5f3666b2d17",
+      "source_key": "LEG_NF_479_2025-10-01",
+      "after_hash": "4aef39d05dfebbf840388a7dcdd901e39ff8ced1ca0634a279ff99f7d64af366"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0bf61ec8-cbd0-512d-b02f-f1c0586b3074",
+      "source_key": "LEG_NF_480_SEMDATA",
+      "after_hash": "2aa6ac564ddd874bce2fa09734ecadf845f218a09fa29e8ad8e61c98c2cc8822"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6afcdeec-6874-52a5-beb5-e87dbc4e28f7",
+      "source_key": "LEG_NF_481_SEMDATA",
+      "after_hash": "fdc1c994fbde1b8ef6ceea803ceb975d1dbecd1921848c008a262576cf8663a9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cd2b9156-9fb3-5922-a8c4-4eb64443c3e0",
+      "source_key": "LEG_NF_482_SEMDATA",
+      "after_hash": "ef369c41e9df5e11314c0fd459db2fcc2ddd0a7a7d69ff38eb4beb95acd25132"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "421fa316-edc2-5f5d-8f9b-9d42b035095b",
+      "source_key": "LEG_NF_483_SEMDATA",
+      "after_hash": "46e725a99f8b6d13a3e8f4ad692273ffc5382b9d4555a40fdde279e5498883d7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d8f83600-a748-5629-a0a1-5dfedf505ee1",
+      "source_key": "LEG_NF_484_SEMDATA",
+      "after_hash": "10454bab28e6ef2d0bad2260f884cf33c197983a7492f134663a892ff679c345"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8c96542b-16df-55f4-bc98-6d7e2259e0e6",
+      "source_key": "LEG_NF_485_SEMDATA",
+      "after_hash": "b477c7d03716fac34287e3502c7a4f7b8bf123bb766cd26ef428c5353788f7d7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "7451bddc-abb4-5513-81fc-8b37232ec637",
+      "source_key": "LEG_NF_486_2025-10-14",
+      "after_hash": "2626b6cff4898ab4f6f9eb585992df9d48e4e25342ac78ddeca085f56b22feea"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4447ae56-e0b4-5a56-bef3-02ccb9591237",
+      "source_key": "LEG_NF_488_2025-10-15",
+      "after_hash": "20c1086f660fd4dc8bb2f2738ce1a3e95cadc8152f9b73ce2153ec5294e46515"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5f5eacbc-2a1c-5a77-92a5-10ca3d4f8d53",
+      "source_key": "LEG_NF_489_2025-10-20",
+      "after_hash": "dad5a1a99b3b82b593e883d7ed9cede6a9e38e0372aa7b951af331413a1b897a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1b9c7ace-e961-5b88-bdee-6d8bf9f2d23b",
+      "source_key": "LEG_NF_490_2025-10-21",
+      "after_hash": "23fb832c97ddc2b225ba97c08b9b20b33a8c441793a61d879d580cc8be803e70"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8822925e-5f68-52a3-be45-691541bf0e83",
+      "source_key": "LEG_NF_491_2025-10-23",
+      "after_hash": "728e5c212c7f68a08c4399bd95555e86684f98c3adea1ef391d70c43f598d6b6"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2ffac6e2-3fe2-5023-89d2-5afbbec90d72",
+      "source_key": "LEG_NF_492_2025-10-28",
+      "after_hash": "ef71e4853afea1a4634b594147fa0d3a1b21997b7e3c9f0baa3f93a071694124"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2f01f6b7-2b1d-54a4-a7a9-05b9f9980591",
+      "source_key": "LEG_NF_493_2025-10-28",
+      "after_hash": "41b993e8fd0a4f4d730e6c38aad0dbd09bcd526f24a73fee6173d44cd9566e56"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d4dda028-32d6-5eed-bacb-9eb010f09044",
+      "source_key": "LEG_NF_496_2025-11-03",
+      "after_hash": "3b6ba0fe5bcec8e29623d1d1457033c7fab76f24304158091500f15184972382"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d48683b5-c115-59a3-87d4-1572f6fb1ba5",
+      "source_key": "LEG_NF_497_SEMDATA",
+      "after_hash": "771095fe3db196a46119bb2179608f1cb0feb78f473e043839af6ace58db6f0a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "446186ce-1788-5a6d-80d0-dd790c63ee6f",
+      "source_key": "LEG_NF_498_2025-11-05",
+      "after_hash": "497f7c1101113d29a76ec47ebd338d5bd394045931c93456d15b33f16c0d8b53"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5b30c868-81f2-578c-95ef-31f67fb6785d",
+      "source_key": "LEG_NF_499_2025-11-07",
+      "after_hash": "e3aafb9da3c5a10770a394e8a3815003e7a3070838180298731f80364ec10f7f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1ab29f29-30ba-514b-a180-cab1cea9b1b5",
+      "source_key": "LEG_NF_501_2025-11-07",
+      "after_hash": "32d35b4f272097f299dcdcf9ce71c35b075763a7ca364a971622d3a67457c9c0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "308660f6-d906-56ea-9717-79cefa338d8e",
+      "source_key": "LEG_NF_501_SEMDATA",
+      "after_hash": "8dbbc082a03256462a52a9aca7bf02b42c2832b755e36b5f0df9e0c3bee94f86"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c47b77e8-fb0c-5a38-bd7d-22bcfee5ddb3",
+      "source_key": "LEG_NF_502_2025-11-11",
+      "after_hash": "1df2fcce6054de17b6cc5da5b2380933aac322b7f2bac1b21aa6f067c3975b33"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e1ff67e5-0b74-5833-a71f-cc2d39e43771",
+      "source_key": "LEG_NF_503_2025-11-11",
+      "after_hash": "3dd3b45b9b202a369bbf22006bed5b291cff437c20c7961e777f4068f6fb0ab3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d10b5649-4f6d-5ffb-881f-254ce7dd1218",
+      "source_key": "LEG_NF_504_2025-11-14",
+      "after_hash": "9149fa9c636ffe8c37d56a88b5ad922db7dbc2852d4a50da6d2d47b909f8ed7c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e26a7458-3053-5adc-ba2a-19535955c2e7",
+      "source_key": "LEG_NF_505_2025-11-17",
+      "after_hash": "2b4914cc7c4e1c4411d35e000aa1e4a21f2c9f17c2bc43503b0de29adf6a1d8b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b241ea62-2104-54d5-8a97-39152be6d875",
+      "source_key": "LEG_NF_508_2025-11-25",
+      "after_hash": "7b2020c97359ffe7ca18f3ab7d223f4b42c388c440c2006792558ecc6aef711c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d006b48a-bd03-53e8-b720-478d1944857c",
+      "source_key": "LEG_NF_514_2025-12-05",
+      "after_hash": "6bc1b89da8375bf6eb90e8262410b81ff938c9419e140bbf9d6cb81ddf621997"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "39f2ad31-239b-59c6-85cf-9abfdf8f15bd",
+      "source_key": "LEG_NF_515_2025-12-05",
+      "after_hash": "cc24ab7e10ceb4338a5de0d0d92af431a20719ab946817f971433eedcaa7313f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b8cdaaa4-da24-5b78-847e-64b347820b2e",
+      "source_key": "LEG_NF_515_SEMDATA",
+      "after_hash": "35b1f25719ad80c71af9aeaf62c96ff455f3e244cc5ca534a0ba51dc8c335141"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8f3b20b9-3da3-53d5-9074-485d9c550aea",
+      "source_key": "LEG_NF_516_2025-12-05",
+      "after_hash": "1f5a860caf4638bf1c168af8add2ee6e11ec1fb0a84a2e15aeaa716364be438c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f0798c5d-0610-567c-9900-c05d4a05ecec",
+      "source_key": "LEG_NF_519_2025-12-09",
+      "after_hash": "248a44d288acb8d70881e74c15159774dd653d19ac73bb60305a26efa958991e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "fa5a5969-2a59-5d27-8ebc-bc8182d781c3",
+      "source_key": "LEG_NF_520_2025-12-09",
+      "after_hash": "01533d053207162ec06eb52e0841935a7fc58a1cab5c05a4b17606b75b8ebd41"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e6726226-c1ec-5bc7-8058-3254dd8e4145",
+      "source_key": "LEG_NF_521_SEMDATA",
+      "after_hash": "a00a992c7e0c1369bb995d53a37adbb69d97405c27a556150b74f2c551f5c5bb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cb7b92c3-81f8-5bbf-a851-c24d72e86dcd",
+      "source_key": "LEG_NF_522_SEMDATA",
+      "after_hash": "ffa2d35471bb38c5c1019575332093fdfa3b3be46e23c1a2886386cb83a66b3b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6a546034-51f8-547f-af81-96a1e8ea1772",
+      "source_key": "LEG_NF_523_SEMDATA",
+      "after_hash": "44a0de0a8c18ba35c0a6eeb0ab92a813cca07b6a62f4480ec0fddaa55d34f08d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "88b1f994-1978-54c2-a9ee-55fa484ec4af",
+      "source_key": "LEG_NF_524_2025-12-12",
+      "after_hash": "dfdd177c896fe3613781dab6c65052847268bc5f2a37dcb298a5b82977e40026"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "96b64cab-b439-5ce1-9ff9-341f3be4ca7c",
+      "source_key": "LEG_NF_525_2025-12-15",
+      "after_hash": "27f4348a9bd36af8a4eb6c9a7a014a904ea52e5185e69aec4a4102c03e761bb1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9a221eb6-1ab0-503b-86e7-485f3927f468",
+      "source_key": "LEG_NF_526_2025-12-15",
+      "after_hash": "c99d4a34584a05a06b5db81c8d68f73b9fc9cbf8bee3a38aa4807c5d51d32e56"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "700c9d6e-9710-5c0a-b3b6-2d545a61c46b",
+      "source_key": "LEG_NF_528_SEMDATA",
+      "after_hash": "890a55f6ec52f23a34d7626471106f98255ce5b5c6f527892c9424b3c670a9bc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b5222f1b-21be-561b-9a0c-1c784d1fa02a",
+      "source_key": "LEG_NF_529_SEMDATA",
+      "after_hash": "205432cc6954dcdfb0c337efe539c3c2ce1d1f96d02ab0f5d304b70b7776a4d1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6a3d3959-f913-50d7-a09c-070609080cf4",
+      "source_key": "LEG_NF_530_SEMDATA",
+      "after_hash": "fcdbbdc4b1e8f52782a4571ded85e2b890acc41ee5c50bb691ae8ce3e83d8d1a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e71be0c0-2112-5c0a-8ed7-c983386fb5be",
+      "source_key": "LEG_NF_531_SEMDATA",
+      "after_hash": "820abef1fc0249c644d1a7ac098937e36879a88a5701f5f11104588397a2a853"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cec42d59-3db3-50bc-90af-95b6832ed876",
+      "source_key": "LEG_NF_532_SEMDATA",
+      "after_hash": "8cf00007ea1e2837cc76d32107f50058d55310bf08ac28b55873c362d9d685c2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4760e8df-26ae-5184-b485-a59cbbf0f5b9",
+      "source_key": "LEG_NF_533_SEMDATA",
+      "after_hash": "06e60961bc28affcde2b30022e637c5f177cbd3e0ed98f87c479e5d8ff0e3ee2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "33e20c8e-0439-52b2-b4e4-00f4c4b8012f",
+      "source_key": "LEG_NF_534_SEMDATA",
+      "after_hash": "04e34b7917d6448820948e326fd8cac6256a981779b8882cf16ab51c18dd5e2a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "3174517d-05d5-504b-ab1e-d80a7389f913",
+      "source_key": "LEG_NF_535_SEMDATA",
+      "after_hash": "6c5f2b7989c8322903aee7fa207eda960215e0a08e8b41f60762de13b2e1b42b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "260b2794-e11c-50c3-b9ec-f584ef02cd07",
+      "source_key": "LEG_NF_536_SEMDATA",
+      "after_hash": "e7e9d789864507c82b1b601ecbc68da011d26c19c00de37c8e83f3c56044c365"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1096abb9-15dd-59b4-b191-20c80cc430cd",
+      "source_key": "LEG_NF_537_SEMDATA",
+      "after_hash": "f56e593d96adc4627a39fa8c2f902f029629f67b4b84e6d328a863f02cd31538"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f5e386ee-880e-5d83-a708-a166ae86e975",
+      "source_key": "LEG_NF_538_SEMDATA",
+      "after_hash": "4f62c515f017b81d2db6e5674384a80b831ab2d1f5f85cea29029dc7e1467367"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "227e0d2a-edd6-5ed7-be4a-165a4bfbc732",
+      "source_key": "LEG_NF_541_SEMDATA",
+      "after_hash": "892197fc8d71debb6d2892837d424f7d95ed87a4227542fed69d64e0031344ab"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "55f90ccb-f8ae-5b62-9605-4507a411ae2e",
+      "source_key": "LEG_NF_542_SEMDATA",
+      "after_hash": "b6f6b8526ff598dcd6796c180690e953d0d021d57b46b498a18116364277f259"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c6101099-c4d2-5553-a65d-8de989b5d680",
+      "source_key": "LEG_NF_543_SEMDATA",
+      "after_hash": "6b3594bf9ca316a01dd23ddae4984da10848a4651836533062dd82c46ece7c95"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "7345eb8d-bdd0-59ad-bb19-d34f9beaa097",
+      "source_key": "LEG_NF_545_SEMDATA",
+      "after_hash": "3399180c1850204a8f1183bd8cabe51981e734f395c11b87675b2dc192919cdb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b13d28cf-59c0-5457-ac17-16367103649b",
+      "source_key": "LEG_NF_546_SEMDATA",
+      "after_hash": "8d0a23aa409ab95375b9e999e30ef50569eb2aa6f7c22028591edb56c351a8d7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f0f21454-55d2-5160-bac3-e68a38340c13",
+      "source_key": "LEG_NF_547_SEMDATA",
+      "after_hash": "57b53493f89d1f7004efc5b193e11b672f0eece9c0749c103471f6e56bce192a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "132b5f1d-30e2-53b9-a0a0-b04a85e136db",
+      "source_key": "LEG_NF_548_SEMDATA",
+      "after_hash": "41bc3a39a09cc6bbd6ebdaf00099724b08f6f6bceb5e1ec990c9a366474a3df2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "08e36176-669f-5e34-8458-9893608edc3e",
+      "source_key": "LEG_NF_551_SEMDATA",
+      "after_hash": "4bc53783a53a760243408b970882fb0600b311c0f62ed1c7e7f032434d2cc31f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "70d8f1a0-ec96-5d5e-8319-63531e51abf0",
+      "source_key": "LEG_NF_553_SEMDATA",
+      "after_hash": "4979a95e8277a4b39e160d83fddadbebb311895bbeb58f2fa865136c042628cc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b9af2702-a2b5-5278-86cc-55a08775cc46",
+      "source_key": "LEG_NF_554_SEMDATA",
+      "after_hash": "b7565debebf307239b2236279398d977a23751d21f5fa68f13807f8a50aef778"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "19f2c834-76d4-5683-8080-a3e4e7ca61bf",
+      "source_key": "LEG_NF_555_SEMDATA",
+      "after_hash": "0e412e4d85cce09a593530f8e1ba461b994b6295f2fcafcfd38acdf9fd2dbc48"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "47b13608-56a0-5c02-b532-875d86ecb9d7",
+      "source_key": "LEG_NF_556_SEMDATA",
+      "after_hash": "cf1bcb2a843df9a42d4e24e7ba1026ad10ad5f6c72fe949a5e2883715d30d096"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5b18e08a-d73e-5a72-b374-c36109d3f5d7",
+      "source_key": "LEG_NF_557_SEMDATA",
+      "after_hash": "d41e06f188e17236bd24f2b881504f197d92ba90f6037799aa9aeaa54d1682e7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "728f70c7-a187-566e-a19a-b992b3d5f84d",
+      "source_key": "LEG_NF_559_SEMDATA",
+      "after_hash": "0c9c40d6acb7130df1acb764307106423dd6b920ea01be21fb1e4d2b5aaa1abc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e05b6fef-db5e-5db7-9829-3c1236bf4cf2",
+      "source_key": "LEG_NF_561_SEMDATA",
+      "after_hash": "f084ac16a12df6e666d7fc87469eab066041a71d40f6411446a52d2a5767d913"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "73abf552-0b84-56fb-b403-a7cb9be5f735",
+      "source_key": "LEG_NF_562_SEMDATA",
+      "after_hash": "0429b4c9df8501471bc255ddf2e5788c6af7c43c190ed3d8a3977d02d306fc5b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "36b1f003-579a-56b9-be1f-0307f53a4a5c",
+      "source_key": "LEG_NF_563_SEMDATA",
+      "after_hash": "870f0f72be7c6a03ef0ace30d94b602eaa9866ad99e5e077b68e98dc7003fead"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "53bfdc86-0c04-59a9-ad58-fd1d2b30ae3c",
+      "source_key": "LEG_NF_565_SEMDATA",
+      "after_hash": "6819e3dbe4e7d7da8408f2946a818fc4cebbfd40b6236c75c32462fd4c0a4fca"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "36479bd0-37bf-503b-875c-29637f9eb5bb",
+      "source_key": "LEG_NF_566_SEMDATA",
+      "after_hash": "fb03b6946cc5dc7be27048af53d6aa80b87d702660be687c8cc0b0836dace29c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9e8a3a41-bc05-5766-af4e-c90c2334c35d",
+      "source_key": "LEG_NF_567_SEMDATA",
+      "after_hash": "1770838af8b975bf0146069d85ed053e7ec21d547b93ce431c495f9c6c706662"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "468f7077-0d0a-5e6e-aafa-f289cc8d5976",
+      "source_key": "LEG_NF_568_SEMDATA",
+      "after_hash": "090e0e0033099c083c17221e764031440cf56e4ad98fa3890330d62bdd5e9112"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1a8f6490-401b-5ea6-85b4-e126b01ccdc8",
+      "source_key": "LEG_NF_570_SEMDATA",
+      "after_hash": "cd5ff1d0616d194877c8219c4f4cb5ace0b74ce5561d4661c047068439f0834d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "df19abb9-147a-5ba1-bdb6-5faeb387fc32",
+      "source_key": "LEG_NF_572_SEMDATA",
+      "after_hash": "e5248655383210fcf2580b5503f4af581c57514018ddcd7f9fb3cb49b986ca37"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5cc014c2-7d4c-592d-a2ac-4c8ee67bf612",
+      "source_key": "LEG_NF_573_SEMDATA",
+      "after_hash": "da4bcac70d0adfd4675b5b4dcadc9bf9b93f16d0c3ec060a23d7dd9ee5bd2385"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "61f32342-6af4-5f96-923f-67d44c9fc826",
+      "source_key": "LEG_NF_575_SEMDATA",
+      "after_hash": "1c2f6ad1e0302be1f1a94b5867d6344bdd5f25ee5a671ed93d49296930d77af7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d4196f25-bd3a-5cec-b64a-a6f497f1331a",
+      "source_key": "LEG_NF_576_SEMDATA",
+      "after_hash": "45ec302d79dbf09986f69af4ffba4b736a9a77478923dd1e91d191de020fd2c9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c4c9dd5f-fdfd-5d0d-9ebc-a7a5f4502551",
+      "source_key": "LEG_NF_577_SEMDATA",
+      "after_hash": "242a49144595c9cc69e4a4ca684cdc15ff98c87233ccd71801fa4d54490814c3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9805fc46-1e97-5d5d-ba58-7e80dd06bdaa",
+      "source_key": "LEG_NF_578_SEMDATA",
+      "after_hash": "24ca3a3428a85a40e3dbdf925e290b04b81f852c258a25f86820f9d380ed33bb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d93afc8a-aa09-5542-9794-514986061124",
+      "source_key": "LEG_NF_579_SEMDATA",
+      "after_hash": "b2511011612e890e9fe6a26c0d5c0035c7ba4637d873964192081daa431ceb3f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0806c1a2-d092-5c59-8e0d-ac2407280f06",
+      "source_key": "LEG_NF_581_SEMDATA",
+      "after_hash": "0e4ed890a6ae4a3e87c68ad3c05284a3dc1b65af167b63ebb87a8d53c188d468"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0ce304be-84d3-512a-94de-f8159ddbdb01",
+      "source_key": "LEG_NF_583_SEMDATA",
+      "after_hash": "c2e4589ef88c192e7ddc360e11102fd36d49926ccbce0e0819ba82a6b9b25a8e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "58ae7337-7dfe-506e-a275-552d726176b1",
+      "source_key": "LEG_NF_584_SEMDATA",
+      "after_hash": "4ad626b2294a7c31aa08178119b9dd17424e85a89da6d983b94f61ce63e4f2d6"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "54e1e4cc-8532-545f-b277-b246e5cca4f6",
+      "source_key": "LEG_NF_586_SEMDATA",
+      "after_hash": "b9ef1bd927a64e1487f559dedc4d4c89d6c75219b754a29587259e368fade03c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cade53fe-1bfa-5a87-a306-82039e160c20",
+      "source_key": "LEG_NF_587_SEMDATA",
+      "after_hash": "360488a37f71cbd2a530bbb71c74d0b1f4944c09cea6a0f8d194cff82f8f812f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "77a96196-54ab-5fe1-9d1e-a8417327b4e9",
+      "source_key": "LEG_NF_589_SEMDATA",
+      "after_hash": "51f8451031b0f4fc3f1fe5ddc43468cd7c95f7e75555810f8c569f4a8d008462"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4ef2036a-cc6d-55ff-a13a-2c631768562c",
+      "source_key": "LEG_NF_590_SEMDATA",
+      "after_hash": "449de8673f26e181a46464683bdd641c09ed51eb554ff7f88bff6c21244cc228"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2c1a6c7a-3cd5-505b-a923-6ba3cf7c69cf",
+      "source_key": "LEG_NF_591_SEMDATA",
+      "after_hash": "38ba41ff663fb4406f020896a35a7a3806344dba8d042d367bfc0cc47fc735bd"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ff229858-3f6b-5771-ade8-ef3f139ac1dd",
+      "source_key": "LEG_NF_595_SEMDATA",
+      "after_hash": "cc035620ba16e0bc5e6384c0421b3100f248881315d188c009bd9325405c3fc1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ec7f04b6-15be-568b-8bca-d0c288c7f0ac",
+      "source_key": "LEG_NF_596_SEMDATA",
+      "after_hash": "8ca4021d512f3eb0fab1cdc8fc7852d7ac8d9d9fd9675ac6809c72c6cda4c621"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1e6d0538-9b0b-5601-8cb9-283324c8853e",
+      "source_key": "LEG_NF_597_SEMDATA",
+      "after_hash": "234d4466ea8478ab7e22c90a851f9ec09f9c876c803db1ea886ad20fbcff49a6"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "67df7062-887d-578f-9aab-69bdbb2ff32c",
+      "source_key": "LEG_NF_599_SEMDATA",
+      "after_hash": "9222e2d2b067b1e1d5059bb7c741fcfa6e2dbf4ab6adf8e972e4396ae83f9ffb"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b474c0ea-78d8-5278-b24d-275f831a6459",
+      "source_key": "LEG_NF_600_SEMDATA",
+      "after_hash": "53b8a056e40e7e81e363ba32a7fe7b18cb98c97fa1f8901ff0f54983010e12d8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "64e631ca-0fd9-5f3c-80f5-9d06b46bb65e",
+      "source_key": "LEG_NF_602_SEMDATA",
+      "after_hash": "0cd57dd03f56e38aa4f98dc0459a92ee7181f300557b5cd28a2aab9dc3f1d0a8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ffeeabdb-33aa-5a15-808b-017683067828",
+      "source_key": "LEG_NF_604_SEMDATA",
+      "after_hash": "5edc89549e12cbd6ff9e618233c3ce2868835ae88558fbc476c84da509dde2ca"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b17cdb5a-ea96-5279-9e74-68f90d212f9d",
+      "source_key": "LEG_NF_612_SEMDATA",
+      "after_hash": "782df55f5ab6f158c353ba4877226cea36d9d8b6cfff627ebb7edf513df49480"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "3ebcc306-293d-593e-8699-fb024d0611fb",
+      "source_key": "LEG_NF_613_SEMDATA",
+      "after_hash": "e7b862576cf6d16a9687bc01de392718adae47426ab74d7794029b043c7fffc1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f712cbbb-be78-5ae7-aa2c-6653b96078bd",
+      "source_key": "LEG_NF_619_2026-05-13",
+      "after_hash": "3695bd5aa509a7e391f5f87c6869644c4f0bc4c47fe1e358725319d048d0d0d0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d1879ead-6758-5370-95e0-e23b07609a1d",
+      "source_key": "LEG_NF_620_SEMDATA",
+      "after_hash": "d461cff7d9c43fc9f3f983205d61f38557050b70dc6845ea3d957e392be6a9c1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8b00ff19-a018-58f8-9f88-7641136624e1",
+      "source_key": "LEG_NF_621_SEMDATA",
+      "after_hash": "bd88c74b56e977447a5c429ab015079bec3b1801a658107f7a5413e5711890db"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f8eaf1c2-6806-5418-a71e-d5b6a9211093",
+      "source_key": "LEG_NF_625_2026-05-19",
+      "after_hash": "4d309999ad4371bbe9265bc80c3a878871db3fbffeea797cd558e3b93c401f21"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1ac5b410-ae95-5762-9a79-42e35bb7022e",
+      "source_key": "LEG_NF_627_2026-05-19",
+      "after_hash": "a90354e28b4f36c981050cf6f41fa2f94ee9a5e9dfd1deecc8db516a3f973d77"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "b0c0e065-3c4c-5f52-8926-1f1d6cc6db67",
+      "source_key": "LEG_NF_628_2026-05-21",
+      "after_hash": "89b3f99e636c4c592008afbea1ccd3a2b0b06c62c03a692dc323c1a9440e5d4e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "26433fb1-3104-5393-af4c-7e44d6b5167c",
+      "source_key": "LEG_NF_630_SEMDATA",
+      "after_hash": "8eca0bbade53eebce2d769393fc5529fd0cd81a2b29ec59c57d0f9844b4d9a70"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "51fed604-9a0c-569a-bd31-ef05b424fae4",
+      "source_key": "LEG_NF_631_SEMDATA",
+      "after_hash": "1871f1fc95e52e648a3b7ab0f1c2628491f6fcdb840bf2cd3c4d7b891cc34337"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "fd31b143-36c6-5294-9255-aac4638e7115",
+      "source_key": "LEG_NF_632_SEMDATA",
+      "after_hash": "9885042c5e4dea414e45809c06120f43a3a9b1a9244f4ceab49934218b04e6db"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1c64c896-4ad1-5337-a8e0-ce0040e066d2",
+      "source_key": "LEG_NF_633_SEMDATA",
+      "after_hash": "7d1608e501d67c04637c2af3b03a4c65281d47ab9cb44e66f2dec2f5486f2277"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6f425af8-6198-5c58-b5bd-2ef386b164e4",
+      "source_key": "LEG_NF_634_SEMDATA",
+      "after_hash": "42570cc8e43185ce9b5c31863e506de802307f6b74357b19d5a89d97c595e3bf"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "70457aba-e5f8-5c54-ae8f-61f69fa0a958",
+      "source_key": "LEG_NF_635_2026-06-02",
+      "after_hash": "8a6ed059adef60637997e989c152635df8f5bba7dd8941b6e182c190ca62bfdf"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e8a01f6c-09b3-5575-a89f-4027355052a4",
+      "source_key": "LEG_NF_636_2026-05-27",
+      "after_hash": "d501b820a3a6f452498f8c4dce730957c3b50045dbd111241c6dbb73613958d0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "79d96f6a-d865-5067-8d4d-3dd6da989f87",
+      "source_key": "LEG_NF_636_637_2026-05-27",
+      "after_hash": "4bc7020b0266634cbf0f5a8bed90223a15a36f9c8cc9698d250175b49a804f85"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8a3ce727-f33c-5c13-8a5a-c8b03f6fe1d0",
+      "source_key": "LEG_NF_638_SEMDATA",
+      "after_hash": "5193be7019d32a68fe96f31827b08fa3687fe307c19cb7127a124638275b829f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e21d1d4e-bf7f-5980-8e10-fe38aa1f0bff",
+      "source_key": "LEG_NF_639_2026-05-28",
+      "after_hash": "702b3e34aa69bae918a991d4a6fb69008140a3c3388f34004c05cb7657d5819d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a94c0f37-6db5-5214-8c00-1b03136cd0c7",
+      "source_key": "LEG_NF_640_SEMDATA",
+      "after_hash": "57314e39907084010c8876dc74651806d738de0432b2ba3fdd32e5b0e99a94e7"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ccb0e7e0-e197-53b3-838e-0087eccb48ac",
+      "source_key": "LEG_NF_643_2026-06-01",
+      "after_hash": "40dd769bb5deeae39d05402f775ec6c486e09883269172fd8c6546778386289f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1d89ccc1-c81d-51d1-9453-311f4152b917",
+      "source_key": "LEG_NF_643_SEMDATA",
+      "after_hash": "a0bc4eaf8fc936a4123fe895a6c383ec92d3e6d58f03a244c5f9929223fdf5d0"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "35a4e7ee-1b59-5ff5-a072-c5a8497a768b",
+      "source_key": "LEG_NF_644_SEMDATA",
+      "after_hash": "9905afa19eae824f9c40f28844b732a8d4c59b053e75c28e0a6c036576ef34bf"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "40411ad2-fa3a-5a7c-935a-0277e2adca39",
+      "source_key": "LEG_NF_648_SEMDATA",
+      "after_hash": "854a91e86c41bcc1f39611018e351f7a92f9e0f8ff692f3807b5909c7f865a87"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c9ba0e14-3d48-58f5-9507-2b7f07165a78",
+      "source_key": "LEG_NF_650_SEMDATA",
+      "after_hash": "dbb247b498b28e04fe96a2886b18ae1493cb4b2206a0418592a1196289d58e46"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "574464ac-e745-5a00-8eab-1d522d922fd2",
+      "source_key": "LEG_NF_651_SEMDATA",
+      "after_hash": "e3327eff0d1b9a5866de36f5358dcafa6e2cd33851e540b3bb27bd293385ac2a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "d2bdc3dd-be4a-5bef-ad6d-e081d84e544e",
+      "source_key": "LEG_NF_652_SEMDATA",
+      "after_hash": "114f489b4ce6bed0b861183545221834b56eed281cc6929d558aca38bb8943c1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "dd587adf-447a-5ee9-b3b4-7aa44bd8c9c0",
+      "source_key": "LEG_NF_653_SEMDATA",
+      "after_hash": "ea4ad4b463e2c658b09bca6efc7c7a9ca31930c3d169a54380e5e78ae1d6e4a9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "47dc7ae9-f009-5ace-b02f-605c10d0b726",
+      "source_key": "LEG_NF_655_SEMDATA",
+      "after_hash": "add918840a66b1363e6cf9683ae9a76824111839d033732a4eb2f660875f6765"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5ea74f0c-81a6-5c86-8e94-8eb93a8a120a",
+      "source_key": "LEG_NF_657_SEMDATA",
+      "after_hash": "52279b6413241ad3a3eff5bc6424ddb7b275374c823c9684ab113c190e7d18fc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "de9f675c-0ae5-5a06-9aeb-bf5a6e357273",
+      "source_key": "LEG_NF_658_SEMDATA",
+      "after_hash": "1ca4e712283dbc78905d0483c21c3e04d34586f0ebc2568da70d72a8ac618d46"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "bd0fb4e6-6945-5b06-ad6f-0444d32525bf",
+      "source_key": "LEG_NF_659_SEMDATA",
+      "after_hash": "223284ef158b8f84d9d9817458d954018e34657f4cffac2a2eefdae591384c8a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4d2fa394-a501-5c79-8585-203d2ca16e51",
+      "source_key": "LEG_NF_660_2026-06-05",
+      "after_hash": "05ef638eabe80602bcd398f237ec59b8b7bdc7ae7bb4060f81108a0fb343164d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ff7b3905-6bcf-5a70-8924-e5aab1bfec00",
+      "source_key": "LEG_NF_660_SEMDATA",
+      "after_hash": "f1a203512d0754174973e53f92386436f9edc3af50ed63e61eaa266be47d456f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "846e351f-14b6-524d-9f04-812f913f0cae",
+      "source_key": "LEG_NF_663_SEMDATA",
+      "after_hash": "ff93cd1b2fb84929d2cfd1217a44f990e95b8da8d26bad7313133bda5fb72e8e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "921f508d-bf6a-530b-bd96-90df2b7bc91c",
+      "source_key": "LEG_NF_664_2026-06-15",
+      "after_hash": "4ad4f24cc5d4549a70106a6037c78aedd632357cc47d1b457e0e0cc4fdecf562"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "bb9e63ff-da96-578c-9f93-bf4467f1de30",
+      "source_key": "LEG_NF_665_2026-06-15",
+      "after_hash": "d6e110032fe454c17bb851061ab6d420cf78f55f0199ee73df3b706996367ba2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "08912303-ea09-5e0e-807a-ca2152731793",
+      "source_key": "LEG_NF_666_2026-06-15",
+      "after_hash": "c197e6200a42168968418518a4e346da893878be443778a14d7710cbf7d8efa2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8130421c-4a16-5894-a984-cab00122f5c0",
+      "source_key": "LEG_NF_668_2026-06-16",
+      "after_hash": "61cc5eb253c97318722dac5af3799f74b0d1a6153f60a2442fe0e180f5311f3c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "060575dd-cd66-5097-a3ef-e10fab263802",
+      "source_key": "LEG_NF_669_2026-06-16",
+      "after_hash": "f9e9882c8505de5e1b8906aad6ee49379b3a95707d05a48a7e9e8390250e187d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1f4229ea-ac6d-5ba6-8ce0-cf35ec8bd02c",
+      "source_key": "LEG_NF_670_2026-06-16",
+      "after_hash": "6b50b189f427f1fd89f19892ea0f92b5ba0580cab34f06845bd07bfa0772488a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "fb1c63c1-7f5d-56d4-9b6f-31bdab0bac31",
+      "source_key": "LEG_NF_671_SEMDATA",
+      "after_hash": "d656a6e1460ca507332075777abe4daac9321800f8c876664b93a9995ec50719"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "67c11867-0a64-5bbf-96bc-4e43b7be1c3b",
+      "source_key": "LEG_NF_672_SEMDATA",
+      "after_hash": "7223d2d2b5040c113783c62b1d32791511378a9aa3aa6de49066a2d9609ddb3c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "571a0a20-ce24-55ec-8654-e4ed1275d5b9",
+      "source_key": "LEG_NF_674_SEMDATA",
+      "after_hash": "e94c9cd99131ebaa6032b5dfc58955141bfeec7882b7032a60422e90d950027f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1ac7e4ca-bd88-58ec-9547-339e1ea84d42",
+      "source_key": "LEG_NF_676_2026-06-24",
+      "after_hash": "94ad157ee249dc28161ec2c6583d2bb8577b71e5a2e77f015b26bf2eda844b5a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "3d1f8587-3484-5015-b101-3aa365155266",
+      "source_key": "LEG_NF_677_2026-06-24",
+      "after_hash": "4b786d10da0f6332da29a4d79cd807c7f57a4326725ae07b38d241423a0752d5"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e1153ba7-50d1-5d5e-9d8a-1bf7f492837e",
+      "source_key": "LEG_NF_678_SEMDATA",
+      "after_hash": "94a94c711b74d1878fe3aa508067a7125b6ce7170d5edc258f514c22a7cd3110"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "55441de1-0837-53cf-a574-f6e3fa5994b2",
+      "source_key": "LEG_NF_679_SEMDATA",
+      "after_hash": "305db4e7f0e7e04d90291fbaf2e2ee7e25b40c92ff67c4b794f1836d1b381979"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "852dfdcf-b9cb-5dfd-ac50-7b54fecb3746",
+      "source_key": "LEG_NF_680_681_SEMDATA",
+      "after_hash": "ff7284d9b974a1a56f85e8e7f08365d0f65f169213767fc0a1b4a1addf992cf3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "13bf0809-4155-5d25-9a8c-c623f56bbceb",
+      "source_key": "LEG_NF_682_SEMDATA",
+      "after_hash": "ef1bda555d221a5e9b411e0dda34f4c56b67a16795fc9f2f5765032df7500f73"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "df2343fa-cb29-5277-a315-9b3377d05f77",
+      "source_key": "LEG_NF_683_SEMDATA",
+      "after_hash": "1969c538dd70aaec5bd1105eeba7df03be2897741c88458f09ef97c1a07e17a2"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "bfb67dbb-e5a7-5698-b976-e80af7813438",
+      "source_key": "LEG_NF_684_SEMDATA",
+      "after_hash": "1aab1a7c2b998f597b2c0eab2d5462852c90b3547ecac996436bb6fdcb3a0817"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "cb113aeb-b010-5550-b625-001ba50b0930",
+      "source_key": "LEG_NF_686_2026-06-30",
+      "after_hash": "c88870f7066bff291c273784a14608a35f43da287ecb122ba81878122bc3ba23"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8e526614-cc64-5c1c-ae85-d4c07570ce28",
+      "source_key": "LEG_NF_687_2026-06-30",
+      "after_hash": "c17d582a64cf738f66bbe5b1dc06cdc2fb93deb3ab6f63f569e034e30ec47fd4"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "56a05e38-11d8-5c45-ae74-98740f7d264a",
+      "source_key": "LEG_NF_688_LALAMOVE_SEMDATA",
+      "after_hash": "774f466089c81debeec0620d961b84610a146e50a1726173a44ce47cdfd564b9"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "beaf1fd5-031e-5bc7-b1a3-34846508c432",
+      "source_key": "LEG_NF_689_SEMDATA",
+      "after_hash": "3a920ed92c249ae1a17acd27a55c90e8cb7e4ad4e352be2eccb34accde6fa8fa"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "164498ca-df39-580f-86e6-f7a33f3228fd",
+      "source_key": "LEG_NF_690_SEMDATA",
+      "after_hash": "902a99398849faf0b01abaffb81a87efbd21527ddc78fdee19389d09f223ecfd"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "59c91651-e64b-5b07-8a45-90e121bf7846",
+      "source_key": "LEG_NF_691_SEMDATA",
+      "after_hash": "78ac0ee543b9196c7705529a93ccbc544389cef522c91633f78b1aac8d50fc49"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1f80b85c-4ba9-528c-9b44-54d6726b44a4",
+      "source_key": "LEG_NF_692_SEMDATA",
+      "after_hash": "2f740e395e14170fa308a4c7171b46555a46f1dce6a28d37e9c00c03c259256b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "09657b30-a875-5239-8325-d97c02df3876",
+      "source_key": "LEG_NF_693_SEMDATA",
+      "after_hash": "e9ad8709e19f9c25489df6cb8f2b69b64530bd4025e3a71e34707cd29397827b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2ba4059b-80ac-514c-b595-6ebf7800fc1d",
+      "source_key": "LEG_NF_694_2026-07-01",
+      "after_hash": "193a019899f493dafe268aa4e2383ba76dbf532202cc0ee12569cbd937ee4ea1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "92158db4-98b6-5ba9-b7b5-74a4a98753c1",
+      "source_key": "LEG_NF_694_2026-07-03",
+      "after_hash": "99a00dd725b67f2267bb427ad2a2a1a0eebd622175b87f06224112706aaf1584"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a34c0dd0-aa57-5310-bfd9-97da658f9955",
+      "source_key": "LEG_NF_695_SEMDATA",
+      "after_hash": "e2879e1a37704aee7333ec4fb85fca8c76599c50464c5d96e2cdb4a64e461c4a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f687318d-e94d-5e78-a039-75cbadf8073c",
+      "source_key": "LEG_NF_696_SEMDATA",
+      "after_hash": "1eccc16b772a0d41159678fe5d12ed0ecc3da1d3c83986c1ba8f19a91e824e5a"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6ca2b429-02c6-5959-bec0-d34a0305c786",
+      "source_key": "LEG_NF_697_2026-07-03",
+      "after_hash": "d5001356b8ccc8d9c61f0ac561a0ad97d4014357fcdad79fbdff00f483873642"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "25bf77ab-b443-575c-a867-a61e1021f530",
+      "source_key": "LEG_NF_698_SEMDATA",
+      "after_hash": "af67a1c5ee5c7a72ab6a21ee9053249010054ea6e1e33a64f0db830bd01b9494"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c8adfd88-3e3b-5698-b5ea-cadd6141dcf5",
+      "source_key": "LEG_NF_700_2026-07-03",
+      "after_hash": "b57320f8ca36528c5d84b437ebacb0b4b0e200c5606c65fe537654e433843c8c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a58f4437-f33a-5e36-ab7d-ff7e823da3d4",
+      "source_key": "LEG_NF_701_2026-07-03",
+      "after_hash": "76227ded33c461b08fd451a7ccead9a554e4ff91464346297fcf9f5a5f807451"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1cdf7cf5-7e92-5275-a9f1-6965d5649c8c",
+      "source_key": "LEG_NF_702_SEMDATA",
+      "after_hash": "bb2e838280f1b39a709f74edb07b083873f216d7192073219e82c9d0c8761779"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "32597f53-e2b9-5452-a1fe-53520dd5b473",
+      "source_key": "LEG_NF_703_SEMDATA",
+      "after_hash": "515bb858b0c9ded2bd2fd4a6d6950d0246780b0987bcb1088c5b1d32a01bb7bc"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "9f22762a-d009-5800-a372-e4de616a6c42",
+      "source_key": "LEG_NF_704_2026-07-08",
+      "after_hash": "68041a8102cc050c9c2a783c1cdfc349a123134a4910fe3f65820cae1e84ff67"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c5302e82-044c-5ea2-9347-2c10e2eb2a1e",
+      "source_key": "LEG_NF_705_2026-07-08",
+      "after_hash": "5236219638121b51307eb48fc86ed73ca723c1d128f9386661055157b13c1f5c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f54bc780-a4bf-535d-babf-ad416c0857e2",
+      "source_key": "LEG_NF_706_2026-07-08",
+      "after_hash": "4672c1bced171476973bdf40cfc2f5f02f62f6f40039b5604068b0633401cae1"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "36e2ae94-84e1-5103-8422-40bd619976bb",
+      "source_key": "LEG_NF_707_2026-07-10",
+      "after_hash": "255f812f40dd499dcea1f7dde02f2d72be2a54fc70fac1092e3c1a621b0e3007"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "227581db-7b6a-5c81-8c77-b512d30bb45d",
+      "source_key": "LEG_NF_708_2026-07-10",
+      "after_hash": "fcc582aa8ada1b5208904ff6a41d71fc70844ba9ec241bf895b64f4c19acdf26"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "a75d2f4e-7924-5615-b657-d87c457e4d17",
+      "source_key": "LEG_NF_709_2026-07-14",
+      "after_hash": "abc09e1ace80d66d43138e0b14032ffe1cdaed71592326427c11ed7ff530d2ce"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "398b1b09-965c-5eb9-8280-44c7b228bcbf",
+      "source_key": "LEG_NF_710_2026-07-14",
+      "after_hash": "9785bbf3e58bf188111508972c795ed47c18eeff0f07113f2f1306744f76414e"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "c9789dc4-e3d3-502f-aa80-fb40ae078f16",
+      "source_key": "LEG_NF_711_2026-07-14",
+      "after_hash": "703220a915f8b461a3d0f7c19135a64c1b01b14e2e021dda1142c03b6052118d"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4849e1ba-675e-5a01-9ac3-101bc181640f",
+      "source_key": "LEG_NF_712_2026-07-14",
+      "after_hash": "de24a99f8946494fc9ed11633c3b0ad9d5f61d207044c202e42d2715207af757"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "4f6c1206-94c3-555c-9f6d-59e8e93a9595",
+      "source_key": "LEG_NF_713_2026-07-16",
+      "after_hash": "d09bdcd551cd45ded12409ac9f1337833a30424e8a29818100ebb7ac1a95cf9f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "0bc61642-38ba-5a33-9c7e-8d3831009840",
+      "source_key": "LEG_NF_714_2026-07-16",
+      "after_hash": "651d21ed7bdd46e14fff25a13a81fc1e5d1ef2b8f20244e40d3adc39a506141f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "6c4843bb-8bc0-58eb-9bd8-cd5eeda9c121",
+      "source_key": "LEG_NF_715_2026-07-15",
+      "after_hash": "282f6cf7c553a6ce841915590430be93b8c01272dea8d3c449dcd2d05eee0c36"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8ec57d77-d2c9-5718-87f6-89b21c73c938",
+      "source_key": "LEG_NF_718_2026-07-20",
+      "after_hash": "fea4e7e4e85db0f5831a0b1d8b33388fcce58a70df88e7e5703a2a02927c3a45"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "85ac5c7f-3979-5dd3-ba81-9f50432c0740",
+      "source_key": "LEG_NF_719_2026-07-20",
+      "after_hash": "5b5db31ba93ce38fbcb60013377fefee247e4871beed8d51c01cf39ed903936b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "1e1ecd0c-9326-544e-8b00-4b9e6139a714",
+      "source_key": "LEG_NF_720_2026-07-22",
+      "after_hash": "a0bbb056003c97f8f159ed76699c7b2e5bb6c373e9d51954e2b1d6a707b8dee8"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ef4d16ea-31e9-5cdb-a098-046884c9179a",
+      "source_key": "LEG_NF_721_2026-08-06",
+      "after_hash": "a25e898b1c6258d4f5793f517be38ce3dc9221e82e544db671f52f6a71c535c3"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "e92b5e36-661d-53cd-9621-7e8e90967d1b",
+      "source_key": "LEG_NF_723_SEMDATA",
+      "after_hash": "ff6815714a1fb16a9312085ae88062c6661cdd4a102044de5c2046458f6bdc8b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "5e5d71c4-a7ff-58dd-b6b3-af0075a10e87",
+      "source_key": "LEG_NF_724_2026-08-18",
+      "after_hash": "0fbff957aa2b12673aae112bc38adaadbd9b5542ec3b8519a5d336d1a082ee55"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f0a55c1e-74a4-5e0d-bc50-8ff73eff8b3f",
+      "source_key": "LEG_NF_725_2026-08-18",
+      "after_hash": "04e9d058b23c26902e009e89297b460dcb4fc38b4eb105db676bcab6f024c289"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8c610fb0-ecc7-518e-ad83-4e4c6d32f7d8",
+      "source_key": "LEG_NF_726_2026-08-25",
+      "after_hash": "9c94b7fc14e372453637a6113f5e6768659c5458083fbde26e6a01f68e2add32"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "ad87c1e9-9bd2-5e79-9f23-c721d571ec25",
+      "source_key": "LEG_NF_CARGA_02_SEMDATA",
+      "after_hash": "5570faa768b1a2e6de7cec52dce7ba1f1de5b28b5f49d163736c8e2898fd852b"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "f1c64a75-54c9-5e23-9aa2-1dc9db59388e",
+      "source_key": "LEG_NF_TBD_2025-09-01",
+      "after_hash": "210fea084016ddabae7812660074abc1e97110e816551f5917b59b6747773d72"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "8f8cba18-c80f-5443-a683-78b305865f30",
+      "source_key": "LEG_NF_TBD_2025-09-11",
+      "after_hash": "f58e75880747fd185c29326285bf837de0c85e7ada175e3f6248a0d7bbff151c"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "360c8523-deba-57b2-ba33-5e17d25539fb",
+      "source_key": "LEG_NF_TBD_2025-10-14",
+      "after_hash": "67ba3cfa3360e64c4fccac3401211757d071262b012f2747170375cf3883de82"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "3656cffd-e5eb-5a68-880a-aaf2c4a4a88e",
+      "source_key": "LEG_NF_TBD_2025-10-23",
+      "after_hash": "d1a9eb1f17a1228f7a2d7bc673b907d429d4a860f71dea4b947421b39def6609"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2c361110-6d7a-5503-8ce9-36e5546f7b0a",
+      "source_key": "LEG_NF_TBD_2025-10-30",
+      "after_hash": "d3e2d9f69360b5730a67bbe952bd6c0e02ef94a855629211be7b9ba68cb5c83f"
+    },
+    {
+      "collection": "legacy_expedition_reviews",
+      "target_id": "2a533c06-ee0f-52e2-858b-72e0e3b20b48",
+      "source_key": "LEG_NF_TBD_SEMDATA",
+      "after_hash": "9903f238cb9364cfc4e449d4322d02cef5fec317a171c2dcbe3e900e3a3e9074"
+    }
+  ]
+}

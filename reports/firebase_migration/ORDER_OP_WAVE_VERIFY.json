@@ -1,0 +1,26 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "order_op_legacy_review_option_a_v1",
+  "unrelated_collections_verified": 105,
+  "unrelated_collection_failures": {},
+  "counts": {
+    "commercial_order": 76,
+    "order_line": 377,
+    "production_order": 1388
+  },
+  "review_checks": {
+    "legacy_order_reviews": {
+      "total": 453,
+      "operational_eligible_true": 0,
+      "activation_not_blocked": 0
+    },
+    "legacy_op_reviews": {
+      "total": 1388,
+      "operational_eligible_true": 0,
+      "activation_not_blocked": 0
+    }
+  },
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "operational_unchanged": true
+}

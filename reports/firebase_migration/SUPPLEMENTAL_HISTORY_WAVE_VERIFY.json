@@ -1,0 +1,21 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "supplemental_legacy_history_review_v1",
+  "total": 597,
+  "counts": {
+    "specification": 213,
+    "production_schedule": 51,
+    "production_stop": 141,
+    "reported_break": 13,
+    "closed_shift": 34,
+    "production_loss_group": 22,
+    "sale_price": 110,
+    "quotation_process": 13
+  },
+  "unsafe_reviews": 0,
+  "unrelated_collections_verified": 115,
+  "unrelated_collection_failures": {},
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "protected_unchanged": true
+}

@@ -1,0 +1,11 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "expedition_legacy_history_review_v1",
+  "count": 338,
+  "unsafe_reviews": 0,
+  "unrelated_collections_verified": 112,
+  "unrelated_collection_failures": {},
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "operational_unchanged": true
+}

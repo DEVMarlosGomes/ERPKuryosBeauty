@@ -1,0 +1,735 @@
+{
+  "status": "APPLIED_HOMOLOGATION",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "policy": "BLOCKED_REVIEW_ONLY",
+  "approved_rule": "blocked_master_data_review_v1",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+    "collection": "legacy_master_data_reviews"
+  },
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "preflight_sha256": "c6a1e5b08cb6a1c49826cf47219f190728ceeac2e417fef4b43dbb1b4d4252d5",
+  "snapshot_sha256": "fba29197578e303ab52ca5dc2425ec8f5a2da2ff9df6f1fe741f86ac5c898a41",
+  "planned": {
+    "supplier": 20,
+    "material": 93,
+    "sku": 3
+  },
+  "operational_before": {
+    "compras_fornecedores": 383,
+    "materiais": 647,
+    "fragrancias": 199,
+    "skus": 382
+  },
+  "operations": [
+    {
+      "target_id": "87ac3ece-21d2-5605-989c-54b913477e3a",
+      "after_hash": "7906fcf0d3f090239bc9c7b59c13d7e80e69572003e73ff2203ed6401a26102e",
+      "source_node": "fornecedores",
+      "source_key": "-P-z16EDVnwoaYzp-xAk"
+    },
+    {
+      "target_id": "912a54a0-fba8-5748-a990-d3aacb1a4375",
+      "after_hash": "3ba91a775b31a24efda7e024b5314846a5771522fdef5a148f1af62d3bcc672f",
+      "source_node": "fornecedores",
+      "source_key": "-P-zO-Avf3tTGrq6ahlu"
+    },
+    {
+      "target_id": "6ba06a88-020a-5c61-a649-d0752ddb95c7",
+      "after_hash": "30f3ecde597d1f09270a963e71cd302ecf3ef00eb7b5b9422d69436ded450140",
+      "source_node": "fornecedores",
+      "source_key": "-P-zOh96Yj-UXdoyT2fr"
+    },
+    {
+      "target_id": "48af619e-cf28-5d72-9b96-91a244c5ea04",
+      "after_hash": "c070bf1d2157753007ebc62413accfce16185ad2e66db2f2b45ebcdcb6b04f80",
+      "source_node": "fornecedores",
+      "source_key": "-P-zPI5bmjN5ItO8MGKH"
+    },
+    {
+      "target_id": "b9030a3c-749e-5056-8ef0-6456d2a77bea",
+      "after_hash": "695572c9713ad9eb634d99c9cc8cbb824b6d49ee1d7b1ddf37087d739a57827d",
+      "source_node": "fornecedores",
+      "source_key": "-P-zRvuv6928vj0Fdsf2"
+    },
+    {
+      "target_id": "dc36aef6-c64a-5b5a-9861-4de3ae672788",
+      "after_hash": "f0a5f82803b517a207481c4799144c667ed2e462416d18e3fdb9592972bd6ef7",
+      "source_node": "fornecedores",
+      "source_key": "-P0b1nxYofGBbHhJvESH"
+    },
+    {
+      "target_id": "03bbdf19-6d3c-51e4-ba63-0469f5e287b2",
+      "after_hash": "e043314c2e374c1691826f1432a779934c6e1f70df7c6989df1842b5806b3a05",
+      "source_node": "fornecedores",
+      "source_key": "-P0bfyzLOBsj40OJhx9A"
+    },
+    {
+      "target_id": "792e5d4a-7636-5108-a46a-a46f7fa34058",
+      "after_hash": "0754df87ef05791bbb755745964d12f296820a7321fd4bd517f41b236fa85aba",
+      "source_node": "fornecedores",
+      "source_key": "-P0gUq4cTzMCpOgOQ9EI"
+    },
+    {
+      "target_id": "dfff4216-c520-5763-a286-d7fb96564f7e",
+      "after_hash": "922b33832c06b4d46047c60df766640e2bde641fa25be86e07b772fa126e98b9",
+      "source_node": "fornecedores",
+      "source_key": "-P1-c_ITewxfO8v2OLeE"
+    },
+    {
+      "target_id": "920b9698-f42c-5f65-a6a4-98b88d17ca3b",
+      "after_hash": "fc7dff9e0d4991f4a4714fee57f510150022e052376bb3c9097be42b61fd980e",
+      "source_node": "fornecedores",
+      "source_key": "-P11TOi6ssrnb-PrNu6t"
+    },
+    {
+      "target_id": "41c420ee-cc3e-5994-909b-f8a7d1a101c1",
+      "after_hash": "7e815e7fcee27052c385827cb645c505e6d3ba9e6ac92bf70c602a3b1293afc3",
+      "source_node": "fornecedores",
+      "source_key": "-P15j3MJlS-iMbbQAo7_"
+    },
+    {
+      "target_id": "510b3aa7-b441-5cca-8ba3-5648188dfeec",
+      "after_hash": "e13d3fd44be26d68aab60221bb628190f010fb05f8473f9e82275d059a6caba5",
+      "source_node": "fornecedores",
+      "source_key": "-P1VAFtyw-tVSQGx4W4K"
+    },
+    {
+      "target_id": "5880950e-a9cf-5296-bd79-26aec8ea4882",
+      "after_hash": "af5cdf8b2f927c07d1113f4780bf51d15630c147eb5aa1a69940cc6956786003",
+      "source_node": "fornecedores",
+      "source_key": "wm104"
+    },
+    {
+      "target_id": "97907ade-02d6-5c00-9f7a-d0299c19e681",
+      "after_hash": "ef9e5da1e022c25406d70213f773a285977a0ea6e43694588c49ba803113b2b0",
+      "source_node": "fornecedores",
+      "source_key": "wm218"
+    },
+    {
+      "target_id": "e3b59c0c-277d-59db-8088-065eb171877e",
+      "after_hash": "54d27be0b53d31665825b961825ed194c5055161732cecfe5bff166967d6eb55",
+      "source_node": "fornecedores",
+      "source_key": "wm219"
+    },
+    {
+      "target_id": "9b356483-34d3-5252-b0b8-2b1b9d04e54f",
+      "after_hash": "f81abdede94bcd089b2b5c3c7be7ab48d22791b97af0b27084426182919a278a",
+      "source_node": "fornecedores",
+      "source_key": "wm220"
+    },
+    {
+      "target_id": "33958a48-7d3e-5a0a-9e78-dd6f94c87786",
+      "after_hash": "d5bcdda4207c1206f38247f8f97bf45ea836ef30b28be552b75044b560833249",
+      "source_node": "fornecedores",
+      "source_key": "wm221"
+    },
+    {
+      "target_id": "aef75f48-e752-56b2-982d-12c1fabae8c6",
+      "after_hash": "32a52e2dc3f925d0810dd0301500b5ce9d9a403a9a15498ad8bcadc950b8b5b7",
+      "source_node": "fornecedores",
+      "source_key": "wm222"
+    },
+    {
+      "target_id": "f62f8373-8ef4-5559-8e07-bb0e4bd3c8c0",
+      "after_hash": "a5d3c4405631588d7365e1c0bad35e5338723b47a3e66d47924e77469f2ef8d5",
+      "source_node": "fornecedores",
+      "source_key": "wm247"
+    },
+    {
+      "target_id": "ea01d83c-aee3-58c6-84bf-a87b3b140440",
+      "after_hash": "dbf5ccc2cdd61478ff28407611443650aa78dcce241610f6bd8e67f74eecdc6b",
+      "source_node": "fornecedores",
+      "source_key": "wm277"
+    },
+    {
+      "target_id": "2cd000af-df8e-5983-8ea4-050866436848",
+      "after_hash": "4f7ac8d227e5870a6586213b19dd7e70d2b9bc105d4d94b7bbf0d4d7d69198e0",
+      "source_node": "materiais",
+      "source_key": "EP-00183"
+    },
+    {
+      "target_id": "f065e9a4-c9e3-5cc4-8815-391ef7fbb043",
+      "after_hash": "5f66f33c06daf3f85e5da7bee32ff0a524c0d67922339b880ef8bdb4ea970232",
+      "source_node": "materiais",
+      "source_key": "ES-00236"
+    },
+    {
+      "target_id": "422ea022-ea20-50f4-8a8b-3441eed7cea3",
+      "after_hash": "77d7dc7f908d2527a839eced01ec64636cddc216ebbfd6a8c60dd7975a7e6155",
+      "source_node": "materiais",
+      "source_key": "ES-00319"
+    },
+    {
+      "target_id": "46d44ca1-15f7-5856-b7ff-427d4126c273",
+      "after_hash": "2b01904c43d448675d8f132c59fc1a1bae0b80f466c6d552036f6e14434d7df3",
+      "source_node": "materiais",
+      "source_key": "ET-00001"
+    },
+    {
+      "target_id": "400a6ed4-6369-5afb-a3b8-7684837567cb",
+      "after_hash": "2b77cfc7342e77804499d638f3b0d5526f6df33554aae8d68b8dd6a085cc637e",
+      "source_node": "materiais",
+      "source_key": "ET-00002"
+    },
+    {
+      "target_id": "3fbcd655-d8b5-53b6-825e-86d9fd497130",
+      "after_hash": "1f6c62712f7057ca4e3c07cb90812330fc25a5560afa9e57fb31ee5f0eaac61a",
+      "source_node": "materiais",
+      "source_key": "ET-00003"
+    },
+    {
+      "target_id": "53198953-cec2-5fb6-acee-16e979ecd2d4",
+      "after_hash": "9a97f08b1e80816b3e94e9f3a7ec99a9e7d1701508bac9f6580ad01c1d6f3f39",
+      "source_node": "materiais",
+      "source_key": "ET-00004"
+    },
+    {
+      "target_id": "696089e6-cfed-53c1-a29e-5bfc0959022b",
+      "after_hash": "1df125da3be4c64515f6d5416b0e59eaf3580421e718034d6b8faac6f6d9f0a8",
+      "source_node": "materiais",
+      "source_key": "ET-00005"
+    },
+    {
+      "target_id": "64b72da0-69ee-5b73-8e22-f71780819349",
+      "after_hash": "4865c3b7db859e2d3b922975a6542a4ca7a779b5e459bcbfa205c8f0d36529aa",
+      "source_node": "materiais",
+      "source_key": "ET-00006"
+    },
+    {
+      "target_id": "5b69f00c-75c2-51a8-b4dc-fe1c33939c09",
+      "after_hash": "c2b09f83be04f31269b1065bb881376b585e744c9baba002b2d4f6318519d04d",
+      "source_node": "materiais",
+      "source_key": "ET-00007"
+    },
+    {
+      "target_id": "5a05d509-c7e1-54d4-a355-db8fe4374d72",
+      "after_hash": "83608c9fc90286f2c40b9632f04a4068c1d9bcdf24815f65175c951e5be41601",
+      "source_node": "materiais",
+      "source_key": "ET-00008"
+    },
+    {
+      "target_id": "9e974b5d-9588-5fa8-a84d-2d60d80bca13",
+      "after_hash": "f63fdd922c231d4723feb99d5c7fc1eee2e74941775f78e8f6e7e1ad0298092d",
+      "source_node": "materiais",
+      "source_key": "ET-00009"
+    },
+    {
+      "target_id": "9bb0921c-3f02-5761-a54c-b28dad4f4e6a",
+      "after_hash": "806fe2b692ba2a466a79edd62d65cf82394b1909a0481cc6dd126811dedc0cea",
+      "source_node": "materiais",
+      "source_key": "ET-00010"
+    },
+    {
+      "target_id": "c0073461-871c-5b5c-8762-79834925deba",
+      "after_hash": "017f577a6c31d2d5b2c0cc23e47db4e2d18b36091d48d1d0f81e9be41ed1e639",
+      "source_node": "materiais",
+      "source_key": "ET-00011"
+    },
+    {
+      "target_id": "1f7b81bb-ef5a-56de-b0fe-aa8e7d2e240f",
+      "after_hash": "9979e33e375a25e0da04ef23a9b8e8d3a318007ae56ef0e00e046c5dc9f59433",
+      "source_node": "materiais",
+      "source_key": "ET-00012"
+    },
+    {
+      "target_id": "c14bfd9a-77ca-5db3-812e-78c5a2d4e10c",
+      "after_hash": "413c25252088fc453508f0bd5add0ecb378f440455f7e913e4f282311faae076",
+      "source_node": "materiais",
+      "source_key": "ET-00013"
+    },
+    {
+      "target_id": "4853e5df-6398-58c1-88f0-0b8d76107f0f",
+      "after_hash": "03055a3626cff4a9e5f0e0901f4f54640b7719432384c65685adc5e41a0bf043",
+      "source_node": "materiais",
+      "source_key": "ET-00014"
+    },
+    {
+      "target_id": "ad5cd2ec-5228-54fd-a3a6-dcbd7fef46b0",
+      "after_hash": "9ac70f4c0d7506a794e69d8431153a8fb1244136d5fe1237464855fc269d9ac8",
+      "source_node": "materiais",
+      "source_key": "ET-00015"
+    },
+    {
+      "target_id": "89645ce8-a728-513d-a769-413903295ec0",
+      "after_hash": "771fa505f21f6380ea504b2d3a6c4e769237ded42556dfcf701b2a42e75c84d9",
+      "source_node": "materiais",
+      "source_key": "ET-00016"
+    },
+    {
+      "target_id": "30d3947f-79f8-5db6-9854-b4593e02d9a8",
+      "after_hash": "ef373ae235bd52a79a217067a9c590a620dd1123d3c29aadcb225950d9411992",
+      "source_node": "materiais",
+      "source_key": "ET-00017"
+    },
+    {
+      "target_id": "d815868d-7c3a-5d93-b12f-3c073d066ca0",
+      "after_hash": "cc5ea33fa4395bac624a2ab72cb497c8f271de37d794ec611ef80258a74c41d4",
+      "source_node": "materiais",
+      "source_key": "ET-00018"
+    },
+    {
+      "target_id": "2d268d69-efc0-5f99-a042-9bc791908cf1",
+      "after_hash": "d81aa400dcd7e82c95513d780682a330e8d00c7fc9f9dfe42454c127e88a3f50",
+      "source_node": "materiais",
+      "source_key": "ET-00019"
+    },
+    {
+      "target_id": "bc4a6da2-7b0b-5d4d-990d-090aa5b3f477",
+      "after_hash": "60a8ef64964d2622a4836b4dac6687c310b3cc01fb108a7f743b4769c31e4d6a",
+      "source_node": "materiais",
+      "source_key": "ET-00020"
+    },
+    {
+      "target_id": "e66ee339-fd6e-580c-b91b-9159e7979cce",
+      "after_hash": "18e98704f5f9cea8a62e779712bca63d03d6ac7910dbfeeb1c3bfc3f4909b3f6",
+      "source_node": "materiais",
+      "source_key": "ET-00021"
+    },
+    {
+      "target_id": "9e6ac2da-fc45-58c6-96bb-cfad2b7f325b",
+      "after_hash": "433cfc3b09bca1d5d257fa3e55ae3a1ad039c8aa109e6dcb23c88d818521caed",
+      "source_node": "materiais",
+      "source_key": "ET-00022"
+    },
+    {
+      "target_id": "3aeab45b-71a1-59bc-8d08-ab0a662b2677",
+      "after_hash": "c1c0f423042afc4090f06e9289118f35e6992ed966328ac919db7a4e71bc0bc2",
+      "source_node": "materiais",
+      "source_key": "ET-00023"
+    },
+    {
+      "target_id": "640a767e-d107-5289-a2b2-f6592d9581cb",
+      "after_hash": "c947ca64ca01b307758de06671ff65c7ea2a8992845ff31342a79c72494c9a20",
+      "source_node": "materiais",
+      "source_key": "ET-00024"
+    },
+    {
+      "target_id": "ed06042e-a4b5-577c-b824-8b2deb998cb2",
+      "after_hash": "7b05fe60dd717a71c2448ce29dd7f259a9b22456dc7afffebec925897130f5fa",
+      "source_node": "materiais",
+      "source_key": "ET-00025"
+    },
+    {
+      "target_id": "5e2e6b19-f6f2-5a1f-b75f-e22c7c4ab077",
+      "after_hash": "69955233e9258e0f45404d2dce253291edf660ff61af2197cce596e9373cd1aa",
+      "source_node": "materiais",
+      "source_key": "ET-00026"
+    },
+    {
+      "target_id": "cc033e36-e2c9-50a0-9bb6-e24411a90c3a",
+      "after_hash": "b274e80bba2e38d2100fcb75ff0cf8d52cf1d8b0a172a05dadc96e60d859e10f",
+      "source_node": "materiais",
+      "source_key": "ET-00027"
+    },
+    {
+      "target_id": "834a4da2-bd80-5086-84a9-a0df85555310",
+      "after_hash": "6fde289e7bbf0e1025bc2a51e004dfd3a2d0b1d0e3b5b47cc143a8b2f22b25e4",
+      "source_node": "materiais",
+      "source_key": "ET-00028"
+    },
+    {
+      "target_id": "3d7a1f73-0e85-584c-b14a-41a793c08432",
+      "after_hash": "229cb3f31ac857ba30a5396fce64dc7335579331e9d14ca2c9036ea8caff20f8",
+      "source_node": "materiais",
+      "source_key": "ET-00029"
+    },
+    {
+      "target_id": "b650291b-4540-5124-bb3b-08abf00d1bea",
+      "after_hash": "6234960ef86f809607092bf1e058785f7dca1f95ce1b010b35129736c56ff4e6",
+      "source_node": "materiais",
+      "source_key": "ET-00030"
+    },
+    {
+      "target_id": "89311ba6-46d2-547e-8692-ca358840f737",
+      "after_hash": "36f44a82dfd60a3c823488f2fb58b17d4d29dec9a3bf0d9c6183751e9a5aa4a4",
+      "source_node": "materiais",
+      "source_key": "ET-00031"
+    },
+    {
+      "target_id": "d3ed7eed-94b4-52c2-a916-b1b2ad2e0621",
+      "after_hash": "5eb27ebd284301f80bb1b2090e3e289e1fae858a96aa63ef926f335ff28b23bb",
+      "source_node": "materiais",
+      "source_key": "ET-00032"
+    },
+    {
+      "target_id": "73768728-cbdd-5f9c-88ce-a8d05e45332e",
+      "after_hash": "40ef46084051a5d68ec3c7f7806fcdd5b568353341572f133538f0e40a38c96b",
+      "source_node": "materiais",
+      "source_key": "ET-00033"
+    },
+    {
+      "target_id": "7d8c4596-46eb-5563-84c2-4c5360450e54",
+      "after_hash": "96f7aedbbcddb65f747edfb30532727b751462ca61484597925b43653b10667a",
+      "source_node": "materiais",
+      "source_key": "ET-00034"
+    },
+    {
+      "target_id": "09393be9-97cf-5e9b-a305-923fdbb8f7ba",
+      "after_hash": "d1cd242307037227ddc59ee32b383f21780710ba288c9ae848dea1ed9b797493",
+      "source_node": "materiais",
+      "source_key": "ET-00035"
+    },
+    {
+      "target_id": "2ce6cc52-ea0b-587c-b625-9695c18ff568",
+      "after_hash": "1be1fbcf48090ae3275adbe0c85449b4126ad442425ef93401f4da50fd7071bd",
+      "source_node": "materiais",
+      "source_key": "ET-00036"
+    },
+    {
+      "target_id": "9f44ecf0-fbb1-5959-a989-4345c1ba9989",
+      "after_hash": "b369dd8c034514b182e30e6f1ea6caba928805edd63361bb34969fefa9cb1c6d",
+      "source_node": "materiais",
+      "source_key": "ET-00037"
+    },
+    {
+      "target_id": "9cc62051-263a-58c3-b957-4d7054598f08",
+      "after_hash": "6a0e67c3eed094e18c0ec4d0b85d6d029f70fea3f5b6ee7dab8ee53515bf68b7",
+      "source_node": "materiais",
+      "source_key": "ET-00038"
+    },
+    {
+      "target_id": "94c412e6-fce2-5b1b-a87b-7c34229c70ff",
+      "after_hash": "ee638e610cebcb7deee540b1d42dce4e2e2c36ffeaa7d1e10b7014c2d55bdeab",
+      "source_node": "materiais",
+      "source_key": "ET-00039"
+    },
+    {
+      "target_id": "0780ee6c-2a58-5756-b07a-c9d32e6da19e",
+      "after_hash": "624c0d3bca2e58e033bce0b002b18cc22c61e3ba6d187390d269377255c89cb4",
+      "source_node": "materiais",
+      "source_key": "ET-00040"
+    },
+    {
+      "target_id": "54608402-d204-5942-ae83-b95986d38125",
+      "after_hash": "7629ff869628c31f4abaeea618acf8174e36ab2b7d96085d31a9459bfdf45b99",
+      "source_node": "materiais",
+      "source_key": "ET-00041"
+    },
+    {
+      "target_id": "b7cfb58b-bc62-5842-ab44-efc1163f3946",
+      "after_hash": "aa0c3164a0790ff765d2b897a34751eccd551b61592e0a4d652194008065bbde",
+      "source_node": "materiais",
+      "source_key": "ET-00042"
+    },
+    {
+      "target_id": "78e5787d-1dbc-5125-bd0b-0282c69b56ef",
+      "after_hash": "b480bf88f806ce510f195e30e1fb465db07ad1a220e9c212a81aa3b435f4489d",
+      "source_node": "materiais",
+      "source_key": "ET-00043"
+    },
+    {
+      "target_id": "6cae63c6-a83c-5a20-b49c-0f8f30bbc680",
+      "after_hash": "1d177ce89d9ce12e1160a8cfbb3fd8804d45a16fb9bb83580928ebb6b9d1b05b",
+      "source_node": "materiais",
+      "source_key": "ET-00044"
+    },
+    {
+      "target_id": "5ba5e0fc-c7e8-581d-850c-82b885f49609",
+      "after_hash": "7f31289478c23d0ae8e98f6be7d2cf43919c6bed59f0cd2b8e10df649b4654d5",
+      "source_node": "materiais",
+      "source_key": "ET-00045"
+    },
+    {
+      "target_id": "f10e555e-b125-515e-8c56-f34c22e4711b",
+      "after_hash": "580b2c2cb806c2a021cbdbed17a1cdded7486dc7bbdc39a9e039b19602128e2d",
+      "source_node": "materiais",
+      "source_key": "ET-00046"
+    },
+    {
+      "target_id": "3c9e9678-5207-5b4c-b289-4e22cf1d61c0",
+      "after_hash": "6838dfcda88967889c1e8d9b6ad238f5f965f641096030de078ec6c2f8808082",
+      "source_node": "materiais",
+      "source_key": "ET-00047"
+    },
+    {
+      "target_id": "3e566cf0-8ae0-598d-bdd5-145a5d7c8756",
+      "after_hash": "59501df6fdbdb755351f8ebcfddec3c127eead1f8dd0e1ef820fda04fd0d23f0",
+      "source_node": "materiais",
+      "source_key": "ET-00048"
+    },
+    {
+      "target_id": "6a50cd75-5bcf-587a-8809-1b1f5116db09",
+      "after_hash": "4b70b3e5a4f9dc2af5b6691c9763cb7529dae3fe3d413a84ae8b0408887adc83",
+      "source_node": "materiais",
+      "source_key": "ET-00049"
+    },
+    {
+      "target_id": "8de467d3-2b42-5b98-9045-466c6674d79a",
+      "after_hash": "f005958562fa7fdf56cf148229ce1df079369254999a702b7e5c0a5ebd389372",
+      "source_node": "materiais",
+      "source_key": "ET-00050"
+    },
+    {
+      "target_id": "b874a092-f75a-5701-a080-5c06aad92054",
+      "after_hash": "b149683d853ef0c5bafe1d294680c6c2cb98624619efa559fdc9dfdf5effc563",
+      "source_node": "materiais",
+      "source_key": "ET-00051"
+    },
+    {
+      "target_id": "c143c50a-9096-57d8-86db-f062736dc654",
+      "after_hash": "f68b9eeacdaef2603d4855a05c88caba72634e076a81e9150f2b9df9049d7e8b",
+      "source_node": "materiais",
+      "source_key": "ET-00052"
+    },
+    {
+      "target_id": "c519c87a-0b1c-5ed2-85e1-09f7ba3a921f",
+      "after_hash": "add85afa9d1cb3dcf51609b046e8b9cecf2526c861cc29328442127ba57e6f7a",
+      "source_node": "materiais",
+      "source_key": "ET-00053"
+    },
+    {
+      "target_id": "69a05390-379a-5603-9cf9-da2c68b11433",
+      "after_hash": "e827d78c147c69814a37297ec43156571c64a5867ca8c15973a65223389d3774",
+      "source_node": "materiais",
+      "source_key": "ET-00054"
+    },
+    {
+      "target_id": "e99e06d6-66a4-5535-bc44-61094b502429",
+      "after_hash": "31c5fa4eb41ee74fa449b0e0b9aa973f9e2c680ca1d0812d1b2ea08fa82d5fff",
+      "source_node": "materiais",
+      "source_key": "ET-00055"
+    },
+    {
+      "target_id": "551904f9-43b6-5ce7-ba1c-ceab3c5a101e",
+      "after_hash": "eee1c92941ee1def24451586a3886eedb85ebd6be97b1ec386f42d09178405b3",
+      "source_node": "materiais",
+      "source_key": "ET-00056"
+    },
+    {
+      "target_id": "f8bc6d51-4fe4-5f90-85c8-7563bea15792",
+      "after_hash": "b79d0d1bcc1c47187d1643a60718c5152042ecb91b9980d8d9db197a7e0e93df",
+      "source_node": "materiais",
+      "source_key": "ET-00057"
+    },
+    {
+      "target_id": "5ec48542-7c0d-5418-a6d8-833a37a28283",
+      "after_hash": "016eb6cbb24a9445fed606201f9550d6ffda47f00cc290c083deb2d199c01897",
+      "source_node": "materiais",
+      "source_key": "ET-00058"
+    },
+    {
+      "target_id": "41513584-5b33-501b-935c-6fcbaa295adb",
+      "after_hash": "af0e180e018cee30ad6ac86a8b48113d93db39f57d709310bafbc95d1fe4f6ab",
+      "source_node": "materiais",
+      "source_key": "ET-00059"
+    },
+    {
+      "target_id": "c2fc9283-0fa1-54b5-bc88-259506bc1ab5",
+      "after_hash": "f9a0611820292bd07e74dc2dc4348df729bffd7bcc1e42ad0dd63910d83a0fa3",
+      "source_node": "materiais",
+      "source_key": "ET-00060"
+    },
+    {
+      "target_id": "eb4ae199-b212-51dc-99d7-d59b5eaefb38",
+      "after_hash": "e516f1d72cf9c1778a98c5a1afd1fb1237b285eaf5e2322d39a5d69810787597",
+      "source_node": "materiais",
+      "source_key": "ET-00061"
+    },
+    {
+      "target_id": "a9b06ef1-3544-53ad-8e43-97d402d3050f",
+      "after_hash": "65fd03f0d683f5a013f2e2474fb78919723f5802ec222310277bc9776df09304",
+      "source_node": "materiais",
+      "source_key": "ET-00062"
+    },
+    {
+      "target_id": "a58e40d3-2053-56f7-b52a-bf2868afe7e8",
+      "after_hash": "eaa2a2ee2cd5d18162dc6ed45fd9369533a5fb00fdf7f53bb6492f41e53fd3e0",
+      "source_node": "materiais",
+      "source_key": "ET-00063"
+    },
+    {
+      "target_id": "700bb2e3-2559-58a0-861f-7496fccb4da0",
+      "after_hash": "943fe4683691547309605d33a297006b677129c42bcd5fc25fd0d854f0c443de",
+      "source_node": "materiais",
+      "source_key": "ET-00064"
+    },
+    {
+      "target_id": "2aabf4ec-0f49-596f-87e4-b0edd6ca6415",
+      "after_hash": "6861039c0d2532a7b8916d355ac83cca38207a6e38fa3673eae2ea16cd826035",
+      "source_node": "materiais",
+      "source_key": "ET-00065"
+    },
+    {
+      "target_id": "dc51771f-28f1-5e6b-9d9b-0bb63bde09f7",
+      "after_hash": "f5eb19ea569e2f0e3c3c1a93884c93f78d9ff42b47771d97ba71bc4ed4054d84",
+      "source_node": "materiais",
+      "source_key": "ET-00066"
+    },
+    {
+      "target_id": "c977e517-6b0b-5cee-8b24-4c6958f5f3a4",
+      "after_hash": "b01e9b3eb8bbb1314cc7133c8f96ccb2bcf10dd4ef7f68f339e1727d4179be20",
+      "source_node": "materiais",
+      "source_key": "ET-00067"
+    },
+    {
+      "target_id": "a6aae13a-7e7c-5d0c-93c4-24ce2cfd934c",
+      "after_hash": "905ec9467c60751747ffae217fdfba33b8ef2208511becdc2be7e69c4f1ead79",
+      "source_node": "materiais",
+      "source_key": "MPES-00020"
+    },
+    {
+      "target_id": "62c75bb2-7e7c-5749-97f2-8d6e4aa74828",
+      "after_hash": "1eb19650ff2d86c265ee8217eaa029b9494d0251bbe522e167cd0217c0a1f6d4",
+      "source_node": "materiais",
+      "source_key": "MPES-00024"
+    },
+    {
+      "target_id": "c0e02352-880f-5a10-a090-0688da1b7c16",
+      "after_hash": "07e410659de1a212fc4c2d3f319102d53583d6710f069df6252eb603537d4a99",
+      "source_node": "materiais",
+      "source_key": "MPES-00174"
+    },
+    {
+      "target_id": "2cefbe90-06c1-5eb4-b95c-32d4e9bd9ffc",
+      "after_hash": "a7d8e9dff3bdaeed71ed5805ed96a2fa77243ea35393fcdc90acbfbeb9d8a313",
+      "source_node": "materiais",
+      "source_key": "MPES-00180"
+    },
+    {
+      "target_id": "6d16fbc3-802c-5c21-b23e-ce78fea47064",
+      "after_hash": "259cb110f255707e489ec4f6a1e758a02b3f0de35079f6abdccd0cef0e0ef11f",
+      "source_node": "materiais",
+      "source_key": "MPES-00185"
+    },
+    {
+      "target_id": "c455c6cf-9b81-5e56-9ce9-3f5adc091ea7",
+      "after_hash": "d8cb34d77f81861f9359918984658afcffbc7e96137e7c81347abacd39e3ea72",
+      "source_node": "materiais",
+      "source_key": "MPES-00196"
+    },
+    {
+      "target_id": "52740802-801c-5432-8906-0130a25bcd83",
+      "after_hash": "f8cc10e749c39939b3beecb435de2b61c0b531aa4ac18dda37311cefec21d844",
+      "source_node": "materiais",
+      "source_key": "MPES-00199"
+    },
+    {
+      "target_id": "0f9070e2-fefb-5d61-babe-e19b47969797",
+      "after_hash": "00476426483c81a6f2058cd16a548641297cd7244582c1cfff7ca19bab8f51ef",
+      "source_node": "materiais",
+      "source_key": "MPES-00200"
+    },
+    {
+      "target_id": "9b2ecdaf-88ff-5ad8-b608-6aad37021c25",
+      "after_hash": "b7c9c95b11e99cb554511c9496ff8dbbe95d338652e5650023805f7a69b165e3",
+      "source_node": "materiais",
+      "source_key": "MPES-00204"
+    },
+    {
+      "target_id": "60bee3d2-573b-52df-b9db-32762013db0f",
+      "after_hash": "547a1bafd41853eba40319df839cc222a7d8913a8553aff22541adf381fc1fe9",
+      "source_node": "materiais",
+      "source_key": "MPES-00205"
+    },
+    {
+      "target_id": "bad5fd85-46c5-5118-b16c-aa4583d8aaa0",
+      "after_hash": "44eace1a4a54d15efc568c29d4d253adc5569e52c4e1820e9fc924d3963e5e04",
+      "source_node": "materiais",
+      "source_key": "MPES-00206"
+    },
+    {
+      "target_id": "0cbf92b5-5ff7-54b0-8215-7d0f5c44061a",
+      "after_hash": "52e6c082b0cc09df7eefa0a4462a562349f96b4e508c8c31fcd6de2d9a7dbc08",
+      "source_node": "materiais",
+      "source_key": "MPES-00207"
+    },
+    {
+      "target_id": "8b5c3d56-b046-5235-9022-4337c98b0b78",
+      "after_hash": "452b4395183db7ba6587f05b8cebc1d8c1e576cb26454c3cf82eb854173715f6",
+      "source_node": "materiais",
+      "source_key": "MPGR-00038"
+    },
+    {
+      "target_id": "4d95ffec-bff4-56e1-8cf9-df50bb51a9d2",
+      "after_hash": "904a13301f8f3bbc61a1ae95665df894057c095bc736afde1c0ef0b355fef2df",
+      "source_node": "materiais",
+      "source_key": "MPGR-00047"
+    },
+    {
+      "target_id": "03c6bb26-bff2-5479-821d-b1bb01c85461",
+      "after_hash": "9a8030f69d470b7054acd21758d285d9e84f737a8b48ccd02b4f397b4f9e9772",
+      "source_node": "materiais",
+      "source_key": "MPGR-00050"
+    },
+    {
+      "target_id": "ed25aba3-c8b1-5f07-abd7-6f92e9c148e2",
+      "after_hash": "37f5e4cd48b56f103423a4f0fa46617a2c6a8063dc8845fdca118a2030597eed",
+      "source_node": "materiais",
+      "source_key": "MPGR-00051"
+    },
+    {
+      "target_id": "1251c9bd-3132-5580-afc1-c2a26f3edee8",
+      "after_hash": "edd4a8662fc82b59c011384d9a38d0005c882c6f04f8b1a2903aefb8b7f3c3c8",
+      "source_node": "materiais",
+      "source_key": "MPGR-00073"
+    },
+    {
+      "target_id": "451172df-a55f-5b02-9079-23f2fe9374cb",
+      "after_hash": "e416d22b50002a59df3963fb5a62eb3c11ab63e485b17eb1789b656de4c219e2",
+      "source_node": "materiais",
+      "source_key": "MPGR-00077"
+    },
+    {
+      "target_id": "7a465374-2c16-5001-bc7f-3637d635373c",
+      "after_hash": "082897d400e9b218da2e1e1135ffb137768feb7d4560b1584db9aaf99f069dd6",
+      "source_node": "materiais",
+      "source_key": "MPGR-00078"
+    },
+    {
+      "target_id": "ea126bef-1ce2-5585-8c7c-4e2b456186a9",
+      "after_hash": "a0730d01094ec1ee20af3864d12f13464f546a0238bb79835920b85a9a747a23",
+      "source_node": "materiais",
+      "source_key": "MPGR-00099"
+    },
+    {
+      "target_id": "e5d36bc1-cb49-5969-b3af-7a188ef90dd6",
+      "after_hash": "67b94506f07363ec14d3807d94b0e1e48a4552f19d85ccda9ad27250990017d7",
+      "source_node": "materiais",
+      "source_key": "MPGR-00125"
+    },
+    {
+      "target_id": "c43de865-3a54-5a2d-9da0-94a1cb91f893",
+      "after_hash": "8bf90959994199b2da2c27b0e7e4ffecd27c292301cffee1f30f239a9afc9b63",
+      "source_node": "materiais",
+      "source_key": "MU-00001"
+    },
+    {
+      "target_id": "ef604d67-9a5e-5dcd-86e8-c5a1c1d3d1e2",
+      "after_hash": "8a7194422d453241449cd39bcae344e6bcf3d6d8b40c8c87552bdb8bd53f0a65",
+      "source_node": "materiais",
+      "source_key": "MU-00002"
+    },
+    {
+      "target_id": "3dce7e3d-8f62-587a-a2a8-c649f33a8c1e",
+      "after_hash": "5e64d67e1fc162d18be24c5c9fb0bff4267056ffe2b911990413c178861b40ec",
+      "source_node": "produtos",
+      "source_key": "DESODORANTE-ROLLON-ALGODÃO"
+    },
+    {
+      "target_id": "b843e0b7-3d7f-5aa3-8f53-c108b8f3faaf",
+      "after_hash": "1164a358a0bf6ceeb511501a75e38bf4b5823a661a08a6137e1079af4b4e177a",
+      "source_node": "produtos",
+      "source_key": "DESODORANTE-ROLLON-LAVANDA"
+    },
+    {
+      "target_id": "811e931a-03c3-5a09-b03f-d26c7615b652",
+      "after_hash": "178ce6d39378efb8868f24470a6e3cd916a07baa292e053dcddc561c0d33a4d3",
+      "source_node": "produtos",
+      "source_key": "KUBPBA01_-_2"
+    }
+  ],
+  "completed_at": "2026-09-25T02:41:37.403379+00:00",
+  "inserted": {
+    "supplier": 20,
+    "material": 93,
+    "sku": 3
+  },
+  "operational_after": {
+    "compras_fornecedores": 383,
+    "materiais": 647,
+    "fragrancias": 199,
+    "skus": 382
+  }
+}

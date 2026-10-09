@@ -1,0 +1,25 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "dispatch_rule": "firebase_review_sector_distribution_v1",
+  "total_reviews": 5234,
+  "distributed_by_rule": 4945,
+  "sector_counts": {
+    "administracao_ti": 36,
+    "cadastros": 343,
+    "comercial": 572,
+    "compras": 53,
+    "expedicao": 338,
+    "logistica": 1338,
+    "pcp": 2071,
+    "pd": 197,
+    "qualidade": 270,
+    "rh": 16
+  },
+  "duplicate_ids": {},
+  "duplicate_source_identities": {},
+  "hash_failures": [],
+  "route_failures": [],
+  "unsafe_reviews": 0,
+  "unrelated_collections_verified": 105,
+  "unrelated_collection_failures": {}
+}

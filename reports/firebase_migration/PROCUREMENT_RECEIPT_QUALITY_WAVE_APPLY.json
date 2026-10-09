@@ -1,0 +1,307 @@
+{
+  "status": "APPLIED_HOMOLOGATION",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "approved_rule": "procurement_receipt_quality_legacy_review_v1",
+  "policy": "ISOLATED_HISTORICAL_REVIEW",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22"
+  },
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "preflight_sha256": "dd60e4fa99ccad73da6fd701d278cd0bd289298550f86fb81dd1d80b2095530b",
+  "snapshot_sha256": "105347da73aa02e2850c256ed25be288ccf52651a7c5e6e14cb2d2ea7d749ab1",
+  "planned": {
+    "purchase_request": 4,
+    "purchase_order": 16,
+    "receipt": 7,
+    "finished_goods_check": 7,
+    "nonconformity": 2
+  },
+  "operational_before": {
+    "compras_demandas": 0,
+    "compras_pos": 0,
+    "recebimentos": 0,
+    "estoque_saldos_lote": 0,
+    "inventory_ledger": 0,
+    "wms_paletes": 0,
+    "cq_rncs": 0,
+    "conferencias_pa": 0
+  },
+  "operations": [
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "736d342b-8246-5552-97e0-2f01ad2ec279",
+      "source_node": "solicitacoes_compra",
+      "source_key": "-P0g_zyhnX3TmcqqsQSq",
+      "after_hash": "7a0d3c82126257b97408bf29490e0ed1c0627c0d36c96dfbc7c9dec76117726c"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "31c4aaf3-0718-50fb-8510-0a327490a8ce",
+      "source_node": "solicitacoes_compra",
+      "source_key": "-P1AIKRhtC73wLEbj3xX",
+      "after_hash": "11f9a60cee130c2df90e119ff33aa3ca866d0a16c72ea8a8f39bb1b99d0728d5"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "b508074f-ca07-5c6a-971f-dc8ef23fb510",
+      "source_node": "solicitacoes_compra",
+      "source_key": "-P1GkKyWrfwM4161S1-L",
+      "after_hash": "ded66f89193a4109675a2532c95394040288f96cbf94df97f9100c90a9321b9a"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "e6a34bce-ddaf-5227-8d2a-c7aefde70c07",
+      "source_node": "solicitacoes_compra",
+      "source_key": "-P1jZF-GROJy2dtVYtvv",
+      "after_hash": "be59777261b5465d110e7b9b272094c38ec9ea63db71fd2c7dd076545c8a8638"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "c67cd5ad-9edb-5796-b843-c87e634d4ca4",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1-t6ZleFwKIrLw27Fb",
+      "after_hash": "edc10588e0a3e7593cf422857d930f8c289a67fa32b2263f7fbe3ddb54ccdca8"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "ded99cd1-e7c8-5b1e-adc8-44c657b05afd",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1FFjs09Kz4LRF8VATc",
+      "after_hash": "f141d59eabf41251613ebce40f93155b5c38cd624a34675083e5e6bf6cfe6615"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "8501eb37-6809-5beb-8d77-48303dc49160",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1WLOLiLDYpRMmhKa06",
+      "after_hash": "c5fcd2e70aad3afa3e252a52a29092a2dca01e607d4fed1ad9e5e21667f3c282"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "569481a6-c906-5e2f-bd61-3971d23ab860",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1WQejZY_iMGa6NLkGp",
+      "after_hash": "beb19cdad962e1faf91ec153766447fed13f933fee62ca0affd8f65471da428f"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "f652fbcc-b2f2-53d4-b169-c96e9f92887a",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1aZRrgwdTcbSNPg5Kr",
+      "after_hash": "38c8a0380894855a275fa9e82be76e841e5b1f24ac9c47b12d64c6b07a9b19f3"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "b19bab99-4c7e-5d23-81e0-7e2cb38b5a42",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1fTh8ZVTwGax5JV--Y",
+      "after_hash": "cc571e6349134933d98425c39158303b2e4fda30a5be1f866e53f2d564624a32"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "867d072b-c71d-5f11-8c4d-6622cf2ad4f8",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1f_276Rlr0UhVMpnxJ",
+      "after_hash": "238a56be42729844d8feb61451c68e2944cb5e40784128ab1ab79ae59a6a710d"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "b1d5398c-4ad1-506d-8351-4a8c78167641",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1j_LSh26CN8S6lXIRO",
+      "after_hash": "46d6a1374c8d2d2f6228fd3143d6142c3b9f5269466a1d621df8b6fa6fa7a6bc"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "225034a8-4b13-55a6-800d-321ec79c1ef4",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1jhEPRwNzO6IQgrfdO",
+      "after_hash": "971be0be0fad0b21014e69677c98f523ce622e0beedbefbe9aa445b76f152cfb"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "67e637d0-25b9-5764-b773-efaa1b5186cc",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1kFVYxO3nZ6KgTcu9B",
+      "after_hash": "1a5801428527e95d7fbd557edbcef5e966074400975976a8e5d9700720bba077"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "189ef74c-1b72-5586-819f-676c38d0f009",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1kNYvpzbpqutWNFTx8",
+      "after_hash": "a99558926695f7b68880ffd93e87c73cfa5b361d2075936e109983d62ad28533"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "00712411-213f-5aef-8518-0ebc107607d3",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1kOcRWXlqGgxrZcy9v",
+      "after_hash": "d12deb3fffffb6385aa8c57ba1878b5222d422829537d3d256ed37c447a88e10"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "f1babcee-135f-529f-9c83-fee41cceee1e",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1k_E5Qtl1UX0B2V37k",
+      "after_hash": "9f7e8d844f83db1c69eddd4ea73005e80fa09dcb3bda22b3bea27595bfac5ec4"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "e093db51-5713-5e07-bdef-8121f4a6109e",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1kt0P1Jqp-vMAZrTbd",
+      "after_hash": "631117c01db44c4bdc814d8451bbc7ba54f5a73579e28f453e2ccf47c6de4326"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "9898a5c5-32ca-53f6-afd7-f4aec0332ccb",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1omL5Yzqza6HcFk8ZZ",
+      "after_hash": "b703774c84e4c90de4a7a400dc638d7d7c672e279921de2388d3f08450593ba0"
+    },
+    {
+      "collection": "legacy_procurement_reviews",
+      "target_id": "2846c1b4-0bd4-5c4a-b0e2-79a8bdd2db25",
+      "source_node": "pedidos_compra",
+      "source_key": "-P1phHzeTTVeBM5L1gPj",
+      "after_hash": "7fbc560cb564b8652add6273a469acc7ea2be3c8c57bdd111a618af8eca0b7e8"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "08dbd879-9f62-536a-aa23-8aae3d3f61c8",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "3e3a3bfe-aea8-4ce9-aeb5-9801e02f0b19",
+      "after_hash": "307944aa1d1ba8c3ac53f1aedd4db0372747d6592b3a806d12a0355c34b9f1d5"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "e5426e65-1fc6-5438-9181-cb212a27b91c",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "9a670479-a11c-4a20-a8d7-2d88325a7917",
+      "after_hash": "328cbfc10c978a4e53004f6c47b2aa6ff24d042b5b7620f2c2adc99c87fec865"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "3b4cb147-1782-50c0-b73d-6b8a34c31c47",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "d0edf3d1-0a37-4b52-b56a-50d07a883e61",
+      "after_hash": "1cea6271cd70ea7f00221545e1f295d54ad82d12cb5da8aa3b450c772cb430ef"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "a2522385-2f62-5d8a-bd35-e8f5267a4528",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "ecb6e17d-68b0-4355-821e-420c4cb94a25",
+      "after_hash": "18298863db8ac7812c143ca3adfaf659db2d7945a6db56d46f05e28f5c05911c"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "f30c1713-6934-5ff1-b3fb-206be0af4867",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "d1e70fee-6ce0-42c4-8ab7-0ad8ba968133",
+      "after_hash": "d0818f8fa3de3b69f25d85e1c3c6c4f29eef96c745d963c17c504792dea42faf"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "9b6f5877-8368-5264-bea7-83b8914738cf",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "74a0c6c0-edb7-47f9-977b-3e3a4b474cf3",
+      "after_hash": "734fb0edcf95572bd712d7650b452572748e08e3698eebae22a283e30e7b0c6b"
+    },
+    {
+      "collection": "legacy_receipt_reviews",
+      "target_id": "19db0164-cb96-5880-9309-024e571f5b93",
+      "source_node": "recebimentos_operacoes",
+      "source_key": "8299e68b-73af-4b69-ad96-7f7434740366",
+      "after_hash": "b00833cd7971e46cb2e96591aa4ef3f86e8dc263bab8292a7700122e60fda821"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "638ab8b5-fbbe-58e9-8ad0-cbf899c9a27b",
+      "source_node": "conferencias_pa",
+      "source_key": "26247-06",
+      "after_hash": "e173cca68f625e6eade5a82921be5eff90a848934a14bc21cfbf80e867c54473"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "1992c986-bb58-5e10-9b4b-fe7452bcd41b",
+      "source_node": "conferencias_pa",
+      "source_key": "26251-15",
+      "after_hash": "d219411efe8688435eb0ba4295b4681bc38dcb44fe94d5c2be298df9fcd916c7"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "339d97c4-e3a2-5ae5-aff6-63ac14bfd194",
+      "source_node": "conferencias_pa",
+      "source_key": "26253-03",
+      "after_hash": "8f37d1ddad1f022821b97fbacfa0c1afbd2e4b07912329c65e49081d235b464f"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "cf1cfe5a-afbe-52b8-ab8c-cb56887f4cad",
+      "source_node": "conferencias_pa",
+      "source_key": "26253-04",
+      "after_hash": "51978b2f03fb4790c93febf2017a1cc66e8d34f3b42291fd487774318f20c1e8"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "c78dc49a-11c6-50de-9217-e99bc7b88d54",
+      "source_node": "conferencias_pa",
+      "source_key": "26253-05",
+      "after_hash": "8e815f87b89fb245857c457084b085488a484257845595bc736e7f69d363bdb9"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "75830055-b238-58f6-a6c0-b27351be14a4",
+      "source_node": "conferencias_pa",
+      "source_key": "26257-03",
+      "after_hash": "ecb468cb4c585428c06f8208c88a1162223e58e1f0bc7dc134d65d3bcd20c7dd"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "40ba1e06-ffe4-5e2c-ae9c-d7af0f502c25",
+      "source_node": "conferencias_pa",
+      "source_key": "26257-17",
+      "after_hash": "719d8ab2dd1fde5f8be4fdb4eb92de9620b97ca3774a51374eccde3c6eb1c7d5"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "94af8281-b894-5a3d-9462-59eb4394c264",
+      "source_node": "nao_conformidades",
+      "source_key": "RNC-PA-26251-15",
+      "after_hash": "b8e1c068a9424702400a04185776090bc0107786d41b7a5b979fd856e8a18506"
+    },
+    {
+      "collection": "legacy_quality_reviews",
+      "target_id": "3ce851c9-da07-563e-ae57-d40fd27c60b8",
+      "source_node": "nao_conformidades",
+      "source_key": "RNC-PA-26253-05",
+      "after_hash": "561df735eb8cc83955f308fd5116eb8cbcb5c766ea41cf3fb55f1a7df0b4d4cd"
+    }
+  ],
+  "completed_at": "2026-09-25T13:14:03.242043+00:00",
+  "inserted": {
+    "purchase_request": 4,
+    "purchase_order": 16,
+    "receipt": 7,
+    "finished_goods_check": 7,
+    "nonconformity": 2
+  },
+  "operational_after": {
+    "compras_demandas": 0,
+    "compras_pos": 0,
+    "recebimentos": 0,
+    "estoque_saldos_lote": 0,
+    "inventory_ledger": 0,
+    "wms_paletes": 0,
+    "cq_rncs": 0,
+    "conferencias_pa": 0
+  },
+  "collections": [
+    "legacy_procurement_reviews",
+    "legacy_receipt_reviews",
+    "legacy_quality_reviews"
+  ]
+}

@@ -1,0 +1,417 @@
+{
+  "status": "DRY_RUN_VALID",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22"
+  },
+  "baseline": {
+    "crm_clients": 15,
+    "workflow_tasks": 361,
+    "audit_logs": 3320,
+    "crm_samples": 30,
+    "pd_requests": 95,
+    "pd_developments": 95
+  },
+  "planned": {
+    "clients": 56,
+    "workflow_tasks": 56,
+    "audit_logs": 56,
+    "pd_writes": 0
+  },
+  "invalid_contact_values_omitted": 3,
+  "operations": [
+    {
+      "operation_id": "c0ed5b28-53b2-5d45-a0c0-a8c215bb425d",
+      "legacy_id": "ALPH",
+      "target_id": "97804f54-0fd6-5ebc-8171-7afd4c0b7a62",
+      "before_hash": null,
+      "after_hash": "fcea6a7b1a4d8591399ee80ee8dcb2bf2ba84b6e7da02e0e11f96895db23a24d"
+    },
+    {
+      "operation_id": "390061c5-80b4-5757-b82c-90f35765c095",
+      "legacy_id": "AMAZ",
+      "target_id": "0c84bc4c-2f8d-545a-a8b0-4a362e17a659",
+      "before_hash": null,
+      "after_hash": "6f3c3d0ff4f3691a30e01173edfb44da03009a68e71b08ae0ad43940a0f75c14"
+    },
+    {
+      "operation_id": "99fd33ed-008c-5e0f-b012-f2cb84282e83",
+      "legacy_id": "AMEE",
+      "target_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd",
+      "before_hash": null,
+      "after_hash": "8a18dfd5258fec6193fef994e2f7ba0a10670080486a4bd9252a5158134260a4"
+    },
+    {
+      "operation_id": "e5312560-bc93-5096-b205-42244f02182f",
+      "legacy_id": "AMOR",
+      "target_id": "c2482978-ca06-5d87-931b-72cfe8c812c8",
+      "before_hash": null,
+      "after_hash": "fdcbf6e43abd0fc8594c8500a4a4c562d2025a1a8f2fd222607f336a33f375af"
+    },
+    {
+      "operation_id": "5d97eee0-77df-598d-828b-50f2dbbdf70d",
+      "legacy_id": "ARTPA",
+      "target_id": "c63da496-a50e-5af3-ad83-4b1a3cf1a54e",
+      "before_hash": null,
+      "after_hash": "89acfae58043b246049ff7df6bf97cf8fb0e66a6b47bae58a72ed25b6b482914"
+    },
+    {
+      "operation_id": "5c1f043f-aa6e-5af1-afd4-792a05168e49",
+      "legacy_id": "BAZA",
+      "target_id": "add6e339-ae66-5098-8205-52f58dae6922",
+      "before_hash": null,
+      "after_hash": "7b97af4441b962be8d906d9d871fb9ea51187bc7e99ed8d573abb413c55ba611"
+    },
+    {
+      "operation_id": "a6394a45-509d-5877-91cb-56c2ef947c29",
+      "legacy_id": "BEMAGIC",
+      "target_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7",
+      "before_hash": null,
+      "after_hash": "83025837ab37f79d0864bbdb398ebb62ee347c939864d5ea891fefda71dc42fb"
+    },
+    {
+      "operation_id": "2c966f05-9428-50f8-85af-6b33115fa311",
+      "legacy_id": "BIOF",
+      "target_id": "dab6fa80-7ff9-5120-8564-deec405bc001",
+      "before_hash": null,
+      "after_hash": "23a1538fa4bb8c900d54242eb4d7d7d78d5e4568bcdad2d4b9f3abc3570cd3d6"
+    },
+    {
+      "operation_id": "f6170af4-f6ca-5c40-b83c-6f4b79f16aed",
+      "legacy_id": "BRIA",
+      "target_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610",
+      "before_hash": null,
+      "after_hash": "9d8680c9d6a6e8990f8d2eacdd5f988ca20d9271f22b5fee7652025a2ee02352"
+    },
+    {
+      "operation_id": "58a4f49d-869d-5091-b0ca-15ddecba9e6c",
+      "legacy_id": "CAMI",
+      "target_id": "66bcdc5e-7d2e-5bac-a775-8e3378f063a0",
+      "before_hash": null,
+      "after_hash": "57cb9eadbe650b6f0324235b02f27f898cc616e496c5a2fc24566d7ea671aae5"
+    },
+    {
+      "operation_id": "53d640ba-5907-5da4-b4eb-9ff25a452c97",
+      "legacy_id": "CNXA",
+      "target_id": "2c29007b-dec7-5277-90de-56b05d73e2ac",
+      "before_hash": null,
+      "after_hash": "8097f33efb485c630680efae982885d26b4fa4282c007238a375ce00c82c6677"
+    },
+    {
+      "operation_id": "78f32078-4c28-5777-bf36-1d538774425a",
+      "legacy_id": "CURADERM",
+      "target_id": "1ecd8f10-550c-523b-ae0c-d2e0c1474f97",
+      "before_hash": null,
+      "after_hash": "dccd3b650738134796cc2798c14437a61ec967b500832d40fc5b57f5c9de7bc9"
+    },
+    {
+      "operation_id": "7cdd281d-cfbf-523f-bde8-5472279b9eec",
+      "legacy_id": "DPOP",
+      "target_id": "e9117a46-0479-527b-8848-c069afa582db",
+      "before_hash": null,
+      "after_hash": "22cd51dab6e2ba1fd116b3971147fa7b8091bcddf6ecc5ade6faac603aae952e"
+    },
+    {
+      "operation_id": "66a66d95-5102-54bc-bff6-b8325b1d6ba3",
+      "legacy_id": "DYNA",
+      "target_id": "dcb374c8-e236-5bb6-b71d-d8d526193871",
+      "before_hash": null,
+      "after_hash": "f8beb934e384ac36d2d077c85730d6d016b60780d094aa2e9b007b179716f3c3"
+    },
+    {
+      "operation_id": "22056208-5532-5656-8977-5ba7a6b3cbbc",
+      "legacy_id": "EMBA",
+      "target_id": "4aafcd1e-f0ec-512c-a3cf-23a86d76654a",
+      "before_hash": null,
+      "after_hash": "9a00194a68815575c2f18139ccfc83b45e796eb75df554eac8abe507f3de943b"
+    },
+    {
+      "operation_id": "530e4399-ec0b-5add-a77c-92638216cb0c",
+      "legacy_id": "FEIT",
+      "target_id": "ea891489-bcdb-5ef9-b5d3-7a837bd65f81",
+      "before_hash": null,
+      "after_hash": "7b83501582fede5e60dc2e0e8efbb956405945c09101b7cce20599d4f00223d8"
+    },
+    {
+      "operation_id": "2552ba3d-4eef-5a01-a75a-adfa02e99b24",
+      "legacy_id": "FILA",
+      "target_id": "3babab51-a27e-5f8c-871a-0ea8fb344674",
+      "before_hash": null,
+      "after_hash": "68f01eae5fab7c7c9d74cb4ebde0c22327d53ccf950829f57356e32fd281ed6d"
+    },
+    {
+      "operation_id": "d08ff567-495a-5174-aad7-8322cba62a6d",
+      "legacy_id": "FORT",
+      "target_id": "a606cb5b-f948-5414-a36b-37e87522d781",
+      "before_hash": null,
+      "after_hash": "0e21ff908d01315b2c324b4c2b1a86f0c8b03a75f5e15de14bac104cb8d65adf"
+    },
+    {
+      "operation_id": "ebf0fd76-f2ad-54d1-9d9c-26f1179e6cf3",
+      "legacy_id": "GING",
+      "target_id": "14879737-4530-5a06-b501-df8867ad17e8",
+      "before_hash": null,
+      "after_hash": "bfde88abe36227f9243ed39476fa5e832e4c1a90dbbd29e384a0fc15907745d0"
+    },
+    {
+      "operation_id": "6e97eb9a-4fca-5033-9125-fa8541ce514e",
+      "legacy_id": "GLMR",
+      "target_id": "9b87b999-9586-5ed4-b530-87a95feb1c02",
+      "before_hash": null,
+      "after_hash": "8e6ae53a036bceb431f324f76eddb44187aa78799bdc48d99b21e5a238e611f0"
+    },
+    {
+      "operation_id": "24093140-d25f-5b6c-b00e-2b984452eef8",
+      "legacy_id": "GLOW",
+      "target_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d",
+      "before_hash": null,
+      "after_hash": "51a649c2a5a7c18d9462b356088bcf6744b2f53907d453b87845da705da4c0cc"
+    },
+    {
+      "operation_id": "4128aafa-b0b8-58a9-b781-d2aeffdb94a6",
+      "legacy_id": "GOTA",
+      "target_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c",
+      "before_hash": null,
+      "after_hash": "dddd36e7ab0d2fb9a1792fbbc3fdc3b9a957ae62ce5fc34f71e2efca24c77d6f"
+    },
+    {
+      "operation_id": "5db62651-2f07-5865-a3df-998ede66bbe1",
+      "legacy_id": "GRIF",
+      "target_id": "1f3b1935-e35a-563e-98bf-c7151fe75bcf",
+      "before_hash": null,
+      "after_hash": "80e4a4746dc5fe9ec8d6d781d474ab8d9f3f4bfccbd042a6f78f5556070ffa27"
+    },
+    {
+      "operation_id": "059ea417-e61d-5a4b-8cd5-62dc2f5c5fd2",
+      "legacy_id": "HBIB",
+      "target_id": "cf450897-e0df-511f-b1b3-86852a556920",
+      "before_hash": null,
+      "after_hash": "c804cdaa2ee0688e164d9223d2e30f623de8a470e83840b4f02275aa659ec1e5"
+    },
+    {
+      "operation_id": "c164f1fa-273c-53e5-ba28-7fe6a8992b4f",
+      "legacy_id": "ISAB",
+      "target_id": "5f99257e-338b-5336-9fd7-bcce25d39928",
+      "before_hash": null,
+      "after_hash": "a31dd90fd6dac16e3bdfbd30ebe709b1efbe1577b25762b742c1eaeefa7e5552"
+    },
+    {
+      "operation_id": "8d248ada-5efc-5427-8a63-5090060adc2b",
+      "legacy_id": "JRSP",
+      "target_id": "6231a9ab-822d-5efa-81e1-50471f8cdb1e",
+      "before_hash": null,
+      "after_hash": "355c1bf04d6786414f4ce8e2428b2f4e15a8c5dff28c339c731aff9ff01e2c49"
+    },
+    {
+      "operation_id": "d80fddb4-d096-5003-8499-2ea9e23ad9ff",
+      "legacy_id": "JSXI",
+      "target_id": "385745d6-a710-5dc8-89a1-b021c0a08ad1",
+      "before_hash": null,
+      "after_hash": "72d8e1bba25f10c3385b6a5353c58d64eef843094dcd811cf2f2c2004d3af86f"
+    },
+    {
+      "operation_id": "9a73a699-2875-5299-8db8-d64f884a22a1",
+      "legacy_id": "LMRP",
+      "target_id": "e88ac703-e9b4-599f-8015-c002eb9f794e",
+      "before_hash": null,
+      "after_hash": "327dbbefb22a6b5655606b0b703705a68f2df3ea80df00b46924f75187bcaa69"
+    },
+    {
+      "operation_id": "0942dc49-446a-55c3-8983-1b949b2fe2b1",
+      "legacy_id": "LUCROSS",
+      "target_id": "e2245935-33a5-5625-89ff-20108eb1e5eb",
+      "before_hash": null,
+      "after_hash": "9170711b43d67cb8deff2eb3ee97b7b6fda47d24fccb82975bfc166b66926cb3"
+    },
+    {
+      "operation_id": "21a13725-2a29-58e8-ba3f-7c83aa0db8cd",
+      "legacy_id": "MAAKE",
+      "target_id": "d4cde1c1-7ad7-5203-b492-89f172381d4a",
+      "before_hash": null,
+      "after_hash": "865aaa3235d8c8c09ccd9cd577be40d9e5cd57fb485b35ed78aad894d54e2fb8"
+    },
+    {
+      "operation_id": "0ae35c10-2cf2-5b77-aca6-37fa51bc1ff2",
+      "legacy_id": "MALU",
+      "target_id": "791bb585-5ab2-54fb-8e55-b5dcb33208ee",
+      "before_hash": null,
+      "after_hash": "6cdfddbe724cfbd5d3dec704481af8ee2c6c77cb5b72be2a3f25a51896fdcf9e"
+    },
+    {
+      "operation_id": "381bb1f9-5252-5832-885d-4f2b3d2ef4c5",
+      "legacy_id": "MENE",
+      "target_id": "ca88d3e3-3d7a-5c99-843c-a7a74ef02e95",
+      "before_hash": null,
+      "after_hash": "429ce4fc8ab9a36faf7f445c36fa0f37b490bc5fa9830a1965ec15188b0479f7"
+    },
+    {
+      "operation_id": "2a882224-1f32-523f-aed3-64af6c3580e6",
+      "legacy_id": "MILN",
+      "target_id": "be7124a4-689a-56b9-bf91-9054c4b09368",
+      "before_hash": null,
+      "after_hash": "81957a1f58241c954a2a5bf236534d3b9d82a5883641cab402cbafb381bcea82"
+    },
+    {
+      "operation_id": "ab8b1390-a578-528d-a6e9-8e1eebbc8810",
+      "legacy_id": "MMAR",
+      "target_id": "1080fb3c-d093-5e07-a75e-dad9554395d1",
+      "before_hash": null,
+      "after_hash": "ca7ec9d71dec23ed3565d8ebe1fe8c51c16f91b49e989ce79eaa000f1847d1ed"
+    },
+    {
+      "operation_id": "0306ae20-f1c4-55b0-a61a-fa226b1a6995",
+      "legacy_id": "MOUTIER",
+      "target_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff",
+      "before_hash": null,
+      "after_hash": "59cb2ce5ce33471e584100030d452257368ab9e18d50667eb72e1f071f4ee248"
+    },
+    {
+      "operation_id": "6c3b879d-45ec-5fa4-88c2-44cdbd03a22e",
+      "legacy_id": "NEVE",
+      "target_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d",
+      "before_hash": null,
+      "after_hash": "2a03747dab92998ec9f9d3452c6a6d56178e8287772bb110541582d015957359"
+    },
+    {
+      "operation_id": "99bdb72c-07b2-56e9-881f-ca85badbb28c",
+      "legacy_id": "ONAT",
+      "target_id": "acbe89f0-717e-59ff-bc3a-d7fe13f41d54",
+      "before_hash": null,
+      "after_hash": "c1de76ee4bc9a0f87fb85ce5ab2dea40e7c93ce9cfe3e8cf07db4a381b33c6d5"
+    },
+    {
+      "operation_id": "42835fdc-ede3-5594-ab0b-97d703dd1d9b",
+      "legacy_id": "PROP",
+      "target_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b",
+      "before_hash": null,
+      "after_hash": "84fa8b542ded0d119752e21f13e108c3b6fc921a1886ab3da5d0e7a645269024"
+    },
+    {
+      "operation_id": "3551f85d-6407-50f3-9c91-aec21abf7124",
+      "legacy_id": "PROSTYLE",
+      "target_id": "5a46a947-73fe-5825-a22b-ab13cf651175",
+      "before_hash": null,
+      "after_hash": "62f76cb80e56ba58b021ccad4fdf6c4c494d8c148a3df10fcdddf5b8b31f6ad7"
+    },
+    {
+      "operation_id": "f51fefa2-14ba-5360-bf7c-26da4f6cc593",
+      "legacy_id": "PRSO",
+      "target_id": "db666011-dc83-5a95-a8b4-beed1103d45f",
+      "before_hash": null,
+      "after_hash": "d19e24ba9446204b913b3f28ce88c9eba7cb18e66acdec69a46abdbcca6fb926"
+    },
+    {
+      "operation_id": "8f902931-805e-5657-860a-e3fb0a11c5fc",
+      "legacy_id": "PUROEU",
+      "target_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3",
+      "before_hash": null,
+      "after_hash": "040100950df0d2f223503aecabc8e5628a2a38143cffba58dc65a0c318b7c736"
+    },
+    {
+      "operation_id": "80556d25-938a-56ee-a8e2-469deec99e8e",
+      "legacy_id": "ROMA",
+      "target_id": "e29a4cc5-7ede-564d-bd17-78d376e8ae8d",
+      "before_hash": null,
+      "after_hash": "03823e5de12c0f87faf3cdaea88edff83491ac0005860e7f1a2f4b59d7fcef03"
+    },
+    {
+      "operation_id": "f0ecb18a-41e2-5d92-a6a8-e13b406f3b78",
+      "legacy_id": "ROSA",
+      "target_id": "183b30fd-02b9-5688-8d48-ae5105da9c7d",
+      "before_hash": null,
+      "after_hash": "fc70d5cf8d099ef7174ed8f311d8d796a7235fdbbde5d4af92edf7de19114398"
+    },
+    {
+      "operation_id": "c217f0dd-898c-5e9a-98bb-b3d10bbbd59e",
+      "legacy_id": "RTRA",
+      "target_id": "91fdd3ea-4cda-55fc-9074-010b4beed251",
+      "before_hash": null,
+      "after_hash": "23ac99cfa7a50d5c4d0faf80e1a1839c245a6665d6a641fb0f7d67222474430f"
+    },
+    {
+      "operation_id": "8e0d5074-7d48-5450-937e-c356a2bac890",
+      "legacy_id": "SARF",
+      "target_id": "82737fbd-44b1-5bab-939f-311841b43925",
+      "before_hash": null,
+      "after_hash": "64871564707a34af8e08eedd9473596fa977341d86ec915221489f097ef71fd5"
+    },
+    {
+      "operation_id": "8eeb1050-9e9a-5e46-8d47-894c6f5315f9",
+      "legacy_id": "SEUNO",
+      "target_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3",
+      "before_hash": null,
+      "after_hash": "9a4fdc6948e390e931e623cd04213d7425eb7a22b0a7682560deeaff232b0a1a"
+    },
+    {
+      "operation_id": "d984ae08-c28c-5443-90b8-f32265ebe828",
+      "legacy_id": "SFRA",
+      "target_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d",
+      "before_hash": null,
+      "after_hash": "533d710154fc8a27ce5578b539c811d8d109d62a697e990678f248765f1055cd"
+    },
+    {
+      "operation_id": "20c2a145-02aa-5b70-8d38-14225ea374f4",
+      "legacy_id": "SRPK",
+      "target_id": "e12ca4c9-21c4-5322-b2f3-aa35a5c49b52",
+      "before_hash": null,
+      "after_hash": "22d00a3bfc427781abd0c881a0aed4d3ae19d3a6a4ff3f952903b1b375544937"
+    },
+    {
+      "operation_id": "dfa0e629-29ad-589c-8d45-bf8bcef6c41c",
+      "legacy_id": "TCQM",
+      "target_id": "72b53985-394b-54a6-b7b5-13f0f678cb84",
+      "before_hash": null,
+      "after_hash": "da14a53856d993f86bf48ece291ac3f414e974085009c3eb401223af8d0bf15a"
+    },
+    {
+      "operation_id": "69d36689-91d5-5a5a-a27a-7eda1147534d",
+      "legacy_id": "VELLARISESSENCE",
+      "target_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9",
+      "before_hash": null,
+      "after_hash": "064124ec47092cd6ab62eb6e7145fb1fbf138a016f0f2eb139a014d8be64d5ee"
+    },
+    {
+      "operation_id": "d375c6c7-5508-53d2-be43-1a314d5d6cc5",
+      "legacy_id": "VLEM",
+      "target_id": "24fae5ab-1955-52d3-9481-e558894e9b31",
+      "before_hash": null,
+      "after_hash": "555e2f4e4d403b2f8cef942bd8866efbaede7dd0a70e35a464016ed609bc73b5"
+    },
+    {
+      "operation_id": "d05d5579-023c-5552-96cd-7a94c7e019a9",
+      "legacy_id": "VPKM",
+      "target_id": "1440b660-334e-580b-bf8f-198cdc450be5",
+      "before_hash": null,
+      "after_hash": "da8349ea68b33bdad55f3ab0a01f170916550b6c8f9cb185da527276b2844203"
+    },
+    {
+      "operation_id": "edaf2a63-a85e-5f81-a385-aa569327258c",
+      "legacy_id": "WHMC",
+      "target_id": "84f96f11-b2b7-5484-967e-f6d8214cf98d",
+      "before_hash": null,
+      "after_hash": "983af0a3a521fba03122b569063fdb20cd396363703caeb8797471a39c16c48d"
+    },
+    {
+      "operation_id": "0c253907-7673-5f4e-bd60-93fb4e8c439c",
+      "legacy_id": "WIKE",
+      "target_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e",
+      "before_hash": null,
+      "after_hash": "01ae296080819cdc974f09527c5fa85817f43674db66f5e7bfc0d36e03543b90"
+    },
+    {
+      "operation_id": "831bbe29-cedd-5861-9f98-1fb0c14bccaf",
+      "legacy_id": "YANN",
+      "target_id": "8e8de551-296f-536b-b678-40fd01111b79",
+      "before_hash": null,
+      "after_hash": "4ef8c4df102fc304cbdab1d3b3225730491c1d0dfdfccaa6253c95d920f82642"
+    },
+    {
+      "operation_id": "c2f72013-eeaf-561c-81a4-1d14a47b694e",
+      "legacy_id": "YXYA",
+      "target_id": "106025bc-525a-5b43-b910-276c64d3b8b5",
+      "before_hash": null,
+      "after_hash": "ddb027fc8019b7e0e588c55f2a513e381d811860b31b7fcbaf54822bdd1ade4b"
+    }
+  ]
+}

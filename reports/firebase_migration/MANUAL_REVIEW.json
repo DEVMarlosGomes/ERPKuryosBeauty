@@ -10,9 +10,9 @@
       "match": 3
     },
     "suppliers": {
-      "manual_review": 0,
+      "manual_review": 14,
       "conflict": 6,
-      "insert_candidate": 397,
+      "insert_candidate": 383,
       "match": 0
     },
     "materials": {

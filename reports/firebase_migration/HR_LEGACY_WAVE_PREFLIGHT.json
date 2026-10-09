@@ -1,0 +1,371 @@
+{
+  "generated_at": "2026-09-25T13:29:14.736538+00:00",
+  "mode": "READ_ONLY_HML_RECONCILIATION",
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "production_written": false,
+  "homologation_written": false,
+  "counts": {
+    "job_role": 3,
+    "legacy_user": 13
+  },
+  "user_classifications": {
+    "manual_review": 10,
+    "match_existing": 3
+  },
+  "job_roles": [
+    {
+      "source_key": "-P1812jiro021RybM1WS",
+      "legacy_name": "AUXILIAR DE PRODUCAO I",
+      "legacy_sector": "PRODUCAO",
+      "legacy_level": "1",
+      "legacy_active": true,
+      "classification": "manual_review",
+      "blockers": [
+        "target_role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "ativo": true,
+        "nivelTrilha": "1",
+        "nome": "AUXILIAR DE PRODUCAO I",
+        "setor": "PRODUCAO"
+      }
+    },
+    {
+      "source_key": "-P1816nkvRap3mvOCm7N",
+      "legacy_name": "AUXILIAR DE PRODUCAO II",
+      "legacy_sector": "PRODUCAO",
+      "legacy_level": "2",
+      "legacy_active": true,
+      "classification": "manual_review",
+      "blockers": [
+        "target_role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "ativo": true,
+        "nivelTrilha": "2",
+        "nome": "AUXILIAR DE PRODUCAO II",
+        "setor": "PRODUCAO"
+      }
+    },
+    {
+      "source_key": "-P181AHm0MUtwkGK1gSr",
+      "legacy_name": "AUXILIAR DE PRODUCAO III",
+      "legacy_sector": "PRODUCAO",
+      "legacy_level": "3",
+      "legacy_active": true,
+      "classification": "manual_review",
+      "blockers": [
+        "target_role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "ativo": true,
+        "nivelTrilha": "3",
+        "nome": "AUXILIAR DE PRODUCAO III",
+        "setor": "PRODUCAO"
+      }
+    }
+  ],
+  "legacy_users": [
+    {
+      "source_key": "76QB4wXNxWcjAZKEAGWzoGHeGIB2",
+      "legacy_name": "Adlai Alberto Santos Junior",
+      "legacy_email": "adlai.alberto@kuryos.com.br",
+      "legacy_role": "pcp",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-08-17T20:24:00.656Z",
+        "email": "adlai.alberto@kuryos.com.br",
+        "modulos": {
+          "analytics": true,
+          "apontamento": true,
+          "cadastros": true,
+          "compras": true,
+          "config": true,
+          "emitir_op": true,
+          "logistica": true,
+          "pedidos": true,
+          "planejamento": true,
+          "qualidade": true
+        },
+        "nome": "Adlai Alberto Santos Junior",
+        "role": "pcp"
+      }
+    },
+    {
+      "source_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "legacy_name": "Yasmim Fantini",
+      "legacy_email": "yasmim.fantini@kuryos.com.br",
+      "legacy_role": "pcp",
+      "target_user_id": "a77782de-0e7d-48f0-9064-aa14d25ea3b5",
+      "classification": "match_existing",
+      "blockers": [
+        "existing_account_preserved"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-08-25T18:47:19.647Z",
+        "email": "yasmim.fantini@kuryos.com.br",
+        "modulos": {
+          "analytics": true,
+          "apontamento": true,
+          "cadastros": true,
+          "compras": true,
+          "logistica": true,
+          "pedidos": true,
+          "planejamento": true,
+          "qualidade": true
+        },
+        "nome": "Yasmim Fantini",
+        "role": "pcp"
+      }
+    },
+    {
+      "source_key": "9hu8LoweLIeWZqdAQfeKLsqoIHj1",
+      "legacy_name": "vicenzo callegaro",
+      "legacy_email": "vicenzo@kuryos.com.br",
+      "legacy_role": "admin",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-08-24T12:57:01.924Z",
+        "email": "vicenzo@kuryos.com.br",
+        "nome": "vicenzo callegaro",
+        "role": "admin"
+      }
+    },
+    {
+      "source_key": "AadKYuWDqEZlhBxNDRrQQC3yfw63",
+      "legacy_name": "Adlai Alberto Santos Junior",
+      "legacy_email": "adlaiadlai.alberto@kuryos.com.br",
+      "legacy_role": "pcp",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-08-17T17:54:34.092Z",
+        "email": "adlaiadlai.alberto@kuryos.com.br",
+        "modulos": {
+          "analytics": true,
+          "apontamento": true,
+          "cadastros": true,
+          "compras": true,
+          "config": true,
+          "emitir_op": true,
+          "logistica": true,
+          "pedidos": true,
+          "planejamento": true,
+          "qualidade": true
+        },
+        "nome": "Adlai Alberto Santos Junior",
+        "role": "pcp"
+      }
+    },
+    {
+      "source_key": "HZSLrB5omiQ83nnEEAHhdkxpFok2",
+      "legacy_name": "Gustavo Callegaro",
+      "legacy_email": "gustavo@kuryos.com.br",
+      "legacy_role": "admin",
+      "target_user_id": "5eb85b1b-284a-4e11-bf55-32f8601cd93c",
+      "classification": "match_existing",
+      "blockers": [
+        "existing_account_preserved"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-07-08T01:05:55.509Z",
+        "email": "gustavo@kuryos.com.br",
+        "nome": "Gustavo Callegaro",
+        "role": "admin"
+      }
+    },
+    {
+      "source_key": "I7n4ydAdI0aYDPiJZThx8yiVB8q2",
+      "legacy_name": "Robert Briz",
+      "legacy_email": "robertflpe1@gmail.com",
+      "legacy_role": "production",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-07-17T14:02:45.599Z",
+        "email": "robertflpe1@gmail.com",
+        "nome": "Robert Briz",
+        "role": "production"
+      }
+    },
+    {
+      "source_key": "NG8bAfNoPzMYDjgzLe8fkguuqAB2",
+      "legacy_name": "Roberta Ramos",
+      "legacy_email": "roberta.ramos@kuryos.com.br",
+      "legacy_role": "qualidade",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-09-09T14:26:24.240Z",
+        "email": "roberta.ramos@kuryos.com.br",
+        "modulos": {
+          "analytics": true,
+          "apontamento": true,
+          "cadastros": true,
+          "logistica": true,
+          "planejamento": true,
+          "qualidade": true
+        },
+        "nome": "Roberta Ramos",
+        "role": "qualidade"
+      }
+    },
+    {
+      "source_key": "TWfr9HWY8pdZcX4IkzphXEfhJO62",
+      "legacy_name": "rotulagem",
+      "legacy_email": "rotulagem@kuryos.com.br",
+      "legacy_role": "rotulagem",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-07-29T19:56:59.242Z",
+        "email": "rotulagem@kuryos.com.br",
+        "nome": "rotulagem",
+        "role": "rotulagem"
+      }
+    },
+    {
+      "source_key": "bNEjC0vCpUTUfpskzxIX4CRksvl1",
+      "legacy_name": "Roberta Ramos",
+      "legacy_email": "roberta.ramos@kuryos.com",
+      "legacy_role": "qualidade",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-09-09T14:21:56.122Z",
+        "email": "roberta.ramos@kuryos.com",
+        "modulos": {
+          "analytics": true,
+          "apontamento": true,
+          "cadastros": true,
+          "logistica": true,
+          "planejamento": true,
+          "qualidade": true
+        },
+        "nome": "Roberta Ramos",
+        "role": "qualidade"
+      }
+    },
+    {
+      "source_key": "fHwKcDCiE2gwkueCpSwgdvZX3sW2",
+      "legacy_name": "Diego Costa",
+      "legacy_email": "diego.costa@kuryos.com.br",
+      "legacy_role": "pcp",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-07-08T13:32:52.206Z",
+        "email": "diego.costa@kuryos.com.br",
+        "modulos": {
+          "analytics": true,
+          "apontamento": true,
+          "cadastros": true,
+          "compras": true,
+          "config": true,
+          "emitir_op": true,
+          "logistica": true,
+          "pedidos": true,
+          "planejamento": true,
+          "qualidade": true
+        },
+        "nome": "Diego Costa",
+        "role": "pcp"
+      }
+    },
+    {
+      "source_key": "jOMHYxfSCvN5LsDNaykwnOIjK0I3",
+      "legacy_name": "Lucca De Camillis Lestingi",
+      "legacy_email": "lucca@kuryos.com.br",
+      "legacy_role": "admin",
+      "target_user_id": "7e8e209f-80dc-474b-b3fc-1135817a7b0e",
+      "classification": "match_existing",
+      "blockers": [
+        "existing_account_preserved"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-07-07T22:18:06.999Z",
+        "email": "lucca@kuryos.com.br",
+        "nome": "Lucca De Camillis Lestingi",
+        "role": "admin"
+      }
+    },
+    {
+      "source_key": "mGmxpnS4fkVGCHQjfZJMr72NJuE2",
+      "legacy_name": "Bruna Araujo",
+      "legacy_email": "bruna.araujo@kuryos.com.br",
+      "legacy_role": "pending",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-07-08T13:32:20.153Z",
+        "email": "bruna.araujo@kuryos.com.br",
+        "nome": "Bruna Araujo",
+        "role": "pending"
+      }
+    },
+    {
+      "source_key": "w2suzV2zFdPOGuuFv3NBbmz4FV32",
+      "legacy_name": "Rodolfo Lima de Sousa",
+      "legacy_email": "rodolfo-lima-sousa@kuryos.com",
+      "legacy_role": "logistica",
+      "target_user_id": null,
+      "classification": "manual_review",
+      "blockers": [
+        "account_creation_prohibited",
+        "role_mapping_required"
+      ],
+      "sanitized_payload": {
+        "created_at": "2026-09-10T11:56:24.290Z",
+        "email": "rodolfo-lima-sousa@kuryos.com",
+        "modulos": {
+          "logistica": true
+        },
+        "nome": "Rodolfo Lima de Sousa",
+        "role": "logistica"
+      }
+    }
+  ],
+  "decision_gate": {
+    "status": "READY_FOR_ISOLATED_HML_REVIEW",
+    "account_creation_allowed": false,
+    "permission_replay_allowed": false
+  }
+}

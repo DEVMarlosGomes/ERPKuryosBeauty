@@ -36,6 +36,10 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { toast } from "sonner";
+import LegacyStructureReviewPanel from "@/components/cadastros/LegacyStructureReviewPanel";
+import LegacyOrderOpReviewPanel from "@/components/cadastros/LegacyOrderOpReviewPanel";
+import LegacyMasterDataReviewPanel from "@/components/cadastros/LegacyMasterDataReviewPanel";
+import LegacyInventoryCutoverReviewPanel from "@/components/cadastros/LegacyInventoryCutoverReviewPanel";
 
 const emptyCliente = {
   nome_empresa: "",
@@ -751,13 +755,14 @@ export default function CadastrosPage() {
       <SearchBar value={search} onChange={setSearch} onRefresh={loadAll} placeholder="Buscar por SKU, cliente, fornecedor, CNPJ ou categoria..." />
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <TabsList className="grid h-auto grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-11">
+        <TabsList className="grid h-auto grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-6 xl:grid-cols-12">
           <TabsTrigger value="dashboard">Visao</TabsTrigger>
           <TabsTrigger value="clientes">Clientes</TabsTrigger>
           <TabsTrigger value="fornecedores">Fornecedores</TabsTrigger>
           <TabsTrigger value="produtos">Produtos</TabsTrigger>
           <TabsTrigger value="materiais">MPs/Insumos</TabsTrigger>
           <TabsTrigger value="pendencias-bom">Pendências BOM</TabsTrigger>
+          <TabsTrigger value="revisao-legado">Revisão legado</TabsTrigger>
           <TabsTrigger value="engenharia">Formulas/BOM</TabsTrigger>
           <TabsTrigger value="fichas">Fichas</TabsTrigger>
           <TabsTrigger value="enderecos">Enderecos</TabsTrigger>
@@ -916,6 +921,16 @@ export default function CadastrosPage() {
               { key: "acao", label: "Acao", render: (r) => <RowActions onEdit={() => openEntityDialog("material", r)} onDelete={() => inactivateEntity("material", r)} /> },
             ]}
           />
+        </TabsContent>
+
+        <TabsContent value="revisao-legado" className="space-y-4">
+          <LegacyMasterDataReviewPanel globalSearch={search} />
+          <Separator />
+          <LegacyStructureReviewPanel globalSearch={search} onChanged={loadAll} />
+          <Separator />
+          <LegacyOrderOpReviewPanel globalSearch={search} />
+          <Separator />
+          <LegacyInventoryCutoverReviewPanel globalSearch={search} />
         </TabsContent>
 
         <TabsContent value="engenharia" className="space-y-4">

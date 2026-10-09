@@ -52,14 +52,15 @@ function LineCard({ linha, slot }) {
   const produzido = Number(slot?.qtd_produzida || 0);
   const pct = planejado > 0 ? Math.min(Math.round((produzido / planejado) * 100), 100) : 0;
   const operando = slot?.status === "em_execucao";
+  const parada = slot?.status === "pausada";
 
   return (
     <div className="dashboard-panel min-h-[116px] rounded-2xl border border-white/5 bg-[#1f1f22] p-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-bold text-white">{linha?.nome || "Linha"}</h3>
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black ${operando ? "bg-[#063d16] text-[#04c821]" : "bg-white/5 text-zinc-400"}`}>
-          <span className={`h-2.5 w-2.5 rounded-full ${operando ? "bg-[#04c821]" : "bg-zinc-500"}`} />
-          {operando ? "OPERANDO" : "SEM OP"}
+        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black ${operando ? "bg-[#063d16] text-[#04c821]" : parada ? "bg-red-500/15 text-red-400" : "bg-white/5 text-zinc-400"}`}>
+          <span className={`h-2.5 w-2.5 rounded-full ${operando ? "bg-[#04c821]" : parada ? "bg-red-500" : "bg-zinc-500"}`} />
+          {operando ? "OPERANDO" : parada ? "PARADA" : "SEM OP"}
         </span>
       </div>
       <p className="mt-3 h-4 truncate text-xs font-black text-white">
@@ -248,22 +249,25 @@ export default function PCPDailyDashboard() {
   const [slots, setSlots] = useState([]);
   const [historicoDia, setHistoricoDia] = useState({ rows: [], kpis: {} });
   const [historicoSemana, setHistoricoSemana] = useState({ rows: [], kpis: {} });
+  const [legacy, setLegacy] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const weekStart = startOfWeek(day);
       const weekEnd = addDays(weekStart, 6);
-      const [linhasRes, slotsRes, diaRes, semanaRes] = await Promise.all([
+      const [linhasRes, slotsRes, diaRes, semanaRes, legacyRes] = await Promise.all([
         api.get("/pcp/linhas"),
         api.get("/pcp/programacao", { params: { data_inicio: day, data_fim: day } }),
         api.get("/pcp/historico", { params: { data_inicio: day, data_fim: day } }),
         api.get("/pcp/historico", { params: { data_inicio: weekStart, data_fim: weekEnd } }),
+        api.get("/pcp/legacy-dashboard-view", { params: { data: day } }).catch(() => ({ data: null })),
       ]);
       setLinhas(linhasRes.data || []);
       setSlots(slotsRes.data || []);
       setHistoricoDia(diaRes.data || { rows: [], kpis: {} });
       setHistoricoSemana(semanaRes.data || { rows: [], kpis: {} });
+      setLegacy(legacyRes.data || null);
     } catch {
       toast.error("Erro ao carregar dashboard diario do PCP");
     } finally {
@@ -273,49 +277,56 @@ export default function PCPDailyDashboard() {
 
   useEffect(() => { load(); }, [load]);
 
-  const activeLinhas = useMemo(() => (linhas || []).filter(l => l.status !== "inativa").slice(0, 3), [linhas]);
+  const useLegacySlots = (slots || []).length === 0 && Boolean((legacy?.schedule_slots || []).length || (legacy?.line_state_slots || []).length);
+  const displaySlots = useLegacySlots
+    ? ((legacy?.schedule_slots || []).length ? legacy.schedule_slots : legacy?.line_state_slots || [])
+    : slots;
+  const displayLinhas = useLegacySlots && (legacy?.lines || []).length ? legacy.lines : linhas;
+  const useLegacyHistory = (historicoDia.rows || []).length === 0 && (legacy?.history?.rows || []).length > 0;
+  const displayHistoricoDia = useLegacyHistory ? legacy.history : historicoDia;
+  const activeLinhas = useMemo(() => (displayLinhas || []).filter(l => l.status !== "inativa").slice(0, 3), [displayLinhas]);
   const slotByLinha = useMemo(() => {
     const map = {};
-    for (const slot of slots || []) {
+    for (const slot of displaySlots || []) {
       const current = map[slot.linha_id];
       if (!current || slot.status === "em_execucao") map[slot.linha_id] = slot;
     }
     return map;
-  }, [slots]);
+  }, [displaySlots]);
 
-  const metaDia = Math.max((slots || []).reduce((s, slot) => s + Number(slot.qtd_planejada || 0), 0), 16000);
+  const metaDia = Math.max((displaySlots || []).reduce((s, slot) => s + Number(slot.qtd_planejada || 0), 0), 16000);
   const metaSemana = metaDia * 5;
-  const produzidoDia = Number(historicoDia.kpis?.total_produzido || 0);
-  const produzidoSemana = Number(historicoSemana.kpis?.total_produzido || 0);
-  const registrosDia = Number(historicoDia.kpis?.registros || 0);
-  const paradasDia = (historicoDia.rows || []).filter(row => row.tipo === "pausa" || row.tipo === "perda").length;
+  const produzidoDia = Number(displayHistoricoDia.kpis?.total_produzido || 0);
+  const produzidoSemana = Number(historicoSemana.kpis?.total_produzido || (useLegacyHistory ? legacy?.week_kpis?.total_produzido : 0) || 0);
+  const registrosDia = Number(displayHistoricoDia.kpis?.registros || 0);
+  const paradasDia = (displayHistoricoDia.rows || []).filter(row => row.tipo === "pausa" || row.tipo === "perda").length;
   const mediaRegistro = registrosDia > 0 ? Math.round(produzidoDia / registrosDia) : 0;
   const weekStart = startOfWeek(day);
   const weekEnd = addDays(weekStart, 6);
-  const hasActiveSlot = (slots || []).some(slot => slot.status === "em_execucao");
+  const hasActiveSlot = (displaySlots || []).some(slot => slot.status === "em_execucao");
   const producedByLine = useMemo(() => {
     const byName = {};
-    for (const row of historicoDia.rows || []) {
+    for (const row of displayHistoricoDia.rows || []) {
       if (row.tipo !== "apontamento") continue;
       const key = row.linha || "Linha";
       byName[key] = (byName[key] || 0) + Number(row.qtd || 0);
     }
-    for (const linha of linhas || []) {
+    for (const linha of displayLinhas || []) {
       const slot = slotByLinha[linha.id];
       if (slot?.linha_nome && byName[slot.linha_nome] != null) byName[linha.id] = byName[slot.linha_nome];
       if (byName[linha.nome] != null) byName[linha.id] = byName[linha.nome];
     }
     return byName;
-  }, [historicoDia.rows, linhas, slotByLinha]);
+  }, [displayHistoricoDia.rows, displayLinhas, slotByLinha]);
   const ordersProgress = useMemo(() => {
     const map = {};
-    for (const slot of slots || []) {
+    for (const slot of displaySlots || []) {
       const key = slot.pedido_numero || slot.op_numero || slot.id;
       map[key] = map[key] || { numero: slot.pedido_numero || slot.op_numero, produto: slot.produto_nome, produced: 0, target: 0 };
       map[key].target += Number(slot.qtd_planejada || 0);
       if (!map[key].produto) map[key].produto = slot.produto_nome;
     }
-    for (const row of historicoDia.rows || []) {
+    for (const row of displayHistoricoDia.rows || []) {
       if (row.tipo !== "apontamento") continue;
       const key = row.pedido_numero || row.op_numero || row.id;
       map[key] = map[key] || { numero: row.pedido_numero || row.op_numero, produto: row.produto, produced: 0, target: 0 };
@@ -325,7 +336,7 @@ export default function PCPDailyDashboard() {
     return Object.values(map)
       .map(order => ({ ...order, target: order.target || Math.ceil((order.produced || 0) / 0.92) || 0 }))
       .sort((a, b) => (b.produced || 0) - (a.produced || 0));
-  }, [historicoDia.rows, slots]);
+  }, [displayHistoricoDia.rows, displaySlots]);
 
   return (
     <div className="pcp-theme min-h-full bg-black text-white">
@@ -356,6 +367,19 @@ export default function PCPDailyDashboard() {
             <div className="mt-10 rounded-3xl bg-[#1b1b1e] p-12 text-center text-zinc-400">Carregando dashboard...</div>
           ) : (
             <div className="mt-7 space-y-5">
+              {(useLegacySlots || useLegacyHistory) && (
+                <section className="flex flex-col gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 px-5 py-4 text-sm md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="font-black text-amber-300">Dados Firebase posicionados no dashboard — somente leitura</p>
+                    <p className="mt-1 text-xs text-zinc-400">Nenhuma OP, apontamento ou saldo operacional foi criado. Os dados atuais do ERP continuam tendo prioridade.</p>
+                  </div>
+                  {legacy?.latest_activity_date && day !== legacy.latest_activity_date && (
+                    <Button variant="outline" className="border-amber-400/30 text-amber-200" onClick={() => setDay(legacy.latest_activity_date)}>
+                      Ver último apontamento ({formatBR(legacy.latest_activity_date)})
+                    </Button>
+                  )}
+                </section>
+              )}
               <section className="dashboard-panel rounded-3xl bg-[#1f1f22] p-5 md:p-6">
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <h2 className="flex items-center gap-2 text-base font-black">
@@ -386,7 +410,7 @@ export default function PCPDailyDashboard() {
               </section>
 
               <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <LaunchesCard rows={historicoDia.rows || []} />
+                <LaunchesCard rows={displayHistoricoDia.rows || []} />
                 <TurnosCard hasActive={hasActiveSlot} />
               </section>
 
@@ -417,7 +441,7 @@ export default function PCPDailyDashboard() {
                   <h2 className="text-base font-black">Programado vs Realizado</h2>
                   <button type="button" onClick={() => navigate("/pcp/planejamento")} className="min-h-8 rounded-md px-3 text-[11px] font-bold text-[#6485f2] hover:bg-[#6485f2]/10">Programar /</button>
                 </div>
-                <GoalBar title="" subtitle="-" produced={produzidoDia} target={(slots || []).reduce((s, slot) => s + Number(slot.qtd_planejada || 0), 0)} tone="orange" />
+                <GoalBar title="" subtitle="-" produced={produzidoDia} target={(displaySlots || []).reduce((s, slot) => s + Number(slot.qtd_planejada || 0), 0)} tone="orange" />
               </section>
 
               <OrdersProgress orders={ordersProgress} />

@@ -1,28 +1,44 @@
-<!DOCTYPE html>
-<html>
-<head><title>KURYOS — Reset de conexão</title>
-<style>body{font-family:sans-serif;padding:40px;text-align:center;background:#0f172a;color:#f1f5f9;}
-button{background:#3b82f6;color:white;border:none;padding:12px 24px;border-radius:8px;font-size:16px;cursor:pointer;margin:8px;}
-button:hover{background:#2563eb;} .ok{color:#22c55e;font-size:18px;} .err{color:#ef4444;}</style>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <title>Kuryos — Recuperar aplicação local</title>
+  <style>
+    body { font-family: sans-serif; padding: 40px; text-align: center; background: #0f172a; color: #f1f5f9; }
+    button { background: #3b82f6; color: white; border: 0; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 8px; }
+    button:hover { background: #2563eb; }
+    .ok { color: #22c55e; font-size: 18px; }
+    .err { color: #ef4444; }
+  </style>
 </head>
 <body>
-<h2>KURYOS — Resetar conexão com backend</h2>
-<p>Clique no botão para limpar a URL em cache e forçar conexão com <strong>localhost:8000</strong></p>
-<button onclick="reset()">Resetar e Entrar</button>
-<div id="msg"></div>
-<script>
-function reset() {
-  try {
-    localStorage.removeItem('kuryos.backend_url');
-    localStorage.setItem('kuryos.backend_url', 'http://localhost:8000');
-    document.getElementById('msg').innerHTML = '<p class="ok">✓ Resetado! Redirecionando para o sistema...</p>';
-    setTimeout(() => { window.location.href = '/'; }, 1500);
-  } catch(e) {
-    document.getElementById('msg').innerHTML = '<p class="err">Erro: ' + e.message + '</p>';
-  }
-}
-// Auto-reset
-reset();
-</script>
+  <h2>Kuryos — Recuperar aplicação local</h2>
+  <p>Limpando bundles antigos e restaurando a conexão com <strong>localhost:8000</strong>.</p>
+  <button type="button" onclick="resetApp()">Limpar e entrar</button>
+  <div id="msg"></div>
+  <script>
+    async function resetApp() {
+      const message = document.getElementById('msg');
+      try {
+        localStorage.removeItem('kuryos.backend_url');
+        localStorage.setItem('kuryos.backend_url', 'http://localhost:8000');
+        if ('caches' in window) {
+          const names = await caches.keys();
+          await Promise.all(names.map((name) => caches.delete(name)));
+        }
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+        }
+        message.innerHTML = '<p class="ok">Cache limpo. Abrindo a versão atual...</p>';
+        setTimeout(() => window.location.replace('/?reload=' + Date.now()), 500);
+      } catch (error) {
+        message.innerHTML = '<p class="err">Erro: ' + String(error?.message || error) + '</p>';
+      }
+    }
+    resetApp();
+  </script>
 </body>
 </html>

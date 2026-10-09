@@ -1,0 +1,18 @@
+{
+  "status": "VERIFIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "policy": "A_LEGACY_AUTHORIZED",
+  "checks": {
+    "skus": 382,
+    "counters": 13,
+    "unique_codes": true,
+    "resolved_clients": true,
+    "legacy_authorized": true,
+    "active": 328,
+    "inactive": 54,
+    "aliases": 7,
+    "hash_mismatches": []
+  },
+  "unrelated_collection_failures": [],
+  "unrelated_collections_verified": 102
+}

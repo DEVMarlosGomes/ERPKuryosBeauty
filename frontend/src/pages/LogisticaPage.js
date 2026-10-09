@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, ArrowRight, CalendarClock, ClipboardCheck, Loader2, PackageCheck, RefreshCw, ShieldCheck, Truck, Warehouse } from "lucide-react";
+import SectorInventoryReviewPanel from "@/components/inventory/SectorInventoryReviewPanel";
 
 const AREAS = [
   { title: "Recebimento", description: "Entrada de NF, conferencia e vinculo com PO.", path: "/recebimento", icon: PackageCheck },
@@ -75,6 +76,8 @@ export default function LogisticaPage() {
         <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Expedicoes abertas</p><p className="mt-1 text-2xl font-semibold">{expDash?.abertas ?? metrics.expAbertas}</p></CardContent></Card>
         <Card><CardContent className="p-4"><p className="text-xs uppercase text-muted-foreground">Agendamentos</p><p className="mt-1 text-2xl font-semibold">{metrics.agendadas}</p></CardContent></Card>
       </div>
+
+      <SectorInventoryReviewPanel sector="logistica" title="Revisão legada de endereços WMS" />
 
       <Card>
         <CardHeader>

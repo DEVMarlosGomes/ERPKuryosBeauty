@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
+import SectorInventoryReviewPanel from "@/components/inventory/SectorInventoryReviewPanel";
 
 const emptyRnc = {
   classificacao: "maior",
@@ -316,16 +317,18 @@ export default function CQDashboard() {
             <SelectItem value="rncs">Nao Conformidades</SelectItem>
             <SelectItem value="especificacoes">Especificacoes</SelectItem>
             <SelectItem value="fornecedores">Desempenho de Fornecedor</SelectItem>
+            <SelectItem value="legado">Lotes legados</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="dashboard-tabs grid grid-cols-2 md:grid-cols-4">
+      <div className="dashboard-tabs grid grid-cols-2 md:grid-cols-5">
         {[
           ["fila", "Fila de Inspecao"],
           ["rncs", "Nao Conformidades"],
           ["especificacoes", "Especificacoes"],
           ["fornecedores", "Fornecedores"],
+          ["legado", "Lotes legados"],
         ].map(([value, label]) => <button key={value} data-active={tab === value} className="dashboard-tab" onClick={() => setTab(value)}>{label}</button>)}
       </div>
 
@@ -338,6 +341,7 @@ export default function CQDashboard() {
           {tab === "especificacoes" && <div className="overflow-hidden rounded-xl border border-l-4 border-l-primary bg-card shadow-sm"><div className="border-b p-4"><b>Especificacoes de produto ({specs.length})</b><p className="text-sm text-muted-foreground">Consulta dos planos de inspecao. Edicao em Cadastros.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[860px] text-sm"><thead className="bg-muted text-xs uppercase text-muted-foreground"><tr>{["SKU", "Produto", "Ensaio", "Faixa / criterio", "Numerico", "Critico", "Acao"].map((h) => <th key={h} className="p-3 text-left">{h}</th>)}</tr></thead><tbody>{specs.map((spec) => <tr key={spec.id} className="border-b"><td className="p-3 font-mono">{spec.produto.codigo_interno || "-"}</td><td className="p-3">{spec.produto.nome_produto}</td><td className="p-3 font-bold">{spec.name.replaceAll("_", " ")}</td><td className="p-3">{String(spec.value)}</td><td className="p-3">{spec.numeric ? <StatusBadge value="aprovado" /> : <StatusBadge value="pendente" />}</td><td className="p-3">{spec.critical ? <StatusBadge value="critica" /> : <StatusBadge value="menor" />}</td><td className="p-3"><Button size="sm" variant="outline" onClick={() => navigate("/cadastros")}>Abrir Cadastros</Button></td></tr>)}{!specs.length && <tr><td colSpan={7} className="p-10 text-center text-muted-foreground">Nenhuma especificacao cadastrada.</td></tr>}</tbody></table></div></div>}
 
           {tab === "fornecedores" && <div className="overflow-hidden rounded-xl border border-l-4 border-l-primary bg-card shadow-sm"><div className="border-b p-4"><b>Desempenho de fornecedor</b><p className="text-sm text-muted-foreground">Pior taxa primeiro. Concessao nao conta como aprovacao e RNC aberta deixa alerta.</p></div><div className="overflow-x-auto"><table className="w-full min-w-[780px] text-sm"><thead className="bg-muted text-xs uppercase text-muted-foreground"><tr>{["Fornecedor", "Taxa aprovacao", "RNCs", "RNC aberta", "Homologacao", "Acao"].map((h) => <th key={h} className="p-3 text-left">{h}</th>)}</tr></thead><tbody>{supplierRows.map((row) => <tr key={row.id} className="border-b"><td className="p-3 font-bold">{row.razao_social}</td><td className={`p-3 font-black ${row.taxa != null && row.taxa < 80 ? "text-red-600" : "text-emerald-600"}`}>{row.taxa == null ? "sem dado" : `${row.taxa}%`}</td><td className="p-3">{row.rncs}</td><td className="p-3">{row.abertas ? <StatusBadge value="aberta" /> : <StatusBadge value="aprovado" />}</td><td className="p-3"><StatusBadge value={row.status_homologacao} /></td><td className="p-3"><Button size="sm" variant="outline" onClick={() => navigate("/compras/fornecedores")}>Ver fornecedor</Button></td></tr>)}{!supplierRows.length && <tr><td colSpan={6} className="p-10 text-center text-muted-foreground">Nenhum fornecedor para analisar.</td></tr>}</tbody></table></div></div>}
+          {tab === "legado" && <SectorInventoryReviewPanel sector="qualidade" title="Validação CQ de lotes legados" />}
         </>
       )}
 

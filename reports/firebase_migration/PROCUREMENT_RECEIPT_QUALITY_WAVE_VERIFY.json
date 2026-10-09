@@ -1,0 +1,36 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "procurement_receipt_quality_legacy_review_v1",
+  "unrelated_collections_verified": 109,
+  "unrelated_collection_failures": {},
+  "counts": {
+    "purchase_request": 4,
+    "purchase_order": 16,
+    "receipt": 7,
+    "finished_goods_check": 7,
+    "nonconformity": 2
+  },
+  "review_checks": {
+    "legacy_procurement_reviews": {
+      "total": 20,
+      "operational_eligible_true": 0,
+      "activation_not_blocked": 0,
+      "historical_only_false": 0
+    },
+    "legacy_receipt_reviews": {
+      "total": 7,
+      "operational_eligible_true": 0,
+      "activation_not_blocked": 0,
+      "historical_only_false": 0
+    },
+    "legacy_quality_reviews": {
+      "total": 9,
+      "operational_eligible_true": 0,
+      "activation_not_blocked": 0,
+      "historical_only_false": 0
+    }
+  },
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "operational_unchanged": true
+}

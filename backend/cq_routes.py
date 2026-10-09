@@ -21,6 +21,7 @@ Invariants:
 
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List, Optional
+from contextvars import ContextVar
 import logging
 
 from stock_ledger import append_lot_ledger_event
@@ -28,6 +29,7 @@ from stock_ledger import append_lot_ledger_event
 from fastapi import APIRouter, HTTPException, Request, Query
 from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
+from pymongo.errors import DuplicateKeyError, OperationFailure
 
 from rbac import require_roles, has_role
 from workflow_engine import audit_log, next_sequence, create_workflow_task
@@ -42,11 +44,48 @@ get_current_user = None
 new_id_func = None
 now_iso_func = None
 _broadcast_event = None
+_cq_session: ContextVar[Any] = ContextVar("cq_mongo_session", default=None)
+_SESSION_METHODS = {
+    "aggregate", "bulk_write", "count_documents", "delete_many", "delete_one", "distinct",
+    "find", "find_one", "find_one_and_delete", "find_one_and_replace", "find_one_and_update",
+    "insert_many", "insert_one", "replace_one", "update_many", "update_one",
+}
+
+
+class _SessionCollectionProxy:
+    def __init__(self, collection):
+        self._collection = collection
+
+    def __getattr__(self, name):
+        attr = getattr(self._collection, name)
+        if name not in _SESSION_METHODS or not callable(attr):
+            return attr
+
+        def call(*args, **kwargs):
+            session = _cq_session.get()
+            if session is not None and "session" not in kwargs:
+                kwargs["session"] = session
+            return attr(*args, **kwargs)
+
+        return call
+
+
+class _SessionDatabaseProxy:
+    def __init__(self, database):
+        self._database = database
+
+    def __getattr__(self, name):
+        if name in {"client", "name", "codec_options", "read_preference", "write_concern"}:
+            return getattr(self._database, name)
+        return _SessionCollectionProxy(getattr(self._database, name))
+
+    def __getitem__(self, name):
+        return _SessionCollectionProxy(self._database[name])
 
 
 def init_cq(database, auth_func, id_func, iso_func, broadcast_event_fn=None):
     global db, get_current_user, new_id_func, now_iso_func, _broadcast_event
-    db = database
+    db = _SessionDatabaseProxy(database)
     get_current_user = auth_func
     new_id_func = id_func
     now_iso_func = iso_func
@@ -403,12 +442,18 @@ async def create_cq_indexes():
     await db.cq_rncs.create_index(
         [("tenant_id", 1), ("numero_rnc", 1)], unique=True, sparse=True
     )
+    await db.cq_rncs.create_index(
+        [("tenant_id", 1), ("ra_id", 1)], unique=True, sparse=True
+    )
     await db.cq_rncs.create_index([("tenant_id", 1), ("status", 1)])
     await db.cq_rncs.create_index([("tenant_id", 1), ("classificacao", 1)])
 
     # Retenção-specific
     await db.cq_retencoes.create_index(
         [("tenant_id", 1), ("numero_ret", 1)], unique=True, sparse=True
+    )
+    await db.cq_retencoes.create_index(
+        [("tenant_id", 1), ("ra_id", 1)], unique=True, sparse=True
     )
     await db.cq_retencoes.create_index([("tenant_id", 1), ("data_limite_guarda", 1)])
     await db.cq_retencoes.create_index([("tenant_id", 1), ("status", 1)])
@@ -422,6 +467,9 @@ async def create_cq_indexes():
 
     # Status lote
     await db.cq_status_lote.create_index([("tenant_id", 1), ("lote_id", 1)])
+    await db.cq_status_lote.create_index(
+        [("tenant_id", 1), ("ra_id", 1), ("status_novo", 1)], unique=True, sparse=True
+    )
 
     # Checklist
     await db.cq_checklists.create_index([("tenant_id", 1), ("op_id", 1)])
@@ -1102,14 +1150,25 @@ async def _propagar_decisao_cq_wms(
     if not item_id:
         return
 
+    def scoped_query(item_field: str) -> Dict[str, Any]:
+        query: Dict[str, Any] = {"tenant_id": tenant_id, item_field: item_id}
+        if ra.get("recebimento_id"):
+            query["recebimento_id"] = ra["recebimento_id"]
+        elif ra.get("lote_id"):
+            query["cq_lote_id"] = ra["lote_id"]
+        else:
+            query["cq_ra_id"] = ra["id"]
+        return query
+
     saldos = []
     if hasattr(db, "estoque_saldos_lote"):
+        saldo_query = scoped_query("item_id")
         saldos = await db.estoque_saldos_lote.find(
-            {"tenant_id": tenant_id, "item_id": item_id}, {"_id": 0}
+            saldo_query, {"_id": 0}
         ).to_list(1000)
         status_wms = "disponivel" if posicao_cq == "aprovado" else "reprovado"
         await db.estoque_saldos_lote.update_many(
-            {"tenant_id": tenant_id, "item_id": item_id},
+            saldo_query,
             {"$set": {
                 "posicao_cq": posicao_cq,
                 "cq_status": decisao,
@@ -1122,8 +1181,9 @@ async def _propagar_decisao_cq_wms(
         )
 
     if hasattr(db, "wms_paletes"):
+        palete_query = scoped_query("estoque_item_id")
         await db.wms_paletes.update_many(
-            {"tenant_id": tenant_id, "estoque_item_id": item_id},
+            palete_query,
             {"$set": {
                 "status": posicao_cq,
                 "posicao_cq": posicao_cq,
@@ -1138,6 +1198,12 @@ async def _propagar_decisao_cq_wms(
 
     if hasattr(db, "estoque_movimentos_lote"):
         for saldo in saldos:
+            ledger_key = f"cq:{ra.get('id')}:{saldo.get('id')}:{decisao}"
+            existing = await db.estoque_movimentos_lote.find_one(
+                {"tenant_id": tenant_id, "idempotency_key": ledger_key}, {"_id": 0, "id": 1}
+            )
+            if existing:
+                continue
             await append_lot_ledger_event(
                 db,
                 new_id_fn=new_id,
@@ -1150,7 +1216,7 @@ async def _propagar_decisao_cq_wms(
                 documento=ra.get("numero_ra", ""),
                 referencia=ra.get("id", ""),
                 usuario=user,
-                idempotency_key=f"cq:{ra.get('id')}:{saldo.get('id')}:{decisao}",
+                idempotency_key=ledger_key,
                 metadata={
                     "status_anterior": saldo.get("posicao_cq") or saldo.get("cq_status"),
                     "status_novo": posicao_cq,

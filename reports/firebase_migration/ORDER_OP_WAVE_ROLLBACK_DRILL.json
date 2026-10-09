@@ -1,0 +1,15 @@
+{
+  "status": "VERIFIED",
+  "source_mode": "HML_READ_ONLY",
+  "rollback_target": "LOCAL_DISPOSABLE_DATABASE",
+  "copied_documents": {
+    "legacy_order_reviews": 453,
+    "legacy_op_reviews": 1388
+  },
+  "rollback_result": {
+    "legacy_order_reviews": 453,
+    "legacy_op_reviews": 1388
+  },
+  "collections_absent_after_rollback": true,
+  "local_database_removed": true
+}

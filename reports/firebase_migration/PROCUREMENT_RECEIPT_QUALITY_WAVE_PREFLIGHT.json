@@ -1,0 +1,692 @@
+{
+  "generated_at": "2026-09-25T13:10:25.049826+00:00",
+  "mode": "READ_ONLY_HML_RECONCILIATION",
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "production_written": false,
+  "homologation_written": false,
+  "counts": {
+    "purchase_request": 4,
+    "purchase_order": 16,
+    "receipt": 7,
+    "finished_goods_check": 7,
+    "nonconformity": 2
+  },
+  "classification_counts": {
+    "purchase_requests": {
+      "manual_review": 2,
+      "archive_ready": 2
+    },
+    "purchase_orders": {
+      "manual_review": 5,
+      "archive_ready": 11
+    },
+    "receipts": {
+      "historical_review": 7
+    },
+    "finished_goods_checks": {
+      "historical_review": 7
+    },
+    "nonconformities": {
+      "archive_ready": 2
+    }
+  },
+  "purchase_requests": [
+    {
+      "source_key": "-P0g_zyhnX3TmcqqsQSq",
+      "legacy_number": "SC-0003",
+      "legacy_status": "CONSOLIDADA",
+      "items": [
+        {
+          "legacy_material_code": "ES-00319",
+          "target_material_id": null,
+          "quantity": 3,
+          "unit": "rolo"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:ES-00319"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_key": "-P1AIKRhtC73wLEbj3xX",
+      "legacy_number": "SC-0006",
+      "legacy_status": "CONSOLIDADA",
+      "items": [
+        {
+          "legacy_material_code": "ET-00064",
+          "target_material_id": null,
+          "quantity": 48,
+          "unit": "rolo"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_key": "-P1GkKyWrfwM4161S1-L",
+      "legacy_number": "SC-0008",
+      "legacy_status": "CONSOLIDADA",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "quantity": 120,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1jZF-GROJy2dtVYtvv",
+      "legacy_number": "SC-0009",
+      "legacy_status": "CONSOLIDADA",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "quantity": 110,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    }
+  ],
+  "purchase_orders": [
+    {
+      "source_key": "-P1-t6ZleFwKIrLw27Fb",
+      "legacy_number": "PC-0002",
+      "legacy_status": "RECEBIDO_TOTAL",
+      "target_supplier_id": "c8960192-ebc3-5a74-b973-284eb5f374cc",
+      "items": [
+        {
+          "legacy_material_code": "ES-00319",
+          "target_material_id": null,
+          "quantity": 3,
+          "received_quantity": 3,
+          "unit": "rolo"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:ES-00319"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_key": "-P1FFjs09Kz4LRF8VATc",
+      "legacy_number": "PC-0003",
+      "legacy_status": "ENVIADO",
+      "target_supplier_id": "45f4fa44-c0ba-5ba3-8fed-5a24197faa2e",
+      "items": [
+        {
+          "legacy_material_code": "ET-00064",
+          "target_material_id": null,
+          "quantity": 48,
+          "received_quantity": 0,
+          "unit": "rolo"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_key": "-P1WLOLiLDYpRMmhKa06",
+      "legacy_number": "PC-0004",
+      "legacy_status": "RECEBIDO_PARCIAL",
+      "target_supplier_id": "07401bac-9c15-5556-b809-4d59d624a8b8",
+      "items": [
+        {
+          "legacy_material_code": "EP-00036",
+          "target_material_id": "f089007d-1678-5aa3-9a92-0c53ca0adcdc",
+          "quantity": 7300,
+          "received_quantity": 7300,
+          "unit": "un"
+        },
+        {
+          "legacy_material_code": "EP-00037",
+          "target_material_id": "e72b3859-d49c-5cf7-a4ca-ff192b74f9e7",
+          "quantity": 21469,
+          "received_quantity": 17157,
+          "unit": "un"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1WQejZY_iMGa6NLkGp",
+      "legacy_number": "PC-0005",
+      "legacy_status": "ENVIADO",
+      "target_supplier_id": "8a916827-edd1-516a-ab72-ec5ec22146ad",
+      "items": [
+        {
+          "legacy_material_code": "MPES-00208",
+          "target_material_id": "f558d45c-6e70-56f9-9a4b-5bc1cf704df4",
+          "quantity": 45,
+          "received_quantity": 0,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1aZRrgwdTcbSNPg5Kr",
+      "legacy_number": "PC-0006",
+      "legacy_status": "RECEBIDO_TOTAL",
+      "target_supplier_id": "591e130c-ba0d-56ef-a610-8e4b80b4b622",
+      "items": [
+        {
+          "legacy_material_code": "EP-00188",
+          "target_material_id": "f1c900d3-9174-568e-a2c5-0e05bb2fe773",
+          "quantity": 1050,
+          "received_quantity": 1050,
+          "unit": "un"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1fTh8ZVTwGax5JV--Y",
+      "legacy_number": "PC-0007",
+      "legacy_status": "CANCELADO",
+      "target_supplier_id": "23bca5a9-a2d8-5c77-88dd-9231b71bc599",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "quantity": 120,
+          "received_quantity": 0,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1f_276Rlr0UhVMpnxJ",
+      "legacy_number": "PC-0008",
+      "legacy_status": "CANCELADO",
+      "target_supplier_id": "fccdc0b4-b2de-57a6-938d-76c155c86fcc",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "quantity": 120,
+          "received_quantity": 0,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1j_LSh26CN8S6lXIRO",
+      "legacy_number": "PC-0009",
+      "legacy_status": "CANCELADO",
+      "target_supplier_id": "fccdc0b4-b2de-57a6-938d-76c155c86fcc",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "quantity": 110,
+          "received_quantity": 0,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1jhEPRwNzO6IQgrfdO",
+      "legacy_number": "PC-0010",
+      "legacy_status": "RECEBIDO_TOTAL",
+      "target_supplier_id": "fccdc0b4-b2de-57a6-938d-76c155c86fcc",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "quantity": 110,
+          "received_quantity": 110,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1kFVYxO3nZ6KgTcu9B",
+      "legacy_number": "PC-0011",
+      "legacy_status": "RECEBIDO_TOTAL",
+      "target_supplier_id": "c355fff3-5909-5e54-b96d-37486b571103",
+      "items": [
+        {
+          "legacy_material_code": "MPGR-00002",
+          "target_material_id": "59337993-c952-5bf0-88f1-8e95233f559f",
+          "quantity": 6000,
+          "received_quantity": 6000,
+          "unit": "L"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1kNYvpzbpqutWNFTx8",
+      "legacy_number": "PC-0012",
+      "legacy_status": "ENVIADO",
+      "target_supplier_id": "b2549218-e32c-5887-bd30-140613ce545f",
+      "items": [
+        {
+          "legacy_material_code": "MU-00002",
+          "target_material_id": null,
+          "quantity": 1,
+          "received_quantity": 0,
+          "unit": "un"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:MU-00002"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_key": "-P1kOcRWXlqGgxrZcy9v",
+      "legacy_number": "PC-0013",
+      "legacy_status": "ENVIADO",
+      "target_supplier_id": "91ce9bea-9cb1-532c-9d21-fb0bffa655f6",
+      "items": [
+        {
+          "legacy_material_code": "MU-00002",
+          "target_material_id": null,
+          "quantity": 1,
+          "received_quantity": 0,
+          "unit": "un"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:MU-00002"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_key": "-P1k_E5Qtl1UX0B2V37k",
+      "legacy_number": "PC-0014",
+      "legacy_status": "RECEBIDO_TOTAL",
+      "target_supplier_id": "e28f8aaa-23ce-515d-9885-a70abc47b9b9",
+      "items": [
+        {
+          "legacy_material_code": "MPES-00058",
+          "target_material_id": "25662d57-dcb1-5abc-9a40-d6dbc9647d60",
+          "quantity": 5,
+          "received_quantity": 5,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1kt0P1Jqp-vMAZrTbd",
+      "legacy_number": "PC-0015",
+      "legacy_status": "RECEBIDO_TOTAL",
+      "target_supplier_id": "1d28d9b6-dd32-513e-bb44-f5da091d3d53",
+      "items": [
+        {
+          "legacy_material_code": "MPES-00172",
+          "target_material_id": "1002808f-81a4-5075-9838-832fbc67bc20",
+          "quantity": 45,
+          "received_quantity": 45,
+          "unit": "kg"
+        },
+        {
+          "legacy_material_code": "MPES-00072",
+          "target_material_id": "803a106c-eb63-5d2d-87ed-6cb727717888",
+          "quantity": 45,
+          "received_quantity": 45,
+          "unit": "kg"
+        },
+        {
+          "legacy_material_code": "MPES-00015",
+          "target_material_id": "8e2d59ca-d25e-5158-8557-4a1bedf03a7d",
+          "quantity": 45,
+          "received_quantity": 45,
+          "unit": "kg"
+        },
+        {
+          "legacy_material_code": "MPES-00014",
+          "target_material_id": "a25aefc2-575f-5c04-8d99-3346ec038f81",
+          "quantity": 45,
+          "received_quantity": 45,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1omL5Yzqza6HcFk8ZZ",
+      "legacy_number": "PC-0016",
+      "legacy_status": "ENVIADO",
+      "target_supplier_id": "60892d01-8619-59fb-a6a5-255ccfc65f1e",
+      "items": [
+        {
+          "legacy_material_code": "ES-00140",
+          "target_material_id": "0517adaf-3909-5578-93c9-ca9f987ad12a",
+          "quantity": 10650,
+          "received_quantity": 0,
+          "unit": "un"
+        },
+        {
+          "legacy_material_code": "ES-00179",
+          "target_material_id": "d4316a65-191c-53a4-bfa9-7546f328ba89",
+          "quantity": 40000,
+          "received_quantity": 0,
+          "unit": "un"
+        }
+      ],
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "-P1phHzeTTVeBM5L1gPj",
+      "legacy_number": "PC-0017",
+      "legacy_status": "ENVIADO",
+      "target_supplier_id": "447ee3e0-8c17-56be-8d61-5eca58aa86fc",
+      "items": [
+        {
+          "legacy_material_code": "ET-00005",
+          "target_material_id": null,
+          "quantity": 50,
+          "received_quantity": 0,
+          "unit": "rolo"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:ET-00005"
+      ],
+      "classification": "manual_review"
+    }
+  ],
+  "receipts": [
+    {
+      "source_key": "3e3a3bfe-aea8-4ce9-aeb5-9801e02f0b19",
+      "source_group_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "legacy_purchase_order_key": "-P1kFVYxO3nZ6KgTcu9B",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "MPGR-00002",
+          "target_material_id": "59337993-c952-5bf0-88f1-8e95233f559f",
+          "legacy_lot": "AK-2026-000585",
+          "address_code": "DOC-1.1.1",
+          "quantity": 6000,
+          "unit": "L"
+        }
+      ],
+      "blockers": [
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "9a670479-a11c-4a20-a8d7-2d88325a7917",
+      "source_group_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "legacy_purchase_order_key": "-P1aZRrgwdTcbSNPg5Kr",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "EP-00188",
+          "target_material_id": "f1c900d3-9174-568e-a2c5-0e05bb2fe773",
+          "legacy_lot": "AK-2026-000586",
+          "address_code": "DOC-1.1.1",
+          "quantity": 1050,
+          "unit": "un"
+        }
+      ],
+      "blockers": [
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "d0edf3d1-0a37-4b52-b56a-50d07a883e61",
+      "source_group_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "legacy_purchase_order_key": "-P1k_E5Qtl1UX0B2V37k",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "MPES-00058",
+          "target_material_id": "25662d57-dcb1-5abc-9a40-d6dbc9647d60",
+          "legacy_lot": "AK-2026-000584",
+          "address_code": "DOC-1.1.1",
+          "quantity": 5,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "ecb6e17d-68b0-4355-821e-420c4cb94a25",
+      "source_group_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "legacy_purchase_order_key": "-P1kt0P1Jqp-vMAZrTbd",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "MPES-00172",
+          "target_material_id": "1002808f-81a4-5075-9838-832fbc67bc20",
+          "legacy_lot": "AK-2026-000580",
+          "address_code": "DOC-1.1.1",
+          "quantity": 45,
+          "unit": "kg"
+        },
+        {
+          "legacy_material_code": "MPES-00072",
+          "target_material_id": "803a106c-eb63-5d2d-87ed-6cb727717888",
+          "legacy_lot": "AK-2026-000581",
+          "address_code": "DOC-1.1.1",
+          "quantity": 45,
+          "unit": "kg"
+        },
+        {
+          "legacy_material_code": "MPES-00015",
+          "target_material_id": "8e2d59ca-d25e-5158-8557-4a1bedf03a7d",
+          "legacy_lot": "AK-2026-000582",
+          "address_code": "DOC-1.1.1",
+          "quantity": 45,
+          "unit": "kg"
+        },
+        {
+          "legacy_material_code": "MPES-00014",
+          "target_material_id": "a25aefc2-575f-5c04-8d99-3346ec038f81",
+          "legacy_lot": "AK-2026-000583",
+          "address_code": "DOC-1.1.1",
+          "quantity": 45,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "d1e70fee-6ce0-42c4-8ab7-0ad8ba968133",
+      "source_group_key": "fHwKcDCiE2gwkueCpSwgdvZX3sW2",
+      "legacy_purchase_order_key": "-P1jhEPRwNzO6IQgrfdO",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "MPGR-00086",
+          "target_material_id": "1b511662-ee0f-57a6-9518-c0ac56f70025",
+          "legacy_lot": "AK-2026-000579",
+          "address_code": "FAB-1.1.2",
+          "quantity": 110,
+          "unit": "kg"
+        }
+      ],
+      "blockers": [
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "74a0c6c0-edb7-47f9-977b-3e3a4b474cf3",
+      "source_group_key": "w2suzV2zFdPOGuuFv3NBbmz4FV32",
+      "legacy_purchase_order_key": "-P1-t6ZleFwKIrLw27Fb",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "ES-00319",
+          "target_material_id": null,
+          "legacy_lot": "AK-2026-000576",
+          "address_code": "FAB-1.1.4",
+          "quantity": 3,
+          "unit": "rolo"
+        }
+      ],
+      "blockers": [
+        "material_unresolved:ES-00319",
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "8299e68b-73af-4b69-ad96-7f7434740366",
+      "source_group_key": "w2suzV2zFdPOGuuFv3NBbmz4FV32",
+      "legacy_purchase_order_key": "-P1WLOLiLDYpRMmhKa06",
+      "legacy_status": "CONCLUIDO",
+      "lots": [
+        {
+          "legacy_material_code": "EP-00036",
+          "target_material_id": "f089007d-1678-5aa3-9a92-0c53ca0adcdc",
+          "legacy_lot": "AK-2026-000577",
+          "address_code": "FAB-1.1.1",
+          "quantity": 7300,
+          "unit": "un"
+        },
+        {
+          "legacy_material_code": "EP-00037",
+          "target_material_id": "e72b3859-d49c-5cf7-a4ca-ff192b74f9e7",
+          "legacy_lot": "AK-2026-000578",
+          "address_code": "FAB-1.1.1",
+          "quantity": 17157,
+          "unit": "un"
+        }
+      ],
+      "blockers": [
+        "stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    }
+  ],
+  "finished_goods_checks": [
+    {
+      "source_key": "26247-06",
+      "legacy_status": "DIVERGENCIA_RECONTAGEM",
+      "legacy_op_key": "26247-06",
+      "legacy_sku": "GLMKAM01",
+      "target_sku_id": "06c5d91a-0b99-55bf-bfe1-3b2116c4ccd9",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "26251-15",
+      "legacy_status": "CONFERIDO_COM_DIVERGENCIA",
+      "legacy_op_key": "26251-15",
+      "legacy_sku": "PRF-AFEE-0014",
+      "target_sku_id": "2b5f1e6a-de4a-5383-bb40-1fecc0e41798",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "26253-03",
+      "legacy_status": "DIVERGENCIA_RECONTAGEM",
+      "legacy_op_key": "26253-03",
+      "legacy_sku": "PRF-AFEE-0025",
+      "target_sku_id": "7034e70b-75ce-50b0-9f7b-1ce3f31e5218",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "26253-04",
+      "legacy_status": "CONFERIDO",
+      "legacy_op_key": "26253-04",
+      "legacy_sku": "PRF-AFEE-0018",
+      "target_sku_id": "6420ff12-e90e-5228-bf89-a514a9e48271",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "26253-05",
+      "legacy_status": "CONFERIDO_COM_DIVERGENCIA",
+      "legacy_op_key": "26253-05",
+      "legacy_sku": "PRF-AFEE-0008",
+      "target_sku_id": "4f4c1f8b-bebe-5a70-82b4-f64ff4f4e5b8",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "26257-03",
+      "legacy_status": "CONFERIDO",
+      "legacy_op_key": "26257-03",
+      "legacy_sku": "GLMKAM03",
+      "target_sku_id": "49ddaa0b-316b-5501-9c69-03c07a9db9ed",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    },
+    {
+      "source_key": "26257-17",
+      "legacy_status": "CONFERIDO",
+      "legacy_op_key": "26257-17",
+      "legacy_sku": "MRARBS04",
+      "target_sku_id": "3a6d2dbc-5b6d-5b6a-a24f-21ee232eb319",
+      "blockers": [
+        "pa_stock_replay_prohibited"
+      ],
+      "classification": "historical_review"
+    }
+  ],
+  "nonconformities": [
+    {
+      "source_key": "RNC-PA-26251-15",
+      "legacy_status": "CONCLUIDA",
+      "legacy_check_key": "26251-15",
+      "blockers": [],
+      "classification": "archive_ready"
+    },
+    {
+      "source_key": "RNC-PA-26253-05",
+      "legacy_status": "CONCLUIDA",
+      "legacy_check_key": "26253-05",
+      "blockers": [],
+      "classification": "archive_ready"
+    }
+  ],
+  "decision_gate": {
+    "status": "READY_FOR_ISOLATED_HML_REVIEW",
+    "operational_activation_allowed": false
+  }
+}

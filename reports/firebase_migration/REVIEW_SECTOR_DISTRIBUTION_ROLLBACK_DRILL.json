@@ -1,0 +1,11 @@
+{
+  "status": "VERIFIED",
+  "copied_documents": 4945,
+  "restored_documents": 4945,
+  "rollback_result": {
+    "reviews_restored": 4945
+  },
+  "hash_failures": [],
+  "distributed_records_remaining": 0,
+  "local_database_removed": true
+}

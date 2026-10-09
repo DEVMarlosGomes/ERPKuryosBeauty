@@ -149,7 +149,7 @@ class RecebimentoItem(BaseModel):
     nome: str
     codigo: str = ""
     tipo_mp: str = "FORMULACAO"
-    quantidade: float
+    quantidade: float = Field(gt=0)
     unidade: str = "kg"
     lote: str = ""
     lote_interno: Optional[str] = None
@@ -529,6 +529,8 @@ async def _registrar_saldo_wms_lote(item_doc: dict, endereco_id: Optional[str], 
             "proprietario_cliente_id": item_doc.get("proprietario_cliente_id"),
             "pedido_id_exclusivo": item_doc.get("pedido_id_exclusivo"),
             "consumo_restrito": bool(item_doc.get("consumo_restrito")),
+            "cq_lote_id": item_doc.get("lote_id"),
+            "cq_ra_id": item_doc.get("ra_id"),
             "created_at": now,
             "updated_at": now,
         }

@@ -1,0 +1,10 @@
+{
+  "status": "VERIFIED",
+  "copied_cargos": 3,
+  "copied_reviews": 3,
+  "rollback_result": {
+    "cargos_removed": 3,
+    "reviews_restored": 3
+  },
+  "local_database_removed": true
+}

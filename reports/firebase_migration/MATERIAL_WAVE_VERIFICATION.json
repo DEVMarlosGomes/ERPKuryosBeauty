@@ -1,0 +1,15 @@
+{
+  "status": "VERIFIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "checks": {
+    "materials": 647,
+    "fragrances": 199,
+    "counters": 4,
+    "material_codes_unique": true,
+    "fragrance_codes_unique": true,
+    "operational_supplier_links_created": 0,
+    "document_hash_mismatches": []
+  },
+  "unrelated_collection_failures": [],
+  "unrelated_collections_verified": 101
+}

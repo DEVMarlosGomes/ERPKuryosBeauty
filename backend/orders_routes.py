@@ -2339,7 +2339,9 @@ async def _build_op_material_requirements(op: Dict[str, Any], tenant_id: str) ->
     alertas: List[str] = []
     for op_item in op.get("items") or []:
         op_quantity = _positive_quantity(op_item.get("qtd_planejada") or op_item.get("qtd"))
-        if op_quantity <= 0:
+        imported_baseline = _positive_quantity(op_item.get("legacy_qtd_produzida_importada"))
+        requirement_quantity = max(op_quantity - imported_baseline, 0.0)
+        if requirement_quantity <= 0:
             continue
         sku = await _resolve_sku_for_op_item(op, op_item, tenant_id)
         if not sku:
@@ -2350,7 +2352,7 @@ async def _build_op_material_requirements(op: Dict[str, Any], tenant_id: str) ->
             alertas.append(f"BOM nao encontrado para SKU {sku.get('codigo_interno') or sku.get('id')}")
             continue
         for bom_item in bom_items:
-            quantity = _bom_item_required_quantity(bom_item, op_quantity, sku)
+            quantity = _bom_item_required_quantity(bom_item, requirement_quantity, sku)
             _merge_requirement(requirements, bom_item, quantity)
     return {"requirements": list(requirements.values()), "alertas": alertas}
 
@@ -4603,7 +4605,9 @@ async def _prepare_apontamento_consumption_plan(
         line_key = (event.get("wms_separacao_id"), event.get("saldo_lote_id"), material_key)
         consumed_by_line[line_key] = round(consumed_by_line.get(line_key, 0.0) + quantity, 6)
 
-    ratio = min(max(produced_after / planned, 0.0), 1.0)
+    imported_baseline = _positive_quantity(item.get("legacy_qtd_produzida_importada"))
+    produced_for_ledger = max(produced_after - imported_baseline, 0.0)
+    ratio = min(max(produced_for_ledger / planned, 0.0), 1.0)
     plan: List[Dict[str, Any]] = []
     for requirement in requirements["requirements"]:
         material_key = requirement.get("material_key") or ""
