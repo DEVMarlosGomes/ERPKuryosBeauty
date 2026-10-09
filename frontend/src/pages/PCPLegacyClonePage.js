@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import SectorLegacyReviewPanel from "@/components/legacy/SectorLegacyReviewPanel";
 
 const WEEK_TABS = ["Seg", "Ter", "Qua", "Qui", "Sex"];
 const WORK_DAYS = [["seg", "Segunda"], ["ter", "Terca"], ["qua", "Quarta"], ["qui", "Quinta"], ["sex", "Sexta"], ["sab", "Sabado"], ["dom", "Domingo"]];
@@ -207,7 +208,7 @@ function usePcpData(live = false) {
   const [liveConnected, setLiveConnected] = useState(false);
   const [day, setDay] = useState(() => ymd(new Date()));
   const [historyRange, setHistoryRange] = useState({ inicio: addDays(ymd(new Date()), -29), fim: ymd(new Date()) });
-  const [data, setData] = useState({ linhas: [], slots: [], ops: [], orders: [], skus: [], catalog: [], historico: { rows: [], kpis: {} } });
+  const [data, setData] = useState({ linhas: [], slots: [], ops: [], legacyOps: [], orders: [], skus: [], catalog: [], historico: { rows: [], kpis: {} } });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -215,16 +216,17 @@ function usePcpData(live = false) {
     const weekEnd = addDays(weekStart, 6);
     const safe = (url, config, fallback) => api.get(url, config).catch(() => ({ data: fallback }));
     try {
-      const [linhas, slots, ops, orders, skus, catalog, historico] = await Promise.all([
+      const [linhas, slots, ops, legacyOps, orders, skus, catalog, historico] = await Promise.all([
         safe("/pcp/linhas", undefined, []),
         safe("/pcp/programacao", { params: { data_inicio: weekStart, data_fim: weekEnd } }, []),
         safe("/ops", undefined, []),
+        safe("/pcp/legacy-active-ops", undefined, { rows: [] }),
         safe("/orders", undefined, []),
         safe("/crm/skus", undefined, []),
         safe("/pd/catalog", undefined, []),
         safe("/pcp/historico", { params: { data_inicio: historyRange.inicio, data_fim: historyRange.fim } }, { rows: [], kpis: {} }),
       ]);
-      setData({ linhas: linhas.data || [], slots: slots.data || [], ops: ops.data || [], orders: orders.data || [], skus: skus.data || [], catalog: catalog.data || [], historico: historico.data || { rows: [], kpis: {} } });
+      setData({ linhas: linhas.data || [], slots: slots.data || [], ops: ops.data || [], legacyOps: legacyOps.data?.rows || [], orders: orders.data || [], skus: skus.data || [], catalog: catalog.data || [], historico: historico.data || { rows: [], kpis: {} } });
       setLastSync(new Date());
       setLiveConnected(true);
     } catch {
@@ -512,7 +514,14 @@ function ControlOpsModule() {
   const [tab, setTab] = useState("ops");
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("ativas");
-  const activeOps = data.ops.filter((op) => ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp"].includes(op.status));
+  const [legacyModal, setLegacyModal] = useState(null);
+  const [legacyClients, setLegacyClients] = useState([]);
+  const [promotingLegacy, setPromotingLegacy] = useState(false);
+  const [legacyForm, setLegacyForm] = useState({ cliente_id: "", linha_id: "none", qtd_planejada: "", qtd_produzida_importada: "", justificativa: "" });
+  const operationalOps = data.ops.filter((op) => ["aberta", "em_processo", "pausada", "aguardando_confirmacao_pcp"].includes(op.status));
+  const operationalIdentities = new Set(operationalOps.flatMap((op) => [op.numero_op, op.items?.[0]?.lote].filter(Boolean).map((value) => norm(value))));
+  const visibleLegacyOps = (data.legacyOps || []).filter((op) => ![op.numero_op, op.items?.[0]?.lote].filter(Boolean).some((value) => operationalIdentities.has(norm(value))));
+  const activeOps = [...operationalOps, ...visibleLegacyOps];
   const rows = activeOps.filter((op) => `${op.numero_op} ${opCustomerName(op)} ${op.project_name} ${(op.items || []).map((item) => item.item).join(" ")}`.toLowerCase().includes(q.toLowerCase()) && (status === "ativas" || op.status === status));
   const checklist = rows.map((op) => {
     const done = producedQty(op);
@@ -542,6 +551,57 @@ function ControlOpsModule() {
     navigate(`/ops/${op.id}`);
   }
 
+  async function openLegacyProduction(op) {
+    const item = op.items?.[0] || {};
+    const resolution = op.production_resolution || {};
+    setLegacyModal(op);
+    setLegacyForm({
+      cliente_id: resolution.cliente_id || "",
+      linha_id: resolution.linha_id || "none",
+      qtd_planejada: String(resolution.qtd_planejada ?? item.qtd_planejada ?? ""),
+      qtd_produzida_importada: String(resolution.qtd_produzida_importada ?? item.qtd_produzida ?? 0),
+      justificativa: resolution.justificativa || "",
+    });
+    try {
+      const response = await api.get("/crm/clients");
+      const clients = response.data || [];
+      setLegacyClients(clients);
+      if (!resolution.cliente_id) {
+        const expected = norm(op.legacy_cliente_nome);
+        const exact = clients.find((client) => norm(client.nome_empresa || client.nome) === expected);
+        if (exact) setLegacyForm((current) => ({ ...current, cliente_id: exact.id }));
+      }
+    } catch {
+      toast.error("Nao foi possivel carregar os clientes para reconciliacao.");
+    }
+  }
+
+  async function prepareLegacyProduction() {
+    if (!legacyModal || !legacyForm.cliente_id) return toast.error("Selecione o cliente operacional.");
+    if (legacyForm.justificativa.trim().length < 10) return toast.error("Informe uma justificativa com pelo menos 10 caracteres.");
+    setPromotingLegacy(true);
+    try {
+      const response = await api.post(`/cadastros/revisoes-pedidos-ops/${legacyModal.review_id}/preparar-producao`, {
+        cliente_id: legacyForm.cliente_id,
+        linha_id: legacyForm.linha_id === "none" ? null : legacyForm.linha_id,
+        qtd_planejada: Number(legacyForm.qtd_planejada),
+        qtd_produzida_importada: Number(legacyForm.qtd_produzida_importada || 0),
+        justificativa: legacyForm.justificativa.trim(),
+      });
+      if (response.data?.promovido) {
+        toast.success(`OP ${response.data.op?.numero_op || ""} liberada para o fluxo operacional.`);
+      } else {
+        toast.info(`BOM pendente. Tarefa ${response.data?.task?.display_code || ""} enviada para Cadastros.`);
+      }
+      setLegacyModal(null);
+      await data.load();
+    } catch (err) {
+      toast.error(apiDetail(err, "Nao foi possivel preparar a OP legada."));
+    } finally {
+      setPromotingLegacy(false);
+    }
+  }
+
   function exportChecklist() {
     csvDownload("checklist_ops.csv", [["OP", "Produto", "SEP", "FAB", "ENV", "ROT", "QUAL", "Progresso", "Status"], ...checklist.map((row) => [row.op.numero_op, productText(row.op), ...CHECK_STEPS.map(([key]) => row.steps[key] ? "Sim" : "Nao"), `${row.count}/5`, row.status])]);
   }
@@ -549,11 +609,50 @@ function ControlOpsModule() {
   return (
     <div className="space-y-4">
       <Header title="Controle de OPs Ativas" subtitle="Acompanhe o progresso fisico e gerencie as OPs ativas em producao" />
+      {visibleLegacyOps.length > 0 && <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-200"><b>{visibleLegacyOps.length} OP(s) do Firebase posicionadas na lista.</b> Use “Preparar produção” para reconciliar cliente, linha, quantidades e BOM antes da liberação operacional.</div>}
       <div className="flex justify-end"><Button onClick={() => api.post("/pcp/recalcular-status").then(() => { toast.success("Status recalculados."); data.load(); }).catch((err) => toast.error(apiDetail(err, "Nao foi possivel recalcular.")))}><RefreshCw className="mr-2 h-4 w-4" />Recalcular Status de Todas as OPs / Lotes</Button></div>
-      <div className="flex w-full max-w-xl overflow-x-auto rounded-lg bg-muted p-1"><button className={`flex-1 rounded-md px-5 py-2 font-black ${tab === "ops" ? "bg-card shadow" : "text-muted-foreground"}`} onClick={() => setTab("ops")}>OPs Ativas</button><button className={`flex-1 rounded-md px-5 py-2 font-black ${tab === "checklist" ? "bg-card shadow" : "text-muted-foreground"}`} onClick={() => setTab("checklist")}>Checklist de Ordens</button></div>
-      {tab === "checklist" && <div className="grid gap-3 md:grid-cols-4"><Stat value={fmt(checklist.length)} label="Total de OPs" /><Stat value={fmt(checklist.filter((row) => row.status === "Concluida").length)} label="Concluidas" tone="green" /><Stat value={fmt(checklist.filter((row) => row.status === "Em andamento").length)} label="Em andamento" tone="amber" /><Stat value={fmt(checklist.filter((row) => row.status === "Nao iniciada").length)} label="Nao iniciadas" tone="red" /></div>}
-      <CardBox><CardContent className="grid gap-3 p-4"><SearchInput value={q} setValue={setQ} placeholder={tab === "ops" ? "Buscar por OP, lote, produto, SKU ou cliente..." : "Buscar por OP ou produto..."} /><Select value={status} onValueChange={setStatus}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ativas">Ativas (padrao)</SelectItem><SelectItem value="aberta">Aberta</SelectItem><SelectItem value="em_processo">Em processo</SelectItem><SelectItem value="pausada">Pausada</SelectItem><SelectItem value="aguardando_confirmacao_pcp">Aguardando confirmacao</SelectItem></SelectContent></Select>{tab === "checklist" && <Button variant="outline" className="w-fit" onClick={exportChecklist}><Download className="mr-2 h-4 w-4" />Exportar CSV</Button>}</CardContent></CardBox>
-      <CardBox className="overflow-hidden"><div className="overflow-x-auto"><table className="w-full min-w-[980px] text-sm"><thead className="bg-muted text-xs uppercase text-muted-foreground"><tr>{(tab === "ops" ? ["OP / Lote", "Cliente", "Produto / Descricao", "Linha", "Programacao", "Pedido Comercial", "Progresso Realizado", "Status da OP", "Acoes"] : ["N OP", "Produto", ...CHECK_STEPS.map((step) => step[1]), "Progresso", "Status", "Apontamento"]).map((h) => <th key={h} className="p-3 text-left">{h}</th>)}</tr></thead><tbody>{tab === "ops" ? rows.map((op) => { const done = producedQty(op); const planned = plannedQty(op); return <tr key={op.id} className="border-b"><td className="p-3 font-black">{op.numero_op}</td><td className="p-3">{opCustomerName(op)}</td><td className="p-3 font-black">{productText(op)}<p className="text-xs text-muted-foreground">{fmt(done)} / {fmt(planned)} un</p></td><td className="p-3">{op.linha_nome || "-"}</td><td className="p-3">{op.data_programada || "-"}</td><td className="p-3">#{op.numero_pedido || "-"}</td><td className="p-3">{planned ? Math.round((done / planned) * 100) : 0}%</td><td className="p-3"><Badge className="bg-amber-100 text-amber-700">{op.status || "-"}</Badge></td><td className="p-3"><div className="flex flex-wrap gap-2">{op.status === "aguardando_confirmacao_pcp" && <Button size="sm" className="bg-emerald-600 text-white" onClick={() => confirm(op)}><Check className="mr-2 h-4 w-4" />Confirmar conclusao</Button>}<Button size="sm" variant="outline" onClick={() => registerEntry(op)}>Registrar entrada</Button><Button size="sm" variant="outline" onClick={() => navigate(`/ops/${op.id}`)}>Documento</Button><Button size="sm" variant="outline" onClick={() => toast.success("Etiquetas de caixa prontas para impressao.")}>Etiquetas</Button><Button size="sm" variant="outline" className="border-red-300 text-red-600" onClick={() => cancelOp(op)}>Cancelar OP</Button></div></td></tr>; }) : checklist.map((row) => <tr key={row.op.id} className="border-b"><td className="p-3 font-black">{row.op.numero_op}</td><td className="p-3">{productText(row.op)}</td>{CHECK_STEPS.map(([key]) => <td key={key} className="p-3"><input type="checkbox" readOnly checked={row.steps[key]} className="h-6 w-6 accent-primary" /></td>)}<td className="p-3">{row.count}/5 - {row.count * 20}%</td><td className="p-3"><Badge>{row.status}</Badge></td><td className="p-3">{row.op.apontamentos?.length ? "Sim" : "Nao"}</td></tr>)}</tbody></table></div></CardBox>
+      <div className="flex w-full max-w-3xl overflow-x-auto rounded-lg bg-muted p-1"><button className={`flex-1 rounded-md px-5 py-2 font-black ${tab === "ops" ? "bg-card shadow" : "text-muted-foreground"}`} onClick={() => setTab("ops")}>OPs Ativas</button><button className={`flex-1 rounded-md px-5 py-2 font-black ${tab === "checklist" ? "bg-card shadow" : "text-muted-foreground"}`} onClick={() => setTab("checklist")}>Checklist de Ordens</button><button className={`flex-1 rounded-md px-5 py-2 font-black ${tab === "legacy" ? "bg-card shadow" : "text-muted-foreground"}`} onClick={() => setTab("legacy")}>Revisões legadas</button></div>
+      {tab === "legacy" && <SectorLegacyReviewPanel sector="pcp" title="Revisões legadas encaminhadas ao PCP" />}
+      {tab !== "legacy" && <>
+        {tab === "checklist" && <div className="grid gap-3 md:grid-cols-4"><Stat value={fmt(checklist.length)} label="Total de OPs" /><Stat value={fmt(checklist.filter((row) => row.status === "Concluida").length)} label="Concluidas" tone="green" /><Stat value={fmt(checklist.filter((row) => row.status === "Em andamento").length)} label="Em andamento" tone="amber" /><Stat value={fmt(checklist.filter((row) => row.status === "Nao iniciada").length)} label="Nao iniciadas" tone="red" /></div>}
+        <CardBox><CardContent className="grid gap-3 p-4"><SearchInput value={q} setValue={setQ} placeholder={tab === "ops" ? "Buscar por OP, lote, produto, SKU ou cliente..." : "Buscar por OP ou produto..."} /><Select value={status} onValueChange={setStatus}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="ativas">Ativas (padrao)</SelectItem><SelectItem value="aberta">Aberta</SelectItem><SelectItem value="em_processo">Em processo</SelectItem><SelectItem value="pausada">Pausada</SelectItem><SelectItem value="aguardando_confirmacao_pcp">Aguardando confirmacao</SelectItem></SelectContent></Select>{tab === "checklist" && <Button variant="outline" className="w-fit" onClick={exportChecklist}><Download className="mr-2 h-4 w-4" />Exportar CSV</Button>}</CardContent></CardBox>
+        <CardBox className="overflow-hidden"><div className="overflow-x-auto"><table className="w-full min-w-[980px] text-sm"><thead className="bg-muted text-xs uppercase text-muted-foreground"><tr>{(tab === "ops" ? ["OP / Lote", "Cliente", "Produto / Descricao", "Linha", "Programacao", "Pedido Comercial", "Progresso Realizado", "Status da OP", "Acoes"] : ["N OP", "Produto", ...CHECK_STEPS.map((step) => step[1]), "Progresso", "Status", "Apontamento"]).map((h) => <th key={h} className="p-3 text-left">{h}</th>)}</tr></thead><tbody>{tab === "ops" ? rows.map((op) => { const done = producedQty(op); const planned = plannedQty(op); return <tr key={op.id} className={`border-b ${op.legacy_read_only ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}`}><td className="p-3 font-black">{op.numero_op}<p className="text-xs font-normal text-muted-foreground">{op.items?.[0]?.lote || ""}</p></td><td className="p-3">{opCustomerName(op)}</td><td className="p-3 font-black">{productText(op)}<p className="text-xs text-muted-foreground">{fmt(done)} / {fmt(planned)} un</p></td><td className="p-3">{op.linha_nome || "-"}</td><td className="p-3">{op.data_programada || "-"}</td><td className="p-3">#{op.numero_pedido || "-"}</td><td className="p-3">{planned ? Math.round((done / planned) * 100) : 0}%</td><td className="p-3"><Badge className="bg-amber-100 text-amber-700">{op.status || "-"}</Badge></td><td className="p-3">{op.legacy_read_only ? <div className="flex flex-col items-start gap-2"><Button size="sm" className="bg-amber-600 text-white hover:bg-amber-700" onClick={() => openLegacyProduction(op)}>Preparar producao</Button>{op.workflow_task_id && <Badge variant="outline" className="border-blue-400 text-blue-600">BOM em Cadastros</Badge>}</div> : <div className="flex flex-wrap gap-2">{op.status === "aguardando_confirmacao_pcp" && <Button size="sm" className="bg-emerald-600 text-white" onClick={() => confirm(op)}><Check className="mr-2 h-4 w-4" />Confirmar conclusao</Button>}<Button size="sm" variant="outline" onClick={() => registerEntry(op)}>Registrar entrada</Button><Button size="sm" variant="outline" onClick={() => navigate(`/ops/${op.id}`)}>Documento</Button><Button size="sm" variant="outline" onClick={() => toast.success("Etiquetas de caixa prontas para impressao.")}>Etiquetas</Button><Button size="sm" variant="outline" className="border-red-300 text-red-600" onClick={() => cancelOp(op)}>Cancelar OP</Button></div>}</td></tr>; }) : checklist.map((row) => <tr key={row.op.id} className="border-b"><td className="p-3 font-black">{row.op.numero_op}</td><td className="p-3">{productText(row.op)}</td>{CHECK_STEPS.map(([key]) => <td key={key} className="p-3"><input type="checkbox" readOnly checked={row.steps[key]} className="h-6 w-6 accent-primary" /></td>)}<td className="p-3">{row.count}/5 - {row.count * 20}%</td><td className="p-3"><Badge>{row.status}</Badge></td><td className="p-3">{row.op.apontamentos?.length ? "Sim" : "Nao"}</td></tr>)}</tbody></table></div></CardBox>
+      </>}
+      <Dialog open={Boolean(legacyModal)} onOpenChange={(open) => !open && !promotingLegacy && setLegacyModal(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Preparar OP legada para produção</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/20 dark:text-amber-200">
+              Esta ação valida cliente, SKU, quantidades, linha e BOM. Se o BOM estiver pendente, será criada uma tarefa bloqueante em Cadastros. Pedido e OP só serão criados quando a estrutura estiver completa.
+            </div>
+            <div className="grid gap-3 rounded-lg bg-muted p-3 text-sm md:grid-cols-2">
+              <div><span className="text-muted-foreground">OP original</span><p className="font-black">{legacyModal?.numero_op || "-"}</p></div>
+              <div><span className="text-muted-foreground">SKU reconciliado</span><p className="font-black">{legacyModal?.target_sku_code || "-"}</p></div>
+              <div><span className="text-muted-foreground">Cliente original</span><p className="font-black">{legacyModal?.legacy_cliente_nome || "-"}</p></div>
+              <div><span className="text-muted-foreground">Produto</span><p className="font-black">{productText(legacyModal)}</p></div>
+            </div>
+            <div className="space-y-2">
+              <Label>Cliente operacional *</Label>
+              <Select value={legacyForm.cliente_id} onValueChange={(value) => setLegacyForm({ ...legacyForm, cliente_id: value })}>
+                <SelectTrigger><SelectValue placeholder="Selecione o cliente correspondente" /></SelectTrigger>
+                <SelectContent>{legacyClients.map((client) => <SelectItem key={client.id} value={client.id}>{safeText(client.nome_empresa || client.nome)}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              <div className="space-y-2"><Label>Linha</Label><Select value={legacyForm.linha_id} onValueChange={(value) => setLegacyForm({ ...legacyForm, linha_id: value })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Definir no planejamento</SelectItem>{data.linhas.filter((line) => line.status !== "inativa").map((line) => <SelectItem key={line.id} value={line.id}>{line.nome}</SelectItem>)}</SelectContent></Select></div>
+              <div className="space-y-2"><Label>Quantidade planejada *</Label><Input type="number" min="0.000001" value={legacyForm.qtd_planejada} onChange={(event) => setLegacyForm({ ...legacyForm, qtd_planejada: event.target.value })} /></div>
+              <div className="space-y-2"><Label>Já produzido no legado</Label><Input type="number" min="0" value={legacyForm.qtd_produzida_importada} onChange={(event) => setLegacyForm({ ...legacyForm, qtd_produzida_importada: event.target.value })} /></div>
+            </div>
+            <div className="space-y-2"><Label>Justificativa da reconciliação *</Label><Textarea value={legacyForm.justificativa} onChange={(event) => setLegacyForm({ ...legacyForm, justificativa: event.target.value })} placeholder="Explique a conferência e autorização para continuidade desta OP." /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" disabled={promotingLegacy} onClick={() => setLegacyModal(null)}>Cancelar</Button>
+            <Button disabled={promotingLegacy} className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={prepareLegacyProduction}>{promotingLegacy ? "Validando..." : "Validar e encaminhar"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

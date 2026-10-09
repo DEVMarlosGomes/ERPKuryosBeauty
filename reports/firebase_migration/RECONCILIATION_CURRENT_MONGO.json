@@ -1,6 +1,6 @@
 {
   "status": "COMPLETED_READ_ONLY_AWAITING_HUMAN_APPROVAL",
-  "generated_at": "2026-09-24T13:56:15.829341+00:00",
+  "generated_at": "2026-09-24T14:02:43.989424+00:00",
   "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
   "mongo": {
     "uri": "REDACTED",
@@ -16,10 +16,10 @@
   "write_operations_performed": [],
   "classifications": {
     "MATCH": 3,
-    "INSERT_CANDIDATE": 906,
+    "INSERT_CANDIDATE": 892,
     "MERGE_CANDIDATE": 0,
     "CONFLICT": 6,
-    "MANUAL_REVIEW": 3008,
+    "MANUAL_REVIEW": 3022,
     "SKIP": 0,
     "target_evaluation_complete": true
   },

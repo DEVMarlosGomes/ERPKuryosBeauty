@@ -1,0 +1,40 @@
+{
+  "status": "FAILED",
+  "approved_rule": "blocked_master_data_review_v1",
+  "unrelated_collections_verified": 105,
+  "unrelated_collection_failures": {
+    "kickoffs": {
+      "before": {
+        "count": 1,
+        "documents_sha256": "922e1184f726c81747ac9a082c8cbcd2c022543662de2d58df9dda0099b316f9",
+        "indexes_sha256": "fda7236dbd57dc832e7d86c25b9ae219f7897a08fe29d5311c0b00499525e0c3"
+      },
+      "after": {
+        "count": 1,
+        "documents_sha256": "5f4599c5ef32bfaff57d46e103e4372e19d85154589a68429931ad0e6d0b2bf2",
+        "indexes_sha256": "fda7236dbd57dc832e7d86c25b9ae219f7897a08fe29d5311c0b00499525e0c3"
+      }
+    },
+    "system_status": {
+      "before": {
+        "count": 1,
+        "documents_sha256": "bc575770415c36f56927e062c489440ff695e0672bde23ea4cf51c83326a5122",
+        "indexes_sha256": "f990d49bb1b4883400095e00212f2404b10353d56107361a3ab51463fa53c7e9"
+      },
+      "after": {
+        "count": 1,
+        "documents_sha256": "56f98db1e1140ab634ea92147e5d5f35090f5ff0adc34222694919a6e8965b01",
+        "indexes_sha256": "f990d49bb1b4883400095e00212f2404b10353d56107361a3ab51463fa53c7e9"
+      }
+    }
+  },
+  "counts": {
+    "supplier": 20,
+    "material": 93,
+    "sku": 3
+  },
+  "blocked_non_operational": 116,
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "operational_unchanged": true
+}

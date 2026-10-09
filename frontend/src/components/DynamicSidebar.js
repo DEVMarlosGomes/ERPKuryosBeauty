@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/App";
 import {
   BarChart3,
+  Archive,
   BookOpen,
   BriefcaseBusiness,
   Building2,
@@ -121,6 +122,7 @@ const NAV_GROUPS = [
 
 const STANDALONE = [
   { key: "tasks", label: "Tarefas", path: "/tasks", icon: CheckSquare, roles: null },
+  { key: "migration-reviews", label: "Revisões da migração", path: "/revisoes-setoriais", icon: Archive, roles: null },
 ];
 
 function isVisibleForRole(item, role) {

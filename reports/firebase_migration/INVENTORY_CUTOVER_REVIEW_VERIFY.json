@@ -1,0 +1,21 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "blocked_inventory_cutover_review_v1",
+  "counts": {
+    "address": 250,
+    "lot": 39
+  },
+  "blocked_non_operational": 289,
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "operational_current": {
+    "wms_enderecos": 0,
+    "estoque_saldos_lote": 0,
+    "inventory_ledger": 0,
+    "reservas_lote": 0,
+    "wms_paletes": 0,
+    "estoque_movimentos_lote": 0,
+    "wms_quarantine_movements": 0
+  },
+  "operational_unchanged": true
+}

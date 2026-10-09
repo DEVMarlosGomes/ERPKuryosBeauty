@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import api from "@/lib/api";
 import { formatApiError } from "@/lib/formatError";
 import { toast } from "sonner";
+import SectorLegacyReviewPanel from "@/components/legacy/SectorLegacyReviewPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -68,6 +69,7 @@ function StatusBadge({ status }) {
 }
 
 export default function ExpedicaoPage() {
+    const [section, setSection] = useState("operacional");
     const [ordens, setOrdens] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
@@ -403,11 +405,19 @@ export default function ExpedicaoPage() {
                             Separação, conferência e despacho de produtos acabados
                         </p>
                     </div>
-                    <Button onClick={() => { setForm(emptyForm()); setShowForm(true); }}>
+                    {section === "operacional" && <Button onClick={() => { setForm(emptyForm()); setShowForm(true); }}>
                         <Plus className="h-4 w-4 mr-1" /> Nova Expedição
-                    </Button>
+                    </Button>}
                 </div>
 
+                <div className="grid w-full max-w-xl grid-cols-2 rounded-lg bg-muted p-1">
+                    <button type="button" className={`rounded-md px-4 py-2 text-sm font-semibold transition ${section === "operacional" ? "bg-background shadow" : "text-muted-foreground"}`} onClick={() => setSection("operacional")}>Expedições operacionais</button>
+                    <button type="button" className={`rounded-md px-4 py-2 text-sm font-semibold transition ${section === "legado" ? "bg-background shadow" : "text-muted-foreground"}`} onClick={() => setSection("legado")}>Histórico migrado</button>
+                </div>
+
+                {section === "legado" && <SectorLegacyReviewPanel sector="expedicao" title="Expedições históricas encaminhadas ao setor" />}
+
+                {section === "operacional" && <>
                 {/* Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {[
@@ -508,6 +518,7 @@ export default function ExpedicaoPage() {
                         ))}
                     </div>
                 )}
+                </>}
             </div>
 
             {/* ── Detail Dialog ── */}

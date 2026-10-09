@@ -1,0 +1,2698 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "policy": "A_LEGACY_AUTHORIZED",
+  "entries": [
+    {
+      "legacy_id": "AMABBS01",
+      "legacy_sku": "AMABBS01",
+      "target_id": "ffdf2057-02a5-5125-9265-d1bca241562a",
+      "target_codigo_interno": "AMABBS01",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS02",
+      "legacy_sku": "AMABBS02",
+      "target_id": "b66586ba-c099-583e-bc3b-26c5ca858c4f",
+      "target_codigo_interno": "AMABBS02",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS03",
+      "legacy_sku": "AMABBS03",
+      "target_id": "956d6ce5-3f90-5e83-901a-f1faaca94a72",
+      "target_codigo_interno": "AMABBS03",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS04",
+      "legacy_sku": "AMABBS04",
+      "target_id": "e1be6362-e145-5927-b53c-d9b61f01c44e",
+      "target_codigo_interno": "AMABBS04",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS05",
+      "legacy_sku": "AMABBS05",
+      "target_id": "522dba29-671d-5ec8-b85f-c23e2c4dc0a9",
+      "target_codigo_interno": "AMABBS05",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS06",
+      "legacy_sku": "AMABBS06",
+      "target_id": "69e6f676-b670-5fbe-92ff-5cbd1a9ab4bb",
+      "target_codigo_interno": "AMABBS06",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS07",
+      "legacy_sku": "AMABBS07",
+      "target_id": "7b474ac7-03b8-56ee-8cdb-81725feec609",
+      "target_codigo_interno": "AMABBS07",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABBS08",
+      "legacy_sku": "AMABBS08",
+      "target_id": "c96b4a17-70d4-58c2-934b-9abb4572220d",
+      "target_codigo_interno": "AMABBS08",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD01",
+      "legacy_sku": "AMABHD01",
+      "target_id": "4831889b-e5c9-58fb-94f3-bc09b803aa9f",
+      "target_codigo_interno": "AMABHD01",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD02",
+      "legacy_sku": "AMABHD02",
+      "target_id": "f3cb987a-77fa-5cff-8aba-05bd27064a15",
+      "target_codigo_interno": "AMABHD02",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD03",
+      "legacy_sku": "AMABHD03",
+      "target_id": "c19fe687-7049-5952-bac4-ac82443b310f",
+      "target_codigo_interno": "AMABHD03",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD04",
+      "legacy_sku": "AMABHD04",
+      "target_id": "de3301ce-18e8-5ceb-87aa-412b07113a70",
+      "target_codigo_interno": "AMABHD04",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD05",
+      "legacy_sku": "AMABHD05",
+      "target_id": "826e1f78-1446-58dc-a138-4d09b7c6dab1",
+      "target_codigo_interno": "AMABHD05",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD06",
+      "legacy_sku": "AMABHD06",
+      "target_id": "bc896166-ef56-5b17-840d-a15c46f3babd",
+      "target_codigo_interno": "AMABHD06",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD07",
+      "legacy_sku": "AMABHD07",
+      "target_id": "b54f6cac-714b-584b-9165-1fd5a2bd4146",
+      "target_codigo_interno": "AMABHD07",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMABHD08",
+      "legacy_sku": "AMABHD08",
+      "target_id": "8b1ee1a7-b9ba-59fe-ab53-3fe1e960d7b6",
+      "target_codigo_interno": "AMABHD08",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS01",
+      "legacy_sku": "AMCLBS01",
+      "target_id": "bfb9c54b-903a-5396-b111-d9aff9763474",
+      "target_codigo_interno": "AMCLBS01",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS02",
+      "legacy_sku": "AMCLBS02",
+      "target_id": "921458a5-4627-5fed-a1c7-1b149f545aea",
+      "target_codigo_interno": "AMCLBS02",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS03",
+      "legacy_sku": "AMCLBS03",
+      "target_id": "5db1668f-ec57-5985-b7c8-9340bcf79878",
+      "target_codigo_interno": "AMCLBS03",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS04",
+      "legacy_sku": "AMCLBS04",
+      "target_id": "9b6f8990-8656-5da3-95c4-a02ae1aa6ba7",
+      "target_codigo_interno": "AMCLBS04",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS05",
+      "legacy_sku": "AMCLBS05",
+      "target_id": "9929dcee-3770-58a2-bd49-5b0b954892af",
+      "target_codigo_interno": "AMCLBS05",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS06",
+      "legacy_sku": "AMCLBS06",
+      "target_id": "5c8cf421-f100-566b-8199-adb658ee68eb",
+      "target_codigo_interno": "AMCLBS06",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS07",
+      "legacy_sku": "AMCLBS07",
+      "target_id": "3ae63fe7-e227-5647-a900-ab60fe215742",
+      "target_codigo_interno": "AMCLBS07",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLBS08",
+      "legacy_sku": "AMCLBS08",
+      "target_id": "6a6c48e5-0961-52dd-95a7-8d3476168446",
+      "target_codigo_interno": "AMCLBS08",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD01",
+      "legacy_sku": "AMCLHD01",
+      "target_id": "55b7e6c5-b174-569e-b9fe-8fbb2371d12c",
+      "target_codigo_interno": "AMCLHD01",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD02",
+      "legacy_sku": "AMCLHD02",
+      "target_id": "7e0454af-b657-5505-8d12-2657becd6bed",
+      "target_codigo_interno": "AMCLHD02",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD03",
+      "legacy_sku": "AMCLHD03",
+      "target_id": "2f958ff8-e7e6-5ee9-a463-1b5217173f3d",
+      "target_codigo_interno": "AMCLHD03",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD04",
+      "legacy_sku": "AMCLHD04",
+      "target_id": "b1aa0262-46fb-5083-8ca6-1d03e277009c",
+      "target_codigo_interno": "AMCLHD04",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD05",
+      "legacy_sku": "AMCLHD05",
+      "target_id": "885789a6-fac6-5fd2-adcf-8b0df928d142",
+      "target_codigo_interno": "AMCLHD05",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD06",
+      "legacy_sku": "AMCLHD06",
+      "target_id": "f62718b6-b144-57b9-a91b-fb88d13bc6bc",
+      "target_codigo_interno": "AMCLHD06",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD07",
+      "legacy_sku": "AMCLHD07",
+      "target_id": "c70628b0-bd20-51b0-8aec-0a6c6a4ffa9b",
+      "target_codigo_interno": "AMCLHD07",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMCLHD08",
+      "legacy_sku": "AMCLHD08",
+      "target_id": "4c46ea90-acd1-5eb5-8378-928a42484b36",
+      "target_codigo_interno": "AMCLHD08",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS01",
+      "legacy_sku": "AMNCBS01",
+      "target_id": "ad34f708-1855-5d29-ad56-d05d94e2a92c",
+      "target_codigo_interno": "AMNCBS01",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS02",
+      "legacy_sku": "AMNCBS02",
+      "target_id": "0009d733-e61a-53b4-afca-6a1cf028f03a",
+      "target_codigo_interno": "AMNCBS02",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS03",
+      "legacy_sku": "AMNCBS03",
+      "target_id": "0ca84428-e5a6-567a-95f8-ab3f04ca3beb",
+      "target_codigo_interno": "AMNCBS03",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS04",
+      "legacy_sku": "AMNCBS04",
+      "target_id": "1e8905d8-8639-53d4-a357-ea45975addd0",
+      "target_codigo_interno": "AMNCBS04",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS05",
+      "legacy_sku": "AMNCBS05",
+      "target_id": "cc81b4f1-59dc-5565-a32b-a6566cbd1726",
+      "target_codigo_interno": "AMNCBS05",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS06",
+      "legacy_sku": "AMNCBS06",
+      "target_id": "b6eafd95-dc7c-50d9-9347-02e73a98c0bb",
+      "target_codigo_interno": "AMNCBS06",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS07",
+      "legacy_sku": "AMNCBS07",
+      "target_id": "71492e40-a14b-590e-95af-50b68b1a844f",
+      "target_codigo_interno": "AMNCBS07",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCBS08",
+      "legacy_sku": "AMNCBS08",
+      "target_id": "c4d2faa4-b899-512f-bb51-c2e465b4b6e3",
+      "target_codigo_interno": "AMNCBS08",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD01",
+      "legacy_sku": "AMNCHD01",
+      "target_id": "d2447060-81a1-50c4-aafb-8ad2d24fc803",
+      "target_codigo_interno": "AMNCHD01",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD02",
+      "legacy_sku": "AMNCHD02",
+      "target_id": "c1da9f21-b439-55a1-b8c0-8162fe64b595",
+      "target_codigo_interno": "AMNCHD02",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD03",
+      "legacy_sku": "AMNCHD03",
+      "target_id": "19ba615d-2af5-5f59-9d54-a7afce7c554f",
+      "target_codigo_interno": "AMNCHD03",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD04",
+      "legacy_sku": "AMNCHD04",
+      "target_id": "2a396d59-a626-59a4-abb5-c7e987066727",
+      "target_codigo_interno": "AMNCHD04",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD05",
+      "legacy_sku": "AMNCHD05",
+      "target_id": "a163a98e-4d7c-51f8-8fee-bb691101446d",
+      "target_codigo_interno": "AMNCHD05",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD06",
+      "legacy_sku": "AMNCHD06",
+      "target_id": "4b588f83-1387-5c1d-9556-b12cab0ed8d2",
+      "target_codigo_interno": "AMNCHD06",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD07",
+      "legacy_sku": "AMNCHD07",
+      "target_id": "a2167dac-3e1b-5a36-af7d-3a43a93e6d78",
+      "target_codigo_interno": "AMNCHD07",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "AMNCHD08",
+      "legacy_sku": "AMNCHD08",
+      "target_id": "5abb1fb5-c02c-5793-84e5-5e2d9ffd3da3",
+      "target_codigo_interno": "AMNCHD08",
+      "cliente_id": "747bbbba-45aa-5d33-a697-d3e731d0bffd"
+    },
+    {
+      "legacy_id": "BBPF0004",
+      "legacy_sku": "BBPF0004",
+      "target_id": "58f9bc08-7cdb-51f4-bfb4-006fabd04582",
+      "target_codigo_interno": "BBPF0004",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS01",
+      "legacy_sku": "BBSJBS01",
+      "target_id": "45911cf0-47d9-53db-8b84-57ed8f529a03",
+      "target_codigo_interno": "BBSJBS01",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS01-2",
+      "legacy_sku": "BBSJBS01-2",
+      "target_id": "07990a88-9f82-50e8-859b-a91a1b0f9219",
+      "target_codigo_interno": "BBSJBS01-2",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS02",
+      "legacy_sku": "BBSJBS02",
+      "target_id": "ff20e06f-91ae-5479-abaf-ef7d72828c34",
+      "target_codigo_interno": "BBSJBS02",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS02-2",
+      "legacy_sku": "BBSJBS02-2",
+      "target_id": "35e13c9e-cc86-52d3-8423-1e24cff4f087",
+      "target_codigo_interno": "BBSJBS02-2",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS03",
+      "legacy_sku": "BBSJBS03",
+      "target_id": "16364aa7-d3e2-5450-a175-ee5080e5cc15",
+      "target_codigo_interno": "BBSJBS03",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS03-2",
+      "legacy_sku": "BBSJBS03-2",
+      "target_id": "e1b1b489-7c66-55dc-aab6-6b1ec74f4ce6",
+      "target_codigo_interno": "BBSJBS03-2",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS04-2",
+      "legacy_sku": "BBSJBS04-2",
+      "target_id": "62bfc98e-d97b-5f92-ba79-02e20d5095f0",
+      "target_codigo_interno": "BBSJBS04-2",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJBS05-2",
+      "legacy_sku": "BBSJBS05-2",
+      "target_id": "050b3463-156d-521e-909a-af99db14dc08",
+      "target_codigo_interno": "BBSJBS05-2",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJPF01",
+      "legacy_sku": "BBSJPF01",
+      "target_id": "1c43f255-71aa-5fa7-ac0c-9055d6e18fa7",
+      "target_codigo_interno": "BBSJPF01",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJPF02",
+      "legacy_sku": "BBSJPF02",
+      "target_id": "02bbc541-66d9-56d5-a31a-3171d320f43f",
+      "target_codigo_interno": "BBSJPF02",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BBSJPF03",
+      "legacy_sku": "BBSJPF03",
+      "target_id": "008702e0-adda-5120-b43a-9431112fbb92",
+      "target_codigo_interno": "BBSJPF03",
+      "cliente_id": "a8d0349a-0501-5781-b7e7-c1a6f4724610"
+    },
+    {
+      "legacy_id": "BFBBBS01",
+      "legacy_sku": "BFBBBS01",
+      "target_id": "60835e5c-ecfe-5756-91c9-6a5c87d607a0",
+      "target_codigo_interno": "BFBBBS01",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "BFBBBS02",
+      "legacy_sku": "BFBBBS02",
+      "target_id": "5f3f312a-e541-57bb-94ba-73c82116dfe4",
+      "target_codigo_interno": "BFBBBS02",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "BFBBBS03",
+      "legacy_sku": "BFBBBS03",
+      "target_id": "2b4751f5-943e-5369-b385-6ee6305102eb",
+      "target_codigo_interno": "BFBBBS03",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "BFBBBS04",
+      "legacy_sku": "BFBBBS04",
+      "target_id": "0068324e-32d0-5856-abee-656f9d8024ad",
+      "target_codigo_interno": "BFBBBS04",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "BFBBBS05",
+      "legacy_sku": "BFBBBS05",
+      "target_id": "390ebfc3-44ad-5b72-b5d2-b3064b10e5cd",
+      "target_codigo_interno": "BFBBBS05",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "BFBBBS06",
+      "legacy_sku": "BFBBBS06",
+      "target_id": "ecfb042c-b925-50c6-8b34-fcaf885c73bb",
+      "target_codigo_interno": "BFBBBS06",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "BMKDBR01",
+      "legacy_sku": "BMKDBR01",
+      "target_id": "f2ddc6d5-7e94-590d-8042-2c5306ef5be8",
+      "target_codigo_interno": "BMKDBR01",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDBR02",
+      "legacy_sku": "BMKDBR02",
+      "target_id": "0ac1d603-5129-5eb2-ad0b-60cf664e1ec2",
+      "target_codigo_interno": "BMKDBR02",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDBR03",
+      "legacy_sku": "BMKDBR03",
+      "target_id": "c03d085c-9d3d-5bca-978b-b7c9eeda307d",
+      "target_codigo_interno": "BMKDBR03",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDBR04",
+      "legacy_sku": "BMKDBR04",
+      "target_id": "a8394844-1648-56f8-9680-4c03335f67b8",
+      "target_codigo_interno": "BMKDBR04",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDHD01",
+      "legacy_sku": "BMKDHD01",
+      "target_id": "7e71d01c-f27e-5649-ae31-14f2132e7277",
+      "target_codigo_interno": "BMKDHD01",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDHD02",
+      "legacy_sku": "BMKDHD02",
+      "target_id": "e9982a8c-97f6-587f-8542-ed61e1de5018",
+      "target_codigo_interno": "BMKDHD02",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDHD03",
+      "legacy_sku": "BMKDHD03",
+      "target_id": "831948a5-a6cf-5071-96a6-f2e2fd769de5",
+      "target_codigo_interno": "BMKDHD03",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDHD04",
+      "legacy_sku": "BMKDHD04",
+      "target_id": "a48b4c61-408e-5693-9f2f-3ee36fe4df09",
+      "target_codigo_interno": "BMKDHD04",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDPF01",
+      "legacy_sku": "BMKDPF01",
+      "target_id": "328f5e04-98ca-5d95-b138-c04b24806b49",
+      "target_codigo_interno": "BMKDPF01",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDPF02",
+      "legacy_sku": "BMKDPF02",
+      "target_id": "0a60754f-24e7-5a05-b2fd-203758f670ad",
+      "target_codigo_interno": "BMKDPF02",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDPF03",
+      "legacy_sku": "BMKDPF03",
+      "target_id": "b800be1e-56d4-501a-bc6c-ed95245b6fd7",
+      "target_codigo_interno": "BMKDPF03",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BMKDPF04",
+      "legacy_sku": "BMKDPF04",
+      "target_id": "87fce0f4-386d-52de-a40f-6be828fe5c3b",
+      "target_codigo_interno": "BMKDPF04",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "BSPL-SEUN-0001",
+      "legacy_sku": "BSPL-SEUN-0001",
+      "target_id": "e7fd5f4b-a893-5d63-8041-2a8b546437da",
+      "target_codigo_interno": "BSPL-SEUN-0001",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "BSPL-SEUN-0002",
+      "legacy_sku": "BSPL-SEUN-0002",
+      "target_id": "bd33644e-3700-5e08-832c-1060566012c2",
+      "target_codigo_interno": "BSPL-SEUN-0002",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "CMBS0001",
+      "legacy_sku": "CMBS0001",
+      "target_id": "3834cd70-b9c0-5ce8-ae7d-7d7786fdc12f",
+      "target_codigo_interno": "CMBS0001",
+      "cliente_id": "66bcdc5e-7d2e-5bac-a775-8e3378f063a0"
+    },
+    {
+      "legacy_id": "CMGL0001",
+      "legacy_sku": "CMGL0001",
+      "target_id": "8eb9d34c-1664-5228-bc84-cbc2f4a977d3",
+      "target_codigo_interno": "CMGL0001",
+      "cliente_id": "66bcdc5e-7d2e-5bac-a775-8e3378f063a0"
+    },
+    {
+      "legacy_id": "CMOC0001",
+      "legacy_sku": "CMOC0001",
+      "target_id": "d6f0f442-75ef-590a-8033-174979595fc5",
+      "target_codigo_interno": "CMOC0001",
+      "cliente_id": "66bcdc5e-7d2e-5bac-a775-8e3378f063a0"
+    },
+    {
+      "legacy_id": "CRPMCR01",
+      "legacy_sku": "CRPMCR01",
+      "target_id": "0f80b91d-7c14-5c94-b38b-5d2557a827e7",
+      "target_codigo_interno": "CRPMCR01",
+      "cliente_id": "1ecd8f10-550c-523b-ae0c-d2e0c1474f97"
+    },
+    {
+      "legacy_id": "DPGLBS01",
+      "legacy_sku": "DPGLBS01",
+      "target_id": "a0f4a859-ce15-5f79-ac36-d198faf6609f",
+      "target_codigo_interno": "DPGLBS01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLBS02",
+      "legacy_sku": "DPGLBS02",
+      "target_id": "f4b578f2-906f-579f-9678-feb32aa53c6a",
+      "target_codigo_interno": "DPGLBS02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLBS03",
+      "legacy_sku": "DPGLBS03",
+      "target_id": "b0b712e8-2f83-52d9-86d8-ff063d69b34a",
+      "target_codigo_interno": "DPGLBS03",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLES01",
+      "legacy_sku": "DPGLES01",
+      "target_id": "a6057515-ce74-5785-94e0-b78dc4220573",
+      "target_codigo_interno": "DPGLES01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLES02",
+      "legacy_sku": "DPGLES02",
+      "target_id": "2be3f377-5c67-5b9e-964a-e7ad729ff258",
+      "target_codigo_interno": "DPGLES02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLES03",
+      "legacy_sku": "DPGLES03",
+      "target_id": "9693e0ec-0d02-508e-8b4e-bc382c69f593",
+      "target_codigo_interno": "DPGLES03",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLHD01",
+      "legacy_sku": "DPGLHD01",
+      "target_id": "43ef6e8b-1851-54c5-9875-469019ac3034",
+      "target_codigo_interno": "DPGLHD01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLHD02",
+      "legacy_sku": "DPGLHD02",
+      "target_id": "75eb17d7-6fb9-5489-a14e-9898edada6f5",
+      "target_codigo_interno": "DPGLHD02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPGLHD03",
+      "legacy_sku": "DPGLHD03",
+      "target_id": "0299cc29-70b6-5783-9016-3c61bdb8d5f7",
+      "target_codigo_interno": "DPGLHD03",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPHNBS01",
+      "legacy_sku": "DPHNBS01",
+      "target_id": "516386e8-0eba-5485-9382-54dc4d0a9c21",
+      "target_codigo_interno": "DPHNBS01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPHNBS02",
+      "legacy_sku": "DPHNBS02",
+      "target_id": "5937424f-8970-51fe-b713-b3946a77841c",
+      "target_codigo_interno": "DPHNBS02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPHNPC01",
+      "legacy_sku": "DPHNPC01",
+      "target_id": "bf69fcc9-9dca-5520-a2b4-9b9c0e75447b",
+      "target_codigo_interno": "DPHNPC01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPHNSR01",
+      "legacy_sku": "DPHNSR01",
+      "target_id": "8b185f1a-c3a8-5354-84cb-b7218b624761",
+      "target_codigo_interno": "DPHNSR01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTBS01",
+      "legacy_sku": "DPMTBS01",
+      "target_id": "1b3819ed-eecc-5524-aa52-89ee074107dc",
+      "target_codigo_interno": "DPMTBS01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTBS02",
+      "legacy_sku": "DPMTBS02",
+      "target_id": "b79e277e-e55d-5b4d-a1e1-2620343da392",
+      "target_codigo_interno": "DPMTBS02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTBS03",
+      "legacy_sku": "DPMTBS03",
+      "target_id": "4fb50219-b283-5f53-918a-4197511d0e23",
+      "target_codigo_interno": "DPMTBS03",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTES01",
+      "legacy_sku": "DPMTES01",
+      "target_id": "3183137a-6555-59d0-82da-29fd072715a9",
+      "target_codigo_interno": "DPMTES01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTES02",
+      "legacy_sku": "DPMTES02",
+      "target_id": "e7f8540c-b806-5d15-8c09-562365f52980",
+      "target_codigo_interno": "DPMTES02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTES03",
+      "legacy_sku": "DPMTES03",
+      "target_id": "92fd4cef-232a-55d1-b6eb-431c5744cebe",
+      "target_codigo_interno": "DPMTES03",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTHD01",
+      "legacy_sku": "DPMTHD01",
+      "target_id": "fd0b4fe1-8861-53b8-8df0-590947efa0a2",
+      "target_codigo_interno": "DPMTHD01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTHD02",
+      "legacy_sku": "DPMTHD02",
+      "target_id": "a780f968-20e4-5461-964d-e83c98058183",
+      "target_codigo_interno": "DPMTHD02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPMTHD03",
+      "legacy_sku": "DPMTHD03",
+      "target_id": "36c779ef-d667-5d8b-8c3f-485df64b8f29",
+      "target_codigo_interno": "DPMTHD03",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPSWHD01",
+      "legacy_sku": "DPSWHD01",
+      "target_id": "cefac6a8-dd6c-5f8d-87d8-30a57fa68d1b",
+      "target_codigo_interno": "DPSWHD01",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DPSWHD02",
+      "legacy_sku": "DPSWHD02",
+      "target_id": "766346d7-241a-5b84-849f-667a647bc8e7",
+      "target_codigo_interno": "DPSWHD02",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "DYPFPF01",
+      "legacy_sku": "DYPFPF01",
+      "target_id": "63acfd27-6f4c-504e-a5a8-e5fc91ca892d",
+      "target_codigo_interno": "DYPFPF01",
+      "cliente_id": "dcb374c8-e236-5bb6-b71d-d8d526193871"
+    },
+    {
+      "legacy_id": "DYPFPF02",
+      "legacy_sku": "DYPFPF02",
+      "target_id": "2fb2adbc-ecf0-581d-802b-11fb0ce1a1c4",
+      "target_codigo_interno": "DYPFPF02",
+      "cliente_id": "dcb374c8-e236-5bb6-b71d-d8d526193871"
+    },
+    {
+      "legacy_id": "DYPFPF03",
+      "legacy_sku": "DYPFPF03",
+      "target_id": "bba3d8e8-4ccd-5d36-8e5e-e4a99f7ae1c7",
+      "target_codigo_interno": "DYPFPF03",
+      "cliente_id": "dcb374c8-e236-5bb6-b71d-d8d526193871"
+    },
+    {
+      "legacy_id": "DYPFPF04",
+      "legacy_sku": "DYPFPF04",
+      "target_id": "d267225d-cb06-5fdb-803e-5364eafa70cf",
+      "target_codigo_interno": "DYPFPF04",
+      "cliente_id": "dcb374c8-e236-5bb6-b71d-d8d526193871"
+    },
+    {
+      "legacy_id": "ESF-SEUN-0001",
+      "legacy_sku": "ESF-SEUN-0001",
+      "target_id": "d083a908-27f3-58d8-8824-8ef7522289d8",
+      "target_codigo_interno": "ESF-SEUN-0001",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "ESP-SEUN-0001",
+      "legacy_sku": "ESP-SEUN-0001",
+      "target_id": "90f5e05e-fe39-5c2e-9893-14dbdd5631f8",
+      "target_codigo_interno": "ESP-SEUN-0001",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "ESP-SEUN-0003",
+      "legacy_sku": "ESP-SEUN-0003",
+      "target_id": "67743d1a-c3ab-53c2-98c3-578812b03acc",
+      "target_codigo_interno": "ESP-SEUN-0003",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "FBBS0001",
+      "legacy_sku": "FBBS0001",
+      "target_id": "f4f05570-b471-5a52-8341-5f8871b11d05",
+      "target_codigo_interno": "FBBS0001",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBBS0002",
+      "legacy_sku": "FBBS0002",
+      "target_id": "1771ed68-213f-531a-80b0-1cfac93b07b5",
+      "target_codigo_interno": "FBBS0002",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBBS0003",
+      "legacy_sku": "FBBS0003",
+      "target_id": "08d48254-c9a0-528c-afdf-05d56a35b73d",
+      "target_codigo_interno": "FBBS0003",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBBS0004",
+      "legacy_sku": "FBBS0004",
+      "target_id": "1404bba3-6cfb-5f04-881d-fc7bebf39cc4",
+      "target_codigo_interno": "FBBS0004",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBBS0005",
+      "legacy_sku": "FBBS0005",
+      "target_id": "05085aa6-cb63-5bc2-8e44-00236715eed3",
+      "target_codigo_interno": "FBBS0005",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBBS0006",
+      "legacy_sku": "FBBS0006",
+      "target_id": "8b8fa735-be51-536a-9503-c586fd15d026",
+      "target_codigo_interno": "FBBS0006",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBHD0001",
+      "legacy_sku": "FBHD0001",
+      "target_id": "1f3de897-c42c-55ac-be3b-7d206aaea98a",
+      "target_codigo_interno": "FBHD0001",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBHD0002",
+      "legacy_sku": "FBHD0002",
+      "target_id": "1d496f21-b444-5480-aa6b-c8434cd2c8cc",
+      "target_codigo_interno": "FBHD0002",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBMF0001",
+      "legacy_sku": "FBMF0001",
+      "target_id": "cf8f7d1f-2002-5eec-bad3-71a6bd4d21a2",
+      "target_codigo_interno": "FBMF0001",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBMF0002",
+      "legacy_sku": "FBMF0002",
+      "target_id": "f06671c4-8615-5a4e-82e7-844d030382e2",
+      "target_codigo_interno": "FBMF0002",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBOC0001",
+      "legacy_sku": "FBOC0001",
+      "target_id": "2324c084-c427-5e85-a38d-57423c3aa1d6",
+      "target_codigo_interno": "FBOC0001",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBOC0002",
+      "legacy_sku": "FBOC0002",
+      "target_id": "e5d7bf91-7a50-5873-9b81-a38e163740f5",
+      "target_codigo_interno": "FBOC0002",
+      "cliente_id": "561c4a0b-b015-492a-b3a4-9d1912d4b549"
+    },
+    {
+      "legacy_id": "FBPF0001",
+      "legacy_sku": "FBPF0001",
+      "target_id": "f00f9136-2b60-5988-9248-f2d39757eb6f",
+      "target_codigo_interno": "FBPF0001",
+      "cliente_id": "3babab51-a27e-5f8c-871a-0ea8fb344674"
+    },
+    {
+      "legacy_id": "FBPF0002",
+      "legacy_sku": "FBPF0002",
+      "target_id": "fb6abf70-e02b-50e0-bd07-a085bad74679",
+      "target_codigo_interno": "FBPF0002",
+      "cliente_id": "3babab51-a27e-5f8c-871a-0ea8fb344674"
+    },
+    {
+      "legacy_id": "FIRMADOR-200ML",
+      "legacy_sku": "FIRMADOR-200ML",
+      "target_id": "3a67f01a-06d3-5e62-8747-500f32094437",
+      "target_codigo_interno": "FIRMADOR-200ML",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "GEL-BRILHO-AMARELO",
+      "legacy_sku": "GEL-BRILHO-AMARELO",
+      "target_id": "baeda1d4-eecc-54bc-946e-f5e696121379",
+      "target_codigo_interno": "GEL-BRILHO-AMARELO",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "GEL-BRILHO-ROSA",
+      "legacy_sku": "GEL-BRILHO-ROSA",
+      "target_id": "d34bdcf7-d0af-59ec-9f86-2f06d1a29539",
+      "target_codigo_interno": "GEL-BRILHO-ROSA",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "GEL-BRILHO-ROXO",
+      "legacy_sku": "GEL-BRILHO-ROXO",
+      "target_id": "611c12f6-d82c-511c-933a-35f011ab83d7",
+      "target_codigo_interno": "GEL-BRILHO-ROXO",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "GEL-BRILHO-VERMELHO",
+      "legacy_sku": "GEL-BRILHO-VERMELHO",
+      "target_id": "5eea29cc-c9c9-5c39-87f8-05f8b58d11e3",
+      "target_codigo_interno": "GEL-BRILHO-VERMELHO",
+      "cliente_id": "aeb04f29-cb20-58a2-bdd6-b28892b0d2a7"
+    },
+    {
+      "legacy_id": "GLMKAM01",
+      "legacy_sku": "GLMKAM01",
+      "target_id": "06c5d91a-0b99-55bf-bfe1-3b2116c4ccd9",
+      "target_codigo_interno": "GLMKAM01",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GLMKAM02",
+      "legacy_sku": "GLMKAM02",
+      "target_id": "8cc0c411-e6d3-5c84-886c-b72c879d19a2",
+      "target_codigo_interno": "GLMKAM02",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GLMKAM03",
+      "legacy_sku": "GLMKAM03",
+      "target_id": "49ddaa0b-316b-5501-9c69-03c07a9db9ed",
+      "target_codigo_interno": "GLMKAM03",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GLMKAM04",
+      "legacy_sku": "GLMKAM04",
+      "target_id": "38c80f9a-c346-5f4e-9f66-a83da8803d3d",
+      "target_codigo_interno": "GLMKAM04",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GLMKAM05",
+      "legacy_sku": "GLMKAM05",
+      "target_id": "80df14ad-5047-5415-a450-f233b6e725fe",
+      "target_codigo_interno": "GLMKAM05",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GLMKAM06",
+      "legacy_sku": "GLMKAM06",
+      "target_id": "202c95a9-0b20-5c5f-9133-0c3e68254443",
+      "target_codigo_interno": "GLMKAM06",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GLMKAM07",
+      "legacy_sku": "GLMKAM07",
+      "target_id": "5ddf9b5d-8483-51cc-8693-ca0f8db847c3",
+      "target_codigo_interno": "GLMKAM07",
+      "cliente_id": "7bed07cb-f457-5035-872e-5fbf3d868c3d"
+    },
+    {
+      "legacy_id": "GZLBBS01",
+      "legacy_sku": "GZLBBS01",
+      "target_id": "66d79d48-78f6-5781-958b-38459d0653b0",
+      "target_codigo_interno": "GZLBBS01",
+      "cliente_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c"
+    },
+    {
+      "legacy_id": "GZLBBS02",
+      "legacy_sku": "GZLBBS02",
+      "target_id": "5b1cc310-bcec-56b8-a301-ebf56aecef6d",
+      "target_codigo_interno": "GZLBBS02",
+      "cliente_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c"
+    },
+    {
+      "legacy_id": "GZLBBS03",
+      "legacy_sku": "GZLBBS03",
+      "target_id": "e1b0d7fb-e6ea-57e3-aa17-ecb6662f3497",
+      "target_codigo_interno": "GZLBBS03",
+      "cliente_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c"
+    },
+    {
+      "legacy_id": "GZLBBS04",
+      "legacy_sku": "GZLBBS04",
+      "target_id": "fe965ee2-19c4-50ac-a2ec-d525718965e2",
+      "target_codigo_interno": "GZLBBS04",
+      "cliente_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c"
+    },
+    {
+      "legacy_id": "GZLBBS05",
+      "legacy_sku": "GZLBBS05",
+      "target_id": "c147ad28-c0fc-5924-a172-e46a74a791d6",
+      "target_codigo_interno": "GZLBBS05",
+      "cliente_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c"
+    },
+    {
+      "legacy_id": "GZLBBS06",
+      "legacy_sku": "GZLBBS06",
+      "target_id": "27d4a790-e61d-5a72-87cc-5aefafb8cbfb",
+      "target_codigo_interno": "GZLBBS06",
+      "cliente_id": "1e0bbc0c-7be0-5abb-ae88-63ce76eaa74c"
+    },
+    {
+      "legacy_id": "HBHD0001",
+      "legacy_sku": "HBHD0001",
+      "target_id": "3258180a-b8bc-56b3-899b-a32abdeb62cf",
+      "target_codigo_interno": "HBHD0001",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0002",
+      "legacy_sku": "HBHD0002",
+      "target_id": "e0694ab4-abdd-5422-bae2-556738eaf916",
+      "target_codigo_interno": "HBHD0002",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0003",
+      "legacy_sku": "HBHD0003",
+      "target_id": "afad05d7-ae41-5ffb-aec5-37ce43fb24ac",
+      "target_codigo_interno": "HBHD0003",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0004",
+      "legacy_sku": "HBHD0004",
+      "target_id": "5e299004-d50e-50bd-91fc-8cc8a5fd73a5",
+      "target_codigo_interno": "HBHD0004",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0005",
+      "legacy_sku": "HBHD0005",
+      "target_id": "5a03b111-68fa-5a16-9af7-d2a4fac36ba9",
+      "target_codigo_interno": "HBHD0005",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0006",
+      "legacy_sku": "HBHD0006",
+      "target_id": "4ff293f5-cd7b-56ee-ba3a-eab149c55366",
+      "target_codigo_interno": "HBHD0006",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0007",
+      "legacy_sku": "HBHD0007",
+      "target_id": "0e93aa95-3da7-5691-9c79-f899e7672ff1",
+      "target_codigo_interno": "HBHD0007",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBHD0008",
+      "legacy_sku": "HBHD0008",
+      "target_id": "7bd54d78-7047-5ce6-b907-cab6198bd74c",
+      "target_codigo_interno": "HBHD0008",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HBPC0001",
+      "legacy_sku": "HBPC0001",
+      "target_id": "e1f39d20-1b11-5585-8d91-27ab6448979e",
+      "target_codigo_interno": "HBPC0001",
+      "cliente_id": "cf450897-e0df-511f-b1b3-86852a556920"
+    },
+    {
+      "legacy_id": "HDR-MISS-0001",
+      "legacy_sku": "HDR-MISS-0001",
+      "target_id": "20a749b2-d875-5367-9fdb-bf0ba6c88eb6",
+      "target_codigo_interno": "HDR-MISS-0001",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0002",
+      "legacy_sku": "HDR-MISS-0002",
+      "target_id": "04e07064-8eef-5c2b-a922-39fa1a5f6c49",
+      "target_codigo_interno": "HDR-MISS-0002",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0003",
+      "legacy_sku": "HDR-MISS-0003",
+      "target_id": "275ea3fa-8409-5cad-bb5f-f725afab90b4",
+      "target_codigo_interno": "HDR-MISS-0003",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0004",
+      "legacy_sku": "HDR-MISS-0004",
+      "target_id": "5f834534-afed-583b-a327-ecc89acba744",
+      "target_codigo_interno": "HDR-MISS-0004",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0005",
+      "legacy_sku": "HDR-MISS-0005",
+      "target_id": "5d372379-5bdf-5697-ac72-770e2a46ccc5",
+      "target_codigo_interno": "HDR-MISS-0005",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0006",
+      "legacy_sku": "HDR-MISS-0006",
+      "target_id": "4d1c6ce2-2802-530a-92ed-26b1eb1db6a0",
+      "target_codigo_interno": "HDR-MISS-0006",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0007",
+      "legacy_sku": "HDR-MISS-0007",
+      "target_id": "ad7309fc-b5f6-51f4-899d-52ff42e0f4a1",
+      "target_codigo_interno": "HDR-MISS-0007",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HDR-MISS-0008",
+      "legacy_sku": "HDR-MISS-0008",
+      "target_id": "91fb078e-953c-5af0-8ba8-cc8125fde6b1",
+      "target_codigo_interno": "HDR-MISS-0008",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "HIDRATANTE-FACIAL-50G",
+      "legacy_sku": "HIDRATANTE-FACIAL-50G",
+      "target_id": "0907dc6b-a37c-55cd-b501-ef76676bd068",
+      "target_codigo_interno": "HIDRATANTE-FACIAL-50G",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "IBARBS01",
+      "legacy_sku": "IBARBS01",
+      "target_id": "2e0f9a66-b813-552a-99f7-492ed974b14b",
+      "target_codigo_interno": "IBARBS01",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARBS02",
+      "legacy_sku": "IBARBS02",
+      "target_id": "160bbab8-e59b-5059-bc73-f04214d34878",
+      "target_codigo_interno": "IBARBS02",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARBS03",
+      "legacy_sku": "IBARBS03",
+      "target_id": "a8906d52-1d15-5331-9a34-d57365b129ac",
+      "target_codigo_interno": "IBARBS03",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARBS04",
+      "legacy_sku": "IBARBS04",
+      "target_id": "a2012129-7936-5b6d-aff5-ec4e9b4d6c2b",
+      "target_codigo_interno": "IBARBS04",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARBS05",
+      "legacy_sku": "IBARBS05",
+      "target_id": "3a0a1587-2563-50e4-82fa-ef3859f3f175",
+      "target_codigo_interno": "IBARBS05",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARBS06",
+      "legacy_sku": "IBARBS06",
+      "target_id": "f42f7a32-7351-586c-9c9a-c5822e964435",
+      "target_codigo_interno": "IBARBS06",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGB01",
+      "legacy_sku": "IBARGB01",
+      "target_id": "8e1bb5af-e6ea-56cd-ac1a-01c28cd20572",
+      "target_codigo_interno": "IBARGB01",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGB02",
+      "legacy_sku": "IBARGB02",
+      "target_id": "b6adcc98-703c-5d92-b568-fc5cc653378b",
+      "target_codigo_interno": "IBARGB02",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGB03",
+      "legacy_sku": "IBARGB03",
+      "target_id": "4f3ab824-3397-558a-807c-7a1639a9f92b",
+      "target_codigo_interno": "IBARGB03",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGB04",
+      "legacy_sku": "IBARGB04",
+      "target_id": "c3357444-41e8-5403-af9b-bc97c6f6da08",
+      "target_codigo_interno": "IBARGB04",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGB05",
+      "legacy_sku": "IBARGB05",
+      "target_id": "f06a173a-d5f0-55dc-9ceb-8cc0260c970a",
+      "target_codigo_interno": "IBARGB05",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGB06",
+      "legacy_sku": "IBARGB06",
+      "target_id": "a020f9c4-ddf0-5d38-a0ef-d63a3e74e670",
+      "target_codigo_interno": "IBARGB06",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGE01",
+      "legacy_sku": "IBARGE01",
+      "target_id": "5c8260bc-5752-5774-9df2-d6ed8fae0253",
+      "target_codigo_interno": "IBARGE01",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGE02",
+      "legacy_sku": "IBARGE02",
+      "target_id": "6975a562-664b-5100-83e5-239bd2c4302d",
+      "target_codigo_interno": "IBARGE02",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGE03",
+      "legacy_sku": "IBARGE03",
+      "target_id": "f21f2809-e31c-50cc-be8d-07e49acc9f60",
+      "target_codigo_interno": "IBARGE03",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGE04",
+      "legacy_sku": "IBARGE04",
+      "target_id": "de5ea7b4-4f59-53af-9a46-010b22e9e2f0",
+      "target_codigo_interno": "IBARGE04",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGE05",
+      "legacy_sku": "IBARGE05",
+      "target_id": "aa4dfc2d-e010-5cb4-b3ed-a001abc089e3",
+      "target_codigo_interno": "IBARGE05",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARGE06",
+      "legacy_sku": "IBARGE06",
+      "target_id": "a24cfbd5-a9e7-5c17-af55-a692d6952d88",
+      "target_codigo_interno": "IBARGE06",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARHD01",
+      "legacy_sku": "IBARHD01",
+      "target_id": "abb34bc1-656c-5093-9c8e-c029ee29ce69",
+      "target_codigo_interno": "IBARHD01",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARHD02",
+      "legacy_sku": "IBARHD02",
+      "target_id": "38bcae23-c572-5d8d-9536-771624dc9af9",
+      "target_codigo_interno": "IBARHD02",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARHD03",
+      "legacy_sku": "IBARHD03",
+      "target_id": "9817f928-f857-5764-a991-5f9ef78241ac",
+      "target_codigo_interno": "IBARHD03",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARHD04",
+      "legacy_sku": "IBARHD04",
+      "target_id": "91b97a18-f6b4-5a2f-9309-215e5eaf71af",
+      "target_codigo_interno": "IBARHD04",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARHD05",
+      "legacy_sku": "IBARHD05",
+      "target_id": "f9e9a181-93b5-5b95-a622-a2d541f19574",
+      "target_codigo_interno": "IBARHD05",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBARHD06",
+      "legacy_sku": "IBARHD06",
+      "target_id": "22771762-149a-5a6d-8420-3a3c132b806c",
+      "target_codigo_interno": "IBARHD06",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBCHEC01",
+      "legacy_sku": "IBCHEC01",
+      "target_id": "e8cc1c6c-d122-50a0-b8a9-7b18d681b28f",
+      "target_codigo_interno": "IBCHEC01",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBCHEC02",
+      "legacy_sku": "IBCHEC02",
+      "target_id": "a2416653-701e-5859-8002-a849b712251b",
+      "target_codigo_interno": "IBCHEC02",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBCHEC03",
+      "legacy_sku": "IBCHEC03",
+      "target_id": "e725396c-95ae-53af-9a6a-dadd51675513",
+      "target_codigo_interno": "IBCHEC03",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBCHGC01",
+      "legacy_sku": "IBCHGC01",
+      "target_id": "9a63ca72-1126-5071-9235-59e282daf1f5",
+      "target_codigo_interno": "IBCHGC01",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBCHGC02",
+      "legacy_sku": "IBCHGC02",
+      "target_id": "4c062ffe-d915-5067-a542-f08d03ee7d86",
+      "target_codigo_interno": "IBCHGC02",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IBCHGC03",
+      "legacy_sku": "IBCHGC03",
+      "target_id": "bf5f9ef1-3546-5eb8-b234-016ca22ade7c",
+      "target_codigo_interno": "IBCHGC03",
+      "cliente_id": "5f99257e-338b-5336-9fd7-bcce25d39928"
+    },
+    {
+      "legacy_id": "IMEDIATT-LISS-PASSO-1",
+      "legacy_sku": "IMEDIATT-LISS-PASSO-1",
+      "target_id": "3d6816cb-8306-534e-9c84-ca2ccc575abe",
+      "target_codigo_interno": "IMEDIATT-LISS-PASSO-1",
+      "cliente_id": "5a46a947-73fe-5825-a22b-ab13cf651175"
+    },
+    {
+      "legacy_id": "IMEDIATT-LISS-PASSO-2",
+      "legacy_sku": "IMEDIATT-LISS-PASSO-2",
+      "target_id": "c4d8fce4-c5c3-544e-acf6-b81f800cfbfd",
+      "target_codigo_interno": "IMEDIATT-LISS-PASSO-2",
+      "cliente_id": "5a46a947-73fe-5825-a22b-ab13cf651175"
+    },
+    {
+      "legacy_id": "KUBPBA01",
+      "legacy_sku": "KUBPBA01",
+      "target_id": "55f34a83-9f2c-58ee-8197-28eedb9ed45a",
+      "target_codigo_interno": "KUBPBA01",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "KUBPBA01-2",
+      "legacy_sku": "KUBPBA01 - 2",
+      "target_id": "14f3184c-b380-5070-a42e-b9f6406210a4",
+      "target_codigo_interno": "KUBPBA01 - 2",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "KUBPBA02",
+      "legacy_sku": "KUBPBA02",
+      "target_id": "c9536334-5345-5519-8f61-2bac8ecf73f4",
+      "target_codigo_interno": "KUBPBA02",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "KUBPBA02-2",
+      "legacy_sku": "KUBPBA02 - 2",
+      "target_id": "3cd23c7a-7a92-5dee-97af-34e3aed81b26",
+      "target_codigo_interno": "KUBPBA02 - 2",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "LNHGCN01",
+      "legacy_sku": "LNHGCN01",
+      "target_id": "86b66273-fd73-5391-948b-1ba5ace8e1cd",
+      "target_codigo_interno": "LNHGCN01",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGCN02",
+      "legacy_sku": "LNHGCN02",
+      "target_id": "9a0139bc-47db-57f3-b1fc-62043d6a823d",
+      "target_codigo_interno": "LNHGCN02",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGCN03",
+      "legacy_sku": "LNHGCN03",
+      "target_id": "9375ea03-763d-58ef-98da-66e97833037f",
+      "target_codigo_interno": "LNHGCN03",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGFN01",
+      "legacy_sku": "LNHGFN01",
+      "target_id": "c6762e68-a238-564e-a917-8006de8f9064",
+      "target_codigo_interno": "LNHGFN01",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGFN02",
+      "legacy_sku": "LNHGFN02",
+      "target_id": "f7fe1ef8-5dce-51bd-ad37-22aa1cad1be8",
+      "target_codigo_interno": "LNHGFN02",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGFN03",
+      "legacy_sku": "LNHGFN03",
+      "target_id": "bacd7491-7967-54ca-af53-084950022a0f",
+      "target_codigo_interno": "LNHGFN03",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGMS01",
+      "legacy_sku": "LNHGMS01",
+      "target_id": "99ca0dc5-0f6b-52ae-ac4c-2860aecb9db7",
+      "target_codigo_interno": "LNHGMS01",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGMS02",
+      "legacy_sku": "LNHGMS02",
+      "target_id": "3efeb236-ca4a-5c1a-812f-f2ce39239a32",
+      "target_codigo_interno": "LNHGMS02",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGMS03",
+      "legacy_sku": "LNHGMS03",
+      "target_id": "ee69b266-7457-58fc-bbfb-7df9935f49ac",
+      "target_codigo_interno": "LNHGMS03",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGSH01",
+      "legacy_sku": "LNHGSH01",
+      "target_id": "04408308-66d2-5a8d-a178-1d3f05691d0b",
+      "target_codigo_interno": "LNHGSH01",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGSH02",
+      "legacy_sku": "LNHGSH02",
+      "target_id": "c0297ad8-5352-5c9b-92c3-0d339c88d02b",
+      "target_codigo_interno": "LNHGSH02",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNHGSH03",
+      "legacy_sku": "LNHGSH03",
+      "target_id": "8b9a7a63-c037-5cf8-9a3d-af0c2f11d53c",
+      "target_codigo_interno": "LNHGSH03",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS01",
+      "legacy_sku": "LNINBS01",
+      "target_id": "8d277bc5-676f-5d2c-a24d-c6887300f2eb",
+      "target_codigo_interno": "LNINBS01",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS02",
+      "legacy_sku": "LNINBS02",
+      "target_id": "76eefda8-e9e5-565e-9940-dd808016d977",
+      "target_codigo_interno": "LNINBS02",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS03",
+      "legacy_sku": "LNINBS03",
+      "target_id": "6ec2d7ed-44a6-5993-b809-0fb190f512a8",
+      "target_codigo_interno": "LNINBS03",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS04",
+      "legacy_sku": "LNINBS04",
+      "target_id": "f6f67ad7-176d-5e01-90f7-525e88b80db3",
+      "target_codigo_interno": "LNINBS04",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS05",
+      "legacy_sku": "LNINBS05",
+      "target_id": "5eb1ecff-91b1-5653-83db-d714408ac235",
+      "target_codigo_interno": "LNINBS05",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS06",
+      "legacy_sku": "LNINBS06",
+      "target_id": "93dd31cb-e9e2-5ce2-9536-ed49d17e7a80",
+      "target_codigo_interno": "LNINBS06",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "LNINBS07",
+      "legacy_sku": "LNINBS07",
+      "target_id": "1ad88341-5046-5a8d-aba8-cdbb1dc80198",
+      "target_codigo_interno": "LNINBS07",
+      "cliente_id": "ddfa1d34-95f2-5ccf-b464-28d1a786c61d"
+    },
+    {
+      "legacy_id": "MAOEOL01",
+      "legacy_sku": "MAOEOL01",
+      "target_id": "bf50d117-df12-5d1d-9f2b-af81c2ac23e6",
+      "target_codigo_interno": "MAOEOL01",
+      "cliente_id": "d4cde1c1-7ad7-5203-b492-89f172381d4a"
+    },
+    {
+      "legacy_id": "MAOEOL02",
+      "legacy_sku": "MAOEOL02",
+      "target_id": "15695e94-f63a-51fc-95eb-74ca3eefe6e1",
+      "target_codigo_interno": "MAOEOL02",
+      "cliente_id": "d4cde1c1-7ad7-5203-b492-89f172381d4a"
+    },
+    {
+      "legacy_id": "MOPFFM01",
+      "legacy_sku": "MOPFFM01",
+      "target_id": "146cf0f8-8c33-5267-ae79-af8d81ff6224",
+      "target_codigo_interno": "MOPFFM01",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM02",
+      "legacy_sku": "MOPFFM02",
+      "target_id": "64091de7-eede-58b6-9497-e5c07d552e14",
+      "target_codigo_interno": "MOPFFM02",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM03",
+      "legacy_sku": "MOPFFM03",
+      "target_id": "d16c4fd8-39ed-5fc3-9f8c-83599adb1556",
+      "target_codigo_interno": "MOPFFM03",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM04",
+      "legacy_sku": "MOPFFM04",
+      "target_id": "0675bcb0-3221-51d6-8f1e-315b8237eb2f",
+      "target_codigo_interno": "MOPFFM04",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM05",
+      "legacy_sku": "MOPFFM05",
+      "target_id": "dc510a82-2ec7-5e4b-95e7-d823f63d7b33",
+      "target_codigo_interno": "MOPFFM05",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM06",
+      "legacy_sku": "MOPFFM06",
+      "target_id": "a925e1e3-5374-51bd-a66d-416161be7d69",
+      "target_codigo_interno": "MOPFFM06",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM07",
+      "legacy_sku": "MOPFFM07",
+      "target_id": "c474e03b-6814-5e52-9875-913792adc58c",
+      "target_codigo_interno": "MOPFFM07",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM08",
+      "legacy_sku": "MOPFFM08",
+      "target_id": "3d42ad8d-3242-5832-ab72-f7bade114ac0",
+      "target_codigo_interno": "MOPFFM08",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM09",
+      "legacy_sku": "MOPFFM09",
+      "target_id": "5a5223d5-e83b-50b7-924b-fc5d318e6ba6",
+      "target_codigo_interno": "MOPFFM09",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM10",
+      "legacy_sku": "MOPFFM10",
+      "target_id": "5daeec88-9cc5-56b6-b8c9-3b2757a11f1f",
+      "target_codigo_interno": "MOPFFM10",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM11",
+      "legacy_sku": "MOPFFM11",
+      "target_id": "5604c5ac-1e8c-5291-9281-eae6ed8f8ca2",
+      "target_codigo_interno": "MOPFFM11",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM12",
+      "legacy_sku": "MOPFFM12",
+      "target_id": "9a7e18b6-b02e-50ec-8a4f-7e9102fa2e2b",
+      "target_codigo_interno": "MOPFFM12",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM13",
+      "legacy_sku": "MOPFFM13",
+      "target_id": "a6e1fd5d-736c-517c-974d-0ba01b57f3a5",
+      "target_codigo_interno": "MOPFFM13",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM14",
+      "legacy_sku": "MOPFFM14",
+      "target_id": "2f834f83-5094-5dd0-ba9a-d397aaa0b9a7",
+      "target_codigo_interno": "MOPFFM14",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM15",
+      "legacy_sku": "MOPFFM15",
+      "target_id": "0a1ba004-fcc5-5c1e-b09c-82abc43e889e",
+      "target_codigo_interno": "MOPFFM15",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM16",
+      "legacy_sku": "MOPFFM16",
+      "target_id": "c64f01d9-ba5e-5474-bd09-8c6a6b9bf105",
+      "target_codigo_interno": "MOPFFM16",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM17",
+      "legacy_sku": "MOPFFM17",
+      "target_id": "103799aa-a013-551c-9453-bf99f572c333",
+      "target_codigo_interno": "MOPFFM17",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM18",
+      "legacy_sku": "MOPFFM18",
+      "target_id": "2613970b-349d-5265-a759-f7308a75573f",
+      "target_codigo_interno": "MOPFFM18",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM19",
+      "legacy_sku": "MOPFFM19",
+      "target_id": "367ec2ac-27eb-5b6a-8839-1940a0ea7a12",
+      "target_codigo_interno": "MOPFFM19",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFM20",
+      "legacy_sku": "MOPFFM20",
+      "target_id": "a3dc478f-8c21-57cc-b4c1-100f5e58832a",
+      "target_codigo_interno": "MOPFFM20",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW01",
+      "legacy_sku": "MOPFFW01",
+      "target_id": "18e07e72-e64c-59af-bf17-4b74d24b4b85",
+      "target_codigo_interno": "MOPFFW01",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW02",
+      "legacy_sku": "MOPFFW02",
+      "target_id": "b556f799-e4c3-5e9a-88b9-883ceb0f7d1c",
+      "target_codigo_interno": "MOPFFW02",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW03",
+      "legacy_sku": "MOPFFW03",
+      "target_id": "4bb1b26b-26ec-5419-bfe8-96e0c5ff0bf0",
+      "target_codigo_interno": "MOPFFW03",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW04",
+      "legacy_sku": "MOPFFW04",
+      "target_id": "130d8fc2-f6fb-5099-8519-288aedec3e00",
+      "target_codigo_interno": "MOPFFW04",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW05",
+      "legacy_sku": "MOPFFW05",
+      "target_id": "72642813-83ae-5c5b-9fbe-280838548652",
+      "target_codigo_interno": "MOPFFW05",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW06",
+      "legacy_sku": "MOPFFW06",
+      "target_id": "615dc166-b19b-5cbb-a520-efb0b4525601",
+      "target_codigo_interno": "MOPFFW06",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW07",
+      "legacy_sku": "MOPFFW07",
+      "target_id": "f56428c7-306e-556d-861e-0d258af1d3ed",
+      "target_codigo_interno": "MOPFFW07",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW08",
+      "legacy_sku": "MOPFFW08",
+      "target_id": "2e573570-7bba-5169-a363-c61afbd501b6",
+      "target_codigo_interno": "MOPFFW08",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW09",
+      "legacy_sku": "MOPFFW09",
+      "target_id": "57301792-c9d9-5e05-8745-e992be3d9347",
+      "target_codigo_interno": "MOPFFW09",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW10",
+      "legacy_sku": "MOPFFW10",
+      "target_id": "a10b4a75-d752-5da8-95b1-efb2c1dff8a2",
+      "target_codigo_interno": "MOPFFW10",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW11",
+      "legacy_sku": "MOPFFW11",
+      "target_id": "6ee77bb8-ffe3-5780-b4f3-efb19e8286cb",
+      "target_codigo_interno": "MOPFFW11",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW12",
+      "legacy_sku": "MOPFFW12",
+      "target_id": "0ac9fef4-6d6e-57cc-9009-4573c1628c16",
+      "target_codigo_interno": "MOPFFW12",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW13",
+      "legacy_sku": "MOPFFW13",
+      "target_id": "94e2b61a-c2ac-52ff-b571-60c81225765d",
+      "target_codigo_interno": "MOPFFW13",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW14",
+      "legacy_sku": "MOPFFW14",
+      "target_id": "363012b1-cf92-56c7-98a0-92dd78e8413c",
+      "target_codigo_interno": "MOPFFW14",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW15",
+      "legacy_sku": "MOPFFW15",
+      "target_id": "b869546d-f3f3-5904-b49f-33da81bd2ddb",
+      "target_codigo_interno": "MOPFFW15",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW16",
+      "legacy_sku": "MOPFFW16",
+      "target_id": "0a6f15a7-2090-516d-a993-84cdc6f5c956",
+      "target_codigo_interno": "MOPFFW16",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW17",
+      "legacy_sku": "MOPFFW17",
+      "target_id": "d688fd10-e937-5f22-879c-0acbcf3dd5d6",
+      "target_codigo_interno": "MOPFFW17",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW18",
+      "legacy_sku": "MOPFFW18",
+      "target_id": "2165a312-29e3-5177-a2f5-1f3260c5e26b",
+      "target_codigo_interno": "MOPFFW18",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW19",
+      "legacy_sku": "MOPFFW19",
+      "target_id": "b46b365f-76c9-5300-a221-8834b5aeb457",
+      "target_codigo_interno": "MOPFFW19",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MOPFFW20",
+      "legacy_sku": "MOPFFW20",
+      "target_id": "cb8f8a5e-8ea4-58ff-b402-61e37ba27021",
+      "target_codigo_interno": "MOPFFW20",
+      "cliente_id": "cdeb833f-606c-5395-8121-b0e3769fc8ff"
+    },
+    {
+      "legacy_id": "MRARBS01",
+      "legacy_sku": "MRARBS01",
+      "target_id": "0db8cfa3-a950-5bc9-8a6f-8e174fdf85b2",
+      "target_codigo_interno": "MRARBS01",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS02",
+      "legacy_sku": "MRARBS02",
+      "target_id": "2d605edc-0a05-5f77-bb4a-91c3befa3e6f",
+      "target_codigo_interno": "MRARBS02",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS03",
+      "legacy_sku": "MRARBS03",
+      "target_id": "4df1ae2c-d783-552e-a6ad-c429caf6c032",
+      "target_codigo_interno": "MRARBS03",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS04",
+      "legacy_sku": "MRARBS04",
+      "target_id": "3a6d2dbc-5b6d-5b6a-a24f-21ee232eb319",
+      "target_codigo_interno": "MRARBS04",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS05",
+      "legacy_sku": "MRARBS05",
+      "target_id": "a0a634fb-5e09-5a7e-9b7a-28174bbb337b",
+      "target_codigo_interno": "MRARBS05",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS06",
+      "legacy_sku": "MRARBS06",
+      "target_id": "2434a277-a3ea-50f0-8ded-d8235d6ca0aa",
+      "target_codigo_interno": "MRARBS06",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS07",
+      "legacy_sku": "MRARBS07",
+      "target_id": "274b2c6a-2367-5844-bff0-2e3917b4549d",
+      "target_codigo_interno": "MRARBS07",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS08",
+      "legacy_sku": "MRARBS08",
+      "target_id": "abf090cf-4f64-57c6-8685-3e0bedfe0ebb",
+      "target_codigo_interno": "MRARBS08",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS09",
+      "legacy_sku": "MRARBS09",
+      "target_id": "99c14d40-3d29-54d3-bfa3-0c27e0ee87f4",
+      "target_codigo_interno": "MRARBS09",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS10",
+      "legacy_sku": "MRARBS10",
+      "target_id": "da40d736-69aa-527c-833a-0391f6c32900",
+      "target_codigo_interno": "MRARBS10",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS11",
+      "legacy_sku": "MRARBS11",
+      "target_id": "f106b3fb-3bf2-507a-b8c9-2bc21579cbfa",
+      "target_codigo_interno": "MRARBS11",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARBS12",
+      "legacy_sku": "MRARBS12",
+      "target_id": "6fc9831b-8fc9-5429-a441-df0a43277e97",
+      "target_codigo_interno": "MRARBS12",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARES01",
+      "legacy_sku": "MRARES01",
+      "target_id": "f93690c5-32c2-5455-9615-aec0aa660eeb",
+      "target_codigo_interno": "MRARES01",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARES02",
+      "legacy_sku": "MRARES02",
+      "target_id": "505a73c6-68b0-531f-b390-4154c2d3ec3e",
+      "target_codigo_interno": "MRARES02",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARHD01",
+      "legacy_sku": "MRARHD01",
+      "target_id": "0c0aadea-ca64-55e8-9996-49de818870a2",
+      "target_codigo_interno": "MRARHD01",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARHD02",
+      "legacy_sku": "MRARHD02",
+      "target_id": "db00ef08-8e29-5ba7-8684-6199f0dac1d7",
+      "target_codigo_interno": "MRARHD02",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARHD03",
+      "legacy_sku": "MRARHD03",
+      "target_id": "b26c525b-b56b-562f-8267-a8be46615b20",
+      "target_codigo_interno": "MRARHD03",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRARHD04",
+      "legacy_sku": "MRARHD04",
+      "target_id": "f39060f7-6dc9-56a4-a7c9-3239aa6d146e",
+      "target_codigo_interno": "MRARHD04",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRBR0001",
+      "legacy_sku": "MRBR0001",
+      "target_id": "cc6cffca-e131-5403-a4fa-b8db5ec943e7",
+      "target_codigo_interno": "MRBR0001",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "MRFX0001",
+      "legacy_sku": "MRFX0001",
+      "target_id": "cbc39c41-e01f-5707-b8e1-625ed0b8be8b",
+      "target_codigo_interno": "MRFX0001",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "PEDECR01",
+      "legacy_sku": "PEDECR01",
+      "target_id": "b9084896-cc0a-5541-af11-23f4c7288a0b",
+      "target_codigo_interno": "PEDECR01",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDECR02",
+      "legacy_sku": "PEDECR02",
+      "target_id": "5e3d27ae-6cfa-56eb-8117-82bd41be5a60",
+      "target_codigo_interno": "PEDECR02",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDECR03",
+      "legacy_sku": "PEDECR03",
+      "target_id": "7151813c-35e6-5439-b266-344d98768c71",
+      "target_codigo_interno": "PEDECR03",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDECR04",
+      "legacy_sku": "PEDECR04",
+      "target_id": "e080bcf2-2c50-51cb-a28b-62a1740430b6",
+      "target_codigo_interno": "PEDECR04",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDECR05",
+      "legacy_sku": "PEDECR05",
+      "target_id": "bdf97b17-17e2-5177-b9ec-b2903678127b",
+      "target_codigo_interno": "PEDECR05",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDERL01",
+      "legacy_sku": "PEDERL01",
+      "target_id": "467ce775-5227-5080-b8bf-88c13faa27ab",
+      "target_codigo_interno": "PEDERL01",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDERL02",
+      "legacy_sku": "PEDERL02",
+      "target_id": "388e2c88-d53a-54ea-a3d5-93eff2268493",
+      "target_codigo_interno": "PEDERL02",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDERL03",
+      "legacy_sku": "PEDERL03",
+      "target_id": "474d83e6-7597-57c5-be41-26328f5144ac",
+      "target_codigo_interno": "PEDERL03",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDERL04",
+      "legacy_sku": "PEDERL04",
+      "target_id": "7d56a2d5-cd83-590b-86ec-8cec66519c62",
+      "target_codigo_interno": "PEDERL04",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEDERL05",
+      "legacy_sku": "PEDERL05",
+      "target_id": "df5248fd-7adb-5199-8002-2dfceaf9880d",
+      "target_codigo_interno": "PEDERL05",
+      "cliente_id": "9b967cf9-aaff-59e1-9a43-aff95bc39ed3"
+    },
+    {
+      "legacy_id": "PEL-SEUN-0001",
+      "legacy_sku": "PEL-SEUN-0001",
+      "target_id": "934a1abd-8c0b-5f68-9cde-0fcab2f4ba8b",
+      "target_codigo_interno": "PEL-SEUN-0001",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "PEL-SEUN-0002",
+      "legacy_sku": "PEL-SEUN-0002",
+      "target_id": "dad38b8b-86f3-5466-a384-086c79c3c94f",
+      "target_codigo_interno": "PEL-SEUN-0002",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0001",
+      "legacy_sku": "PRF-AFEE-0001",
+      "target_id": "208af3ec-6fa0-5b60-8b57-71bbf0915b17",
+      "target_codigo_interno": "PRF-AFEE-0001",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0002",
+      "legacy_sku": "PRF-AFEE-0002",
+      "target_id": "d58c0e00-b29c-55d7-af30-a01ab9a95289",
+      "target_codigo_interno": "PRF-AFEE-0002",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0003",
+      "legacy_sku": "PRF-AFEE-0003",
+      "target_id": "69a664c1-2e17-5037-a460-20377f095ce0",
+      "target_codigo_interno": "PRF-AFEE-0003",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0004",
+      "legacy_sku": "PRF-AFEE-0004",
+      "target_id": "bfa65213-c92b-5b97-ab45-ac8a435a27cd",
+      "target_codigo_interno": "PRF-AFEE-0004",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0005",
+      "legacy_sku": "PRF-AFEE-0005",
+      "target_id": "a69ef7f3-2ebb-5e6c-a7b2-71caaee36979",
+      "target_codigo_interno": "PRF-AFEE-0005",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0006",
+      "legacy_sku": "PRF-AFEE-0006",
+      "target_id": "b3e9042f-82cc-55d9-ada5-90b70ff3bb6f",
+      "target_codigo_interno": "PRF-AFEE-0006",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0007",
+      "legacy_sku": "PRF-AFEE-0007",
+      "target_id": "8fa92c0d-5bbc-53e9-816b-0873663aa1df",
+      "target_codigo_interno": "PRF-AFEE-0007",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0008",
+      "legacy_sku": "PRF-AFEE-0008",
+      "target_id": "4f4c1f8b-bebe-5a70-82b4-f64ff4f4e5b8",
+      "target_codigo_interno": "PRF-AFEE-0008",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0009",
+      "legacy_sku": "PRF-AFEE-0009",
+      "target_id": "8bad6a7a-52b3-58bc-ab99-131faeeb7d9f",
+      "target_codigo_interno": "PRF-AFEE-0009",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0010",
+      "legacy_sku": "PRF-AFEE-0010",
+      "target_id": "f646bfb3-6668-5a9e-b53d-1ccc3e1f6b66",
+      "target_codigo_interno": "PRF-AFEE-0010",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0011",
+      "legacy_sku": "PRF-AFEE-0011",
+      "target_id": "d2629d9d-3876-5be5-ae1a-5846099627d8",
+      "target_codigo_interno": "PRF-AFEE-0011",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0012",
+      "legacy_sku": "PRF-AFEE-0012",
+      "target_id": "c3c7a473-f891-5d10-86e9-65c3a159e3cd",
+      "target_codigo_interno": "PRF-AFEE-0012",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0013",
+      "legacy_sku": "PRF-AFEE-0013",
+      "target_id": "4ade6497-7ca0-57f3-9854-d3ffbf9c55b5",
+      "target_codigo_interno": "PRF-AFEE-0013",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0014",
+      "legacy_sku": "PRF-AFEE-0014",
+      "target_id": "2b5f1e6a-de4a-5383-bb40-1fecc0e41798",
+      "target_codigo_interno": "PRF-AFEE-0014",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0015",
+      "legacy_sku": "PRF-AFEE-0015",
+      "target_id": "0d232446-c4bf-50ae-80f1-387e359efd59",
+      "target_codigo_interno": "PRF-AFEE-0015",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0016",
+      "legacy_sku": "PRF-AFEE-0016",
+      "target_id": "104f9850-72b3-5e89-8729-92e2516e3183",
+      "target_codigo_interno": "PRF-AFEE-0016",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0017",
+      "legacy_sku": "PRF-AFEE-0017",
+      "target_id": "08ffb3df-e89d-5dd5-a601-2bae4ae786b3",
+      "target_codigo_interno": "PRF-AFEE-0017",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0018",
+      "legacy_sku": "PRF-AFEE-0018",
+      "target_id": "6420ff12-e90e-5228-bf89-a514a9e48271",
+      "target_codigo_interno": "PRF-AFEE-0018",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0019",
+      "legacy_sku": "PRF-AFEE-0019",
+      "target_id": "026a8a21-0519-5021-9285-9902fa253b1e",
+      "target_codigo_interno": "PRF-AFEE-0019",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0020",
+      "legacy_sku": "PRF-AFEE-0020",
+      "target_id": "f3d40bd8-ffd1-5da5-a730-d122ab0fd33e",
+      "target_codigo_interno": "PRF-AFEE-0020",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0021",
+      "legacy_sku": "PRF-AFEE-0021",
+      "target_id": "6825bc8c-8f22-5231-a9b6-019fc258bdb2",
+      "target_codigo_interno": "PRF-AFEE-0021",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0022",
+      "legacy_sku": "PRF-AFEE-0022",
+      "target_id": "7a1d1baa-73fa-58cc-8899-0e8c69f877bd",
+      "target_codigo_interno": "PRF-AFEE-0022",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0023",
+      "legacy_sku": "PRF-AFEE-0023",
+      "target_id": "7b54d25b-26d9-5264-82ae-80de39afb43e",
+      "target_codigo_interno": "PRF-AFEE-0023",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0024",
+      "legacy_sku": "PRF-AFEE-0024",
+      "target_id": "68b6dd01-e3d4-5f09-8fd7-524887b25b86",
+      "target_codigo_interno": "PRF-AFEE-0024",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0025",
+      "legacy_sku": "PRF-AFEE-0025",
+      "target_id": "7034e70b-75ce-50b0-9f7b-1ce3f31e5218",
+      "target_codigo_interno": "PRF-AFEE-0025",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0026",
+      "legacy_sku": "PRF-AFEE-0026",
+      "target_id": "d7f0fc6f-f6b0-5faa-826f-da6d5fce02db",
+      "target_codigo_interno": "PRF-AFEE-0026",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0027",
+      "legacy_sku": "PRF-AFEE-0027",
+      "target_id": "6b90ae46-12b8-5b98-bbee-ad1c1e90a990",
+      "target_codigo_interno": "PRF-AFEE-0027",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0028",
+      "legacy_sku": "PRF-AFEE-0028",
+      "target_id": "9fcadbc4-a057-5c32-88e8-3e503fb317a3",
+      "target_codigo_interno": "PRF-AFEE-0028",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0029",
+      "legacy_sku": "PRF-AFEE-0029",
+      "target_id": "dffe7897-39f9-5355-ac8d-357c530f0e56",
+      "target_codigo_interno": "PRF-AFEE-0029",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0030",
+      "legacy_sku": "PRF-AFEE-0030",
+      "target_id": "7549dbfc-8795-5fc3-a951-f5fb1c0a0761",
+      "target_codigo_interno": "PRF-AFEE-0030",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0031",
+      "legacy_sku": "PRF-AFEE-0031",
+      "target_id": "6b1427c3-cc42-529f-b89d-96e4fc365fe2",
+      "target_codigo_interno": "PRF-AFEE-0031",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0032",
+      "legacy_sku": "PRF-AFEE-0032",
+      "target_id": "4becdaf1-3576-59f9-8b74-5bae8f77b273",
+      "target_codigo_interno": "PRF-AFEE-0032",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0033",
+      "legacy_sku": "PRF-AFEE-0033",
+      "target_id": "21805c45-5eb2-5a4d-8c98-60e877d74b25",
+      "target_codigo_interno": "PRF-AFEE-0033",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0034",
+      "legacy_sku": "PRF-AFEE-0034",
+      "target_id": "6639c483-1678-5c84-a761-1d4f0ad705ec",
+      "target_codigo_interno": "PRF-AFEE-0034",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-AFEE-0035",
+      "legacy_sku": "PRF-AFEE-0035",
+      "target_id": "41699538-ef8a-5295-90ef-522c684fe45c",
+      "target_codigo_interno": "PRF-AFEE-0035",
+      "cliente_id": "c60726bd-33b8-42ae-9ccc-5fe8b7eacde6"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0001",
+      "legacy_sku": "PRF-BIOF-0001",
+      "target_id": "c3481a3e-1937-5ac3-a3fb-daeb9bc53026",
+      "target_codigo_interno": "PRF-BIOF-0001",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0002",
+      "legacy_sku": "PRF-BIOF-0002",
+      "target_id": "7e4c1b50-b08d-53af-a974-8f850ac4b5e6",
+      "target_codigo_interno": "PRF-BIOF-0002",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0003",
+      "legacy_sku": "PRF-BIOF-0003",
+      "target_id": "6e9057c2-498c-5416-973d-64c582c1ae71",
+      "target_codigo_interno": "PRF-BIOF-0003",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0004",
+      "legacy_sku": "PRF-BIOF-0004",
+      "target_id": "48abc063-0979-5041-81df-a0c84cf3e6bc",
+      "target_codigo_interno": "PRF-BIOF-0004",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0005",
+      "legacy_sku": "PRF-BIOF-0005",
+      "target_id": "6d2894c6-ff4f-530d-89bc-c109a005b317",
+      "target_codigo_interno": "PRF-BIOF-0005",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0006",
+      "legacy_sku": "PRF-BIOF-0006",
+      "target_id": "ac5cc793-ac06-5ab0-8ed5-ab268ccd06f5",
+      "target_codigo_interno": "PRF-BIOF-0006",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-BIOF-0007",
+      "legacy_sku": "PRF-BIOF-0007",
+      "target_id": "b6d16bf4-e61b-56e8-b3f9-52ab5eda7710",
+      "target_codigo_interno": "PRF-BIOF-0007",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "PRF-MENE-0001",
+      "legacy_sku": "PRF-MENE-0001",
+      "target_id": "9f691d30-6460-5af4-816a-3ec321855919",
+      "target_codigo_interno": "PRF-MENE-0001",
+      "cliente_id": "ca88d3e3-3d7a-5c99-843c-a7a74ef02e95"
+    },
+    {
+      "legacy_id": "PRF-PROP-0001",
+      "legacy_sku": "PRF-PROP-0001",
+      "target_id": "8bf4eee1-9d70-5d99-903f-7803b599f270",
+      "target_codigo_interno": "PRF-PROP-0001",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "PRF-ROSA-0001",
+      "legacy_sku": "PRF-ROSA-0001",
+      "target_id": "e379a620-6093-5b1b-9773-bd500d05a006",
+      "target_codigo_interno": "PRF-ROSA-0001",
+      "cliente_id": "183b30fd-02b9-5688-8d48-ae5105da9c7d"
+    },
+    {
+      "legacy_id": "PRF-ROSA-0002",
+      "legacy_sku": "PRF-ROSA-0002",
+      "target_id": "636ffa66-5c83-52b6-b4de-e7e469745786",
+      "target_codigo_interno": "PRF-ROSA-0002",
+      "cliente_id": "183b30fd-02b9-5688-8d48-ae5105da9c7d"
+    },
+    {
+      "legacy_id": "PRF-ROSA-0003",
+      "legacy_sku": "PRF-ROSA-0003",
+      "target_id": "e6a0141f-17ad-54e6-9b98-917f4c1a94fc",
+      "target_codigo_interno": "PRF-ROSA-0003",
+      "cliente_id": "183b30fd-02b9-5688-8d48-ae5105da9c7d"
+    },
+    {
+      "legacy_id": "PRF-ROSA-0004",
+      "legacy_sku": "PRF-ROSA-0004",
+      "target_id": "826e221d-62c4-50b7-b2c1-09909236b57c",
+      "target_codigo_interno": "PRF-ROSA-0004",
+      "cliente_id": "183b30fd-02b9-5688-8d48-ae5105da9c7d"
+    },
+    {
+      "legacy_id": "PRF-ROSA-0005",
+      "legacy_sku": "PRF-ROSA-0005",
+      "target_id": "bcaa9965-c3e4-5eff-937c-9629b9f72101",
+      "target_codigo_interno": "PRF-ROSA-0005",
+      "cliente_id": "183b30fd-02b9-5688-8d48-ae5105da9c7d"
+    },
+    {
+      "legacy_id": "PRF-VELL-0001",
+      "legacy_sku": "PRF-VELL-0001",
+      "target_id": "d838d15e-9abc-5fee-bdcc-f4721261563c",
+      "target_codigo_interno": "PRF-VELL-0001",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0002",
+      "legacy_sku": "PRF-VELL-0002",
+      "target_id": "a01b8b60-4541-575a-8da0-f98a8e222f97",
+      "target_codigo_interno": "PRF-VELL-0002",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0003",
+      "legacy_sku": "PRF-VELL-0003",
+      "target_id": "6f92ceac-0961-532a-a0e0-8756b21fef19",
+      "target_codigo_interno": "PRF-VELL-0003",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0004",
+      "legacy_sku": "PRF-VELL-0004",
+      "target_id": "070e872d-b24e-5dcc-879e-725f3d55ff94",
+      "target_codigo_interno": "PRF-VELL-0004",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0005",
+      "legacy_sku": "PRF-VELL-0005",
+      "target_id": "2482de99-b3c4-58ff-b79b-ef5eb29a59f3",
+      "target_codigo_interno": "PRF-VELL-0005",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0006",
+      "legacy_sku": "PRF-VELL-0006",
+      "target_id": "afabc229-6cbe-563b-a4aa-a9084a3b3500",
+      "target_codigo_interno": "PRF-VELL-0006",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0007",
+      "legacy_sku": "PRF-VELL-0007",
+      "target_id": "c1ca44c3-d4b9-5a17-9119-9c9e496f7089",
+      "target_codigo_interno": "PRF-VELL-0007",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0008",
+      "legacy_sku": "PRF-VELL-0008",
+      "target_id": "f41aa99e-3feb-5fde-a73a-0ba0058a45b5",
+      "target_codigo_interno": "PRF-VELL-0008",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0009",
+      "legacy_sku": "PRF-VELL-0009",
+      "target_id": "45679ced-7a33-5029-8e5c-1c986e39f4b7",
+      "target_codigo_interno": "PRF-VELL-0009",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "PRF-VELL-0010",
+      "legacy_sku": "PRF-VELL-0010",
+      "target_id": "7daf6bb7-09ee-5347-91f8-d7d01c56a514",
+      "target_codigo_interno": "PRF-VELL-0010",
+      "cliente_id": "7e2481c5-b4b8-540b-8f1a-afde5ff554c9"
+    },
+    {
+      "legacy_id": "RETRAB01",
+      "legacy_sku": "RETRAB01",
+      "target_id": "69bc5855-9035-5c31-9b99-91a16b52a8dc",
+      "target_codigo_interno": "RETRAB01",
+      "cliente_id": "e2245935-33a5-5625-89ff-20108eb1e5eb"
+    },
+    {
+      "legacy_id": "RETRAB02",
+      "legacy_sku": "RETRAB02",
+      "target_id": "d982075e-ae34-5314-98b7-0e6cd4ba30a0",
+      "target_codigo_interno": "RETRAB02",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "RETRAB03",
+      "legacy_sku": "RETRAB03",
+      "target_id": "311e77a2-bc38-5f12-9366-78020b54b1c2",
+      "target_codigo_interno": "RETRAB03",
+      "cliente_id": "dab6fa80-7ff9-5120-8564-deec405bc001"
+    },
+    {
+      "legacy_id": "RETRAB04",
+      "legacy_sku": "RETRAB04",
+      "target_id": "f9d0c15b-c3e5-5fd3-b148-81cfce770b51",
+      "target_codigo_interno": "RETRAB04",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "RETRAB05",
+      "legacy_sku": "RETRAB05",
+      "target_id": "27016e7e-db2b-507d-9171-762bb2c5c495",
+      "target_codigo_interno": "RETRAB05",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "RETRAB06",
+      "legacy_sku": "RETRAB06",
+      "target_id": "a070cde4-da31-54b3-8aa3-2f499984dd9b",
+      "target_codigo_interno": "RETRAB06",
+      "cliente_id": "e9117a46-0479-527b-8848-c069afa582db"
+    },
+    {
+      "legacy_id": "RETRAB07",
+      "legacy_sku": "RETRAB07",
+      "target_id": "e3f5561f-2a78-5c4a-9729-e1ba152eae05",
+      "target_codigo_interno": "RETRAB07",
+      "cliente_id": "4f770814-cc69-47b0-9322-4cd5bf21365d"
+    },
+    {
+      "legacy_id": "SAGLBS01",
+      "legacy_sku": "SAGLBS01",
+      "target_id": "f04f0b97-a4f2-5bf5-8ab3-f1c17665f358",
+      "target_codigo_interno": "SAGLBS01",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SAGLBS02",
+      "legacy_sku": "SAGLBS02",
+      "target_id": "98c5094d-ded8-5b01-a3df-9925800f0da2",
+      "target_codigo_interno": "SAGLBS02",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SAGLBS03",
+      "legacy_sku": "SAGLBS03",
+      "target_id": "690815c2-37eb-506e-a008-5e3f78483012",
+      "target_codigo_interno": "SAGLBS03",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SAMTBS01",
+      "legacy_sku": "SAMTBS01",
+      "target_id": "17174b9c-0d78-5102-b378-f3ef07ce95ae",
+      "target_codigo_interno": "SAMTBS01",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SAMTBS02",
+      "legacy_sku": "SAMTBS02",
+      "target_id": "035b4e7a-39b2-5da0-9ed0-65f0e312beba",
+      "target_codigo_interno": "SAMTBS02",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SAMTBS03",
+      "legacy_sku": "SAMTBS03",
+      "target_id": "ed9ee950-d892-5da6-a8a2-7d094786b230",
+      "target_codigo_interno": "SAMTBS03",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SASCDM01",
+      "legacy_sku": "SASCDM01",
+      "target_id": "695245a9-b530-5ff1-bbcb-04d867fed812",
+      "target_codigo_interno": "SASCDM01",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SASCDM02",
+      "legacy_sku": "SASCDM02",
+      "target_id": "c91d104c-c52b-5c90-a32e-b03ade5a3b6b",
+      "target_codigo_interno": "SASCDM02",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SASCES01",
+      "legacy_sku": "SASCES01",
+      "target_id": "ec835fed-5f5b-548b-bc83-d4d4711c8576",
+      "target_codigo_interno": "SASCES01",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SASCES02",
+      "legacy_sku": "SASCES02",
+      "target_id": "7d684131-6890-5514-ab2c-23c5fac5f1e5",
+      "target_codigo_interno": "SASCES02",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SASCGF01",
+      "legacy_sku": "SASCGF01",
+      "target_id": "45249417-ea40-5946-b70e-fe44b73e3a30",
+      "target_codigo_interno": "SASCGF01",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SASCGF02",
+      "legacy_sku": "SASCGF02",
+      "target_id": "8ef488b7-4e75-5b5b-ab54-7bc02bd896cd",
+      "target_codigo_interno": "SASCGF02",
+      "cliente_id": "1ee63ac7-1e4b-50c2-9484-c7704d17637d"
+    },
+    {
+      "legacy_id": "SRM-SENR-0001",
+      "legacy_sku": "SRM-SENR-0001",
+      "target_id": "68981600-d5f6-51a2-a1d8-923663f09141",
+      "target_codigo_interno": "SRM-SENR-0001",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "SRM-SEUN-0001",
+      "legacy_sku": "SRM-SEUN-0001",
+      "target_id": "199b3b81-f061-5bc2-856e-44952baa01fa",
+      "target_codigo_interno": "SRM-SEUN-0001",
+      "cliente_id": "347e62c0-8af3-55ca-a2a0-55edc91d3db3"
+    },
+    {
+      "legacy_id": "USO-PROP-0001",
+      "legacy_sku": "USO-PROP-0001",
+      "target_id": "8a30d873-7be9-5b62-ac8a-0f153a731775",
+      "target_codigo_interno": "USO-PROP-0001",
+      "cliente_id": "a08e9275-ffd1-5c2c-b7b8-c75a0fa9424b"
+    },
+    {
+      "legacy_id": "WKBM0001",
+      "legacy_sku": "WKBM0001",
+      "target_id": "b0c85244-2344-595e-a7d6-a38fd2913be5",
+      "target_codigo_interno": "WKBM0001",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    },
+    {
+      "legacy_id": "WKBS0001",
+      "legacy_sku": "WKBS0001",
+      "target_id": "9b48d008-a66f-5b60-a68a-02252db9d114",
+      "target_codigo_interno": "WKBS0001",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    },
+    {
+      "legacy_id": "WKBS0002",
+      "legacy_sku": "WKBS0002",
+      "target_id": "1ff94d5e-7f58-5b00-a4cf-f096c3f28412",
+      "target_codigo_interno": "WKBS0002",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    },
+    {
+      "legacy_id": "WKBS0003",
+      "legacy_sku": "WKBS0003",
+      "target_id": "74079a06-df03-5db6-b57c-e260cf3a1e72",
+      "target_codigo_interno": "WKBS0003",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    },
+    {
+      "legacy_id": "WKBS0004",
+      "legacy_sku": "WKBS0004",
+      "target_id": "1053dd47-a3e5-5ca1-9358-a531f175f36e",
+      "target_codigo_interno": "WKBS0004",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    },
+    {
+      "legacy_id": "WKBS0005",
+      "legacy_sku": "WKBS0005",
+      "target_id": "31cf12c5-4c10-581b-8e47-02d938e75c0e",
+      "target_codigo_interno": "WKBS0005",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    },
+    {
+      "legacy_id": "WKBS0006",
+      "legacy_sku": "WKBS0006",
+      "target_id": "da6ab81e-76fc-54be-8c10-03cc331003a8",
+      "target_codigo_interno": "WKBS0006",
+      "cliente_id": "fead7ce1-c66e-5471-bb3a-ee15a59a4e2e"
+    }
+  ],
+  "blocked": [
+    {
+      "legacy_id": "DESODORANTE-ROLLON-ALGODÃO",
+      "codigo": "DESODORANTE-ROLLON-ALGODÃO",
+      "reason": "client_not_resolved"
+    },
+    {
+      "legacy_id": "DESODORANTE-ROLLON-LAVANDA",
+      "codigo": "DESODORANTE-ROLLON-LAVANDA",
+      "reason": "client_not_resolved"
+    },
+    {
+      "legacy_id": "KUBPBA01_-_2",
+      "codigo": "KUBPBA01 - 2",
+      "reason": "client_not_resolved"
+    }
+  ]
+}

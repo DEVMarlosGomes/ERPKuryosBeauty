@@ -1,0 +1,45 @@
+{
+  "status": "PLAN_ONLY_NOT_APPLIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+    "environment": "homologation"
+  },
+  "recovery_objective": "Return homologation data and indexes to the exact pre-apply fingerprint.",
+  "mandatory_before_apply": [
+    "Create a fresh compressed mongodump of the complete homologation database.",
+    "Calculate and record SHA-256 and archive size; retain the archive until final homologation approval.",
+    "Record exact per-collection document hashes, counts and index definitions.",
+    "Record before-images for counters and every document that could be updated.",
+    "Create a migration run manifest with plan_id, operation_id, target id and before/after hashes.",
+    "Verify a restore drill into a disposable database before starting Wave 1."
+  ],
+  "apply_safety": {
+    "batching": "One domain wave at a time; bounded transaction batches where supported.",
+    "idempotency": "Deterministic UUIDv5 IDs plus plan_id/operation_id precondition checks.",
+    "existing_documents": "No automatic updates in the initial plan; MATCH records are map-only.",
+    "migration_marker": "Every inserted document must carry source, source_id, plan_id and operation_id metadata.",
+    "stop_conditions": [
+      "count drift",
+      "hash drift",
+      "new conflict",
+      "index failure",
+      "dependency unresolved",
+      "target is not homologation"
+    ]
+  },
+  "inverse_operations": [
+    "Stop the homologation application and background workers.",
+    "Verify inserted documents still match their recorded after-hash; stop on operator/user edits.",
+    "Delete only inserted documents whose tenant_id, plan_id and operation_id all match the manifest.",
+    "Restore any future updates from immutable before-images.",
+    "Restore counter before-images after dependent inserts are removed.",
+    "Restore index definitions if a future approved wave changes indexes.",
+    "Recalculate collection counts/hashes/index fingerprints and compare with the baseline.",
+    "If any inverse check fails, restore the retained full snapshot to a new clean homologation database and switch the homologation connection only after validation."
+  ],
+  "production_actions": [],
+  "current_rollback_required": false,
+  "reason": "This turn generated files only; no Mongo transformation was applied."
+}

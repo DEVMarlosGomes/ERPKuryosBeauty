@@ -1,0 +1,12 @@
+{
+  "status": "VERIFIED",
+  "source_mode": "HML_READ_ONLY",
+  "rollback_target": "LOCAL_DISPOSABLE_DATABASE",
+  "copied_documents": 116,
+  "rollback_result": {
+    "collection_dropped": "legacy_master_data_reviews",
+    "documents_removed": 116
+  },
+  "collection_absent_after_rollback": true,
+  "local_database_removed": true
+}

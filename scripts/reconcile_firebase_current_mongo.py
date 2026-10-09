@@ -47,6 +47,21 @@ def digits(value: Any) -> str:
     return re.sub(r"\D", "", str(value or ""))
 
 
+def is_valid_cnpj(value: Any) -> bool:
+    number = digits(value)
+    if len(number) != 14 or number == number[0] * 14:
+        return False
+
+    def check_digit(base: str, weights: list[int]) -> str:
+        total = sum(int(digit) * weight for digit, weight in zip(base, weights))
+        remainder = total % 11
+        return "0" if remainder < 2 else str(11 - remainder)
+
+    first = check_digit(number[:12], [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2])
+    second = check_digit(number[:12] + first, [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2])
+    return number[-2:] == first + second
+
+
 def source_records(source: dict[str, Any], node: str) -> Iterable[tuple[str, Any]]:
     value = source.get(node, {})
     if isinstance(value, dict):
@@ -175,10 +190,13 @@ def main() -> int:
             matches = clients_by_name.get(name, [])
             basis = "NAME_EXACT" if matches else None
         classification, match = classify_exact(matches)
+        if classification == "INSERT_CANDIDATE" and cnpj and not is_valid_cnpj(cnpj):
+            classification = "MANUAL_REVIEW"
         reason = {
             "MATCH": f"Correspondencia unica por {basis} dentro do tenant aprovado.",
             "CONFLICT": f"Mais de um cliente alvo corresponde por {basis}; nenhuma decisao automatica.",
             "INSERT_CANDIDATE": "Nenhum cliente alvo corresponde por CNPJ ou nome normalizado.",
+            "MANUAL_REVIEW": "CNPJ informado e invalido; corrigir ou remover antes de cadastrar o cliente.",
         }[classification]
         client_entries.append({
             "legacy_id": legacy_id,
@@ -213,6 +231,9 @@ def main() -> int:
         if duplicate_source:
             classification, match = "CONFLICT", None
             reason = "CNPJ aparece em mais de um fornecedor na fonte; exige consolidacao humana."
+        elif not cnpj or not is_valid_cnpj(cnpj):
+            classification, match = "MANUAL_REVIEW", None
+            reason = "Fornecedor exige CNPJ valido no ERP; valor ausente ou invalido na fonte."
         else:
             classification, match = classify_exact(matches)
             if classification == "MATCH":

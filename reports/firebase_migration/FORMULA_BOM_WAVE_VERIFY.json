@@ -1,0 +1,22 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "collection": "legacy_formula_bom_reviews",
+  "unrelated_collections_verified": 104,
+  "unrelated_collection_failures": {},
+  "review_checks": {
+    "total": 443,
+    "formula": 197,
+    "bom": 246,
+    "operational_eligible_true": 0,
+    "activation_not_blocked": 0,
+    "hash_failures": [],
+    "payload_hash_failures": []
+  },
+  "operational_collections": {
+    "produtos_pai": 0,
+    "bom_items": 0,
+    "skus_with_parent": 0
+  },
+  "operational_unchanged": true
+}

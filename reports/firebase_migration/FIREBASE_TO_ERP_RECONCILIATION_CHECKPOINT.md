@@ -15,16 +15,16 @@ Data: 2026-09-24
 ## Classificações
 
 - `MATCH`: 3.
-- `INSERT_CANDIDATE`: 906.
+- `INSERT_CANDIDATE`: 892.
 - `MERGE_CANDIDATE`: 0.
 - `CONFLICT`: 6.
-- `MANUAL_REVIEW`: 3.008.
+- `MANUAL_REVIEW`: 3.022.
 - `SKIP`: 0.
 
 ## Filas por domínio
 
 - Clientes: 3 matches e 56 candidatos de inserção.
-- Fornecedores: 397 candidatos de inserção e 6 registros em conflito, correspondentes a CNPJs duplicados na fonte.
+- Fornecedores: 383 candidatos de inserção, 6 registros em conflito e 14 bloqueados por CNPJ ausente ou inválido.
 - Materiais: 939 em revisão manual; cadastro alvo vazio e classificação de domínio pendente.
 - SKUs e aliases: 392 em revisão manual; geração automática permanece proibida.
 - Pedidos: 453 candidatos de inserção, dependentes de cliente, SKU e CGI reconciliados.
@@ -50,4 +50,3 @@ Nenhuma transformação final foi gerada e nenhum dado Firebase foi aplicado ao 
 3. decidir o tratamento dos 56 clientes e 397 fornecedores candidatos;
 4. manter estoque, OPs, lotes, fórmulas e BOMs bloqueados até resolver suas dependências;
 5. autorizar explicitamente a geração do plano de transformação para homologação.
-

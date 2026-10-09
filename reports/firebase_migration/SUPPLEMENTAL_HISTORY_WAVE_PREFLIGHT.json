@@ -1,0 +1,6438 @@
+{
+  "generated_at": "2026-09-25T21:35:17.452317+00:00",
+  "mode": "READ_ONLY_HML_RECONCILIATION",
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "production_written": false,
+  "homologation_written": false,
+  "counts": {
+    "specification": 213,
+    "production_schedule": 51,
+    "production_stop": 141,
+    "reported_break": 13,
+    "closed_shift": 34,
+    "production_loss_group": 22,
+    "sale_price": 110,
+    "quotation_process": 13
+  },
+  "total": 597,
+  "classifications": {
+    "specification:manual_review": 19,
+    "specification:historical_archive_ready": 194,
+    "production_schedule:historical_archive_ready": 49,
+    "production_schedule:manual_review": 2,
+    "production_stop:historical_archive_ready": 141,
+    "reported_break:historical_archive_ready": 13,
+    "closed_shift:historical_archive_ready": 34,
+    "production_loss_group:historical_archive_ready": 22,
+    "sale_price:historical_archive_ready": 110,
+    "quotation_process:manual_review": 10,
+    "quotation_process:historical_archive_ready": 3
+  },
+  "records": [
+    {
+      "source_node": "especificacoes",
+      "source_key": "AGBE-SEUN-0001__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "AGBE-SEUN-0001"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS07__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABBS08__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABBS08"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD01__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "AMABHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD07__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMABHD08__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMABHD08"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS07__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCBS08__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCBS08"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD07__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "AMNCHD08__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "AMNCHD08"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBPF0004__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBPF0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS01-2__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS01-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS02-2__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS02-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS03-2__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS03-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS04-2__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS04-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJBS05-2__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJPF01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJPF01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJPF01__v2",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "BBSJPF01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJPF02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJPF02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJPF02__v2",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "BBSJPF02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BBSJPF03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJPF03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BFBBBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BFBBBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BFBBBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BFBBBS04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BFBBBS05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BFBBBS06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BSP-SEUN-0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "BSP-SEUN-0001"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "BSPL-SEUN-0001__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "BSPL-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "CMBS0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "CMBS0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "CMGL0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "CMGL0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLES01__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "DPGLES01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLES02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLES02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLHD01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLHD02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPGLHD03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPHNBS01__v2",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "DPHNBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPHNBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPHNPC01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPHSBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHSBS02"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTBS01__v2",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "DPMTBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTBS03__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "DPMTBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTES01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTES01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTES02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTES02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTES03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTES03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTHD01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTHD02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DPMTHD03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DYPFPF01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DYPFPF01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DYPFPF02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DYPFPF02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DYPFPF03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DYPFPF03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "DYPFPF04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "DYPFPF04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "ESP-SEUN-0001__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FBBS0002__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FBBS0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FBBS0005__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FBBS0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FBBS0006__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FBBS0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FBHD0002__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FBHD0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FBMF0002__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FBMF0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FBOC0002__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FBOC0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FEBS0003__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FEBS0003"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FEBS0004__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FEBS0004"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "FEBS0005__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "FEBS0005"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GLMKAM07__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GZLBBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GZLBBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GZLBBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GZLBBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GZLBBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GZLBBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GZLBBS04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GZLBBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GZLBBS05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GZLBBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "GZLBBS06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "GZLBBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0002__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0003__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0004__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0005__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0006__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0007__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBHD0008__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBHD0008"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HBPC0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "HBPC0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0001__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0002__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0003__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0004__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0005__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0006__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0007__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "HDR-MISS-0008__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "HDR-MISS-0008"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARBS04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARBS05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARBS06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARGB01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARGB01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARGB05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARGB05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARGE01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARGE01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARHD01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARHD02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARHD03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARHD04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARHD04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARHD05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARHD05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBARHD06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBARHD06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBCHEC01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBCHEC01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBCHEC02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBCHEC02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBCHEC03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBCHEC03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBCHGC01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBCHGC01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBCHGC02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBCHGC02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "IBCHGC03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "IBCHGC03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "KUBPBA01-2__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "KUBPBA01-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "KUBPBA01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "KUBPBA01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "KUBPBA01__v2",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "KUBPBA01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "KUBPBA02-2__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "KUBPBA02-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "KUBPBA02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "KUBPBA02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "LNHGCN02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "LNHGCN02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MAOEOL02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MAOEOL02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS010__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS010"
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS05__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS06__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS07__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS08__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS08"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS09__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS09"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS10__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS10"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS11__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS11"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARBS12__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS12"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARHD01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARHD02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARHD03__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRARHD04__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRBR0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "MRFX0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRFX0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PEL-SEUN-0001__v1",
+      "record_type": "specification",
+      "legacy_status": "APROVADA",
+      "reference_codes": [
+        "PEL-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PEL-SEUN-0001__v2",
+      "record_type": "specification",
+      "legacy_status": "APROVADA",
+      "reference_codes": [
+        "PEL-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0001__V2",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0003__V2",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0003__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0014__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0014"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0015__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0015"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0016__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0016"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0017__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0017"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0018__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0018"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0025__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0025"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0028__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0028"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0029__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0029"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0030__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0030"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0031__V2",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0031__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0031"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0032__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0032"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-AFEE-0033__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0001__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-BIOF-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0002__v1",
+      "record_type": "specification",
+      "legacy_status": "APROVADA",
+      "reference_codes": [
+        "PRF-BIOF-0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0002__v2",
+      "record_type": "specification",
+      "legacy_status": "APROVADA",
+      "reference_codes": [
+        "PRF-BIOF-0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0003__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-BIOF-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0004__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-BIOF-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0005__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-BIOF-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0006__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-BIOF-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-BIOF-0007__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-BIOF-0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-MENE-0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-MENE-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "PRF-PROP-0001__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "PRF-PROP-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SASCDM01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SASCDM01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SASCDM02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SASCDM02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SASCES01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SASCES01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SASCES02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SASCES02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SASCGF01__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SASCGF01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SASCGF02__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SASCGF02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SRM-SEUN-0001__V1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        ""
+      ],
+      "blockers": [
+        "sku_unresolved"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "SRM-SEUN-0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "SRM-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "USO-PROP-0001__v1",
+      "record_type": "specification",
+      "legacy_status": "RASCUNHO",
+      "reference_codes": [
+        "USO-PROP-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBM0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBM0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBS0001__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBS0002__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBS0003__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBS0004__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBS0005__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "especificacoes",
+      "source_key": "WKBS0006__v1",
+      "record_type": "specification",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "1926-09-01",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0029"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-08",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-09",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-17",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "FEOC0002",
+        "MRARBS05",
+        "MRARBS09",
+        "MRARBS11"
+      ],
+      "blockers": [
+        "sku_unresolved:FEOC0002"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-20",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05",
+        "MRFX0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-21",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRFX0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-22",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRFX0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-27",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-28",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05",
+        "MRARBS12",
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-29",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05",
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-30",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05",
+        "MRARBS09",
+        "MRARBS11",
+        "MRBR0001",
+        "PRF-AFEE-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-07-31",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS09",
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-03",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-04",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-05",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-06",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-07",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "MRARBS06",
+        "MRARBS08",
+        "PRF-AFEE-0032"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-10",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS06",
+        "MRARBS08",
+        "PRF-AFEE-0014",
+        "PRF-AFEE-0032"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-11",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS06",
+        "MRARBS08",
+        "MRARBS12",
+        "PRF-AFEE-0014",
+        "PRF-AFEE-0016",
+        "PRF-AFEE-0018",
+        "PRF-AFEE-0025"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-12",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05",
+        "MRARBS08",
+        "MRARBS12",
+        "PRF-AFEE-0017",
+        "PRF-AFEE-0025",
+        "PRF-AFEE-0028",
+        "PRF-AFEE-0029"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-13",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS03-2",
+        "MRARBS05",
+        "PRF-AFEE-0003",
+        "PRF-AFEE-0017",
+        "PRF-AFEE-0030",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-14",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS03-2",
+        "HDR-MISS-0005",
+        "MRARBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-17",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS03-2",
+        "HDR-MISS-0005",
+        "MRARBS09"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-19",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05",
+        "PRF-AFEE-0003",
+        "PRF-AFEE-0030",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-20",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM06",
+        "MRARBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-21",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM06",
+        "MRARBS05",
+        "PRF-AFEE-0006",
+        "PRF-AFEE-0016"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-24",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM06",
+        "MRARBS02",
+        "PRF-AFEE-0006",
+        "PRF-AFEE-0018",
+        "PRF-AFEE-0028"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-25",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM06",
+        "MRARBS01",
+        "MRARBS02",
+        "PRF-AFEE-0019",
+        "PRF-AFEE-0027"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-26",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM05",
+        "MRARBS01",
+        "MRARBS10",
+        "PRF-AFEE-0008",
+        "PRF-AFEE-0019",
+        "PRF-AFEE-0025",
+        "PRF-AFEE-0026"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-27",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM04",
+        "GLMKAM05",
+        "PRF-AFEE-0021",
+        "PRF-AFEE-0030",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-28",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "ESP-SEUN-0001",
+        "GLMKAM04",
+        "GLMKAM05",
+        "PRF-AFEE-0032",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-08-31",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01",
+        "ESF-SEUN-0001",
+        "GLMKAM05",
+        "HDR-MISS-0001",
+        "HDR-MISS-0002",
+        "HDR-MISS-0003",
+        "HDR-MISS-0005",
+        "HDR-MISS-0006",
+        "HDR-MISS-0007",
+        "PRF-AFEE-0008",
+        "PRF-AFEE-0021"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-01",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01",
+        "HDR-MISS-0001",
+        "HDR-MISS-0002",
+        "PRF-AFEE-0014",
+        "PRF-AFEE-0021",
+        "PRF-AFEE-0029",
+        "PRF-AFEE-0030"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-02",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01",
+        "GLMKAM04",
+        "HDR-MISS-0003",
+        "HDR-MISS-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-03",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM04",
+        "HDR-MISS-0006",
+        "HDR-MISS-0007",
+        "PRF-AFEE-0012",
+        "PRF-AFEE-0032"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-04",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "GLMKAM01",
+        "GLMKAM04",
+        "HDR-MISS-0004",
+        "HDR-MISS-0008",
+        "PRF-AFEE-0012",
+        "PRF-AFEE-0015"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-08",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM01",
+        "PRF-AFEE-0015",
+        "PRF-AFEE-0017",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-09",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "GLMKAM01",
+        "HDR-MISS-0002",
+        "HDR-MISS-0008",
+        "PRF-AFEE-0012",
+        "PRF-AFEE-0014",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-10",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "GLMKAM01",
+        "GLMKAM02",
+        "PRF-AFEE-0014",
+        "PRF-AFEE-0023"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-11",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2",
+        "GLMKAM02",
+        "KUBPBA02",
+        "PRF-AFEE-0008",
+        "PRF-AFEE-0018",
+        "PRF-AFEE-0025"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-14",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM02",
+        "GLMKAM03",
+        "KUBPBA02",
+        "MRARBS05",
+        "PRF-AFEE-0026",
+        "PRF-PROP-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-15",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM03",
+        "KUBPBA01 - 2",
+        "MRARBS05",
+        "PRF-AFEE-0031",
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-16",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "GLMKAM03",
+        "MRARBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-17",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM03",
+        "MRARBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-18",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "AGU-SEUN-0001",
+        "ESF-SEUN-0001",
+        "MRARBS04",
+        "MRARBS07"
+      ],
+      "blockers": [
+        "sku_unresolved:AGU-SEUN-0001"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-21",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "HDR-MISS-0001",
+        "HDR-MISS-0008",
+        "MRARBS07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-22",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "HDR-MISS-0001",
+        "HDR-MISS-0008",
+        "PRF-BIOF-0002",
+        "PRF-BIOF-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-23",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "HDR-MISS-0004",
+        "HDR-MISS-0008",
+        "PRF-BIOF-0004",
+        "PRF-BIOF-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-24",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "HDR-MISS-0004",
+        "HDR-MISS-0005",
+        "PRF-BIOF-0003",
+        "PRF-BIOF-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-25",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "HDR-MISS-0005",
+        "PRF-BIOF-0003",
+        "PRF-BIOF-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "programacao",
+      "source_key": "2026-09-28",
+      "record_type": "production_schedule",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01",
+        "HDR-MISS-0005",
+        "PRF-BIOF-0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OxWvXJ3khC2yy8swITA",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-Oyret9w7FfQLT8j1JLL",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OyrfUSf7fl41WNB7wEV",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-Oyrmyky7hlaDjzCuoK_",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OysX7q6YGJDGSMlgBc0",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-Oz7RlzXxKhGLPZu-1LI",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-Oz7Rn-V20JdxvULajQ8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-Oz7bT0NosfIyRqS3Od7",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzBGzhmYNkVUbO78NN9",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzBH-nePGlsqqHDoFhD",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzBHkO9A1GgxndJUkGZ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzCVmVQhjXklkbHYcNs",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzCVnAhwOUkt2rZcl9P",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzDP8DrXNbCwXtLcZFH",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzGPfftclvBUaF9VBVS",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzGPgsy97ef1_v2DsSk",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzHklH49ZSV7J7iwPzn",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzIHpagcWwKyxpbfO37",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzLY08np2h2YGC0nV6m",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzLY0utHngA45B-VNQH",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzModQvISfsdEGKCr6z",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzMofQxt27mXq30iBuk",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzNHZb1_cYTjy-x9X7P",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzNePk25wnt_CL2XMB5",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzQjpYSWOzG-Qi_0V-n",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzQjqU9QxBliY_NxYlg",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzRBXy-XrX3eEjTlWeq",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzS5nwFW4VudeewvwE3",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzS5p-IjcxobZdftF7q",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzfAYf0uWjmiio-pZT8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzfAZasjoacgZjvM5X8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzkOx2WjeNr5vwR2fDA",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzkOy6IJ-EkkYIq9oOH",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzkOywfjX-dLA_72Hqf",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzmCOX-bePM7c88lP1e",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzpZDDBw77QXy4MFcsR",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzpZEQGxRmnz_8gDZT9",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzpZFEtRfNOTKZj-vOE",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzumtjsYmL3rnSLZ43K",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzvrnP8educ5WfB6auK",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzvroWu3Si3l42Z8kTk",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzzlfVc12q0FbfsAGev",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-OzzliGqf5a_p9Y7Ap61",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-ENNwyyhchZB9komZr",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-ENOkpZsjaAxut5u2T",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-JkdNxJfbB5qyQ4_Hf",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-JkePbhWlJTXh5IMY8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-PLdkM7tj6cwe4FWIs",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-PLfSuOO1-IohBbadU",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-PMGu5xotxuIQ8khk0",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-TomScBfEUM-NRKZnb",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-ToopYGyPpVPn9PvOr",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-Vgr1asu-eKJUH-2lz",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-Z1Icf2KcC3tE2Of4W",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-nIIffQPklLxgqOaOl",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-nKmSlRTOA27V-3OAe",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-nLFljjE_TTGKFr7OQ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-sRgX_wExcabs4jdSl",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-sRhdPKi4MoxSVKfmj",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-sRjEVcEzUHvS2x4hg",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-xaHtNBDnQLvcPWUFU",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-xaIVtssBTMqN8urHt",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P-xaNDKm21uuqBwZbBG",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P01m-ykYjp2cbSBiHdQ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P01m0bbdOnO7XJoqJJc",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P01m1W8-Omxh5BTh7zQ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P02-BjkZbNBRjfBCPki",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P02DKd-gRhs3FMISJBN",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P03iaA5kO0uufXcjtO1",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P06xW-t1VkR7L6hsvaG",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P06xWk5LviC0EiYHHIL",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P06xXwE5w6Ka-0duk0e",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0MKJdtpDSPnlE1Z6O9",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0MKMaDk5Yv95_hPI9s",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0MKNxNy9NAlah3J-jE",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0RZxbVt4zWlGqqaCkZ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0Rac6gFF6SaiJpod5j",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0S-TR1RvdBVqZIMNyF",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0Sn-RvDcCpQBmHZAiQ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0TSibdifcC0k1qj5NP",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0WawDL7onBYw6PL7NB",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0WaxAKyT_9U8vA1maE",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0Wb5K5m4EqLo1fw1l_",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0XMbRAHm79eMrn5mTI",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0XSuu9EDmQSeTjMPLm",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0XwFCTcMqQ2jNZxK-R",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0akCYlTEjzBlGdce3q",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0akDKBpT3sHHYxxaCZ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0b-ml2kH8JftCbXzh1",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0c4ezBj1I32hEEX2oj",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0c4gibKz4nc9sodm1A",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0cU7zrxIifWQAydmiB",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0ccaoNuvj2c5iPJevc",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0fvod6bcuNobf5R1KP",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0fvpAn6XosQXm0MaW4",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0fvq8QMl9uWzTV9fg6",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P0hEA-OqiJ0LOqnWnPG",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P11JYMjKUuDNh71ke2b",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P14bodYE9MwqpuRgDM8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P14bpg0EKbXAZHyiUSi",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P14bqsDuoNw-fYAf44X",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P15vPJlM6_7x7yYlVXP",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P15vQ2XKQD47Yf-tZ_J",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P168iiH5LvSUQXYGZ2K",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P19lgdnb61474_enfCW",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P19lhFcWGoScrD0wyh8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1B24oyOuaZl4qEvs60",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1B2Apwe9thkUtlEmIM",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1EwjiKouFt2-9s_gig",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1EwkRFS4w-Ha1A_J72",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1EwlkkJIaDDYHFwANc",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1Fu6YvajMKMKY_jS9s",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1Fu7u1I4ZvlfhZ0Axd",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1UPlk54tvtsmT6AxCB",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1UPmnNCZVSDd8iKUlH",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1UPnpIGs2ZACNdHxTO",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1VdQuu3glw73TyloLJ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1VdS7JD02UAyVEFZh5",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1ZaW2NiEg1kUejbHTG",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1_-ts05jM7y2e5G46L",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1_n06W_8Xm7P3l2YEm",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1_n1FUQPBN9EnVWJEJ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1_n2AxMMc9f-uT7eMQ",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1dp3yMICawK33QoKxp",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1dp5SWeaKcn-r9yLRb",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1irp0kPW8_BUmYS_Io",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1irpu-TxfTVUTP5T1z",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1k5qOHmJl__UaEZlj-",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1k5rvGO6sFyRHjCOBE",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1k6-mzxrs5S2Q3FFBc",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1nyyrZBMqLM7gNkz1K",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1nz-GznWihcIf_58iY",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1nz0JtqKb_NYkHo7z8",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1obDIH01ks9Pqa3ZKz",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1oo8hAadnulsMLm4M2",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1pFVyzauivpRIzm2M6",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P1pFXD4mwdCub_VgnJt",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P22Wq-LHI-qlq7dSMJw",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P22Wr-9mZF7HyTo_ZtS",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P22kuEjn2xB5Q-LzSKR",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "paradas_historico",
+      "source_key": "-P2307u5B58jlMvv0Oah",
+      "record_type": "production_stop",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-08-04",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-08-05",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-08-06",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-08-07",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-08-13",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-02",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-03",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-09",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-10",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-14",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-15",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-17",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "intervalosApontados",
+      "source_key": "2026-09-18",
+      "record_type": "reported_break",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-07-30",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-07-31",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-03",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-04",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-05",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-06",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-07",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-10",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-11",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-12",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-13",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-17",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-18",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-19",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-20",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-21",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-24",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-25",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-26",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-27",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-28",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-08-31",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-01",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-02",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-03",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-08",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-09",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-10",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-11",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-14",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-15",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-16",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-17",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "turnosEncerrados",
+      "source_key": "2026-09-18",
+      "record_type": "closed_shift",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26195-04",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26195-05",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26196-02",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26196-03",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26196-06",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26197-01",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26198-02",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26201-01",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26204-04",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26212-01",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26212-02",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26212-05",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26212-06",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26216-03",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26224-03",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26226-02",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26230-01",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26231-03",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26232-08",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26237-15",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26243-02",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "perdas",
+      "source_key": "26246-08",
+      "record_type": "production_loss_group",
+      "legacy_status": null,
+      "reference_codes": [],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BBSJBS03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BBSJBS05-2",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BBSJBS05-2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BFBBBS01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BFBBBS02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BFBBBS03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BFBBBS04",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BFBBBS05",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "BFBBBS06",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "BFBBBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPGLBS01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPGLBS02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPGLBS03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPGLBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPHNPC01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPHNPC01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPMTBS01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPMTBS02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "DPMTBS03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "DPMTBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "ESF-SEUN-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "ESF-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "ESP-SEUN-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "ESP-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "GLMKAM01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "GLMKAM02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "GLMKAM03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "GLMKAM04",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "GLMKAM05",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "GLMKAM06",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "GLMKAM06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0002",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0003",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0004",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0005",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0006",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "HDR-MISS-0007",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "HDR-MISS-0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "KUBPBA01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "KUBPBA01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "KUBPBA01_-_2",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "KUBPBA01 - 2"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "KUBPBA02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "KUBPBA02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS04",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS05",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS05"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS06",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS06"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS07",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS07"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS08",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS08"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS09",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS09"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS10",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS10"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS11",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS11"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARBS12",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARBS12"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARHD01",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD01"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARHD02",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD02"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARHD03",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD03"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRARHD04",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRARHD04"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRBR0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRBR0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "MRFX0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "MRFX0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0003",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0004",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0005",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0006",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0007",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0008",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0008"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0009",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0009"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0010",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0010"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0011",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0011"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0012",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0012"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0013",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0013"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0014",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0014"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0015",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0015"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0016",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0016"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0017",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0017"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0018",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0018"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0019",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0019"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0020",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0020"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0021",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0021"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0022",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0022"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0023",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0023"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0025",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0025"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0026",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0026"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0027",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0027"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0028",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0028"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0029",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0029"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0030",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0030"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0031",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0031"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0032",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0032"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0033",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0033"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0034",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0034"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-AFEE-0035",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-AFEE-0035"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-BIOF-0002",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-BIOF-0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-BIOF-0003",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-BIOF-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-BIOF-0004",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-BIOF-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-BIOF-0005",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-BIOF-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-BIOF-0006",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-BIOF-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-BIOF-0007",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-BIOF-0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-MENE-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-MENE-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-ROSA-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-ROSA-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-ROSA-0002",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-ROSA-0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-ROSA-0003",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-ROSA-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-ROSA-0004",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-ROSA-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-ROSA-0005",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-ROSA-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0002",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0003",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0003"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0004",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0004"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0005",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0006",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0007",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0007"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0008",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0008"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0009",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0009"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "PRF-VELL-0010",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "PRF-VELL-0010"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "SRM-SEUN-0001",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "SRM-SEUN-0001"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "WKBS0002",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0002"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "WKBS0005",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0005"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "precos_venda",
+      "source_key": "WKBS0006",
+      "record_type": "sale_price",
+      "legacy_status": null,
+      "reference_codes": [
+        "WKBS0006"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P0g_YDfpJIT8WvZQ8Hb",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "ES-00236"
+      ],
+      "blockers": [
+        "material_unresolved:ES-00236"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P0ga1XOjAjXRKP-HDLb",
+      "record_type": "quotation_process",
+      "legacy_status": "DECIDIDO",
+      "reference_codes": [
+        "ES-00319"
+      ],
+      "blockers": [
+        "material_unresolved:ES-00319"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P157V0aX2e1_NeccVFX",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "EP-00009",
+        "EP-00106",
+        "ES-00014",
+        "ES-00171",
+        "ET-00018",
+        "MPES-00008",
+        "MPGR-00066",
+        "MPGR-00127",
+        "MPGR-00132"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00018"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P16jXNJZAtFDDicjj0E",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "EP-00009",
+        "EP-00100",
+        "EP-00101",
+        "EP-00106",
+        "ES-00010",
+        "ES-00014",
+        "ES-00147",
+        "ES-00169",
+        "ES-00171",
+        "ET-00018",
+        "ET-00032",
+        "MPES-00008",
+        "MPES-00093",
+        "MPGR-00066",
+        "MPGR-00127",
+        "MPGR-00132"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00018",
+        "material_unresolved:ET-00032"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1AJ3xIO7C4X03avX4C",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "ET-00064"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1Bq9bXNzDI1lMFaBxs",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "ET-00064"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1BrFDj7m_yu5DUnXeI",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "ET-00064"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1BrhHUwZBeXCbIxSSb",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "EP-00009",
+        "EP-00100",
+        "EP-00101",
+        "EP-00106",
+        "ES-00010",
+        "ES-00014",
+        "ES-00147",
+        "ES-00169",
+        "ES-00171",
+        "ET-00018",
+        "ET-00032",
+        "MPES-00008",
+        "MPES-00093",
+        "MPGR-00066",
+        "MPGR-00127",
+        "MPGR-00132"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00018",
+        "material_unresolved:ET-00032"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1BsqBBocIvr6v1NGWH",
+      "record_type": "quotation_process",
+      "legacy_status": "DECIDIDO",
+      "reference_codes": [
+        "ET-00064"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1F5nrfVviY1sYrx_jP",
+      "record_type": "quotation_process",
+      "legacy_status": "CANCELADO",
+      "reference_codes": [
+        "ET-00064"
+      ],
+      "blockers": [
+        "material_unresolved:ET-00064"
+      ],
+      "classification": "manual_review"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1GlAPE0VOqqZqla7aK",
+      "record_type": "quotation_process",
+      "legacy_status": "DECIDIDO",
+      "reference_codes": [
+        "MPGR-00086"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1fXiVIM7eNnfyCEtEH",
+      "record_type": "quotation_process",
+      "legacy_status": "DECIDIDO",
+      "reference_codes": [
+        "MPGR-00086"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    },
+    {
+      "source_node": "processos_cotacao",
+      "source_key": "-P1jZVnQDfYhc7yTzMCU",
+      "record_type": "quotation_process",
+      "legacy_status": "DECIDIDO",
+      "reference_codes": [
+        "MPGR-00086"
+      ],
+      "blockers": [],
+      "classification": "historical_archive_ready"
+    }
+  ],
+  "decision_gate": {
+    "status": "READY_FOR_ISOLATED_HML_REVIEW",
+    "operational_replay_allowed": false
+  }
+}

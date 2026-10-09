@@ -1,0 +1,15 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "hr_legacy_review_no_account_creation_v1",
+  "counts": {
+    "job_role": 3,
+    "legacy_user": 13
+  },
+  "unsafe_reviews": 0,
+  "sensitive_field_failures": [],
+  "unrelated_collections_verified": 113,
+  "unrelated_collection_failures": {},
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "operational_unchanged": true
+}

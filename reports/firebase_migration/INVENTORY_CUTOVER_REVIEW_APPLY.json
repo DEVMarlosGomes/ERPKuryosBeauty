@@ -1,0 +1,1778 @@
+{
+  "status": "APPLIED_HOMOLOGATION",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "policy": "BLOCKED_PHYSICAL_REVIEW_ONLY",
+  "approved_rule": "blocked_inventory_cutover_review_v1",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+    "collection": "legacy_inventory_cutover_reviews"
+  },
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "preflight_sha256": "2615d02ae15f012167e691919f3696cd683a445225ea78c3af469fd2550484fc",
+  "snapshot_sha256": "22f9e828e96ea8928a5fc48322c4ec785cd00c6464837f16b8e742fdde60406d",
+  "planned": {
+    "address": 250,
+    "lot": 39
+  },
+  "operational_before": {
+    "wms_enderecos": 0,
+    "estoque_saldos_lote": 0,
+    "inventory_ledger": 0,
+    "reservas_lote": 0,
+    "wms_paletes": 0,
+    "estoque_movimentos_lote": 0,
+    "wms_quarantine_movements": 0
+  },
+  "operations": [
+    {
+      "target_id": "d3926d94-1026-5bb1-882b-81cb9de1dc93",
+      "after_hash": "23c2cb93c5572dbb3d47ae87eb9e0abe66a3b00c5fea9731f93550e8a16c8df5",
+      "source_node": "enderecos_estoque",
+      "source_key": "DOC-1-1-1"
+    },
+    {
+      "target_id": "6c9503f5-aa1d-5471-924d-1deff5bee5c9",
+      "after_hash": "77bae1826d57b4a0c6174fe540fd1ee7409e6017278eb1f883f39f9b1f830a38",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-1-1-1"
+    },
+    {
+      "target_id": "533d3ca7-bf00-5557-90bc-00c88c1aa7f0",
+      "after_hash": "3fe05475cfe739a4d10f8a0cb75fcc6d7404f42fef761eba08c3ac63d616564f",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-1-1-2"
+    },
+    {
+      "target_id": "c32067cb-04e1-5534-bef0-15f2a377ca3b",
+      "after_hash": "12367a4c1a006a29107b668a5e6c259d7fc31feee492fa5271528181a28a970f",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-1-1-3"
+    },
+    {
+      "target_id": "0b077b1e-54ea-5283-9474-482529d8c627",
+      "after_hash": "de31ffd7436c69e978eb65f6c7e84c2650d0adf9f1ddfba61bb6e7c020386712",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-1-1-4"
+    },
+    {
+      "target_id": "37448abb-887f-5f6a-84bc-e491a3e7802f",
+      "after_hash": "2f36ee854e23c626682d6741d6566a18a243f10d9e862e9f258b14ec2b21b213",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-10-1-1"
+    },
+    {
+      "target_id": "8b4b41ac-e348-5d98-852f-b04a87fd1589",
+      "after_hash": "3c0f65e4735c7d51c2004e3e94a6c3856d053336ef2f510ba11b3782a0e0f8ad",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-10-1-2"
+    },
+    {
+      "target_id": "c57e6720-3498-514f-b039-8ab6d63fcad6",
+      "after_hash": "b4c1da097c0c99fdb25358662b1298a32b9c92f51d2c80ae187cbd887de9df49",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-10-1-3"
+    },
+    {
+      "target_id": "b822d3e0-21f4-5629-ae72-a157f1fba101",
+      "after_hash": "11feadb14d40749ede4d4519aca070fe3afcfa8474b8b43ab4724c30a0921266",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-10-1-4"
+    },
+    {
+      "target_id": "02699c03-66c3-5f0b-a42a-a84ad8f6ab14",
+      "after_hash": "085c3fbf2805152deb44b95d662bf011256e4b8bf714ed4509dbcf92db73ee3f",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-11-1-1"
+    },
+    {
+      "target_id": "3e15b693-8eec-590a-82a9-f95feab0ec03",
+      "after_hash": "a47ad66d2ffa6f2d81a24c87d69f16f13f6a03fe0b388e5b93d664b25cc14e8b",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-11-1-2"
+    },
+    {
+      "target_id": "b4f6fd1f-837a-58b7-a087-558018fa421d",
+      "after_hash": "92e46d191184397760750436b1a253ae531819ee41f82990511059c8730784e1",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-11-1-3"
+    },
+    {
+      "target_id": "ca69080e-be8e-5cc8-b235-84aad5e51099",
+      "after_hash": "c25c24311312429adf8179399be47eef54546bc0c409b3e01d4658f94afb056a",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-11-1-4"
+    },
+    {
+      "target_id": "f85d7201-85d3-5842-9d0c-b0954f1df03a",
+      "after_hash": "d3a62a1c9fd75c5a9880b8689acc7ed00cb2a7d50a408d28baa830dd8d5e741a",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-12-1-1"
+    },
+    {
+      "target_id": "4bd0eb98-883b-5509-9b55-b6897e5d355c",
+      "after_hash": "c99364c94edf7a1d243782b17d0b90d273c8981832cdb3b8a3b9ff02d8b019d3",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-12-1-2"
+    },
+    {
+      "target_id": "0e1f7657-acba-5cc4-909c-3fb5ce9e4043",
+      "after_hash": "17a441affa947b30744de736431e2bdf9fda687ed496d2846590ddd2d8637154",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-12-1-3"
+    },
+    {
+      "target_id": "79b294ed-c02b-57b7-a3f3-4228aa4cd5cd",
+      "after_hash": "30689235f60498f1ea95234387e3ca47802442d89243785aeae1815088983d51",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-12-1-4"
+    },
+    {
+      "target_id": "3a264c1f-55c1-5f1e-8f14-48face13219d",
+      "after_hash": "b59d20f890164bc8782b2ef524e236703abf56a64b463312b5df9b78bc86209f",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-2-1-1"
+    },
+    {
+      "target_id": "d4660073-66c2-566e-8956-a124a9e408a2",
+      "after_hash": "c74bf177e5a80f19ecb0375cd77cc0bec6191bdbabcdc54fd7fed46c3d56ff2e",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-2-1-2"
+    },
+    {
+      "target_id": "9b2d10f4-357b-533f-b2fd-0a559e9b4e90",
+      "after_hash": "ffafab62ed02cd44c6fa13ee09c40da7b336137eafdc716eff917b6add9448a4",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-2-1-3"
+    },
+    {
+      "target_id": "55c561e9-6c7a-5fac-8a7f-76454dba6c6a",
+      "after_hash": "53bca008c40fedc570294c85909a3b0db5308b193485fa9a72b27e9716a1d58b",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-2-1-4"
+    },
+    {
+      "target_id": "45a9d367-d0f9-5034-a490-d631b3c4d0bd",
+      "after_hash": "b54eeb9be42b4c86e873c2e4009218696affb9ab789eca5d6041679e7451e25c",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-3-1-1"
+    },
+    {
+      "target_id": "eb83d9d7-f48c-5bf5-944e-5fbd44e47491",
+      "after_hash": "d82a1c8f723c2d102e75245e7f54b43b151319dc0f6cbf2310730723b1734eef",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-3-1-2"
+    },
+    {
+      "target_id": "8a343d43-d26b-5d54-b1ad-d01b9f742cfb",
+      "after_hash": "2df0c5853436ba128a24de4911a962a699f541d62e40a9aa2dcdacfa089de367",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-3-1-3"
+    },
+    {
+      "target_id": "d0158f30-005c-5e73-b44b-0f76ffa357de",
+      "after_hash": "be345f5a72ee0f63ebd793fa355d497fc2572009b2be424b827b988289ab5b61",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-3-1-4"
+    },
+    {
+      "target_id": "dea294e9-1a70-5091-be8d-0ce94fe73205",
+      "after_hash": "f0fecc6a1ecd57fdbf31ebe19c3c4413f14d5aee1b715a6b91e259df9c4bbf2e",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-4-1-1"
+    },
+    {
+      "target_id": "720c2561-d61f-5304-927d-f9613bb885e0",
+      "after_hash": "634ccae977a543c7b51006bddf2cf71ffe2d9716fc7b130f19fe9df2036b4bd0",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-4-1-2"
+    },
+    {
+      "target_id": "a968be49-deeb-56a3-b4d5-a68921a8091a",
+      "after_hash": "b36ce364c2e2c82f42153f57b8c564de7ce80a95535814184010394da8e647ca",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-4-1-3"
+    },
+    {
+      "target_id": "7ca6779e-169b-547e-9e95-b479d0e4429e",
+      "after_hash": "b08f5cbaa17ba9d3757c4b83a0145846eeded4a8d78f65e7979d276dea93e715",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-4-1-4"
+    },
+    {
+      "target_id": "3d9b2912-aa61-5504-bb24-b3a944ea1504",
+      "after_hash": "8698d5d0405353d9514ef0b50a5af6c005c6b713022915ca6070b55f77a2bd40",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-5-1-1"
+    },
+    {
+      "target_id": "16220139-27cf-5c24-a3e8-1685c09459bc",
+      "after_hash": "d143ba29893b22a6c588bffff5fd3eec4bfab5d5e6b7db5dc3945465cc743093",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-5-1-2"
+    },
+    {
+      "target_id": "093cf143-baf5-5f59-a0cf-c66d83714013",
+      "after_hash": "bc4a382190a69e8397d8426ea1f39d8548f535ca6231a30c0426abf013cec2bf",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-5-1-3"
+    },
+    {
+      "target_id": "2ba0ddd0-3f0e-5dc1-b17a-e5c85575cba7",
+      "after_hash": "0ac7d7e6579fcfe4def27c30b735a95058ee8942385e9cd10f8b7115d89911d4",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-5-1-4"
+    },
+    {
+      "target_id": "e5c86a58-c902-5b68-a412-4e8cff81e58e",
+      "after_hash": "3c58d6b5d15a78feff4d4d5d25b1961598257bd887dfa7b88918afcc7aa1b9e8",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-6-1-1"
+    },
+    {
+      "target_id": "edc6ffaf-52be-536c-b7e4-5bbc54f44881",
+      "after_hash": "0544b4b84988ca3d26b09398affb8bcf87479492df0228dc0faf0633a58e518e",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-6-1-2"
+    },
+    {
+      "target_id": "bcba14d2-7b46-5431-a8c1-dc6fb8605ae4",
+      "after_hash": "159c738c54b9d807d5cb27c9251d4b3076c7027558132f780d7da28eed3eeafe",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-6-1-3"
+    },
+    {
+      "target_id": "bdf4ad46-f3e0-582b-956c-ac907f9a8c06",
+      "after_hash": "eb20282b1ed8bc68d69a13841a91a812b71e2e13f33bdeef1797e43cf0f2c848",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-6-1-4"
+    },
+    {
+      "target_id": "9992efc6-0b1b-56d0-a710-a99575172038",
+      "after_hash": "5227c763b8a0c3baf1af47c7a003623f7341f36203e21ca6c51acfb8be14c7df",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-7-1-1"
+    },
+    {
+      "target_id": "29b63eea-1def-5c41-a14d-b4ce8d6d2263",
+      "after_hash": "22b68d1294a12dca6bbe174f747442dfd1e47c2037e194e30422dc97cb8b7e5d",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-7-1-2"
+    },
+    {
+      "target_id": "96334fd0-f558-564a-a972-52d0b101cb1c",
+      "after_hash": "9eb4fa247c5415b8a40b80f1ca5a36223924801e06987c2aeb406d68bb515c47",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-7-1-3"
+    },
+    {
+      "target_id": "f1ca9237-d0e1-5ee3-afc7-dd9120ac441c",
+      "after_hash": "3fe399b958c280ae2d89ca349be490c569991e537835da1b523328d30a69bf9c",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-7-1-4"
+    },
+    {
+      "target_id": "6be5c940-d686-5dbf-942e-9d8e30a5e44f",
+      "after_hash": "cd499257a53ea3e256e9dff5e187636bafb46f644e1d0993bda15e1515539da3",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-8-1-1"
+    },
+    {
+      "target_id": "51552597-e383-53c8-b19e-d90f6c6ffeb8",
+      "after_hash": "a670c63f9314ae0b891fe075ec53cfeb372a43e779507deb17b08d7e1e4d1058",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-8-1-2"
+    },
+    {
+      "target_id": "7ac91305-c85e-508f-a02f-7a18d4f09b22",
+      "after_hash": "7351197c3d60a64a2678619e39037bb58ccbc6582dd53af155fdaeac7913f5cf",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-8-1-3"
+    },
+    {
+      "target_id": "e4c50c11-19fe-5f56-9ded-14e5b3077752",
+      "after_hash": "0b4d5a85598a7ce961566f01a96366822e993f80e80a94e46331451e113b51b9",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-8-1-4"
+    },
+    {
+      "target_id": "63690144-2f0e-5e0d-9bb7-4d5de3a45737",
+      "after_hash": "b92427ae2823e87d931daa9e951b83a3b8a9cebe5ab16f78c4b6b4a1e2b8536a",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-9-1-1"
+    },
+    {
+      "target_id": "57dbbdd3-7380-5fc3-bc56-f3198d3ef7bc",
+      "after_hash": "e67928c11d320f3352c2c91b6f061677e061677081b40b0e61de082359d7a557",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-9-1-2"
+    },
+    {
+      "target_id": "434bc19a-b1ed-5e61-9909-effb1ad7e7d2",
+      "after_hash": "c2bcfdd71123a9aee00465dedb8b64bc485fcb9755f5150d20f081e9411c0a8d",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-9-1-3"
+    },
+    {
+      "target_id": "38adf4ed-df80-50c2-8fa7-2cbdf21af176",
+      "after_hash": "29a164330b5d8490c89dd4d9b8cdd2cbf5f201433e8a0ce31bbab7f68c9d658c",
+      "source_node": "enderecos_estoque",
+      "source_key": "FAB-9-1-4"
+    },
+    {
+      "target_id": "c83c5a15-3472-558f-9e06-cb78c6e16c03",
+      "after_hash": "b45e7c0ad6078d00dd26ba3be8be529893bb67b30033a6e1c93563c90fcd5738",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-1"
+    },
+    {
+      "target_id": "062e3c71-cf07-519d-a266-a7208fcaa04a",
+      "after_hash": "144ca05e56fad1beab3fdba0b2b205170e18efcbe744e19f1d02c59751aa5991",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-10"
+    },
+    {
+      "target_id": "e4938107-0070-5d1a-96e3-bee5fe2d0254",
+      "after_hash": "aeb5801ecd360c1d3394296e10387dc20b48cd5beb6d2a0a86fc41202ec9d106",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-11"
+    },
+    {
+      "target_id": "3ee8c6f8-543a-5103-8ce3-0805628fb570",
+      "after_hash": "c6af144195b49bb842eb7e1f3a46a22ba5502720adceac2a17ecde5df2767b09",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-12"
+    },
+    {
+      "target_id": "8e8ff397-e1ee-54b6-aeba-b3770c114029",
+      "after_hash": "68c1aa6008af357961275320849b3575350f4ecc6b7f6c08610f0dceef5d4fac",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-2"
+    },
+    {
+      "target_id": "9c99bf37-c116-515a-bd49-dedc3e3d4e89",
+      "after_hash": "9a81e6c49ebfb485dd67edabf6a46db1f79507ad7ac00050da9e58e227d34981",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-3"
+    },
+    {
+      "target_id": "1c9ba5b5-4652-5b11-bf92-db5b1b6fa051",
+      "after_hash": "60091400f2769fa110e506d1c831d89b63b1b9545cb92c1911b7ed11d96469ed",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-4"
+    },
+    {
+      "target_id": "ce906881-4666-57b2-a305-c6fa4fcc916c",
+      "after_hash": "3390765346ffe95f6fbcd85ca09ad1be819ad8f25fa6c38fcdf4507aa91a93da",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-5"
+    },
+    {
+      "target_id": "6ddaa14d-a680-520d-afc5-0c468d185434",
+      "after_hash": "ed19cb6b7e3ebcc25c3e4451f806d22593ea386e8d0a5e388f3f29c736a5259f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-6"
+    },
+    {
+      "target_id": "0896d647-2907-599c-acf2-99d83ccebdcd",
+      "after_hash": "2904a5073f33ecef9a656de572fb10606376330684f3ea7d53311e07354f5155",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-7"
+    },
+    {
+      "target_id": "bd5e7d57-8872-5661-a846-7d10af37d961",
+      "after_hash": "895000c68ad0c0d8bb5694d1fb04d071a8a7c1709a60ddbe7e2ae3a068936731",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-8"
+    },
+    {
+      "target_id": "7b5ca82c-692a-52c0-b891-2d57093b3ab0",
+      "after_hash": "6fe90d1a2a25d53b15c939ef876f0517107adeae566b071a15031a9cc3095326",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-1-9"
+    },
+    {
+      "target_id": "5576ffa0-790b-510e-a62a-bbb6b9e0d2fc",
+      "after_hash": "24665cfa238ab4a836a413cb84e3110212446770e95718193ab4a7c1bbdb0e1c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-1"
+    },
+    {
+      "target_id": "caeed02c-b677-59be-a008-ca3ede919a41",
+      "after_hash": "6539895935fa15e1e973ed7e7a71628e6b4a8611c7edc02b13aecbfa4d5238b4",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-10"
+    },
+    {
+      "target_id": "67e9af9e-55bc-55ef-a1e9-36f9e8f92b76",
+      "after_hash": "3174922c1873c194cc67b84c800d55103a6fac2457125e171771b39cf229db98",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-11"
+    },
+    {
+      "target_id": "bf0e7e96-bec5-5478-beb7-305b1928ca3d",
+      "after_hash": "689e27a2cb10a91d8bb433fed35e065d1591c32e756913dae612be6642a643d9",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-12"
+    },
+    {
+      "target_id": "48761013-e4c5-5f6c-8a23-df254934ec05",
+      "after_hash": "840f3292c14bc226b794ad5cc6b74282b257f68106d0b926610ef95772f3ae0f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-2"
+    },
+    {
+      "target_id": "fc8447e4-313e-595b-895b-fb7353b25677",
+      "after_hash": "4dcef8f5a106ed8f3d9b9b52a3163f596387c9dcec87e9bf98263340471983a7",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-3"
+    },
+    {
+      "target_id": "6b394fdd-bf84-5451-8f6d-562dbb6f33b5",
+      "after_hash": "d17eb3cee4a021b09939639ad8376be84d6b96aa890d3cf7e0352703c1f835e7",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-4"
+    },
+    {
+      "target_id": "92c55dfc-09af-5a67-9487-632459e4abed",
+      "after_hash": "9b2c1eeb8cd74ed2fa573f8685010668e03a3ed3062fe71de0e7bd066c40d63c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-5"
+    },
+    {
+      "target_id": "53ba3011-9c70-5a9c-9286-85d38b0bf4bc",
+      "after_hash": "50caa9950cb6cebd26a1650cacf84c5e6a048dc2d19ee44814e78eae3547bf25",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-6"
+    },
+    {
+      "target_id": "c31d33a8-a345-52b4-b27c-0c9187fe623f",
+      "after_hash": "fb72b082b09542697ce2ae70e298f061f1d2db348a1a9da00b6a532ef2df0b3d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-7"
+    },
+    {
+      "target_id": "c2b046ef-a544-5454-8f4f-2b0b6380a7a5",
+      "after_hash": "7e91ef16cfbe11926cc9ce16f2532983f6c03c35ea89134113af2e47e9d504af",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-8"
+    },
+    {
+      "target_id": "9b0f10bc-7619-5d74-9f76-7bd7fcd5fb7e",
+      "after_hash": "edb97ee642e1708aad6e8c162fd01f46339fc9c7132bf4630e2c65ef8e20d21d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-2-9"
+    },
+    {
+      "target_id": "2646cb18-c30d-5bfd-b6f5-c3817870a9fc",
+      "after_hash": "80902abd0af61dc51f2d61578dba3ab6bbe7ede1f022e3986f9915c9d6473ed8",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-1"
+    },
+    {
+      "target_id": "4bbc79a9-2f7c-5459-872f-7231b4d6020a",
+      "after_hash": "b84d9ff16416e107c7cc583191d0209ee85d78ce660df3b2a8109846449e0a40",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-10"
+    },
+    {
+      "target_id": "104c9ccb-4d82-5eeb-ac8e-fe7090cfca2f",
+      "after_hash": "5d9a56ded01647431b07d90770a70a35ddc879f4b80c5eef81e852ff7d9f4932",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-11"
+    },
+    {
+      "target_id": "b2a2f235-677c-5f55-8e5b-da35270aa312",
+      "after_hash": "b3f3ea4fcdf84a786978eeae430ab7888294c999d885342353187b0b1ae56567",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-12"
+    },
+    {
+      "target_id": "9e4ef2c8-fc99-5e2d-975e-a2abd853ec9c",
+      "after_hash": "304561f3c0d92a17cf9b2d912081f120b030a14724b456d72c23d6b0b500e0da",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-2"
+    },
+    {
+      "target_id": "641554dd-10a1-528a-9a4f-bd6341696571",
+      "after_hash": "5e057ad1ff013169bd462c3c5284eeb75e9e046e9e186a1fa7bd8f43bcba9c26",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-3"
+    },
+    {
+      "target_id": "8f844b38-e43d-54f9-b6e9-0dd92b4369bb",
+      "after_hash": "7a85929d8086f75653c65ae5abdbe0cdac5087434670d70be689b1f2c8b87048",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-4"
+    },
+    {
+      "target_id": "0822fed3-5339-5836-ba2c-0e5ac12841f4",
+      "after_hash": "eee63d8e45d14cf917aa73f1522b4bb9b0f5d9c80e7bc3ae815e92d866f3be24",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-5"
+    },
+    {
+      "target_id": "ff17e355-c33c-57fd-86c1-dc90d6836ccb",
+      "after_hash": "5500f52c7dc3afe4a8cf7eec006068bc1e0fc6155b3ad74704d8e338be4fbc69",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-6"
+    },
+    {
+      "target_id": "4c9d27e0-31fe-5f8d-9d98-f67e20e055df",
+      "after_hash": "31752f1f95f9185d6170f45e6825d63eef783f8a3d769686f3f64577c17a6367",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-7"
+    },
+    {
+      "target_id": "80cc9ca6-cfd5-56a5-9b6f-34703928ca09",
+      "after_hash": "1cc83e8598703f0af52416af8c3fc0ce7c24f445ee82810989020ab71c2e24b1",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-8"
+    },
+    {
+      "target_id": "af137a11-1c6a-5a77-93cd-aba3ee67b008",
+      "after_hash": "c5a9628ead7282fbd127852f340142bfdc915404fa0346782982f61d28d8d742",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-1-3-9"
+    },
+    {
+      "target_id": "d81c239b-9180-5b44-ad8d-6539a5ebbc63",
+      "after_hash": "abc573edab1dbef3053d7fd47dbf3f3aac692e47a18e25f91720f45e28299f64",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-1"
+    },
+    {
+      "target_id": "a39b3633-11c6-5ca1-a614-0a25f5bdfcd7",
+      "after_hash": "1ff57a0161752e70339c2d7bb4e3d9e7426eaef93b779ed32bc43866be90b245",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-10"
+    },
+    {
+      "target_id": "23faa33e-63ac-59a8-86e3-ce1140cede3c",
+      "after_hash": "d1cc23487db17f46075f622fa4e0e77ad1dacf437dec905737c9252eecca728f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-11"
+    },
+    {
+      "target_id": "84e16585-3cc7-5b8f-91f3-7bc8f596a5ed",
+      "after_hash": "c8525fe2abebe7ac7db932904129f3d6a492b168bcca6b5deebbe0905e11bf7b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-12"
+    },
+    {
+      "target_id": "c544ae42-7148-53b9-9446-ccfd7e02491d",
+      "after_hash": "ebaf2956aba99686f01457e204b1a9b0b679376eb4b00050e3aec25aef9f9360",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-2"
+    },
+    {
+      "target_id": "a1887d48-917d-5a41-a32c-37cc7742794a",
+      "after_hash": "6adcdec545d657d0a1ef8d9b72588f18a718f92c2568ec2079db8c75b6a9d6f5",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-3"
+    },
+    {
+      "target_id": "3ddf2666-e9c4-5701-adf7-41278c1f4124",
+      "after_hash": "005501475abfe330c7be59647699ee054b2c947635bd19f5e28164fb30a93a4f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-4"
+    },
+    {
+      "target_id": "dcaf5a17-246e-5855-ab05-5f5def3a0910",
+      "after_hash": "c2d9d0c8f99a2682c5accee134b4d5fccc3bb1b0dd449cbb5b2c7e58b2dd9c28",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-5"
+    },
+    {
+      "target_id": "0513a886-889d-5645-9b64-47737d8f3bd7",
+      "after_hash": "189a608ea169c9a9d47d2b5e50c3ee9bf00da145ae04086407ba03acdf6a10ad",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-6"
+    },
+    {
+      "target_id": "991c2df7-85c8-5c22-a378-e8e35d244770",
+      "after_hash": "df63ad87873839c05bb26fbf25874288eaf620c1c13f0b8ceea574efd2fd8b42",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-7"
+    },
+    {
+      "target_id": "388accaf-1bb8-56c2-8f38-6256224e12e1",
+      "after_hash": "9379583590fdca827ec59ce0ad10547665613e440d981ddacdb92882a9ec745d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-8"
+    },
+    {
+      "target_id": "e93a8285-969e-5c70-8bf4-e88637d8e652",
+      "after_hash": "b9e3ac238e3c4190b1f35fa4de3def7ee99ae610a5b6b13098fa25f97b8dae59",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-1-9"
+    },
+    {
+      "target_id": "85b830b6-03dd-5a2d-ab70-b9ab661c3a1c",
+      "after_hash": "01020fcff76d6f828530f989476bdb8f7bbe6ecae3233df6daac0389035ea510",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-1"
+    },
+    {
+      "target_id": "c562efb1-5b1c-51f1-a88c-0da92fe1161a",
+      "after_hash": "5b756fe9fdfa0bafe4a1972f77afb5fe2be3a40cd077335964cb81e7e3f9aa2d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-10"
+    },
+    {
+      "target_id": "47410370-ecc5-525f-850b-72aa23a3c59f",
+      "after_hash": "44bd9a981586250fff8018775c07e55c892430cd50a2ae2fe094762c9287237f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-11"
+    },
+    {
+      "target_id": "5246d73d-e7a0-55c9-9921-36f3498ff9a3",
+      "after_hash": "593f3707b84296664a086643b205fe44932522ab03f21472e5335e0b5c30e291",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-12"
+    },
+    {
+      "target_id": "a3cf1d9a-f216-5632-80e5-3846c75e919b",
+      "after_hash": "bb389c81f1b6c5324101c34cddebb114680d4558a014c1244f51f4b972152db3",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-2"
+    },
+    {
+      "target_id": "37302a9a-1cfe-54bd-9471-08fdf6ce8bfb",
+      "after_hash": "51f535a49b51281da52213ac9d055d0ff448d02b879f1ecb49d1e514230414e7",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-3"
+    },
+    {
+      "target_id": "0b9cf556-c506-5e25-a2f4-1eabe65fe052",
+      "after_hash": "47defa111652eec0f6c0e66659f296700c706b5e978de7bec3a137b9b5d44730",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-4"
+    },
+    {
+      "target_id": "fab2effe-79c3-59ef-9fdb-e46bd6d32797",
+      "after_hash": "2f7d3a3d83519b36fe24e7cf25eaaf304517b3b67fa55500811e895a1e216aa8",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-5"
+    },
+    {
+      "target_id": "79716e5f-427a-50a4-acac-a23d01ffed5a",
+      "after_hash": "0ce370bd4eb5a35d2d257527a7dee3ec608b11805822606e1235af1b9208677f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-6"
+    },
+    {
+      "target_id": "16547c39-9ca4-5371-9f65-3669e944bc78",
+      "after_hash": "ad67fb3b0bc7a553fe31240b7d2469404f872c5d3fae9f6b587756495e7ca1bc",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-7"
+    },
+    {
+      "target_id": "417d1098-48d3-5cc5-89f7-1518184935ee",
+      "after_hash": "13c5c64a61a7f79435ac6000c609950626b019ad5dc2a0acff38195e3f49cd4c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-8"
+    },
+    {
+      "target_id": "b338f393-c5a7-5005-a3a0-015b549d320f",
+      "after_hash": "dd9bed09120a7267c3799e2d50e2c0ed2725f5e636d1226ab6b9c822a1aaa8e0",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-2-9"
+    },
+    {
+      "target_id": "eb948ad6-e0d1-553e-9c95-f6cf0cbed2c4",
+      "after_hash": "d884c789513aa91b8778589f5a0d24f4db5af9b95329eb03d09a4e3618b4c548",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-1"
+    },
+    {
+      "target_id": "292ef1e7-16f4-5616-83fa-e0c268fac601",
+      "after_hash": "dcd9923a0e15b55d298737a09c4144e931aa23d7b27bddccc4f446d7bff1f76a",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-10"
+    },
+    {
+      "target_id": "baec2c6d-e883-543e-8e59-0926728748d8",
+      "after_hash": "35c6542905a890a8dd1cc99bf8d3a897eebe93dc3aeed09d26ba0e3aeb545e58",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-11"
+    },
+    {
+      "target_id": "c8892dfe-9436-5550-94fc-a046c9b37c2c",
+      "after_hash": "f0cc086424b370d92ca7fb24b4f3aa18f32a77206cb87ddd44f283a169aca263",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-12"
+    },
+    {
+      "target_id": "fe65cd8a-3ace-59a9-aae6-fb0376479007",
+      "after_hash": "4c2b8bd22afdcb9ed4b80c5e17c2b0d4eca3d3acc515e728b4d2ce0e0afe59ee",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-2"
+    },
+    {
+      "target_id": "4b35a5cb-de98-5b01-8cf8-f0a64b5bbbcf",
+      "after_hash": "2b807b6f73c8f4aa06aa9a7638974dbe031fb01e84f5f0c5e23cc93bd745c347",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-3"
+    },
+    {
+      "target_id": "4246c422-5f2d-547d-b3af-ec908ca61cea",
+      "after_hash": "cfdf048cb45a49d85c2f8b4780fd636692ae0e4603572fdfabd7308d125d7509",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-4"
+    },
+    {
+      "target_id": "900ebe32-b185-53c5-986b-3a489bab2a68",
+      "after_hash": "ed4dab11833dc42b428184e555953373bc3444fb175176f9238c34c322693112",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-5"
+    },
+    {
+      "target_id": "e83dae71-442c-5fe8-af9c-aedf0f5f61dc",
+      "after_hash": "9837304757d6e97215ddb00fd4831bd1ac8dbd6d7e19cb4bfa4f129b7d4aa75a",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-6"
+    },
+    {
+      "target_id": "48d2a173-3c76-5bc6-a340-902ac8c1859d",
+      "after_hash": "13270d308cb1441a6221f99ed01637d7a39853fd0573b233019b0dc3e72cf86b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-7"
+    },
+    {
+      "target_id": "bf0effb7-7d74-54fd-9a3e-6da9dba7cd73",
+      "after_hash": "79df885d991bdacf8b584b09febda08a3089f980dd827275498cff968e7321d1",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-8"
+    },
+    {
+      "target_id": "9719a17c-6f9e-502c-b438-338cca7a0201",
+      "after_hash": "1eee7fa3a006ba3a92887181fc476e76bbada60d25d1ccd458802f5778ffeeb6",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-2-3-9"
+    },
+    {
+      "target_id": "34f3a756-1a67-5961-9e17-39ae793efbb8",
+      "after_hash": "7f3a57e02b32e143c95ac621130ebc3903c3561047ad56bf87a1ceb861719c88",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-1"
+    },
+    {
+      "target_id": "cd908e15-f45e-5382-8d15-152becc52f18",
+      "after_hash": "ff77eb7f1b39055d990b60f5432dc5cf358650010248def0be96772886d21d2c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-10"
+    },
+    {
+      "target_id": "09b27c37-2e17-5f4e-ae67-d81f5837b7dc",
+      "after_hash": "9f13a5d4d28a85363c1cfcb6f8c2cb33cc801809cb9b27156a836a24d67988dc",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-11"
+    },
+    {
+      "target_id": "1df47d09-f07f-57b6-9c03-97c76e0c14cc",
+      "after_hash": "73fa62ffb4e47ee448fd2c76f5cbea76c0f331801caa7a41a05d96001f419aba",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-12"
+    },
+    {
+      "target_id": "f7dc3692-51b4-5256-9d53-467bb2f6e2ec",
+      "after_hash": "127c82c01043c70ebe3559a777b1d58befb335ab7c56909a5d72c8006f8ff961",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-2"
+    },
+    {
+      "target_id": "ec568dda-e688-5fd1-b088-e85193d10665",
+      "after_hash": "c21a1dc1af9a34f1d262dd401b54c9d1c3a7aab90c625bfcc380986db4e848df",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-3"
+    },
+    {
+      "target_id": "2e64726a-6770-5898-8067-cf8a6daf72c4",
+      "after_hash": "03addca4e6a5bdecfcd3989865734f83f780074a97fa850dd0fb9f09965a7aff",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-4"
+    },
+    {
+      "target_id": "6cb88003-afae-5387-b49f-fcdac171c930",
+      "after_hash": "98aad1b3358114cc1d6a7061b88e11e6aecdaa00ac7f528e3a97f0f3f58d9050",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-5"
+    },
+    {
+      "target_id": "37bf9305-5f3f-5205-bcc9-2a8a854ad9cd",
+      "after_hash": "7966cc091a354e682b7759a0687cf50ffc27581062600afeed652aee1d0c4f42",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-6"
+    },
+    {
+      "target_id": "73dc7693-6b0b-545a-a5a1-0fab0b095660",
+      "after_hash": "1029c10c642f8b9db1a3b4f9565a636736bb014b158ec52f825fc53b7e488dcf",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-7"
+    },
+    {
+      "target_id": "f7d4fe22-1900-59ec-b7f6-aa44f2112422",
+      "after_hash": "05a6d63244745515b4c919e88668d09434974d097044c5929f1f4236977d19f2",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-8"
+    },
+    {
+      "target_id": "a20be066-ac49-5226-be6a-9908c7fbe4e0",
+      "after_hash": "aacbfc85447dc3dee7725d446f7efb36f54eeab3ff4288458d4b43dc2e6cdb00",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-1-9"
+    },
+    {
+      "target_id": "457eefb8-5168-5fb9-b0e5-06614e356a15",
+      "after_hash": "9d9fc8d904b21bf2f3d610291237fe197051dc5275f40c10e9ad0baecbc08102",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-1"
+    },
+    {
+      "target_id": "213bd18f-b587-5b9f-b5b6-0f385054b0db",
+      "after_hash": "96f6a1aac22fb704989ca023a1feaa8c4daac70d4aeae66668ed1bc4aaf96edd",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-10"
+    },
+    {
+      "target_id": "e75d9fe4-e70d-599b-9a8d-30cc2b756283",
+      "after_hash": "b25b8fad518ae6fe0e23de44ad00b5e24aa77097c0913df8dce6c2f87063484b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-11"
+    },
+    {
+      "target_id": "398a5d45-ea4f-5fea-a36d-09ef77492ce9",
+      "after_hash": "5cfb9b08f476afbb63f9b7769f059d611d0e9f7165f8cce14e66f84106d1dd60",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-12"
+    },
+    {
+      "target_id": "7c81164a-6fd7-5912-9782-5b547e8fd3ea",
+      "after_hash": "0761facda370fd43b9a5561339bb0280029edb4f4eb60fbd9368319dc3431050",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-2"
+    },
+    {
+      "target_id": "d3949277-897f-53f1-bc7e-98aef97585d8",
+      "after_hash": "f675a5c36198b7deee723661aba86e44ff908d971e018d9c720a9c77a0367f86",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-3"
+    },
+    {
+      "target_id": "96c1c66f-6bf6-5a87-9344-4ffd4b5abe61",
+      "after_hash": "24c8488817ac998ca85eed95350b1c42412e213354ea9298100b91ebe25dfabe",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-4"
+    },
+    {
+      "target_id": "8d51cee5-786b-5ad2-84dd-5b6c02e95714",
+      "after_hash": "15db989eee226d2e32057ef3887c8b3676a09aeef1424d124256a6168df600a1",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-5"
+    },
+    {
+      "target_id": "514e87a7-a535-5b71-95d5-aab65fcdeb63",
+      "after_hash": "d88cf71a15e4a758b09e24a53a29ecfbb3fc239d98ebea9a8f8739474e66527d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-6"
+    },
+    {
+      "target_id": "1ecf3c13-a136-5527-ac5d-3bc2549c0f46",
+      "after_hash": "005997c98963b4b967c207b384bd2128693e469c39c05e8c4e106204625e8d4a",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-7"
+    },
+    {
+      "target_id": "24768510-bb2f-575e-8504-53da0c060366",
+      "after_hash": "c748fb7ca1c85d6504a9452c46c2df405e9f480b6d38257523181bc181011d23",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-8"
+    },
+    {
+      "target_id": "2cc58d8c-34ea-5c9e-92ae-4f8b2305f8c5",
+      "after_hash": "dd795efe542283683706544c816851b6807a81f8bf39888c9f5ca419b1ed8b93",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-2-9"
+    },
+    {
+      "target_id": "bbca4f36-e4c4-55cc-9374-bd8a2affcefa",
+      "after_hash": "ffe186dc4ea03a9fc4d41436067915ad4bb3d79243398904cf6b5628f73e20c9",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-1"
+    },
+    {
+      "target_id": "263d03d8-ca2e-5db3-bd99-d2ae03046914",
+      "after_hash": "2887a32b0c5772781b8881d264aa37253f496199a21bcf1fe086d07caec1a621",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-10"
+    },
+    {
+      "target_id": "479d5bda-7108-5c4f-8bca-4e704201b64b",
+      "after_hash": "fa4a4f7bf1e5673c55bebdd4eb0a3a44d44524c96028af1f2d0a085c93e71068",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-11"
+    },
+    {
+      "target_id": "430c9f1a-7397-5415-a8f9-c01059339827",
+      "after_hash": "58ab34f544519107dca0c6fdc2a2298a9177a92c7f11e7a79645ec616bb9a41c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-12"
+    },
+    {
+      "target_id": "5ea20de2-b042-525a-804d-269e8c6a21e2",
+      "after_hash": "95fa0ba400625a404107f58b90463c2ee53bd7c328a5a1ea54cc17e65d1c2589",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-2"
+    },
+    {
+      "target_id": "b19c0242-678f-51ed-9a5d-e1a2b8bdd28f",
+      "after_hash": "8c380b2f5c09c3b5e758c2ac7ea5a613b21ac00cc3b0bbacf039654381112dcb",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-3"
+    },
+    {
+      "target_id": "02bc6d1e-4550-5019-824d-19b4c2dd263c",
+      "after_hash": "5ddfd9ff2a400fd850a2dfe136c0771a8c9244d283e16a046e649ce607bb69ac",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-4"
+    },
+    {
+      "target_id": "b5c5e6af-1afd-5bba-a726-2e5887652fbe",
+      "after_hash": "f617040dbef5959f57f8a244f91f81526b8a4889cef2fafdfb85e11f7a6693bf",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-5"
+    },
+    {
+      "target_id": "79c1520d-ea9f-569c-91c6-ff78f57c04bb",
+      "after_hash": "ab1a0dbb3992cdfba94cec9458a19dee168bf9dc0acfff53555efda08c0faa68",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-6"
+    },
+    {
+      "target_id": "384faa1c-3dcf-5c15-aede-537b5955bcec",
+      "after_hash": "070b35f93c743347100b0155b6b42751981edca50b602501e993ae1450b957b0",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-7"
+    },
+    {
+      "target_id": "75105af8-3cc6-5c5e-9f0c-6abbf4f6de50",
+      "after_hash": "5557d92697e62bc1fa1cc91b2c04c5eea625c773fa2d4116725701ff9b524606",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-8"
+    },
+    {
+      "target_id": "d1369df0-55b7-5f04-9fff-599d0bd99509",
+      "after_hash": "2e4fba79e6fdc0d3559517dc3e09d0bd537de19588837478385a5f83073ac095",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-3-3-9"
+    },
+    {
+      "target_id": "bbac7326-21d1-56ad-ba83-4857bd4a5a76",
+      "after_hash": "b11df17d42f591f1c38e41c23043d0ca91148853a2e231916550e506bccae1a2",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-1"
+    },
+    {
+      "target_id": "6f880787-1055-5480-a4c3-f280ed97e828",
+      "after_hash": "b1abb1200abfeed43e3732382520648de6408e2b22bb027278568b58a354bd92",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-10"
+    },
+    {
+      "target_id": "b0ca3437-220d-5b21-8e17-c14c856ac3aa",
+      "after_hash": "c0955ce3852c08aafe318c0ec1b7faa3ad2e5c225f07fab3f5c2f9d8b129db41",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-11"
+    },
+    {
+      "target_id": "8639cda1-0518-5756-9843-2e00b7707c05",
+      "after_hash": "e88707f6c93d79686d76c9e55f1e6a71f06fa3a8f8f77d73417b05ab6cbdd006",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-12"
+    },
+    {
+      "target_id": "61dc34ed-e3c6-5250-9034-12f08c9ba15b",
+      "after_hash": "6cf3ba0be7a1da6ee5ea7a3ee4bdbb6f3c080b61bd4314c9d2a49316b7e4976e",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-13"
+    },
+    {
+      "target_id": "79c31737-dc32-5a7a-b9e0-b534925bac79",
+      "after_hash": "971acf32242ed473874d0fe50e53ee8b2b2716677410fe2502ea0e709a1e8b05",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-14"
+    },
+    {
+      "target_id": "61106499-501e-5d40-a035-b17d8c972a40",
+      "after_hash": "dab267eca8f20feecc5a27ba4e8a178dd325c73ef480ea34ccaabd23474b0b06",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-15"
+    },
+    {
+      "target_id": "616ad5b3-73c9-5a25-b4f5-b6deed2d5dbc",
+      "after_hash": "86f936cec9bcb341bd59b867ded5a2d7bcf9b55aea3fb7bec7595c885c0f40e7",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-16"
+    },
+    {
+      "target_id": "32abc19b-34d3-5082-a7bd-1e91f51f3c5f",
+      "after_hash": "3534937fcc154566e1faf007a496b50062e8deecd31d6650bba70ae71a22542b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-17"
+    },
+    {
+      "target_id": "c4b2f6f0-36eb-5cd3-9ad4-4898b6550884",
+      "after_hash": "ce52cf1f4b558e7b966fab5ec2291fedc0addb91ecc3732de6d8a4beab6ad722",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-18"
+    },
+    {
+      "target_id": "dea1b566-351e-5035-ab67-111a54e525c3",
+      "after_hash": "5493848cbf092df2afccbecc47121d374e27fffe65b8a43e3a53ae85fa81328c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-19"
+    },
+    {
+      "target_id": "fddd0def-59d4-5303-bd12-580009d1cb39",
+      "after_hash": "ef6347d64aa69534f0c65604abc28dc959760816bf4e37e084d1c7789d4805a3",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-2"
+    },
+    {
+      "target_id": "7f079e5b-2065-56dc-acd2-4e36aaf1ff0b",
+      "after_hash": "73f553b8fa7052906d7f3794f409b78b7d165cb0afcf4efb70b91374b257b5f2",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-20"
+    },
+    {
+      "target_id": "f0b05983-45e4-57b7-a4ed-c974eb6b400f",
+      "after_hash": "3cee767a15eaafc30f5df29d90fbde7049337aa75434e5733387612d87e132e0",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-21"
+    },
+    {
+      "target_id": "ce890384-ad9c-5939-8d00-ad56baf116ba",
+      "after_hash": "0671c1d58f191dc3fcd023bdc9c4fe90ca6bf76b22a65635b80ae3de9c1b1f4e",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-22"
+    },
+    {
+      "target_id": "ff8b3853-a207-557c-9eb2-0ba55743f940",
+      "after_hash": "2b48a0897909d5fba535634813fcf4b5c6f0a3b38edc1befda77d0a008f7cfd2",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-3"
+    },
+    {
+      "target_id": "48989f92-4666-5eb3-8aa9-bf7197fb50c0",
+      "after_hash": "d67972d579f52de9a4a254e28c3dfcc5b18b1bf4d1c584a2866dbb12ea49aedc",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-4"
+    },
+    {
+      "target_id": "60df3035-24ee-577d-934c-97db84bf2d3d",
+      "after_hash": "64a74ef136c262bb460d52034db0fb393cff60f7ef7ef25a12ba331512d9a397",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-5"
+    },
+    {
+      "target_id": "9fceee64-e897-520b-9658-b3075365afd6",
+      "after_hash": "6d620c6715ae6762f3add8115e38507c9843a09c0981739ba55a9e21f017342f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-6"
+    },
+    {
+      "target_id": "39314ef6-3870-51d5-9d84-ea4bc2a5a5bb",
+      "after_hash": "a5799656af1ad9c9f65e6ce17f223262dd2a0da1adda0b8ca201f37f40e4232a",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-7"
+    },
+    {
+      "target_id": "7e470dbf-361a-5860-9c11-9099782a067a",
+      "after_hash": "c7d78d09674829234609c575e6f546e31ce55bf3eca543d9ff1230d773d3da5d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-8"
+    },
+    {
+      "target_id": "d7833c8e-d2de-5d6e-a3e0-868ed1eb285f",
+      "after_hash": "4e7b6cd032a1e3cba4118d8356e30ded2d3034a16cc2982a674af0b02f5ed543",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-1-9"
+    },
+    {
+      "target_id": "74cc046a-5d0f-5640-82bf-ef3a36f84873",
+      "after_hash": "8cd37a9a8b2c869bb6ee81fea612c48da8d162c84f33e5d0a2994a6e5ea00587",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-1"
+    },
+    {
+      "target_id": "cfc494e5-d8ab-53c6-99a5-dafcf35791cd",
+      "after_hash": "a552ee5c1a61e8392297d1d738eb4697dec088e5061f52c664d08c4e8b460233",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-10"
+    },
+    {
+      "target_id": "7dc22178-8452-56af-86c7-89784674e48f",
+      "after_hash": "89785a9774e662145d075be7d29483768b8b8338c895b7bcd42beeea99878406",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-11"
+    },
+    {
+      "target_id": "b5c5016e-986a-5ebd-a517-c28a50f68998",
+      "after_hash": "7b7e329ecd1d0b106cd70ef394f52b86097f4ba25aca09865cd7e77059cff8a4",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-12"
+    },
+    {
+      "target_id": "cc456b23-a14b-59ee-9269-f6fb49f85e08",
+      "after_hash": "0d863cd15ab1196fa48ede87f3c127842584c9c986e9a3734c4ebdc310215222",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-13"
+    },
+    {
+      "target_id": "5eac70e7-e4b8-5f1d-9b7c-f1038befb44b",
+      "after_hash": "5f58812fae3909b054a90995b5bf245ebcab193a298a793551d7246bad3a3d14",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-14"
+    },
+    {
+      "target_id": "26cadeb3-0b41-574b-87c2-b9d79c4096fc",
+      "after_hash": "cfffac0951419a9e1403c69eed99fe1c731a829cbd6bbaebb75f9a1ef6b3b94c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-15"
+    },
+    {
+      "target_id": "c64b18c6-0013-5e8f-a195-862df0e7fafb",
+      "after_hash": "b74f682985ca74fb8fa987b2495bba89bc87a8daad639bae1ec0d1ca165ce5fe",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-16"
+    },
+    {
+      "target_id": "0eac18f7-fb7c-5bc7-8469-3d40edefd939",
+      "after_hash": "f70ffcad71515b9b33cd9e5d14500f83f50f890abaf433d094611543631942d1",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-17"
+    },
+    {
+      "target_id": "e89f98e0-4696-520b-989d-802ca68b4c8f",
+      "after_hash": "f25c7f93721eca828a7d81a236ac19b7c2a516f1220fa89193e24ce937807f6a",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-18"
+    },
+    {
+      "target_id": "de2e4b94-ecfc-5f74-99a3-dc05424187cf",
+      "after_hash": "865cb5040a609ed4214801cc3d1afa894e363b5e48684a2f108ee286f4f0e279",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-19"
+    },
+    {
+      "target_id": "1ed6f636-2970-5423-9b6e-fbdcc73ff341",
+      "after_hash": "ec4069171ee37aef70f9905d7fb8408c9f0989baf8bdf84e1ebda2f139c6968d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-2"
+    },
+    {
+      "target_id": "e016add9-8e96-511c-9954-effe49c11aac",
+      "after_hash": "62187a20b1e8d2a35cbbc4ab42fbcf7c1e95f2e0e8c6503e7de22528ecdff5f7",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-20"
+    },
+    {
+      "target_id": "59960175-acc3-5430-be45-1f4ad1f402fd",
+      "after_hash": "07d420acb2222776ba347beefe567c9f17956dc144d62d91c29dd8f5e7f24dcc",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-21"
+    },
+    {
+      "target_id": "1ee6047c-31ee-51ac-84ff-07aa5b2a889d",
+      "after_hash": "2a84d891772c2d27c48786ff95c93bbf6b2ccb19c4a3510fd20364975faaa115",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-22"
+    },
+    {
+      "target_id": "95e7e583-46d7-5850-8377-9126bfca55a3",
+      "after_hash": "d5ecdc30e77a4c2e6457672818154041c2bfa9bb94258da65e05f9fa54902d42",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-3"
+    },
+    {
+      "target_id": "d2be2e32-88a4-5d0f-aeae-a6d39ee77652",
+      "after_hash": "ea9805fdf24c6ba05bad3efb2c02bf8edd2ab0310e6a0d3fefce8be7f41d6559",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-4"
+    },
+    {
+      "target_id": "da47a1a3-ab0e-59d5-a21f-87410fbe909d",
+      "after_hash": "72ceb328e6c5e00473146d8ed2dc320a1264c9a86d1f643f279e985c5d7a18c5",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-5"
+    },
+    {
+      "target_id": "a6e5f7a2-2685-54b2-95ea-e63c70314945",
+      "after_hash": "71a09e3d594a583c06a6a16d7033979802e43997913d40c4bd41fd9fd7f7cf9b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-6"
+    },
+    {
+      "target_id": "51381cac-ff1d-5471-b4b8-93e1f0746c05",
+      "after_hash": "044cfb5d63f80a8704fbeed356af8e18fefebf7ea8c995365f82e22773f9b816",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-7"
+    },
+    {
+      "target_id": "8394b182-677f-5b92-a188-229f7a137a59",
+      "after_hash": "f81b5d369e629b30ae8c0c4973b792d029993ab1ceb9b72f70833365cca71882",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-8"
+    },
+    {
+      "target_id": "9f3928d8-780e-50dc-8429-b330b2d4be6f",
+      "after_hash": "81e62665ea29d635d459779cd0421e94c9d90289b735dc31cfeca51139199343",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-2-9"
+    },
+    {
+      "target_id": "2a37f352-5f0a-5384-87b8-a20ef6934cb6",
+      "after_hash": "3ddd961a9ebf5f80f1766f5a98a553495e2b9fe4356e45329faf1ad9b3a3fc73",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-1"
+    },
+    {
+      "target_id": "3b84f0ae-4d34-5139-a774-c468e96eaff6",
+      "after_hash": "daede2e1350de142e6cfa8b69e7b852a829c5140702fa969e9ad5f4c3166a40f",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-10"
+    },
+    {
+      "target_id": "185c577d-6bb1-5834-ac93-d2670cd822cb",
+      "after_hash": "d5a61f7e9c84a11be40a5bb316ca6386feb686f21158b7b09900d56a468e6c6b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-11"
+    },
+    {
+      "target_id": "c72c0ff5-a7fa-528b-a57e-5b61e3e7a3ca",
+      "after_hash": "6d723e0e822545736024f37863db8bb53ed06b48a077f2adc68ea4f65ff6bc55",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-12"
+    },
+    {
+      "target_id": "df39a068-d1bd-56a8-8ce6-6c2ec570634a",
+      "after_hash": "99be34381bdb8466d6fac9f78d9b9812e4bc1d1c4d9e7000c3525c1d0a5b4605",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-13"
+    },
+    {
+      "target_id": "9932ade6-894f-5fd2-a076-f3e5c1dbb9ae",
+      "after_hash": "d1170df0fb5f8f52aec3fade7ae32cede2d8242c34e326603ced958c0cb5b195",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-14"
+    },
+    {
+      "target_id": "111297ca-af66-51a4-bd28-b229b338df17",
+      "after_hash": "acceea5d5c0a9249b5a861a0555adac3068cdceb35e82fceef6ddc5b3c3cfdf0",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-15"
+    },
+    {
+      "target_id": "745ce886-2fd9-55df-ba72-c0b83da5d18b",
+      "after_hash": "aed084517047d6e13bd96c61165e20a9ff7b43b78a0701d00753a81e76670223",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-16"
+    },
+    {
+      "target_id": "1dc4fcfa-2cc6-5f13-be92-76c294a8561a",
+      "after_hash": "2f1cf50d5de01cca191176451c512febb3f5784b3f1b82b46d0304a78f780e6e",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-17"
+    },
+    {
+      "target_id": "32acf4b5-46bf-56f0-82d2-f8886586740c",
+      "after_hash": "87b8492d2a850a26a7baf41df0b32a87cd4827e738a543bba0344ff830d2cf46",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-18"
+    },
+    {
+      "target_id": "7ddbc557-c00e-5ff3-a2ee-4ce352c64732",
+      "after_hash": "51b35ce55ac66fefb3ff9048bf09052bbc6f3eae35a8f659e52ee71bfc84c92b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-19"
+    },
+    {
+      "target_id": "f9bdf7e7-1748-54c6-877a-a1e73ef82f50",
+      "after_hash": "714c2ecae1ecd0d87f374df9c2ade732c6787a5b9d8e2e2dd86e0ed8aac16350",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-2"
+    },
+    {
+      "target_id": "abf95fd3-8aec-5a04-8642-a64435382981",
+      "after_hash": "cebed2cac9568320372bb16f7803228e7acc469ea56795d1378fd43aa945dd84",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-20"
+    },
+    {
+      "target_id": "e6164880-11ea-524a-930e-1ce47ae42bfe",
+      "after_hash": "06a9c6af9b67c5454debe5ab9d4c3cc1a9b09e6627f0e7eee334dff1c7c32f33",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-21"
+    },
+    {
+      "target_id": "4e90a16e-0bc9-5a65-a6c8-e85294a8e174",
+      "after_hash": "40bdd49136512e7b10f19782f5236b1c26abc8a39c6bb17414fb78cc2b5bee90",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-22"
+    },
+    {
+      "target_id": "5796a1cd-3644-507d-a43b-86aa286378c7",
+      "after_hash": "ebef70d4c9356a4ac3d81b78e8aa1436ee965867fdf25bbd22c4b90c4dbf08eb",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-3"
+    },
+    {
+      "target_id": "8cd05f92-74a8-5aed-a9c0-c0d2022ddb43",
+      "after_hash": "a02bae8764f40398e993ccf273e9de7e855caef609d73639c881165c45621578",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-4"
+    },
+    {
+      "target_id": "77112f3e-d2f5-5e13-9e0d-5062ecef9263",
+      "after_hash": "4b73b58dc1e23dd8ac77a178fdc169b8f803eaa40682e9fff518b64f48e6b3be",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-5"
+    },
+    {
+      "target_id": "71a96638-d227-5c4d-bc1d-e509b99e15c9",
+      "after_hash": "9b8131708650dca349292be513cbe12838a39c5c649729cc225935abbba5504a",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-6"
+    },
+    {
+      "target_id": "50eaef7e-50b7-579d-9493-f188ad570ffc",
+      "after_hash": "9b23db8ba0c1672c25e72898e92b253be1f5a68b7f952e396dcc68454a584da3",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-7"
+    },
+    {
+      "target_id": "7dae06e3-dea2-56c9-8a03-c402fa59de0b",
+      "after_hash": "c947f58e618b9fe17bd365a3b4c473c3e3708c51e010e627a900c69d8747d891",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-8"
+    },
+    {
+      "target_id": "3e322c81-0886-5822-a7a4-fca09702754f",
+      "after_hash": "592bd46933673a6d959a0acf9bb00ccf37b19c9aa436af06117f9d2dd36027b9",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-4-3-9"
+    },
+    {
+      "target_id": "614949d8-c695-579a-af2e-068b3323fef9",
+      "after_hash": "3ef4ebf6d7949430e7eb5efe83d74c8a178fb61937279443256bc49824aa1710",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-1"
+    },
+    {
+      "target_id": "69219278-6bd9-5406-8ae1-98b8259868ba",
+      "after_hash": "e32db0b6d89a19a18451bf69af31bf4200b7f791a1bb8541c01f01dd2bf7ccfa",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-10"
+    },
+    {
+      "target_id": "84ffe33d-b8c2-507b-b292-60129ae3bc2a",
+      "after_hash": "5170f7a98f572864a4c2b5a3c9f72cc537f77f1b8566b59fccdaaa29ac65fa1d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-2"
+    },
+    {
+      "target_id": "eb4a634a-13c8-5220-b905-dbaebf8d6043",
+      "after_hash": "f2fd505e429fd09b3271cb622cc9fc641955cd39dfd6bf085c5504d9f58012ab",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-3"
+    },
+    {
+      "target_id": "dc374b5f-6276-551a-b82e-7ba126cf656c",
+      "after_hash": "1de671238442b6b5305c39a39defdc0fa1e5ffe86c5d25bc512cddd7905de2fb",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-4"
+    },
+    {
+      "target_id": "b3aa69cd-374c-5a65-b299-680fd00dab48",
+      "after_hash": "13a5a581551b737a4b969398695b0951ccd4dc3b2c2310997e17b20dc0ce580b",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-5"
+    },
+    {
+      "target_id": "446ef233-a85b-5a05-b662-420b538f48ee",
+      "after_hash": "6890bb2368c0d33d3180c5020ed7b3f7da8cd4f8d2d505b65fb17464f3450e64",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-6"
+    },
+    {
+      "target_id": "bf8e7421-80d3-5f7d-bc65-07de5d964017",
+      "after_hash": "58116c50b999ef97b193f0d380e35018245fb0bac2491655c17ad38cf9e1fb0c",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-7"
+    },
+    {
+      "target_id": "cbc3fb61-87f4-5e4f-b328-a03f06b24793",
+      "after_hash": "f72b61fe25bee1b1f1b3fd15c1607a92a43605c105979418a741778fbc0e0d15",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-8"
+    },
+    {
+      "target_id": "34c98b79-1434-5d15-9d60-a8b40cea586c",
+      "after_hash": "d6da997ae8cc34ec790527483151f4e5b15072c9a14f7c1d10c41144530a8b87",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-5-1-9"
+    },
+    {
+      "target_id": "bcf59c19-e8b5-5938-abc0-897955372a08",
+      "after_hash": "f612ad0b8e11362dd65c9fb4d1cd2dce8e56aad0b17cafda6d35b71cf66da774",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-1"
+    },
+    {
+      "target_id": "185cc127-2931-5449-9eea-3496019704ce",
+      "after_hash": "8748b94d84887f301ede53208f723419aa967a880f9c6a57eeb401a5b8db733d",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-2"
+    },
+    {
+      "target_id": "eae73ca4-ec51-57cc-bc2e-57384d137c7e",
+      "after_hash": "febfa7df174819819508031890655605ff6131ebc7278096bc6282bac97e93cc",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-3"
+    },
+    {
+      "target_id": "b68d051e-e504-54bb-86c9-e0393d920c4d",
+      "after_hash": "958b6a5a2acff3a18080826860564492bd8bb2835d8333ba37d4bf496f599f87",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-4"
+    },
+    {
+      "target_id": "de2c5950-2c60-53a0-936e-0a150095f23a",
+      "after_hash": "aaf866e20adf919293c728282f3381f14ca2170b4ca7225d9d6b2363563b27f7",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-5"
+    },
+    {
+      "target_id": "c340d58e-c7f2-5fe2-90d0-ffc19804d0b3",
+      "after_hash": "2445a2913d02bd31a0b5ba16afda359ab22ec09e030e4fb22514882e70f8ae43",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-6"
+    },
+    {
+      "target_id": "a3db1cae-ebc5-5262-a5b3-311451444a71",
+      "after_hash": "958242982ce5b7d12a46187db56a723b48a0f9d1e0e63a51b509b3caea3682a6",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-7"
+    },
+    {
+      "target_id": "24751597-49c2-5021-9d7f-21bb7563aaff",
+      "after_hash": "d81a8343294375e494493c3a4e921db31384336bd90e2820bf97dbc15121a1f6",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-1-8"
+    },
+    {
+      "target_id": "eed78bac-c0b6-542f-af32-fa0e0fc13623",
+      "after_hash": "fbb7652d5383958772e282c14c7d99b39578a7156c14b364539d7ebfe04a0600",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-1"
+    },
+    {
+      "target_id": "b8e2cfe3-7658-5cfc-85a0-936e39736815",
+      "after_hash": "e4a30d7b22063cef854b1fa6523a4cc1673bec7d6096b3fbcaf27d04a31f6de1",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-2"
+    },
+    {
+      "target_id": "45cb7c78-3ce0-5a44-9cda-c5deca79fb57",
+      "after_hash": "05d410d1abaaaaaebe572150e1d1038d0c6f21b3f64c22b269d8585b531beede",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-3"
+    },
+    {
+      "target_id": "f1579bd9-091c-5fe7-9d8c-765fd4c7a254",
+      "after_hash": "553fc284ef36e3d6d34206e19840cacb118aade3f279e864aff4c9dfc1d72524",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-4"
+    },
+    {
+      "target_id": "e0e3cdfa-0626-5a52-81dc-7fa8a6c37450",
+      "after_hash": "1d2e4456610d3762821ee8e487d209e68e6d0663c64055961090d4974e2b0076",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-5"
+    },
+    {
+      "target_id": "90dfd915-9f30-5974-819a-93d319c5d64f",
+      "after_hash": "63e8f63c5a85cdaa2f46af60dbae28516a70b661461de8d23d44ca2034e2f2ad",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-6"
+    },
+    {
+      "target_id": "6b96ea0a-c593-5fb1-a5ec-7dea6f018d1a",
+      "after_hash": "3b2e6e8b113501240c8b5088ad0a8fa5be356d0403a9a92298b276580a0f8d34",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-7"
+    },
+    {
+      "target_id": "bc0971d5-d18a-59c9-b088-5b192b1eefb6",
+      "after_hash": "c8e328074fb5b7ad63250933328f606a49551b1e57d842f94c7f49c0c3761711",
+      "source_node": "enderecos_estoque",
+      "source_key": "GAL-6-2-8"
+    },
+    {
+      "target_id": "caf06c81-9ba6-5488-9f8b-158a6ac8498d",
+      "after_hash": "45b402e744784199a74eb9728edf3078ff247044a4f6f131a8c9da1ac634f4f7",
+      "source_node": "enderecos_estoque",
+      "source_key": "HISTORICO"
+    },
+    {
+      "target_id": "91e6965a-0a62-5b73-8514-53f2b4556640",
+      "after_hash": "f9365578dbb107f56b73616f238fc3df0d3d34ae72e0ea27f60b4ce4348ff16c",
+      "source_node": "estoque_lotes",
+      "source_key": "EP-00036::AK-2026-000577"
+    },
+    {
+      "target_id": "09bd5294-df26-5eee-8eb5-fd0022207c7a",
+      "after_hash": "dcb835eb1b8050cc1ebcb4daaf94e8afb620c34c8e5a1007f841eee3ff1c2c78",
+      "source_node": "estoque_lotes",
+      "source_key": "EP-00037::AK-2026-000578"
+    },
+    {
+      "target_id": "ea5d950a-ed18-530c-991b-1aca14e8c1e0",
+      "after_hash": "703006da486e867a1628132f856a134c065ebc69fff97bd32b52509931c7f576",
+      "source_node": "estoque_lotes",
+      "source_key": "EP-00188::AK-2026-000586"
+    },
+    {
+      "target_id": "27afded7-a536-5775-9805-25ca29209f1f",
+      "after_hash": "144530e9e6e43ebfe26db38caa42e7174254a43226021e7af2926fbc85159e87",
+      "source_node": "estoque_lotes",
+      "source_key": "ES-00319::AK-2026-000576"
+    },
+    {
+      "target_id": "1efd63df-d608-5794-abfd-70219f34398a",
+      "after_hash": "d14ed8650679da01fc95c92c39b60271ef6bcc069b17bd192ec52558ef1e2ae7",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_164a7cb1143f6cc3"
+    },
+    {
+      "target_id": "9252024b-01c6-5cc9-8f03-1f818e5872c9",
+      "after_hash": "a8283ae7e40f07e315529c1bd712e7be6cc2c5b90a0166003c13fc89896d7cd5",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_20787120f8bf7c9f"
+    },
+    {
+      "target_id": "38dd04d0-594f-5973-85e8-215fbd208f5d",
+      "after_hash": "0d45e929e242df2758d31b14e43e85d2c0f4ec400291a3d55f4224c1ae19d799",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_224158ad7e51f128"
+    },
+    {
+      "target_id": "312b1759-67d4-545f-8d2a-e159b36107cd",
+      "after_hash": "3fdd0ca9799433662bd144d8529ef8e6b91a6ec60ee3f1bf9a8c845a56ecc2d3",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_2bea58270622ff95"
+    },
+    {
+      "target_id": "c3858dcf-ad2a-5f64-a510-cc92fc8cbc7f",
+      "after_hash": "6b973928e24b8f4d8b64ef5fae55667f676d9d96e390e40b23ae4e58e4d95931",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_4e3b7f760681b3fe"
+    },
+    {
+      "target_id": "8f0ae153-df22-57d5-b489-d5b0855032c1",
+      "after_hash": "dab2e5bc3cdba9cf7c2579888792a55fbcdc224167147dd534034a30d3937ad8",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_69a6f662e4536fde"
+    },
+    {
+      "target_id": "1e79b4b9-0b65-52b1-bfd3-4c08dcf91f8b",
+      "after_hash": "0976f697a7bc65fd644cdcfdbfb1fba96b8a778280fee24a1660d8ee40f95737",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_72c0c6eda1e08bc1"
+    },
+    {
+      "target_id": "e02b92ba-1ea2-571a-8b0d-a370b0700aac",
+      "after_hash": "db771d253575b33fa5bf71ac325505ce322e92fca70e3171e8ce981ef1530458",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_7a3c30fa65efed75"
+    },
+    {
+      "target_id": "8997ebd7-f06e-5d5e-8b41-482e42a4b98f",
+      "after_hash": "d7da5b28b5a18ddd1b5efb6d909817f8f56bee96b04e1de3d3ce74241dfe9b3b",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_92bce041948e5814"
+    },
+    {
+      "target_id": "54400fb6-22ec-5846-a44b-c1e94a05f2a0",
+      "after_hash": "371e025068e46a4f838796ca381ae4a87f43f1e16bc4b8b366a713dff7638f6c",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM01::LEG_d2f827aadc78ea78"
+    },
+    {
+      "target_id": "aac72525-767e-5265-aeba-32dafd6dfa09",
+      "after_hash": "7e372556fcf9725fb95362b1102e9ab99334092e957ff6ea8814a1fc4cda0570",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM02::LEG_3a3a862f304fdbc3"
+    },
+    {
+      "target_id": "195e077e-6de6-5374-9ba4-329fd5d6aabe",
+      "after_hash": "52c00a2b1245b4bb083dd6a9cc622590a8db025401eb438cae84080b82b17b7c",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM02::LEG_dd0e263e58e69d3f"
+    },
+    {
+      "target_id": "bfad3150-ecfc-5f3a-ba6d-7bc286ef47a5",
+      "after_hash": "4bf77bc14e63bf4c5ffdad9c17a322b9383dda81bdeeb1ccb1ac80c4dd541eb1",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM03::pa_26257-03_p1"
+    },
+    {
+      "target_id": "628cfc9f-fdb1-5f18-80bc-a29d02ea596c",
+      "after_hash": "0a233f925927dc7b4a810f9061c951d48022304ef073cd2bc198e06074f7b1da",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM03::pa_26257-03_p2"
+    },
+    {
+      "target_id": "f9cdbe93-e2c3-5b21-859a-dca409afce44",
+      "after_hash": "b14bc5c941c60185256e47617e564b36953d8edb318286dd9af3924afa29ba15",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM04::LEG_0cab5e4bbcd9971d"
+    },
+    {
+      "target_id": "f23e0ad2-b252-559d-a93a-4028acc43d66",
+      "after_hash": "9132df38d28905d97b0b1cd921f95214b5c8b08b0a24c4c1a6ce72b5d9a29245",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM04::LEG_293e59ba0e9a1941"
+    },
+    {
+      "target_id": "edeab638-f73c-551f-be1c-b923dce71496",
+      "after_hash": "a2736c2847395d24616835bf13e0e361eedaa939e861bad3ce078b0bb0f4c4b8",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM04::LEG_3a6f57edbc250036"
+    },
+    {
+      "target_id": "65c5eadc-8a7b-597d-acf4-75a5200d14c0",
+      "after_hash": "766a4a9b9757af0a69cde0df91b19e81437a149f0123d60d5708692b57816bf0",
+      "source_node": "estoque_lotes",
+      "source_key": "GLMKAM04::LEG_96630a984ff2ed73"
+    },
+    {
+      "target_id": "46c40696-f22e-5203-b9d0-dc2e7766aa6e",
+      "after_hash": "3082df7d6dbbc618f4b6be3ef565c4cb8dda4feb337c6e22de6844b8409e55e7",
+      "source_node": "estoque_lotes",
+      "source_key": "HDR-MISS-0002::LEG_13db2e14c2657829"
+    },
+    {
+      "target_id": "5ab6c641-d0e1-53ba-a1bb-70cf41f33801",
+      "after_hash": "28c1d1bb258adf7eb57a4bfb8426ebf8bcda6f2eebc2e1e641e2684eaf46cc26",
+      "source_node": "estoque_lotes",
+      "source_key": "HDR-MISS-0003::LEG_a1d566faef9b0551"
+    },
+    {
+      "target_id": "28aa65c5-3bcc-5929-a57e-92919892ffdd",
+      "after_hash": "49d4976b74183f9abf9f7b70accc40608f38d5a4de2f0a83e156bc47275b7af2",
+      "source_node": "estoque_lotes",
+      "source_key": "HDR-MISS-0005::LEG_466c8a1986bf8426"
+    },
+    {
+      "target_id": "9fb6016f-374f-5fea-8c12-0335b6bc6e65",
+      "after_hash": "0b3be28e53fb335ef14bb650ed4febb7e39d3828e9ffa0b76c42fc749ba65635",
+      "source_node": "estoque_lotes",
+      "source_key": "HDR-MISS-0008::LEG_ac88c498cbbca14e"
+    },
+    {
+      "target_id": "50f1d248-d0c5-5a13-b39a-7a49e9cc7766",
+      "after_hash": "a75daaf33df27e82b40cc8f265ce9a8715b0d7d2dc003ef6c01e1f69cca57c5b",
+      "source_node": "estoque_lotes",
+      "source_key": "MPES-00014::AK-2026-000583"
+    },
+    {
+      "target_id": "7ab10d64-00f6-5941-964d-24ef7dd8b7c2",
+      "after_hash": "84265c50c8260ec18e4b411f74e0ac6c59a7ebbc4616804f36fbe500a91f67b6",
+      "source_node": "estoque_lotes",
+      "source_key": "MPES-00015::AK-2026-000582"
+    },
+    {
+      "target_id": "a5c2ae9b-948d-5a5b-8148-eaa50197761c",
+      "after_hash": "8ffdd1a0385426a079e830713c38eb62df05c7df17e042cdfad3f41183befaa7",
+      "source_node": "estoque_lotes",
+      "source_key": "MPES-00058::AK-2026-000584"
+    },
+    {
+      "target_id": "f8476bd8-ec83-5af6-bbe6-24601b1a37aa",
+      "after_hash": "6a0db20a46eae30c43204fb30d2eaf154180a4a5678d6ee1db79e11ac356051d",
+      "source_node": "estoque_lotes",
+      "source_key": "MPES-00072::AK-2026-000581"
+    },
+    {
+      "target_id": "283e3692-86d4-54c7-b11f-22da85482ec5",
+      "after_hash": "774627ea67d3856764b436446a96e7cc84c8f695499ab9f5c9b0b146877c8e88",
+      "source_node": "estoque_lotes",
+      "source_key": "MPES-00172::AK-2026-000580"
+    },
+    {
+      "target_id": "9d763e60-fac6-5dd7-8d56-e946a1def84d",
+      "after_hash": "b9a030f26e527e26669aeba8bca41307b6abc61496100dd76dbb6bd99c9234fa",
+      "source_node": "estoque_lotes",
+      "source_key": "MPGR-00002::AK-2026-000585"
+    },
+    {
+      "target_id": "b2099e06-871e-5084-866f-9786075b0847",
+      "after_hash": "5995fa1c329e53e9b9bebe9d258f22a9aea0020c608088dc376f25b6cdc31f3d",
+      "source_node": "estoque_lotes",
+      "source_key": "MPGR-00086::AK-2026-000579"
+    },
+    {
+      "target_id": "9a2f40ee-2cc4-53a9-86b2-b97326ba5928",
+      "after_hash": "11775a3bce16f1f71caba7f646587c8eda2da109299cf46b582c648d35b81aac",
+      "source_node": "estoque_lotes",
+      "source_key": "MRARBS04::pa_26257-17_p1"
+    },
+    {
+      "target_id": "36acecdc-c23f-5ea7-91f2-2be0454622ab",
+      "after_hash": "3fea0403e06b31cdfb8a860282bc286c14f0b338d6af3d39b40cf8f22c629689",
+      "source_node": "estoque_lotes",
+      "source_key": "MRARBS04::pa_26257-17_p2"
+    },
+    {
+      "target_id": "1846bdca-e74d-5327-a64f-6b275c95e1db",
+      "after_hash": "42ea8747a246e18997b9413be900c53fac470796ca08f5fb80a8e33f42a2251b",
+      "source_node": "estoque_lotes",
+      "source_key": "PRF-AFEE-0008::pa_26253-05_p1"
+    },
+    {
+      "target_id": "d17986b9-c612-5202-99fd-ed79944a0b5e",
+      "after_hash": "2f9e02ae84f69ecac2b36468038e5ff5bde19786e63d58e4bbea1c1723f1d99b",
+      "source_node": "estoque_lotes",
+      "source_key": "PRF-AFEE-0014::pa_26251-15_p1"
+    },
+    {
+      "target_id": "d2a788ad-26a8-56d8-8601-1139a518fe4d",
+      "after_hash": "78bbe40e93137b4a27860fa0cc5d25ed7d6c6cd3b86bd9ed7af7cee6dfa06553",
+      "source_node": "estoque_lotes",
+      "source_key": "PRF-AFEE-0018::pa_26253-04_p1"
+    },
+    {
+      "target_id": "6bf6ad67-2764-5929-80ab-c7318e1ef3f0",
+      "after_hash": "269adb93034795c2369b653dc7a9d1b7b7375c133818ba529693a58dde1f1593",
+      "source_node": "estoque_lotes",
+      "source_key": "PRF-AFEE-0025::LEG_66a54ebe684a068b"
+    }
+  ],
+  "completed_at": "2026-09-25T12:33:01.593127+00:00",
+  "inserted": {
+    "address": 250,
+    "lot": 39
+  },
+  "blocked_non_operational": 289,
+  "operational_after": {
+    "wms_enderecos": 0,
+    "estoque_saldos_lote": 0,
+    "inventory_ledger": 0,
+    "reservas_lote": 0,
+    "wms_paletes": 0,
+    "estoque_movimentos_lote": 0,
+    "wms_quarantine_movements": 0
+  }
+}

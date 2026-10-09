@@ -1,0 +1,54 @@
+{
+  "status": "VERIFIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "checks": {
+    "existing_clients": {
+      "snapshot_count": 15,
+      "homologation_unmarked_count": 15,
+      "snapshot_sha256": "98ac640cdc22a2d03134a85685a2b234726a52203e9aca47c993e038c8185271",
+      "homologation_sha256": "98ac640cdc22a2d03134a85685a2b234726a52203e9aca47c993e038c8185271",
+      "unchanged": true
+    },
+    "pd_collections": {
+      "crm_samples": {
+        "snapshot_count": 30,
+        "homologation_count": 30,
+        "snapshot_sha256": "4ed6749e3183116acad42cb205cc59aa26cd9d2cb535e018c66505089a4d29bf",
+        "homologation_sha256": "4ed6749e3183116acad42cb205cc59aa26cd9d2cb535e018c66505089a4d29bf",
+        "snapshot_indexes_sha256": "03b040e2979f143523661fe50ddcdae57863afd257ebedbce95a4580d6139592",
+        "homologation_indexes_sha256": "03b040e2979f143523661fe50ddcdae57863afd257ebedbce95a4580d6139592",
+        "migration_marked_count": 0,
+        "unchanged": true
+      },
+      "pd_requests": {
+        "snapshot_count": 95,
+        "homologation_count": 95,
+        "snapshot_sha256": "054f5ad459a681b96b579cd730745ebb18a1a25b652fec5a77796054027b15f3",
+        "homologation_sha256": "054f5ad459a681b96b579cd730745ebb18a1a25b652fec5a77796054027b15f3",
+        "snapshot_indexes_sha256": "6625441546c62b9f008f4dd682c466a2ebfa41aca91e099191c23aa1c12b1ede",
+        "homologation_indexes_sha256": "6625441546c62b9f008f4dd682c466a2ebfa41aca91e099191c23aa1c12b1ede",
+        "migration_marked_count": 0,
+        "unchanged": true
+      },
+      "pd_developments": {
+        "snapshot_count": 95,
+        "homologation_count": 95,
+        "snapshot_sha256": "920343e02038fc4fb9894d7c7bc9dfd11b54bc2571ca9122c93ed6677689e929",
+        "homologation_sha256": "920343e02038fc4fb9894d7c7bc9dfd11b54bc2571ca9122c93ed6677689e929",
+        "snapshot_indexes_sha256": "126c39bdaa8556b0d994600b8817138547f724f55c8664fb9cbb4de8fc5ef2d0",
+        "homologation_indexes_sha256": "126c39bdaa8556b0d994600b8817138547f724f55c8664fb9cbb4de8fc5ef2d0",
+        "migration_marked_count": 0,
+        "unchanged": true
+      }
+    },
+    "new_wave": {
+      "clients": 56,
+      "all_in_prospeccao": true,
+      "unique_ids": true,
+      "unique_cli4": true,
+      "workflow_tasks": 56,
+      "audit_logs": 56,
+      "valid": true
+    }
+  }
+}

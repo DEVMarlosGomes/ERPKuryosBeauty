@@ -1,0 +1,29 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "firebase_final_source_archive_v1",
+  "total": 1558,
+  "counts": {
+    "ajustes_planejamento": 2,
+    "comercial_eventos": 1,
+    "config": 32,
+    "contadores_lote_interno": 1,
+    "email_notifications_state": 2,
+    "emails_diretoria": 2,
+    "estado_linhas": 3,
+    "estoque": 95,
+    "estrutura_ruas": 19,
+    "historico_materiais": 901,
+    "insumos": 1,
+    "movimentos_estoque": 72,
+    "notificacoes_comercial": 8,
+    "notificacoes_op_encerrada": 41,
+    "parametros_pa": 2,
+    "registros": 376
+  },
+  "unsafe_archive_documents": 0,
+  "unrelated_collections_verified": 116,
+  "unrelated_collection_failures": {},
+  "hash_failures": [],
+  "payload_hash_failures": [],
+  "protected_unchanged": true
+}

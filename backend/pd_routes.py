@@ -478,7 +478,7 @@ class FormulaUpdate(BaseModel):
 
 class FormulaItemCreate(BaseModel):
     ingredient_name: str
-    percentage: float
+    percentage: float = Field(gt=0, le=100)
     price_per_kg: float = 0.0
     price_usd: Optional[float] = None   # R04: preço em US$ (fragrâncias cotadas em dólar)
     fornecedor: Optional[str] = ""
@@ -488,7 +488,7 @@ class FormulaItemCreate(BaseModel):
 
 class FormulaItemUpdate(BaseModel):
     ingredient_name: Optional[str] = None
-    percentage: Optional[float] = None
+    percentage: Optional[float] = Field(default=None, gt=0, le=100)
     price_per_kg: Optional[float] = None
     price_usd: Optional[float] = None   # R04: preço em US$
     fornecedor: Optional[str] = None
@@ -2962,7 +2962,9 @@ async def update_formula_client_link(formula_id: str, link_id: str, data: Formul
 @pd_router.post("/formulas/{formula_id}/items")
 async def add_formula_item(formula_id: str, data: FormulaItemCreate, request: Request):
     user = await get_current_user(request)
-    formula = await db.pd_formulas.find_one({"id": formula_id}, {"_id": 0})
+    require_roles(user, PD_WRITE)
+    tenant_id = user["tenant_id"]
+    formula = await db.pd_formulas.find_one({"id": formula_id, "tenant_id": tenant_id}, {"_id": 0})
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
     if formula.get("locked"):
@@ -2976,6 +2978,7 @@ async def add_formula_item(formula_id: str, data: FormulaItemCreate, request: Re
     item_id = new_id()
     item = {
         "id": item_id,
+        "tenant_id": tenant_id,
         "formula_id": formula_id,
         "ingredient_name": data.ingredient_name,
         "percentage": data.percentage,
@@ -3013,7 +3016,9 @@ async def add_formula_item(formula_id: str, data: FormulaItemCreate, request: Re
 @pd_router.put("/formula-items/{item_id}")
 async def update_formula_item(item_id: str, data: FormulaItemUpdate, request: Request):
     user = await get_current_user(request)
-    existing = await db.pd_formula_items.find_one({"id": item_id}, {"_id": 0})
+    require_roles(user, PD_WRITE)
+    tenant_id = user["tenant_id"]
+    existing = await db.pd_formula_items.find_one({"id": item_id, "tenant_id": tenant_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Item não encontrado")
     
@@ -3026,7 +3031,11 @@ async def update_formula_item(item_id: str, data: FormulaItemUpdate, request: Re
     ppk = update_fields.get("price_per_kg", existing.get("price_per_kg", 0))
     p_usd = update_fields.get("price_usd", existing.get("price_usd"))  # R04
 
-    formula = await db.pd_formulas.find_one({"id": existing["formula_id"]}, {"_id": 0})
+    formula = await db.pd_formulas.find_one(
+        {"id": existing["formula_id"], "tenant_id": tenant_id}, {"_id": 0}
+    )
+    if not formula:
+        raise HTTPException(status_code=404, detail="Formula do item nao encontrada para este tenant")
     if formula and formula.get("locked"):
         raise HTTPException(status_code=409, detail=f"Fórmula v{formula.get('version',1)} está registrada e bloqueada (RN-BF-01). Crie uma nova versão para editar.")
     cotacao = formula.get("cotacao_usd", 6.00) if formula else 6.00
@@ -3049,8 +3058,10 @@ async def update_formula_item(item_id: str, data: FormulaItemUpdate, request: Re
         },
         ignored_fields=["cost_brl", "cost_kg_usd"],
     )
-    await db.pd_formula_items.update_one({"id": item_id}, {"$set": update_fields})
-    item = await db.pd_formula_items.find_one({"id": item_id}, {"_id": 0})
+    await db.pd_formula_items.update_one(
+        {"id": item_id, "tenant_id": tenant_id}, {"$set": update_fields}
+    )
+    item = await db.pd_formula_items.find_one({"id": item_id, "tenant_id": tenant_id}, {"_id": 0})
     if any(field in update_fields for field in ("ingredient_name", "percentage", "phase", "function", "catalog_id")):
         await _auto_generate_documents_for_development(
             formula["development_id"],
@@ -3065,16 +3076,20 @@ async def update_formula_item(item_id: str, data: FormulaItemUpdate, request: Re
 @pd_router.delete("/formula-items/{item_id}")
 async def delete_formula_item(item_id: str, request: Request):
     user = await get_current_user(request)
-    existing = await db.pd_formula_items.find_one({"id": item_id}, {"_id": 0})
+    require_roles(user, PD_WRITE)
+    tenant_id = user["tenant_id"]
+    existing = await db.pd_formula_items.find_one({"id": item_id, "tenant_id": tenant_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Item nao encontrado")
     result = await db.pd_formula_items.update_one(
-        {"id": item_id, "is_deleted": {"$ne": True}},
+        {"id": item_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}},
         {"$set": {"is_deleted": True, "archived_at": now_iso(), "archived_by": user.get("id")}},
     )
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Item não encontrado")
-    formula = await db.pd_formulas.find_one({"id": existing["formula_id"]}, {"_id": 0})
+    formula = await db.pd_formulas.find_one(
+        {"id": existing["formula_id"], "tenant_id": tenant_id}, {"_id": 0}
+    )
     if formula:
         await _auto_generate_documents_for_development(
             formula["development_id"],
@@ -3098,8 +3113,15 @@ async def delete_formula_item(item_id: str, request: Request):
 @pd_router.get("/formulas/{formula_id}/items")
 async def list_formula_items(formula_id: str, request: Request):
     user = await get_current_user(request)
+    require_roles(user, PD_READ)
+    tenant_id = user["tenant_id"]
+    formula = await db.pd_formulas.find_one(
+        {"id": formula_id, "tenant_id": tenant_id}, {"_id": 0, "id": 1}
+    )
+    if not formula:
+        raise HTTPException(status_code=404, detail="Formula nao encontrada")
     items = await db.pd_formula_items.find(
-        {"formula_id": formula_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+        {"formula_id": formula_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}}, {"_id": 0}
     ).to_list(200)
     return items
 
@@ -3109,11 +3131,15 @@ async def list_formula_items(formula_id: str, request: Request):
 async def formula_cost_report(formula_id: str, request: Request):
     """Returns full cost breakdown for a formula - Relatório de Custo Acabado"""
     user = await get_current_user(request)
-    formula = await db.pd_formulas.find_one({"id": formula_id}, {"_id": 0})
+    require_roles(user, PD_READ)
+    tenant_id = user["tenant_id"]
+    formula = await db.pd_formulas.find_one({"id": formula_id, "tenant_id": tenant_id}, {"_id": 0})
     if not formula:
         raise HTTPException(status_code=404, detail="Fórmula não encontrada")
     
-    items = await db.pd_formula_items.find({"formula_id": formula_id}, {"_id": 0}).to_list(200)
+    items = await db.pd_formula_items.find(
+        {"formula_id": formula_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(200)
     
     total_percentage = sum(it.get("percentage", 0) for it in items)
     total_cost_per_kg = sum(it.get("cost_brl", 0) for it in items)
@@ -6678,9 +6704,28 @@ async def _evaluate_formula_homologacao(formula_id: str, tenant_id: str) -> Dict
     de cada MP usada (via catalog -> homologacao_mps por nome+inci).
     Retorna estrutura: {ok: bool, blocked: [..], pending: [..], total_items: int, summary: str}
     """
-    items = await db.pd_formula_items.find({"formula_id": formula_id}, {"_id": 0}).to_list(2000)
+    formula = await db.pd_formulas.find_one(
+        {"id": formula_id, "tenant_id": tenant_id}, {"_id": 0, "id": 1}
+    )
+    if not formula:
+        return {
+            "ok": False,
+            "blocked": [],
+            "pending": [{"ingredient_name": "", "reason": "Formula nao encontrada para o tenant", "status": "ausente"}],
+            "total_items": 0,
+            "summary": "Formula nao encontrada para o tenant",
+        }
+    items = await db.pd_formula_items.find(
+        {"formula_id": formula_id, "tenant_id": tenant_id, "is_deleted": {"$ne": True}}, {"_id": 0}
+    ).to_list(2000)
     if not items:
-        return {"ok": True, "blocked": [], "pending": [], "total_items": 0, "summary": "Formula sem itens"}
+        return {
+            "ok": False,
+            "blocked": [],
+            "pending": [{"ingredient_name": "", "reason": "Formula sem itens", "status": "ausente"}],
+            "total_items": 0,
+            "summary": "Formula sem itens",
+        }
 
     catalog_ids = [it["catalog_id"] for it in items if it.get("catalog_id")]
     catalogs: Dict[str, Dict[str, Any]] = {}
@@ -6737,7 +6782,7 @@ async def _evaluate_formula_homologacao(formula_id: str, tenant_id: str) -> Dict
 
     summary = f"{len(blocked)} bloqueadas, {len(pending)} pendentes, {len(items)} itens"
     return {
-        "ok": len(blocked) == 0,
+        "ok": len(blocked) == 0 and len(pending) == 0,
         "blocked": blocked,
         "pending": pending,
         "total_items": len(items),
@@ -6748,6 +6793,8 @@ async def _evaluate_formula_homologacao(formula_id: str, tenant_id: str) -> Dict
 async def assert_formula_homologacao_ok(formula_id: str, tenant_id: str, *, allow_pending: bool = True):
     """Raises 409 if formula has insumos reprovados/suspensos. Pending only blocks if allow_pending=False."""
     result = await _evaluate_formula_homologacao(formula_id, tenant_id)
+    if result["total_items"] == 0:
+        raise HTTPException(status_code=409, detail="Formula bloqueada: composicao sem itens validos.")
     if result["blocked"]:
         names = ", ".join(item["ingredient_name"] for item in result["blocked"][:5])
         raise HTTPException(
@@ -6792,13 +6839,13 @@ async def assert_pd_card_ready_for_approval(card_id: str, tenant_id: str):
     if not dev:
         return
     latest = await db.pd_formulas.find_one(
-        {"development_id": dev["id"]},
+        {"development_id": dev["id"], "tenant_id": tenant_id},
         {"_id": 0, "id": 1},
         sort=[("version", -1)],
     )
     if not latest:
         return
-    await assert_formula_homologacao_ok(latest["id"], tenant_id, allow_pending=True)
+    await assert_formula_homologacao_ok(latest["id"], tenant_id, allow_pending=False)
 
 
 @pd_router.get("/formulas/{formula_id}/homologacao-status")

@@ -1,0 +1,14 @@
+{
+  "status": "VERIFIED",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "supplier_checks": {
+    "marked_count": 383,
+    "total_tenant_count": 383,
+    "unique_cnpj": true,
+    "unique_code": true,
+    "all_not_started": true,
+    "document_hash_mismatches": []
+  },
+  "unrelated_collection_failures": [],
+  "unrelated_collections_verified": 103
+}

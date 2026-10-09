@@ -41,6 +41,16 @@ class FakeCollection:
         self.docs.append(dict(doc))
         return FakeResult()
 
+    async def find_one_and_update(self, query, update, upsert=False, projection=None, **_kwargs):
+        for doc in self.docs:
+            if self._matches(doc, query):
+                return self._project(doc, projection)
+        if not upsert:
+            return None
+        doc = dict(update.get("$setOnInsert") or {})
+        self.docs.append(doc)
+        return self._project(doc, projection)
+
     async def update_one(self, query, update, *args, **kwargs):
         for doc in self.docs:
             if not self._matches(doc, query):

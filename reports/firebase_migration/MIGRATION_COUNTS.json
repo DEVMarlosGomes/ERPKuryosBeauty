@@ -52,10 +52,10 @@
   },
   "reconciliation": {
     "MATCH": 3,
-    "INSERT_CANDIDATE": 906,
+    "INSERT_CANDIDATE": 892,
     "MERGE_CANDIDATE": 0,
     "CONFLICT": 6,
-    "MANUAL_REVIEW": 3008,
+    "MANUAL_REVIEW": 3022,
     "SKIP": 0,
     "target_evaluation_complete": true
   },
@@ -77,7 +77,7 @@
     "expedicao": 338,
     "rh": 16
   },
-  "generated_at": "2026-09-24T13:56:15.829341+00:00",
+  "generated_at": "2026-09-24T14:02:43.989424+00:00",
   "target": {
     "database": "kuryos_erp_homologacao",
     "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",

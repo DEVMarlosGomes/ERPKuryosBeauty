@@ -1,0 +1,119 @@
+{
+  "status": "APPLIED_HOMOLOGATION",
+  "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+  "approved_rule": "hr_legacy_review_no_account_creation_v1",
+  "policy": "ISOLATED_HR_REVIEW_NO_ACCOUNT_CREATION",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22"
+  },
+  "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+  "preflight_sha256": "0ee4288a64a9337ee4b6a75440408ca2f66849641307e47cdfa2962f973e8a88",
+  "snapshot_sha256": "49848d4f9202de364ed0d4bf0905bd128e939f4ee9433e57060c2dbf4617210f",
+  "planned": {
+    "job_role": 3,
+    "legacy_user": 13
+  },
+  "operational_before": {
+    "users": 14,
+    "rh_cargos": 0,
+    "rh_colaboradores": 0,
+    "rh_avaliacoes": 0,
+    "rh_ferias": 0
+  },
+  "operations": [
+    {
+      "target_id": "70332fcd-c9b8-565f-b39d-ee701dd6ec7f",
+      "source_key": "-P1812jiro021RybM1WS",
+      "after_hash": "425d92f51a0dc8dd06b0e88264bb27bfc8ea7e6b975b171caede659d540cc62e"
+    },
+    {
+      "target_id": "fc657ca4-6b99-5edd-b918-aa7074b638f7",
+      "source_key": "-P1816nkvRap3mvOCm7N",
+      "after_hash": "b9aac0323d18171547f7f071ffb05109c6694f221ac18f89cc1992eb8c944b88"
+    },
+    {
+      "target_id": "e0e3ade3-8a32-566d-a2fe-6263fb07fda4",
+      "source_key": "-P181AHm0MUtwkGK1gSr",
+      "after_hash": "b2a5e88d371f436f049b9cce0f6a957648d2d175ada663bdb9f2a61a9e8d115a"
+    },
+    {
+      "target_id": "05e1fcb8-e9df-5e30-addf-e6894bcdfde8",
+      "source_key": "76QB4wXNxWcjAZKEAGWzoGHeGIB2",
+      "after_hash": "45b53e8291c61fade184a583bfbd0fa84ef45a34e937ed48f91dd7a43c56f2de"
+    },
+    {
+      "target_id": "8548ec56-2854-5f41-a9bf-3148687751f5",
+      "source_key": "9VyEU7XHfpSXpG3K62fFRn6AriB2",
+      "after_hash": "9ad841eac7e61dff4acbe0dada702651627a9bfda76d5bdb6a17131758e875f3"
+    },
+    {
+      "target_id": "b3c53979-bef5-58bd-9e69-d1ce861dbdb1",
+      "source_key": "9hu8LoweLIeWZqdAQfeKLsqoIHj1",
+      "after_hash": "fc40b123cb1fb13a47279fdbec649859f2d893a9779753539494b8914a53030c"
+    },
+    {
+      "target_id": "9fa306ee-9b8c-526d-94a9-f91465aac6d9",
+      "source_key": "AadKYuWDqEZlhBxNDRrQQC3yfw63",
+      "after_hash": "3523f7afae6bb92f8ed90734581de622dad3f7204585209f5b06358ecbcb4407"
+    },
+    {
+      "target_id": "228fc1f1-3639-5374-b763-2d88a81e6b1a",
+      "source_key": "HZSLrB5omiQ83nnEEAHhdkxpFok2",
+      "after_hash": "9cd4a87d1b4747c501808e7863a333cd193400fec59b9e0d82d2fb85dae5cffe"
+    },
+    {
+      "target_id": "21175445-1c53-5570-89dd-c211312d7e79",
+      "source_key": "I7n4ydAdI0aYDPiJZThx8yiVB8q2",
+      "after_hash": "ca4e7f9d16ddac0ea9b8babbd936b4480d0d3bd34b8ea743303b289d2705f96a"
+    },
+    {
+      "target_id": "33a946bd-9624-53b1-b2ed-2054400c0d7c",
+      "source_key": "NG8bAfNoPzMYDjgzLe8fkguuqAB2",
+      "after_hash": "68897916ae372e055f47bd9f603efcd171b69dce539226a0114f2b45aaea40e1"
+    },
+    {
+      "target_id": "dfd3b147-4444-5493-baa1-67713c4ec61c",
+      "source_key": "TWfr9HWY8pdZcX4IkzphXEfhJO62",
+      "after_hash": "a562cbcb68901413a89df6dd820bddd865d4ecc5254d2ed9b994eeddf0152af3"
+    },
+    {
+      "target_id": "50f6f9b2-d911-5020-9d71-086e5fb86422",
+      "source_key": "bNEjC0vCpUTUfpskzxIX4CRksvl1",
+      "after_hash": "7f4671138c1683d450b557c0e0f7b9588fe4026728399967ccc9e3e62ceeed59"
+    },
+    {
+      "target_id": "9a305670-6970-5724-9a7a-29bd1faf7b5f",
+      "source_key": "fHwKcDCiE2gwkueCpSwgdvZX3sW2",
+      "after_hash": "422a1b7a6ae11587558bdeaf3236c1884ac52aadd9726cee01e653a6a92e3266"
+    },
+    {
+      "target_id": "f3e9cca5-5b44-527f-b889-323b2c23b655",
+      "source_key": "jOMHYxfSCvN5LsDNaykwnOIjK0I3",
+      "after_hash": "d003ccbc29df8575ae76a356a2ea8ef5d799b817d20b1f3a5a00f31a5a2fb9c1"
+    },
+    {
+      "target_id": "83d63a0e-dcb9-5ec5-92a1-4a22e067dcbd",
+      "source_key": "mGmxpnS4fkVGCHQjfZJMr72NJuE2",
+      "after_hash": "4bde0e8ccb34d5b5651383d2ecf5f89fb390a94e244ef84d4e027b3f76569a0f"
+    },
+    {
+      "target_id": "7308700b-6adf-52ed-a63e-dfe37f2faf6c",
+      "source_key": "w2suzV2zFdPOGuuFv3NBbmz4FV32",
+      "after_hash": "6887b80da13cabfe84dbf90e4b5ded8c5df3611f3c33083c36317f25134a32ac"
+    }
+  ],
+  "completed_at": "2026-09-25T13:32:45.254941+00:00",
+  "inserted": {
+    "job_role": 3,
+    "legacy_user": 13
+  },
+  "operational_after": {
+    "users": 14,
+    "rh_cargos": 0,
+    "rh_colaboradores": 0,
+    "rh_avaliacoes": 0,
+    "rh_ferias": 0
+  },
+  "collection": "legacy_hr_reviews"
+}

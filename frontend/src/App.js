@@ -69,6 +69,7 @@ const PCPProductionPage = lazy(() => import("@/pages/PCPProductionPage"));
 const PCPQuantityPlanningPage = lazy(() => import("@/pages/PCPQuantityPlanningPage"));
 const ContratosPage = lazy(() => import("@/pages/ContratosPage"));
 const CadastrosPage = lazy(() => import("@/pages/CadastrosPage"));
+const ReviewSectorPage = lazy(() => import("@/pages/ReviewSectorPage"));
 
 function ThemeProvider({ children }) {
     const [dark, setDark] = useState(() => localStorage.getItem("theme") !== "light");
@@ -205,6 +206,7 @@ function AppLayout() {
                         <Route path="/recebimento" element={<RoleGuard allowed={LOGISTICA_ROLES}><RecebimentoPage /></RoleGuard>} />
                         <Route path="/contratos" element={<RoleGuard allowed={CONTRATOS_ROLES}><ContratosPage /></RoleGuard>} />
                         <Route path="/audit" element={<RoleGuard allowed={AUDIT_ROLES}><AuditLogPage /></RoleGuard>} />
+                        <Route path="/revisoes-setoriais" element={<ReviewSectorPage />} />
                         <Route path="/cq" element={<RoleGuard allowed={CQ_ROLES}><CQDashboard /></RoleGuard>} />
                         <Route path="/qualidade" element={<RoleGuard allowed={CQ_ROLES}><CQDashboard /></RoleGuard>} />
                         <Route path="/qualidade.html" element={<RoleGuard allowed={CQ_ROLES}><CQDashboard /></RoleGuard>} />

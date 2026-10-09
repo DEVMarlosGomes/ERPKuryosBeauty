@@ -1,0 +1,12 @@
+{
+  "status": "VERIFIED",
+  "source_mode": "HML_READ_ONLY",
+  "rollback_target": "LOCAL_DISPOSABLE_DATABASE",
+  "copied_documents": 289,
+  "rollback_result": {
+    "reviews_restored": 289
+  },
+  "hash_failures": [],
+  "dispatched_records_remaining": 0,
+  "local_database_removed": true
+}

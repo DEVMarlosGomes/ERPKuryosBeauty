@@ -1,0 +1,11 @@
+{
+  "status": "APPLIED_HOMOLOGATION_VERIFIED",
+  "approved_rule": "hr_cargo_exact_firebase_promotion_v1",
+  "cargos": 3,
+  "unrelated_collections_verified": 112,
+  "unrelated_collection_failures": {},
+  "cargo_hash_failures": [],
+  "review_hash_failures": [],
+  "exact_field_failures": [],
+  "protected_unchanged": true
+}

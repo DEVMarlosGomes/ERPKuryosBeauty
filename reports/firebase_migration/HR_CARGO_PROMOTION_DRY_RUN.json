@@ -1,0 +1,210 @@
+{
+  "status": "DRY_RUN_VALID",
+  "approved_rule": "hr_cargo_exact_firebase_promotion_v1",
+  "target": {
+    "database": "kuryos_erp_homologacao",
+    "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22"
+  },
+  "snapshot_sha256": "e31df64895be4cc0d8082b82c115fc71bc8a03f5e7d260b2f2aa93936c012393",
+  "planned": 3,
+  "protected_before": {
+    "users": 14,
+    "rh_colaboradores": 0,
+    "rh_avaliacoes": 0,
+    "rh_ferias": 0
+  },
+  "operations": [
+    {
+      "review_id": "70332fcd-c9b8-565f-b39d-ee701dd6ec7f",
+      "cargo_id": "bb05c61e-03e4-5284-9b41-48ac46988573",
+      "source_key": "-P1812jiro021RybM1WS",
+      "cargo_after_hash": "33c6cd748790f690a5e873c66e77940839f5e54669e8c10f783aa7d7acae4b51",
+      "review_before_hash": "425d92f51a0dc8dd06b0e88264bb27bfc8ea7e6b975b171caede659d540cc62e",
+      "review_after_hash": "bc4c733479880756934d7dedb1e6b99fd7ef1f8b67799d85e743d67e076e7650",
+      "review_before_document": {
+        "id": "70332fcd-c9b8-565f-b39d-ee701dd6ec7f",
+        "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+        "record_type": "job_role",
+        "source_node": "rh_cargos",
+        "source_key": "-P1812jiro021RybM1WS",
+        "legacy_name": "AUXILIAR DE PRODUCAO I",
+        "legacy_email": null,
+        "legacy_role": null,
+        "legacy_sector": "PRODUCAO",
+        "target_user_id": null,
+        "reconciliation_classification": "manual_review",
+        "blockers": [
+          "target_role_mapping_required"
+        ],
+        "reconciliation": {
+          "source_key": "-P1812jiro021RybM1WS",
+          "legacy_name": "AUXILIAR DE PRODUCAO I",
+          "legacy_sector": "PRODUCAO",
+          "legacy_level": "1",
+          "legacy_active": true,
+          "classification": "manual_review",
+          "blockers": [
+            "target_role_mapping_required"
+          ],
+          "sanitized_payload": {
+            "ativo": true,
+            "nivelTrilha": "1",
+            "nome": "AUXILIAR DE PRODUCAO I",
+            "setor": "PRODUCAO"
+          }
+        },
+        "review_status": "pendente_revisao",
+        "activation_status": "bloqueado",
+        "operational_eligible": false,
+        "historical_only": true,
+        "account_creation_allowed": false,
+        "permission_replay_allowed": false,
+        "source_payload": {
+          "ativo": true,
+          "nivelTrilha": "1",
+          "nome": "AUXILIAR DE PRODUCAO I",
+          "setor": "PRODUCAO"
+        },
+        "source_payload_sha256": "6c51f9188a60a6f067ee356c93c645c736ff7029153bf7795053eb761eab42af",
+        "created_at": "2026-09-25T13:32:44.795725+00:00",
+        "updated_at": "2026-09-25T13:32:44.795725+00:00",
+        "_migration": {
+          "source": "firebase-current",
+          "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+          "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+          "approved_rule": "hr_legacy_review_no_account_creation_v1",
+          "operation_id": "d9c476e2-4eda-565b-bfa9-45f73d143c9c",
+          "applied_at": "2026-09-25T13:32:44.795725+00:00"
+        }
+      }
+    },
+    {
+      "review_id": "fc657ca4-6b99-5edd-b918-aa7074b638f7",
+      "cargo_id": "6ecff03d-c20b-5895-bed4-71347dc95700",
+      "source_key": "-P1816nkvRap3mvOCm7N",
+      "cargo_after_hash": "f03d9055e24a7ae310f8c3d04d02918f7602c7a0dbdc2bedfc707f219d2f4b73",
+      "review_before_hash": "b9aac0323d18171547f7f071ffb05109c6694f221ac18f89cc1992eb8c944b88",
+      "review_after_hash": "df9555e1c0ff77d5282a0590bfc19fc4e984efc0d2050f0512539f029c966930",
+      "review_before_document": {
+        "id": "fc657ca4-6b99-5edd-b918-aa7074b638f7",
+        "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+        "record_type": "job_role",
+        "source_node": "rh_cargos",
+        "source_key": "-P1816nkvRap3mvOCm7N",
+        "legacy_name": "AUXILIAR DE PRODUCAO II",
+        "legacy_email": null,
+        "legacy_role": null,
+        "legacy_sector": "PRODUCAO",
+        "target_user_id": null,
+        "reconciliation_classification": "manual_review",
+        "blockers": [
+          "target_role_mapping_required"
+        ],
+        "reconciliation": {
+          "source_key": "-P1816nkvRap3mvOCm7N",
+          "legacy_name": "AUXILIAR DE PRODUCAO II",
+          "legacy_sector": "PRODUCAO",
+          "legacy_level": "2",
+          "legacy_active": true,
+          "classification": "manual_review",
+          "blockers": [
+            "target_role_mapping_required"
+          ],
+          "sanitized_payload": {
+            "ativo": true,
+            "nivelTrilha": "2",
+            "nome": "AUXILIAR DE PRODUCAO II",
+            "setor": "PRODUCAO"
+          }
+        },
+        "review_status": "pendente_revisao",
+        "activation_status": "bloqueado",
+        "operational_eligible": false,
+        "historical_only": true,
+        "account_creation_allowed": false,
+        "permission_replay_allowed": false,
+        "source_payload": {
+          "ativo": true,
+          "nivelTrilha": "2",
+          "nome": "AUXILIAR DE PRODUCAO II",
+          "setor": "PRODUCAO"
+        },
+        "source_payload_sha256": "a02ae6c99828745d3d294694ccc5feea8e166f52c51840326832e6686f5d1257",
+        "created_at": "2026-09-25T13:32:44.795725+00:00",
+        "updated_at": "2026-09-25T13:32:44.795725+00:00",
+        "_migration": {
+          "source": "firebase-current",
+          "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+          "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+          "approved_rule": "hr_legacy_review_no_account_creation_v1",
+          "operation_id": "927cdd71-dddc-5682-ace4-a75734245564",
+          "applied_at": "2026-09-25T13:32:44.795725+00:00"
+        }
+      }
+    },
+    {
+      "review_id": "e0e3ade3-8a32-566d-a2fe-6263fb07fda4",
+      "cargo_id": "f3862497-28f4-5897-ba7a-4fd494946323",
+      "source_key": "-P181AHm0MUtwkGK1gSr",
+      "cargo_after_hash": "dd936500199fbca94236829c1f023b5b393d450f31d5d6a8e9a410e8790ed9a3",
+      "review_before_hash": "b2a5e88d371f436f049b9cce0f6a957648d2d175ada663bdb9f2a61a9e8d115a",
+      "review_after_hash": "172aa5b571bf727fe88a3ca0e5f013d89c024f222991ae3ae4ab13fce80ca0a2",
+      "review_before_document": {
+        "id": "e0e3ade3-8a32-566d-a2fe-6263fb07fda4",
+        "tenant_id": "a1534e89-bbfa-483f-ac0b-8d6dbf6bab22",
+        "record_type": "job_role",
+        "source_node": "rh_cargos",
+        "source_key": "-P181AHm0MUtwkGK1gSr",
+        "legacy_name": "AUXILIAR DE PRODUCAO III",
+        "legacy_email": null,
+        "legacy_role": null,
+        "legacy_sector": "PRODUCAO",
+        "target_user_id": null,
+        "reconciliation_classification": "manual_review",
+        "blockers": [
+          "target_role_mapping_required"
+        ],
+        "reconciliation": {
+          "source_key": "-P181AHm0MUtwkGK1gSr",
+          "legacy_name": "AUXILIAR DE PRODUCAO III",
+          "legacy_sector": "PRODUCAO",
+          "legacy_level": "3",
+          "legacy_active": true,
+          "classification": "manual_review",
+          "blockers": [
+            "target_role_mapping_required"
+          ],
+          "sanitized_payload": {
+            "ativo": true,
+            "nivelTrilha": "3",
+            "nome": "AUXILIAR DE PRODUCAO III",
+            "setor": "PRODUCAO"
+          }
+        },
+        "review_status": "pendente_revisao",
+        "activation_status": "bloqueado",
+        "operational_eligible": false,
+        "historical_only": true,
+        "account_creation_allowed": false,
+        "permission_replay_allowed": false,
+        "source_payload": {
+          "ativo": true,
+          "nivelTrilha": "3",
+          "nome": "AUXILIAR DE PRODUCAO III",
+          "setor": "PRODUCAO"
+        },
+        "source_payload_sha256": "4a63871903f03b37cbc96ee63381b98aaee2a22b2e01ae11364c43e65c0aca1c",
+        "created_at": "2026-09-25T13:32:44.795725+00:00",
+        "updated_at": "2026-09-25T13:32:44.795725+00:00",
+        "_migration": {
+          "source": "firebase-current",
+          "source_sha256": "7b6ba88ff260d4b8c18e4a057e9e6732d77d394c88d4b4bd034e08a7fe0b83e4",
+          "plan_id": "e5669507-b321-5187-96fa-7246cc909085",
+          "approved_rule": "hr_legacy_review_no_account_creation_v1",
+          "operation_id": "5d3cac02-705a-5e19-96b2-25f4b5536c42",
+          "applied_at": "2026-09-25T13:32:44.795725+00:00"
+        }
+      }
+    }
+  ]
+}
